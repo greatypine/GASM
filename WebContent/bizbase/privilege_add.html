@@ -1,0 +1,287 @@
+
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="author" content="Zhong Youyuan">
+		<title>数据权限添加</title>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/common-app.css" />
+		<script type="text/javascript" src="js/lib.js"></script>
+		<script type="text/javascript" src="js/orgForPrivilege.js"></script>
+		<script type="text/javascript" src="js/privilegeItemTree.js"></script>
+		<script type="text/javascript" src="js/DictTreeWin.js"></script>
+		<script type="text/javascript" src="js/bidOrgTree.js"></script>
+		<script type="text/javascript" src="js/localComOrgTree4Exp.js"></script>
+		<script type="text/javascript" src="js/changeOrganization.js"></script>
+		<script type="text/javascript" src="js/erpProcType.js"></script>
+		<script type="text/javascript" src="js/privilegeEdit.js"></script>
+		<script>
+			$(function() {
+				if (null != userGroupId || "" == userGroupId) {
+					doManager("userGroupManager", "getUserGroupDTO", userGroupId, function(datas, textStatus, XMLHttpRequest) {
+						if (datas.result) {
+							var str = datas.data;
+							var userGroupObj = $.fromJSON(str);
+							$("#userGroupName").text(userGroupObj.name);
+							$("#userGroupCode").text(userGroupObj.code);
+							clientCode = userGroupObj.orgEntity.clientCode;
+							parentID = userGroupObj.orgEntity.parent_id;
+							psorgCode=userGroupObj.orgEntity.code;
+							psorgParentCode = userGroupObj.orgEntity.parentCode
+						}
+					});
+				}
+			});
+			function doSave(){
+				var fileValueArrCheck = [];
+				var fileNameArrCheck =[];
+				var conditionsValue = getConditons();
+				var isRepeat=false;
+				var fm = new Array();
+				
+				for(var i=0; i<conditionsValue.length;i++){
+					if(conditionsValue[i].fieldValue != ""){
+						 fileValueArrCheck.push(conditionsValue[i].fieldValue);
+					}
+					if(conditionsValue[i].fieldName != ""){
+						 fileNameArrCheck.push(conditionsValue[i].fieldName);
+					}
+				}
+				if(fileNameArrCheck.length != conditionsValue.length){
+					$$.showMessage("${system.info}", "条件名称不能为空!");
+					return;
+				}
+				if(fileValueArrCheck.length != conditionsValue.length){
+	                $$.showMessage("${system.info}", "条件取值不能为空!");
+					return;
+				}
+				$.each(conditionsValue, function(i, n){
+					fm[i]=n.fieldName;
+	       		});
+				for(var i=0;i<fm.length;i++){
+					for(var j=i+1;j<fm.length;j++){
+						if(fm[j]==fm[i]){
+							var isRepeat=true;
+							break;	
+						}
+					}
+				}
+				if(isRepeat){
+					$$.showMessage("${system.info}", "条件名称不能重复!");
+					return;	
+				}
+				var div = $("<div></div>");
+				div.html("确定提交？");
+				div.dialog(
+				{
+					bgiframe: true,
+					title: "提示",
+					width: 320,
+					buttons: 
+						{
+							"确定": function() {
+									doSubmit(this);
+									$(this).dialog("close");
+							},
+							"取消": function() {
+								$(this).dialog("close");
+							}
+						},
+					modal: true
+				});
+			}
+			//保存信息
+			function doSubmit(obj) {
+				$validator = new PMSValidator($("#privilegeAddForm")[0],{
+					bNormalDisplay: false,
+					iDisplayLength: 999
+				});
+				$validator.clean();
+				var passed = $validator.clientValidate();
+				if (!passed) {
+					return false;
+				}
+				var privilegeObj = {
+					businessId: $("#businessType").val(),
+					disabledFlag:1,
+					conditions: getConditons(),
+					userGroup:{id:userGroupId}
+				};
+				doManager("privilegeManager", "addPrivilege", privilegeObj, function(data, textStatus, XMLHttpRequest) {
+					if(data.result){
+						if(type=='userGroupQuery'){
+							window.location = "userGroupQuery.html";
+						}else{
+							window.location = "userGroupManagement.html?orgId="+ orgId;
+						}
+					}
+				},true,{showWaiting:true});
+			    $(obj).dialog("close");
+			}
+		</script>
+		<style>
+			.hidden {
+			    display: none;
+			}
+			.tableHeader {
+			    text-align: center;
+			    background: #ADB6E1 url(images/tablebg.jpg) repeat-x;
+			    border: 1px solid #888888;
+			    height: 18px;
+			    line-height: 22px;
+			    padding-top: 3px;
+			    padding-left: 3px;
+			    color: #28356F;
+			    font-weight: bold;
+			    font-size: 12px;
+			}
+			#addtable td {
+			    border: 1px solid #888888;
+			}
+			.tableTextBorder {
+			    border: 1px solid #888888;
+			}
+			.fontCenter{
+				text-align: center;
+			}
+			td.tdText{
+				width:200px;
+				text-align:left;
+				padding-left:5px;
+				height:26px;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="rightcont clear">
+		<table class="bigteble">
+			<tr>
+				<td>
+					<table class="Querytable">
+						<tr class="Colorbar1">
+							<td>
+								<strong>&nbsp;数据权限创建</strong>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+			<tr>
+				<td style="padding:5px;" bgcolor="#FFFFFF">
+					<table class="Querytable">
+						<tr class="Colorbar1">
+							<td width="20" align="center">
+								<a href="#" onclick="toggleBiz('conditionsDiv4','pic4');"><img src="../scripts/images/22.png" align="absmiddle" id="pic4" /></a>
+							</td>
+							<td>
+								<strong>角色组信息</strong>
+							</td>
+						</tr>
+					</table>
+					<div id="conditionsDiv4" style="border:thin solid;border-color:#999999;">
+						<table id="privilegeTable" bgcolor="#f7f8fd">
+							<tr>
+								<td style="padding:5px;" bgcolor="#FFFFFF">
+								 <div style="padding:0 18px 3px 18px;">
+									<table width="100%">
+										<tr>
+											<td class="Querytext" nowrap="nowrap">
+												角色组名称:
+											</td>
+											<td class="Queryform" id="userGroupName">
+											</td>
+											<td class="Querytext" nowrap="nowrap">
+												角色组编码:
+											</td>
+											<td class="Queryform" id="userGroupCode">
+											</td>
+										</tr>
+									</table>
+								 </div>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td style="padding:5px;" bgcolor="#FFFFFF">
+					<table class="bigteble">
+						<tr class="Colorbar1">
+							<td width="20" align="center">
+								<a href="#" onclick="toggleBiz('conditionsDiv3','pic3');"><img src="../scripts/images/22.png" align="absmiddle" id="pic3" /></a>
+							</td>
+							<td>
+								<strong>条件信息</strong>
+							</td>
+						</tr>
+					</table>
+					<div id="conditionsDiv3" style="border:thin solid;border-color:#999999;">
+						<table id="privilegeTable">
+							<tr>
+								<td colspan="4" style="padding:5px;">
+									<button type="button" id="addline" class="buttonu" onclick="addLine()">
+										添加条件
+									</button>
+								</td>
+							</tr>
+							<tr>
+								<td  colspan="4">
+									<div id="conditionDiv" class="hidden" style="padding:10px;" >
+										<table id="conditions" class="layout" align="center">
+											<thead>
+												<tr>
+													<th class="tableHeader" id="addnumber" nowrap="nowrap" width="5%" align="center">
+														序号
+													</th>
+													<th class="tableHeader" id="flieName" nowrap="nowrap" width="25%" align="center">
+														条件名称
+													</th>
+													<th class="tableHeader" id="operation" nowrap="nowrap" width="25%" align="center">
+														操作符
+													</th>
+													<th class="tableHeader" id="fileValue" nowrap="nowrap"  align="center">
+														条件取值
+													</th>
+													<th class="tableHeader" id="operate" nowrap="nowrap" width="10%"  align="center">
+														操作
+													</th>
+												</tr>
+											</thead>
+											<tbody id="addtable" class="fontCenter">
+											</tbody>
+										</table>
+									</div>
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4">
+									<table class="bigteble" style="border:none">
+										<tr class="Colorbar3">
+											<td>
+												<div style="padding:0px 5px 0px 0px;">
+												  	<input align="right" role="button" class="buttonu" onClick="doSave()"  value="提交" type="button" />
+													<input align="right" role="button" class="buttonu" onClick="returnPage()" value="返回" type="button" />
+												  </div>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+						</table>
+					</div>
+				</td>
+			</tr>
+		</table>
+			<div class="box">
+			<div id="containerbody" class="containerbody" style="padding:0px">			
+				<form class="pmsForm" id="privilegeAddForm" validate="true" clientvlidate="true">				
+						<select style="display:none" class='pmsSelect' id='operationsHiddenForpur' src='operation' name='operationsHiddenForpur'></select>
+						<select style="display:none" showblank="true" class='pmsSelect' id='fileNameHiddenForpur' src='businessbidtype' name='fileNameHiddenForpur'></select>
+				</form>
+			</div>
+		</div>
+	</body>
+</html>

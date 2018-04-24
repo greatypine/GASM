@@ -1,0 +1,419 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>添加员工信息</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script> 
+
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+.panel{border-radius:0; border:0; margin:0;}
+form{border:1px solid #337ab7;background-color:#fff;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	height:55px; line-height:55px; padding:5px 0;
+}
+table tr:nth-child(2n){background-color:#f2f2f2;}
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 58%;
+	height: 35px;
+	line-height: 35px;
+	border: 1px solid #e2e2e2;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;outline:none; border-radius:3px;
+}
+table td label{padding-left:10px; color:#999;}
+table te .letter{ letter-spacing:2em;}
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.form-control{margin:0; height:40px;}
+.input-group-btn button{height:40px;}
+</style>
+
+<script type="text/javascript">
+Date.prototype.format=function(fmt) {        
+    var o = {        
+    "M+" : this.getMonth()+1, //月份        
+    "d+" : this.getDate(), //日        
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
+    "H+" : this.getHours(), //小时        
+    "m+" : this.getMinutes(), //分        
+    "s+" : this.getSeconds(), //秒        
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度        
+    "S" : this.getMilliseconds() //毫秒        
+    };        
+    var week = {        
+    "0" : "\u65e5",        
+    "1" : "\u4e00",        
+    "2" : "\u4e8c",        
+    "3" : "\u4e09",        
+    "4" : "\u56db",        
+    "5" : "\u4e94",        
+    "6" : "\u516d"       
+    };        
+    if(/(y+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
+    }        
+    if(/(E+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
+    }        
+    for(var k in o){        
+        if(new RegExp("("+ k +")").test(fmt)){        
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
+        }        
+    }        
+    return fmt;        
+} 
+
+	var id = getUrlParamByKey("id");
+
+	
+	function dataCheck() {
+		var name = $("#name").val();
+		var phone = $("#phone").val();
+		var login_username = $("#login_username").val();
+		var password = $("#password").val();
+		var zw = $("#zw").val();
+		var usergroupname =$("#usergroupname  option:selected").text();
+		var usergroupid =$("#usergroupname  option:selected").val();
+		
+		if(name==null||name.trim()==""){
+			$$.showMessage("系统信息", "请填写姓名!");
+			return;
+		}
+		if(phone==null||phone.trim()==""){
+			$$.showMessage("系统信息", "请填写本人电话!");
+			return;
+		}
+		
+		if(phone!=null&&phone.trim().length!=11){
+			$$.showMessage("系统信息", "电话格式不正确!");
+			return;
+		}
+		
+		if(login_username==null||login_username.trim()==""){
+			$$.showMessage("系统信息", "请填写登录名!");
+			return;
+		}
+		if(password==null||password.trim()==""){
+			$$.showMessage("系统信息", "请填写密码!");
+			return;
+		}
+		if(zw==null||zw.trim()==""){
+			$$.showMessage("系统信息", "请填写职务!");
+			return;
+		}
+		if(usergroupname=="请选择"){
+			$$.showMessage("系统信息", "请选择用户组!");
+			return;
+		}
+		var isExist = false;
+		var msg = "";
+		//判断是否重复
+		doManager("UserManager", "querySysUserByPhoneAndLoginName", [phone,login_username] , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				if(jsonData!=null&&jsonData.length>0){
+					isExist = true;
+					msg = jsonData.toString();
+				}
+			}
+		},false); 
+		if(isExist){
+			$$.showMessage("系统信息", msg);
+			return;
+		}
+		return true;
+	}
+	
+	
+	var array=new Array();
+	
+	
+	$(function() {
+		//加载 取当前登录人所管理的用户组
+		
+		doManager("SysUserGroupOperaManager", "querySysGroupByCurUser", null , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				if(jsonData!=null){
+					
+					var selectShow = "<option>请选择</option>";
+					$(jsonData).each(function(i,usergroup){
+						selectShow+="<option value=\""+usergroup.id+"\">"+usergroup.name+"</option>";
+						
+					});
+					
+					$("#usergroupname").append(selectShow);
+					
+					
+				}else{
+					$$.showMessage("系统信息", "暂未维护用户组!");
+				}
+				
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		});
+		
+		
+		
+		
+	});
+
+	function doSave() {
+		if (!dataCheck()) {
+			return;
+		}
+		
+		
+		var name = $("#name").val().trim();
+		var phone = $("#phone").val();
+		var login_username = $("#login_username").val().trim();
+		var password = $("#password").val();
+		var zw = $("#zw").val();
+		var usergroupname =$("#usergroupname  option:selected").text();
+		var usergroupid =$("#usergroupname  option:selected").val();
+		
+		var o = {
+				name:name,
+				mobilephone:phone,
+				phone:phone,
+				code:login_username,
+				password:password,
+				zw:zw,
+				cOrgId:usergroupid
+		}
+		
+		doManager("SysUserGroupOperaManager", "saveSysUser", o , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				window.location.href = 'sysuserquery_list.html';
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		}); 
+		
+		
+	}
+
+	
+	function doBack(){
+		window.location.href = 'sysuserquery_list.html';
+	}
+	 
+    
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">系统用户管理 :系统用户新增
+        	<span class="but">
+                <input name="" type="submit" onclick="doSave();" value="保存"/>
+                <input name="" type="button" onclick="doBack();" value="返回"/>
+            </span>
+        </div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						<font color="red">*</font>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：<input type="text" id="name" isautotab="true" value="" style="width: 48%;"/>
+					</p>
+				</td>
+				
+				<td>
+					<p>
+						<font color="red">*</font>本人电话：<input type="text" id="phone" isautotab="true"  style="width: 48%;" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11"/>
+					</p>
+				</td>
+			</tr>
+            
+            
+            
+             <tr>
+             <td>
+					<p>
+						<font color="red">*</font>登&nbsp;录&nbsp;名：<input type="text" id="login_username" isautotab="true" value="" style="width: 48%;"/>
+					</p>
+				</td>
+				
+                <td>
+                	<p>
+					<font color="red">*</font>密&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;码：<input type="password" id="password" isautotab="true" value="" style="width: 48%;"/>
+					</p>
+                </td>
+            </tr> 
+            
+            
+            
+            
+          <tr>
+             <td>
+					<p>
+						<font color="red">*</font>职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：<input type="text" id="zw" isautotab="true" value="" style="width: 48%;"/>
+					</p>
+				</td>
+				
+                <td>
+                	<p>
+					<font color="red">*</font>角&nbsp;&nbsp;色&nbsp;组：
+					<select id="usergroupname" name="usergroupname"  style="width: 48%;">
+                	              		
+                	</select>
+					</p>
+                </td>
+            </tr>
+            
+            	
+			
+			
+                       
+		</table>
+	</form>
+	
+	<!-- <div class="rightcont clear">
+	<div id="centerQueryGridContainer" class="panel panel-primary" queryid="storekeepersubQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showheader="false" 
+         showsearch="false" showpaging="false" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+    </div> 
+    
+    
+    <table class="display" style="width: 100%; table-layout: auto;" border="1">
+		<thead>
+			<tr>
+				<th class="ui-state-default" style="width: 10%; text-align: center;"><div
+						class="DataTables_sort_wrapper">
+						门店编号<span class="css_right ui-icon ui-icon-triangle-1-n"></span>
+					</div>
+				</th>
+				<th class="ui-state-default" style="width: 30%; text-align: center;"><div
+						class="DataTables_sort_wrapper">
+						门店名称<span class="css_right ui-icon ui-icon-triangle-1-n"></span>
+					</div>
+				</th>
+				<th class="ui-state-default" style="width: 50%; text-align: center;"><div
+						class="DataTables_sort_wrapper">
+						详细地址<span class="css_right ui-icon ui-icon-carat-2-n-s"></span>
+					</div>
+				</th>
+				<th class="ui-state-default" style="width: 10%; text-align: center;"><div
+						class="DataTables_sort_wrapper">
+						操作<span class="css_right ui-icon ui-icon-carat-2-n-s"></span>
+					</div>
+				</th>
+			</tr>
+		</thead>
+		<div id="t_storelist">
+		</div> -->
+		<!-- <tr>
+			<th>36</th>
+			<th>呼家楼门店</th>
+			<th>朝阳区呼家楼</th>
+			<th><a href="">删除</a></th>
+		</tr>
+		<tr>
+			<th>36</th>
+			<th>呼家楼门店</th>
+			<th>朝阳区呼家楼</th>
+			<th><a href="">删除</a></th>
+		</tr>
+		<tr>
+			<th>36</th>
+			<th>呼家楼门店</th>
+			<th>朝阳区呼家楼</th>
+			<th><a href="">删除</a></th>
+		</tr> 
+	</table>
+-->
+</body>
+
+<script>
+function clearStoreVal(obj){
+		var srcVal = tmpCitySelect;
+		if(srcVal!=obj){
+			$("#selectStoreName").val('');
+			$("#selectStoreIds").val('');
+			$("#showSelectName").html('');
+			tmpCitySelect = obj;
+		}
+	
+}
+	
+	var test=new Vcity.CitySelector({input:'citySelect'});
+	
+</script>
+
+</html>

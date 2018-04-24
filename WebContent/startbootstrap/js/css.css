@@ -1,0 +1,49 @@
+@charset "utf-8";
+body,h1,h2,h3,h4,h5,h6,p,ul,ol,li,form,img,dl,dt,dd,table,th,td,blockquote,fieldset,strong,label,em{margin:0;padding:0;border:0;}
+ul,ol,li{list-style:none;}
+
+
+#jin{
+	height: 130px;
+}
+.ded{
+	display: block;
+}
+#buton{
+	float: right;
+}
+
+#tall .ee{
+	width: 40%;
+}
+#tall .ff{
+	width: 40%;
+}
+#tall .gg{
+	width: 20%;
+}
+
+.dn-list{padding:5px;}
+.dn-list li{line-height:28px; font-size:16px;}
+p span{
+	margin-left: 130px;
+	font-size: 1.5em;
+	height: 10px;
+	margin-top: 10px;
+	padding-top: 10px;
+}
+.barline{
+float:left;
+width:200px;
+background:#FFF;
+border:2px solid #4DBF7D;
+height:12px;
+
+display:inline-block;
+border-radius:8px;
+display:block;
+position:absolute;left:500px;top:80px;
+}
+.barline #percent{position:absolute;left:0px;top:-30px;display:inline-block;color:#4DBF7D;font-size:16px;}
+.barline #line{float:left;height:12px;overflow:hidden;background:#4DBF7D;border-radius:8px;}
+.barline #msg{position:absolute;left:80px;top:30px;display:inline-block;color:#4DBF7D;font-size:14px;}

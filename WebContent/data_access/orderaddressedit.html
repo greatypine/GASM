@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>订单区块指定小区(订单视角)</title>
+   <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit">
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    <script type="text/javascript" src="select_view/select_option.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <script type="text/javascript" src="./select_view/select_option.js"></script>
+    <script type="text/javascript" src="../scripts/auto.js"></script>
+</head>
+<style type="text/css">
+    .header_img{
+        width: 100%;
+        height: 100%;
+        float: right;
+        border-radius:50%
+    }
+    td{
+        padding-bottom: 15px;
+    }
+    .but {
+        float: right;
+        text-align: center;
+    }
+    ul,li{list-style: none;}
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+
+    /* new */
+    .daikan_list{border-bottom: 1px solid #dfdfdf; margin: 20px; position:relative;}
+    .bf_item_title{ font-size: 16px;}
+    .bf_item_title span{padding-left: 20px;}
+    .bf_des{margin:13px 0;}
+    .bf_des_con{clear: both; overflow: hidden;}
+    .bf_des_conl{float:left; width:30%; color: #999;line-height: 30px;}
+    .bf_des_conr{float:left; width:70%;}
+    
+    .bf_des_conl_tob{float:left; width:10%; color: #999;line-height: 30px;}
+    .bf_des_conr_tob{float:left; width:90%;margin-top:5px;}
+    
+    .bf_des_conr li{line-height: 30px; clear:both; overflow: hidden;}
+    .bf_des_conr li label{color:#666; width: 10%; float:left; display: inline-block;}
+    .bf_des_conr li span{width: 90%; float:left; display: inline-block;line-height:30px;}
+    .bfn_item_record{color: #b0b3b4;font-size: 12px;margin-bottom: 19px; position: absolute; top:0; right:0;}
+
+</style>
+<script type="text/javascript">
+var id = getUrlParamByKey("id");//订单区块的id
+var pids = getUrlParamByKey("pids");//小区的id
+$(function(){
+	$("#id").val(id);
+	$("#pid").val(pids);
+	doManager("addressRelevanceManager", "findAddressRelevanceById",id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+					if(key=="publicarea"){
+						if(va==1){
+							document.getElementById("publicarea").checked=true;
+							$("#tinybutt").attr({"disabled":"disabled"});
+						}
+					}
+				}
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+	});
+	
+	$("#publicarea").change(function(){
+		if($("#publicarea").is(':checked')){
+			$("#tinyname").text('');
+			$("#pid").val('');
+			$("#tinybutt").attr({"disabled":"disabled"});
+			//alert($("#pid").val());
+		}else{
+			$("#tinybutt").removeAttr("disabled");
+		}
+	})
+	
+	addplace();
+})
+
+	function addplace(){
+		$("#tinyname").text('');
+		var pid=$("#pid").val();
+		if(pid!=null&&pid!=''){
+			doManager("tinyVillageManager", "getTinyVillageInformationById",pid, function(data, textStatus,
+					XMLHttpRequest) {
+				if(data.result){
+					if(data.data!="null"){
+						var jsonData = $.fromJSON(data.data);
+							var name = jsonData.name;
+							if(name.length>10){
+								name=name.substring(0,7)+"...";
+							}
+							$("#tinyname").text(name);
+					}else{
+						$$.showMessage("系统信息", "加载信息错误");
+					}	
+				}else{
+					$$.showMessage("系统信息", "加载信息错误");
+				}
+			});
+		}
+	}
+
+
+
+var win;
+function showCustomerWin(callback){
+      win = new checkWin(callback);
+      $(".ui-icon-closethick").hide();
+      win.show();
+  }
+
+function setCustomerSelect(jsons){
+ 	var selectCustomerIds = "";
+		$.each(jsons,function(n,value) {
+			selectCustomerIds=value.id;
+		})
+		if(selectCustomerIds!=''){
+			$("#pid").val(selectCustomerIds);
+			addplace();
+		}else{
+			$("#pid").val('');
+			$("#tinyname").text('');
+		}
+ };
+ 
+ /**
+ *
+ * @param {Object} callback 	回调函数
+ * 返回值json
+ */
+var checkWin = function(callback){
+    this.win = $("<div style='overflow-y: hidden'></div>");
+    var par = $("#pid").val();
+    var _this = this;
+    var initWin = function(){
+        _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/selectTinyvillageDataList.html?par='+par+'" scrolling="yes"></iframe>');
+        _this.win.dialog({
+            bgiframe: true,
+            title:"分配订单区块",
+            autoOpen:false,
+            width:_this.width,
+            height:_this.height,
+            buttons : {
+                "确定": function(){
+                 	window.frames["selectWin"].doSubmit();
+                 	_this.win.remove();
+                },
+                "取消":function(){
+                    _this.hide();
+                    _this.win.remove();
+                }
+            },
+            modal:true
+        });
+    };
+    this.width = 800;
+    this.height = 730;
+    this.callBack = function(json){
+        if (callback && typeof(callback) == 'function') {
+            callback(json);
+        }
+    };
+
+    this.show = function(){
+        _this.win.dialog("open");
+    };
+
+    this.hide = function(){
+        if(_this.onSubmitHandler){
+            _this.onSubmitHandler();
+        }
+        _this.win.dialog("close");
+    };
+    initWin();
+}
+
+ function doSave(){
+	 $("#btnSave").attr("disabled",true);
+	$("#btnSave").val("正在保存...");
+	 var pid=$("#pid").val();
+	 if(!$("#publicarea").is(':checked')){
+		 if(pid==null||pid==''){
+			 alert("请分配小区!");
+			 $("#btnSave").attr("disabled",false);
+				$("#btnSave").val("保存");
+			 return;
+		 }
+	 }
+	 
+	var id= $("#id").val();
+	 var obj={"communityId":pid,"address_relevance_id":id};
+	 if($("#publicarea").is(':checked')){
+		 obj['publicarea']=1;
+	 }
+	 doManager("ComnunityAreaManager", "SaveComnunityArea",obj, function(data, textStatus,
+				XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				alert("分配成功!");
+				window.location.href = 'orderAddress_list.html';
+			} else {
+				$$.showMessage("系统信息", "分配失败!");
+				$("#btnSave").attr("disabled",false);
+				$("#btnSave").val("保存");
+			}
+		});
+	 
+ }
+
+
+</script>
+ <body style="height: 100%; background-color: #fff;">
+    <div class="rightcont clear">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+               订单区块分配
+                <span class="but">
+                    <input type="button" id="btnSave" onclick="doSave()" value="保存"/> 
+                    <input type="button" onclick="javascript:history.go(-1);" value="返回"/>
+                </span>
+            </div>
+            <div class="panel-body" style="height: 80%;">
+                <div id="div_customer" style="float:left;width: 100%;height: 100%">
+                    <table id="tiny_village_table" cellpadding="0" cellspacing="0" style="min-width: 100%;margin: 10px; width: auto">
+                        <tr>
+                            <td style="width: 9%">订单区块<span style="color: red">*</span></td>
+                            <td>
+                                <input id="placename" name="placename" disabled="disabled" type="text" class="form-control"  style="width: 50%"/>
+                                <input id="id" name="id" type="hidden"/>
+                                <input id="pid" name="pid" type="hidden"/>
+                            </td>
+                            <td style="width: 9%;">市</td>
+                            <td>
+                                <input id="city_name" name="city_name" disabled="disabled" type="text" class="form-control"  style="width: 50%"/>
+                            </td>
+                            <td >区</td>
+                            <td>
+                                <input id="county_name" name="county_name" disabled="disabled" type="text" class="form-control"  style="width: 50%"/>
+                            </td>
+                        </tr>
+                        <tr>
+                        	<td style="width: 9%">小区选择<span style="color: red">*</span></td>
+                            <td>
+                                <button id="tinybutt" class="btn btn-primary" onclick="showCustomerWin(setCustomerSelect);">指定小区</button><lable id="tinyname" style="margin-left:15px;">呼家楼小区</lable>
+                            </td>
+                            <td style="width: 9%">是否公共区块<input id="publicarea" name="publicarea" style="margin-left: 1px;" type="checkbox"/></td>
+                            <td>
+                                
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            </div>
+            
+            
+        </div>
+    </div>
+</body>
+</html>

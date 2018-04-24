@@ -1,0 +1,1003 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>员工得分填报表</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/datatables.css" rel="stylesheet">
+
+<script type="text/javascript" src="../startbootstrap/js/jquery.1.10.2.min.js"></script>
+<script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+
+<script type="text/javascript" src="../scripts/bidLibjs.js"></script>
+<!-- <script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+<script language="javascript" src="../scripts/common/common-tool.js"></script>
+<script language="javascript" src="../scripts/common/common-core.js"></script>
+<script language="javascript" src="../scripts/common/common-form.js"></script>
+<script language="javascript" src="../scripts/common/processingdialog.js"></script>
+<script language="javascript" src="../scripts/common/common-messagedialog.js"></script>
+<script language="javascript" src="../scripts/common/common-expand.js"></script>
+<script language="javascript" src="../forecast/js/scripts/bidCommon.js"></script>
+<script language="javascript" src="../scripts/default-ready.js"></script> -->
+
+<style>
+*{margin:0; padding:0;}
+table{border-collapse:collapse; font-size:12px; text-align:center;margin:10px -1px 0 -1px;background-color:#eee;}
+table input{width:100%; border:0; height:30px; text-align:center; outline:none; position:relative;}
+table input::-webkit-outer-spin-button,table input::-webkit-inner-spin-button{-webkit-appearance: none !important;  margin: 0; }
+table input[type="number"]{-moz-appearance:textfield;}
+table td{height:30px; min-height:30px;}
+table th{height:40px; min-height:40px;}
+tfoot td{border:1px solid #000;}
+.prompt{padding:10px 20px; line-height:30px; font-size:14px;}
+.panel{
+	margin-bottom: 0px;
+}
+.but {
+        float: right;
+        text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+
+
+.popup{position:absolute; width:50px; background-color:#FFF; border:1px solid #ccc; z-index:1000; line-height:20px; color:#000;}
+.popup p{margin:0;}
+.popup p:nth-child(1){background-color:#4876FF;}
+.popup p:nth-child(2){background-color:#4876FF;}
+.popup p:nth-child(3){background-color:#33ccff;}
+.popup p:nth-child(4){background-color:#33ccff;}
+
+.popup p:nth-child(5){background-color:#ffffff;} 
+
+
+.popup8{position:absolute; width:50px; background-color:#FFF; border:1px solid #ccc; z-index:1000; line-height:20px; color:#000;}
+.popup8 p{margin:0;}
+.popup8 p:nth-child(1){background-color:#4876FF;}
+.popup8 p:nth-child(2){background-color:#4876FF;}
+.popup8 p:nth-child(3){background-color:#33ccff;}
+.popup8 p:nth-child(4){background-color:#33ccff;}
+
+
+.popup8 p:nth-child(5){background-color:#BCEE68;}
+.popup8 p:nth-child(6){background-color:#BCEE68;}
+.popup8 p:nth-child(7){background-color:#43CD80;}
+.popup8 p:nth-child(8){background-color:#43CD80;}
+
+
+/* rgba(0,0,0,0) */
+</style>
+<script>
+function mGetDate(year, month){
+    var d = new Date(year, month, 0);
+    return d.getDate();
+}
+	var work_type="绩效打分录入";
+    var nowObj = "";
+    var scorerecord_id="";
+    var store_id = getUrlParamByKey('store_id');
+    var workMonth = getUrlParamByKey('workMonth');
+    var isTotalView = getUrlParamByKey('isTotalView');
+    var work_info_id = getUrlParamByKey('work_id');
+    
+    var loginstore_id=store_id;
+    var totalDay=0;
+    //var work_info_id = null;
+	$(function(){
+		//加载完数据之前 不可用
+		$("#btnSave").attr("disabled",true);
+		$("#btnCommit").attr("disabled",true);
+		if(loginstore_id==null||loginstore_id==""||loginstore_id.trim()==""){
+			//取得当前登录人的门店
+			doManager("UserManager", "getCurrentUserDTO",null,
+	    				function(data, textStatus, XMLHttpRequest) {
+	    					if (data.result) {
+	    						var current_uesr = JSON.parse(data.data);
+	    						loginstore_id=current_uesr.store_id;
+	    					}
+	    	},false);
+		}
+		//取得发起得最新月份
+		
+		doManager("ScoreRecordManager", "queryMaxWorkMonth",null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var workMonthObj = JSON.parse(data.data);
+						workMonth = workMonthObj.work_month;
+					}
+		},false);
+		
+		var date=new Date;
+		var year = date.getFullYear();
+		var month=date.getMonth()+1;
+		/* var month_bf1=date.getMonth();
+		var month_bf2=date.getMonth()-1; */
+		
+		month = ("0"+month).slice(-2);
+		/* month_bf1 = ("0"+month_bf1).slice(-2);
+		month_bf2 = ("0"+month_bf2).slice(-2);
+		
+		var cur_month = year+"-"+month;//当前月
+		var bef_month1 = year+"-"+month_bf1;//当前月
+		var bef_month2 = year+"-"+month_bf2;//当前月
+		
+		if(month=="01"){
+			bef_month1=(year-1)+"-"+"12";
+			bef_month2=(year-1)+"-"+"11";
+		}
+		if(month=="02"){
+			bef_month1=(year)+"-"+"01";
+			bef_month2=(year-1)+"-"+"12";
+		}
+		
+		$("#changeSelectDate").empty();
+		var three_month = "<option value='"+bef_month2+"'>"+bef_month2+"</option><option value='"+bef_month1+"'>"+bef_month1+"</option><option value='"+cur_month+"'>"+cur_month+"</option>";
+		$("#changeSelectDate").append(three_month); */
+		
+		$("#changeSelectDate").val(workMonth);
+		$("#showhidedate").html(workMonth);
+		
+		if(work_info_id!=null&&work_info_id.length>0){
+			queryObjectById(work_info_id);
+			 //查询审批履历
+			 doManager('flowDetailManager','queryAllFlowDetailByWorkId',[work_info_id],function(data){
+	               if(data.result){
+		            	var process_flow = $("#process_flow_tbl");
+		              	var work_detail_list = JSON.parse(data.data);
+		            	$(work_detail_list).each(function(i,obj){
+		              		var app_ret = obj.approv_ret;
+		              		if(app_ret=='审批中'){
+		              			app_ret='审核通过';
+		              		}
+		              		var approv_content = obj.approv_content==null?"":obj.approv_content;
+		              		var flowHtml="<tr>"+
+		                   	"<td align=\"right\">"+obj.create_user+":&nbsp;&nbsp;</td>"+
+		                   	"<td align=\"center\">"+obj.update_user+"</td>"+
+		                   	"<td align=\"left\">"+app_ret+"</td>"+
+		                   	"<td align=\"left\" width=\"60%\">"+approv_content+"</td>"+
+		                	"</tr>";
+		              		process_flow.append(flowHtml);
+		              	});
+	               }
+			 },false);
+		}
+		//取得门店以及员工信息
+		var obj;
+		if(workMonth==null||workMonth==""){
+			obj = year+"-"+month;
+		}else{
+			obj = workMonth;
+		}
+		
+		
+		$("#ym").html(obj);
+		//$("#changeSelectDate").attr("value",obj);
+		//$("#changeSelectDate option[text='"+obj+"']").attr("selected", true);
+		
+		
+		
+		
+		
+        nowObj=obj;
+		if(obj!="-"){
+			updatestoreid(obj);
+		}
+	
+		
+		//查询该月的提交状态 如果为1审核中 不允许保存。
+		doManager("ScoreRecordTotalManager", "queryScoreRecordTotal",[nowObj,store_id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if(jsonData!=null){
+							var commit_status=jsonData.commit_status;
+							work_info_id = jsonData.work_info_id;
+							if(commit_status==0){
+								$("#pro_status").html("状态：【保存】");
+							}else if(commit_status==1){
+								$("#pro_status").html("状态：【待审批】");
+								$("#btnSave").remove();
+								$("#btnCommit").remove();
+								$("#expBtn").show();
+							}else if(commit_status==2){
+								var msg = jsonData.remark;
+								if(msg.length>60&&msg.length<120){
+									var appendStr = msg.substring(60,msg.length);
+									msg=msg.substring(0,60)+"<br>"+appendStr;
+								}
+								$("#pro_status").html("状态：【退回】");
+								
+								if(isTotalView!=null&&isTotalView.length>0){
+									$("#back_msg").html("");
+								}else{
+									$("#back_msg").html("退回信息： <font color='red' size='2'>"+msg+"</font>");
+								}
+								
+								
+							}else if(commit_status==3){
+								$("#pro_status").html("状态：【已通过】");
+								$("#btnSave").remove();
+								$("#btnCommit").remove();
+								$("#expBtn").show();
+							}else{
+								$("#pro_status").html("状态：【保存】");
+							}
+						}
+						//window.location.href="work_record.html";
+					}else{
+						$$.showMessage("系统信息", "提交失败!");
+					}
+					
+					var st = $("#pro_status").html();	
+					if(st.indexOf('已通过')||st.indexOf('待审批')){
+						$("input[type='text']").each(function(){
+							$(this).attr('readonly',true);
+							$(this).css("background",'#f5f5f5');
+						});
+					}
+					
+		});
+		
+		
+		
+		
+		//切换月份
+		
+		
+		/* $("#changeSelectDate").change(function(){
+			var selectDate = $("#changeSelectDate option:selected").val();
+			var store_id = loginstore_id;
+			window.location.href="score_record.html?store_id="+store_id+"&workMonth="+selectDate;
+		}); */
+		
+		
+		
+	});
+	
+	
+	function queryObjectById(work_record_id){
+		doManager('scoreRecordTotalManager','queryScoreRecordTotalByWorkId',work_record_id,function(data){
+	           if(data.result){
+	        	   var workInfoTotalObj = JSON.parse(data.data);
+	        	   var store_id_sub = workInfoTotalObj.store_id;
+	        	   var workMonth_sub = workInfoTotalObj.work_month;
+	        	   store_id=store_id_sub;
+	        	   workMonth=workMonth_sub;
+	           }
+	        },false); 
+	}
+	
+	
+	function preSaveWorkInfo(){
+		var obj = new Object();
+			 obj.work_type = work_type;
+			 obj.store_id = loginstore_id;
+			 var selectDate = $("#changeSelectDate").val();
+			 obj.work_month=selectDate;
+			 var isOk = false;
+			 doManager('workInfoManager','saveWorkInfo',obj,function(data){
+           if(data.result){
+        	   var workInfoObj = JSON.parse(data.data);
+        	   work_info_id = workInfoObj.id;
+           }
+        },false); 
+	}
+	
+	function doSave(){
+		$("#btnSave").attr("disabled",true);
+		if(work_info_id==null){
+			preSaveWorkInfo();
+		}
+		var selectDate = $("#changeSelectDate").val();
+		
+		var arr = Array(); //存所有数据
+		$(".addemp").each(function(){
+			var obj = {};
+			$("input",this).each(function(i,value){ //便利行内的input select的值
+				obj[$(this).attr('name')] = $(this).val();
+	        });
+			arr.push(obj); 
+		});
+		doManager("ScoreRecordManager", "saveScoreRecordList",[arr,nowObj,loginstore_id,work_info_id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						window.location.href="score_record.html?store_id="+loginstore_id+"&workMonth="+selectDate+"&work_id="+work_info_id;
+					}else{
+						$$.showMessage("系统信息", "保存失败!");
+					}
+		},false);
+	}
+	
+	
+	function validateisNotNull(){
+		var isNotNull = true;
+		$("input[type='text']").each(function(){
+			var obj_val = $(this).val();
+			if(obj_val==""||obj_val==null||obj_val.trim()==""){
+				isNotNull = false;
+				return ;
+			}
+		});
+		if(!isNotNull){
+			$$.showMessage("系统信息", "请检查， 存在空值 ！ ");
+			return false;
+		}else{
+			return true;
+		}
+	}
+	
+	function preCommit(){
+		if(work_info_id==null){
+			preSaveWorkInfo();
+		}
+		var selectDate = $("#changeSelectDate").val();
+		
+		var arr = Array(); //存所有数据
+		$(".addemp").each(function(){
+			var obj = {};
+			$("input",this).each(function(i,value){ //便利行内的input select的值
+				obj[$(this).attr('name')] = $(this).val();
+	        });
+			arr.push(obj); 
+		});
+		doManager("ScoreRecordManager", "saveScoreRecordList",[arr,nowObj,loginstore_id,work_info_id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						doManager("ScoreRecordTotalManager", "updateCommitStatus",[jsonData.id],
+								function(data, textStatus, XMLHttpRequest) {
+									if (data.result) {
+										window.location.href="score_record.html?store_id="+loginstore_id+"&workMonth="+workMonth+"&work_id="+work_info_id;
+									}else{
+										$$.showMessage("系统信息", "提交失败!");
+									}
+							});
+						
+					}else{
+						$$.showMessage("系统信息", "保存失败!");
+					}
+		},false);
+	}
+	
+	function checkScore(){
+		var isnull = true;
+		$("input[name='score']").each(function(){
+			var scoreval = $(this).val();
+			if(scoreval==null||scoreval==''||scoreval.trim()==''){
+				isnull=false;
+				$$.showMessage("系统信息", "绩效分 存在空值！");
+			}
+			if(scoreval<0){
+				isnull=false;
+				$$.showMessage("系统信息", "绩效分 不合法 ！");
+			}
+		});
+		return isnull;
+	}
+	
+	function doCommit(){
+		if(!validateisNotNull()){
+			return;
+		}
+		
+		var pro_status = $("#pro_status").html();
+		//alert(pro_status);
+		/* var pro_status = $("#pro_status").html();
+		var scoreisnull="";
+		
+		if(!checkScore()){
+			//$$.showMessage("系统信息", "绩效分 存在空值！");
+			return;
+		} */
+		$$.showConfirm('提示','提交后不可修改，确认提交到人力资源中心？',function(){
+			$("#btnCommit").attr("disabled",true);
+			if(pro_status=="状态：【填报】"||pro_status==""||pro_status=="状态：【退回】"){
+				preCommit();
+			}else{
+				var id=scorerecord_id;
+				doManager("ScoreRecordTotalManager", "updateCommitStatus",[scorerecord_id],
+						function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								window.location.href="score_record.html?store_id="+loginstore_id+"&workMonth="+workMonth+"&work_id="+work_info_id;;
+							}else{
+								$$.showMessage("系统信息", "提交失败!");
+							}
+					});
+			}
+        });
+		
+	}
+	
+	
+	function updatestoreid(obj){
+		var index = layer.load(1, {
+	    	  shade: [0.1,'#fff'] //0.1透明度的白色背景
+	    	 });
+		//更改店长用户的 store_id
+		var url = "../dispatcher.action";
+		var data = new PMSRequestObject("ScoreRecordManager", "queryScoreRecordListByTop",[obj,store_id]);
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+			if (datas.result) {
+				var jsonData = $.fromJSON(datas.data);
+				var retcontent="";
+				var storename="";
+				if(jsonData!=null&&jsonData.length>0){
+					for(i=0;i<jsonData.length;i++){
+						scorerecord_id=jsonData[i].scorerecord_id;
+						storename=jsonData[i].store_name;
+						var authorized =  jsonData[i].isauth;
+						var leavedate = jsonData[i].leavedate;
+						var topostdate = jsonData[i].topostdate;
+						var overtime = jsonData[i].overtime;
+						
+						var mixedType_repeatBuyCostomer = jsonData[i].mixedType_repeatBuyCostomer;
+						var turnover = jsonData[i].turnover;
+						var score = jsonData[i].score;
+						var storeroom = jsonData[i].storeroom;
+						var emprise = jsonData[i].emprise;
+						if(emprise==null||emprise=="null"){
+							emprise="";
+						}
+						var zw = jsonData[i].zw;
+						if(zw==null||zw=="null"){
+							zw="离职";
+						}
+						var zwhtml = "";
+						if(zw!=null){
+							if(zw=="综合管理"||zw=="服务专员"||zw=="综合专员"){
+								zwhtml="<input type=\"text\" name=\"storeroom\" value=\""+storeroom+"\" />";
+							}
+							if(zw=="副店长综合管理"||zw=="副店长综合专员"||zw=="副店长服务专员"){
+								zwhtml="<input type=\"text\" name=\"storeroom\" value=\""+storeroom+"\" />";
+								zw = "副店长";
+							}
+						}else{
+							zwhtml="";
+						}
+						//retcontent += "<tr class=\"addemp\"><td>"+jsonData[i].employee_no+"</td>"+
+			            //"<td>"+jsonData[i].employee_name+"["+zw+"]</td><td><input type=\"text\" name=\"mixedType_repeatBuyCostomer\" value=\""+mixedType_repeatBuyCostomer+"\"/></td><td><input type=\"text\" name=\"turnover\" value=\""+turnover+"\" /></td><td><input type=\"text\" name=\"score\" value=\""+score+"\" /></td><td>"+zwhtml+"</td><td><input type=\"text\" name=\"emprise\" value=\""+emprise+"\" /></td> <input type=\"hidden\" name='employee_name' value=\""+jsonData[i].employee_name+"\"/><input type=\"hidden\" name='employee_no' value=\""+jsonData[i].employee_no+"\"/><input type=\"hidden\" name='scorerecord_id'  value=\""+jsonData[i].scorerecord_id+"\"/><input type=\"hidden\" name='id'  value=\""+jsonData[i].id+"\"/></td></tr>";
+			            
+						retcontent += "<tr class=\"addemp\"><td>"+jsonData[i].employee_no+"</td>"+
+			            "<td>"+jsonData[i].employee_name+"["+zw+"]</td><td colspan='5'><input type=\"text\" name=\"score\" value=\""+score+"\" /></td><input type=\"hidden\" name='employee_name' value=\""+jsonData[i].employee_name+"\"/><input type=\"hidden\" name='employee_no' value=\""+jsonData[i].employee_no+"\"/><input type=\"hidden\" name='scorerecord_id'  value=\""+jsonData[i].scorerecord_id+"\"/><input type=\"hidden\" name='id'  value=\""+jsonData[i].id+"\"/></td></tr>";
+			            
+					}
+				}
+				
+				$(".content").append(retcontent);
+				$("#storename").text(storename);
+				
+			}else{
+				$$.showMessage("系统信息", "获取失败!");
+			}
+			layer.close(index);
+			
+			if($("#pro_status").html()!="状态：【已通过】"&&$("#pro_status").html()!="状态：【待审批】"){
+				//有异动 就为填报状态
+				$("input[type='text']").blur(function(){
+					$("#pro_status").html("状态：【填报】");
+				});
+				$("input[type='number']").blur(function(){
+					$("#pro_status").blur("状态：【填报】");
+				});
+				
+				
+			}else{
+				//状态为 已确认 和 提交 状态  显示 颜色工时提示。
+				var totalworktime = $("#totalworktime").html();
+				i=0;
+				$(".content").find("tr").each(function(){
+					//AB为10小时
+					//CD为8小时
+					var $this = $(this);
+					var oneworktime=0;
+					$this.find("input[maxlength='1']").each(function(){
+						if($(this).val().indexOf('A')>=0||$(this).val().indexOf('B')>=0){
+							oneworktime+=10;
+						}
+						if($(this).val().indexOf('C')>=0||$(this).val().indexOf('D')>=0){
+							oneworktime+=8;
+						}
+						if($(this).val()!=""&&$(this).val()!=null&&!isNaN($(this).val())){
+							oneworktime+=parseInt($(this).val());
+						}
+						if($(this).val().indexOf('※')>=0){
+							oneworktime+=8;
+						}
+						//$(this).attr('readonly',true);
+					});
+					
+					$this.find("input[type='text'],input[type='number']").each(function(){
+						$(this).attr('readonly',true);
+					});
+					
+					i++;
+					if(i>3){
+						if(oneworktime<totalworktime){
+							$this.children('td').eq(0).css('color','red');
+							//$this.css('color','red');
+						}
+					}
+				});
+				
+			}
+			
+			
+			//$(".content").find("input").attr("readonly",true);
+			$(".content").find("input[readonly]").css("background",'#f5f5f5');
+			//$(".content").find("input[value='是']").css("background",'#f5f5f5');
+            if(isTotalView != null){
+                window.parent.setIframeHeight();
+            }
+			
+			
+			
+          //添加校验 所添必须为数字  
+    		
+    		/* $("input[name='mixedType_repeatBuyCostomer']").blur(function(){
+    			var mixedType_repeatBuyCostomerval = $(this).val();
+    			if(mixedType_repeatBuyCostomerval!=null&&mixedType_repeatBuyCostomerval.length>0){
+    				var pattern=/^([0-9]{1,3})$/;
+        			var bl = pattern.test(mixedType_repeatBuyCostomerval);
+        			if(!bl){
+        				$$.showMessage("系统信息", "输入内容不合法!");
+        				$(this).val("");
+        			}else{
+        				if(mixedType_repeatBuyCostomerval>300){
+        					$$.showMessage("系统信息", "输入值最大为300，请重新填写!");
+            				$(this).val("");
+        				}
+        			}
+    			}
+    			
+    		}); */
+    		/* $("input[name='turnover']").blur(function(){
+    			var turnoverval = $(this).val();
+    			if(turnoverval!=null&&turnoverval.length>0){
+    				var pattern=/^([0-9]{1,4})$/;
+        			var bl = pattern.test(turnoverval);
+        			if(!bl){
+        				$$.showMessage("系统信息", "输入内容不合法!");
+        				$(this).val("");
+        			}
+    			}
+    			
+    		}); */
+    		$("input[name='score']").blur(function(){
+    			 //0-100
+    			var scoreval = $(this).val();
+    			 if(scoreval!=null&&scoreval.length>0){
+    				 var pattern=/^([0-9]|10)$/;
+    	    			var bl = pattern.test(scoreval);
+    	    			if(!bl){
+    	    				$$.showMessage("系统信息", "输入内容不合法!");
+    	    				$(this).val("");
+    	    			}else{
+    	    				if(scoreval>100){
+    	    					$$.showMessage("系统信息", "输入值最大为100，请重新填写!");
+    	        				$(this).val("");
+    	    				}
+    	    			}
+    			 }
+    			
+    		});
+    		
+    		/* $("input[name='emprise']").blur(function(){
+   			 //0-100
+   			var scoreval = $(this).val();
+   			 if(scoreval!=null&&scoreval.length>0){
+   				 var pattern=/^([0-9]{1,2})$/;
+   	    			var bl = pattern.test(scoreval);
+   	    			if(!bl){
+   	    				$$.showMessage("系统信息", "输入内容不合法!");
+   	    				$(this).val("");
+   	    			}else{
+   	    				if(scoreval>30){
+   	    					$$.showMessage("系统信息", "输入值最大为30，请重新填写!");
+   	        				$(this).val("");
+   	    				}
+   	    			}
+   			 }
+   			
+   		}); */
+    		
+    		/* $("input[name='storeroom']").blur(function(){
+    			 //0-100
+    			var storeroomval = $(this).val();
+    			if(storeroomval!=null&&storeroomval.length>0){
+    				var pattern=/^([0-9]{1,1}|10)$/;
+        			var bl = pattern.test(storeroomval);
+        			if(!bl){
+        				$$.showMessage("系统信息", "输入内容不合法!");
+        				$(this).val("");
+        			}else{
+        				if(scoreval>100){
+        					$$.showMessage("系统信息", "输入值最大为10，请重新填写!");
+            				$(this).val("");
+        				}
+        			}
+    			}
+    		}); */
+			
+			
+			
+		});
+		
+		
+		//加载完成后,按钮可用
+		$("#btnSave").attr("disabled",false);
+		$("#btnCommit").attr("disabled",false);
+		
+		
+	}
+	
+	
+	function doExport(){
+		var pro_status = $("#pro_status").html();
+		$$.showMessage("系统信息", "功能开发中..!");
+		return ;
+    	var wrid=scorerecord_id;
+    	doManager("WorkRecordManager", "saveWorkRecordForExcel",[wrid], function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				//alert("导出成功！ ");
+				var ret = JSON.parse(data.data); 
+				window.location.href=ret;
+			} else {
+				$$.showMessage("系统信息", "导出失败!");
+			}
+		});
+	}
+
+</script>
+</head>
+<body>
+<input type="hidden" id="idxrow" value=""/>
+<div class="panel panel-primary">
+		<div class="panel-heading"><label id="ym"></label><label>份员工绩效打分统计表</label><label id="pro_status"></label>
+        	<span class="but">
+                <input id="btnSave" name="" type="button" onclick="doSave();" value="保存"/>
+                <input id="btnCommit" name="" type="button" onclick="doCommit();" value="提交"/>
+            </span>
+        </div>
+        <div class="panel-body" style="padding: 0 10px 0 10px;">
+        	<label id="back_msg"></label>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" id="ice">
+                <thead>
+                <!--  <tr>
+                     <th colspan="49" style="font-size:24px;"></th>
+                 </tr> -->
+                <tr style="font-size:16px;background-color: white;">
+                    <td>填报单位:</td>
+                    <td colspan="4" align="left"><label id="storename"></label></td>
+                     <td>日期:<label id="showhidedate"></label><input id="changeSelectDate" type="hidden" value=""  readonly="readonly"/></td>
+                    <td align="right"><!-- <input class="btn btn-primary" style="display: none;width: 50%;" id="expBtn" type="button" onclick="doExport();"  value="导出"> --></td>
+                </tr>
+                </thead>
+                <tfoot class="content">
+                <tr>
+                    <td rowspan="2" width="30%">工号</td>
+                    <td rowspan="2" width="30%">出勤情况</td>
+                    <td colspan="5">绩效达成情况</td>
+                </tr>
+                 <tr>
+                   <!--  <td>拉新客户数(0-300)</td>
+                    <td>营业额(0-9999)</td> -->
+                    <td colspan="5">日常工作表现扣分(此项为扣分项，最高扣10分)</td>
+                 <!--    <td>店面和库房管理(0-10)</td>
+                    <td>重点产品增长率打分(0-30)</td> -->
+                </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div class="panel-footer">
+            <!-- <div class="prompt">
+                <p>1、出勤根据A、B、C、D四种班次分别进行标注，A、B班工时数为10小时，C、D班工时数为8小时，班次总工时须满本月法定工时<span><label id="totalworktime"></label>小时</span>，事假∧，病假△，婚假☆，丧假□，产假﹢，年休假◎，出差※，工伤◇，旷工×，迟到﹤，早退﹥；</p>
+                <p>2、考勤表由考勤员如实填写；</p>
+                <p>3、月累计栏：出勤、事假、病假、婚假、丧假、年休假、出差、工伤假、旷工以天数累计，迟到、早退以次数累计；</p>
+                <p>4、考勤表电子版每月2日前交人力资源中心，纸质版每月15号前提交。</p>
+            </div> -->
+        </div>
+	</div>
+
+
+<!-- <table width="100%" border="0" cellpadding="0" cellspacing="0" id="ice">
+	<thead>
+        <tr>
+            <th colspan="49" style="font-size:24px;"></th>
+        </tr>
+        <tr style="font-size:16px;">
+            <th colspan="2">填报单位:</th>
+			<th colspan="44" align="left"><label id="storename"></label></th>
+			<th colspan="3"><input class="btn btn-primary" id="expBtn" type="button" onclick="doExport();"  value="导出"></th>
+        </tr>
+    </thead>
+    <tfoot class="content">
+        <tr>
+            <td width="5%" rowspan="3">工号</td>
+            <td width="4%" rowspan="3">出勤<br>情况</td>
+            <td colspan="31">日期</td>
+            <td colspan="13">月累计</td>
+            <td colspan="2">饭补</td>
+            <td width="2%" rowspan="3">绩效分</td>
+        </tr>
+        <tr>
+            <td width="2%">1</td>
+            <td width="2%">2</td>
+            <td width="2%">3</td>
+            <td width="2%">4</td>
+            <td width="2%">5</td>
+            <td width="2%">6</td>
+            <td width="2%">7</td>
+            <td width="2%">8</td>
+            <td width="2%">9</td>
+            <td width="2%">10</td>
+            <td width="2%">11</td>
+            <td width="2%">12</td>
+            <td width="2%">13</td>
+            <td width="2%">14</td>
+            <td width="2%">15</td>
+            <td width="2%">16</td>
+            <td width="2%">17</td>
+            <td width="2%">18</td>
+            <td width="2%">19</td>
+            <td width="2%">20</td>
+            <td width="2%">21</td>
+            <td width="2%">22</td>
+            <td width="2%">23</td>
+            <td width="2%">24</td>
+            <td width="2%">25</td>
+            <td width="2%">26</td>
+            <td width="2%">27</td>
+            <td width="2%">28</td>
+            <td width="2%">29</td>
+            <td width="2%">30</td>
+            <td width="2%">31</td>
+            <td width="2%" rowspan="2">出勤</td>
+            <td width="2%" rowspan="2">倒休</td>
+            <td width="1.5%" rowspan="2">事假</td>
+            <td width="1.5%" rowspan="2">病假</td>
+            <td width="1.5%" rowspan="2">婚假</td>
+            <td width="1.5%" rowspan="2">产假</td>
+            <td width="1.5%" rowspan="2">丧假</td>
+            <td width="1.5%" rowspan="2">年休</td>
+            <td width="1.5%" rowspan="2">出差</td>
+            <td width="1.5%" rowspan="2">工伤</td>
+            <td width="1.5%" rowspan="2">旷工</td>
+            <td width="1.5%" rowspan="2">迟到</td>
+            <td width="1.5%" rowspan="2">早退</td>
+            <td width="1.5%" rowspan="2">是否正式</td>
+            <td width="2%" rowspan="2">饭补天数</td>
+      </tr>
+        <tr class="weekch">
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+            <td>五</td>
+            <td>六</td>                                                                                                                                                                                                                              
+            <td>日</td>
+            <td>一</td>
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+            <td>五</td>
+            <td>六</td>
+            <td>日</td>
+            <td>一</td>
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+            <td>五</td>
+            <td>六</td>
+            <td>日</td>
+            <td>一</td>
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+            <td>五</td>
+            <td>六</td>
+            <td>日</td>
+            <td>一</td>
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+        </tr> -->
+       
+      <!-- 
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="text"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+        </tr> -->
+<!--     </tfoot>
+</table>-->
+<div id="process_flow">
+	<table id="process_flow_tbl" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                   <!--  <tr>
+                       	<td align="right">张震:&nbsp;&nbsp;</td>
+                       	<td align="center">2017-07-24 12:23:22</td>
+                       	<td align="left">发起</td>
+                    </tr>
+                    <tr>
+                       	<td align="right">霍嫒婷:&nbsp;&nbsp;</td>
+                       	<td align="center">2017-07-24 12:23:22</td>
+                       	<td align="left">已通过</td>
+                    </tr>
+                    <tr>
+                       	<td align="right">吴丽娜:&nbsp;&nbsp;</td>
+                       	<td align="center">2017-07-24 12:23:22</td>
+                       	<td align="left">已通过</td>
+                    </tr> -->
+                   
+                </table>
+</div> 
+<script>  
+<!--  
+//定义初始化行列  
+var currentLine=4;  // 目前的行号  
+var currentCol=0;  
+
+
+
+var objtab=document.all.ice;  
+//var colums = objtab.rows[4].cells.length; 
+var colums = 31;
+var objrow=objtab.rows[0].getElementsByTagName("INPUT");  
+ objrow[0].select();  
+document.body.onkeydown=function(e){  
+  e=window.event||e;  
+  switch(e.keyCode){  
+    case 37: //左键  
+      currentCol--;  
+      changeItem(e);  
+      break;  
+    case 38: //向上键  
+      currentLine--;  
+      changeItem(e);  
+      break;  
+    case 39: //右键  
+      currentCol++;  
+      changeItem(e);  
+      break;  
+    case 40: //向下键  
+      currentLine++;  
+      changeItem(e);  
+      break;  
+    default:  
+      break;  
+  }  
+}  
+//方向键调用  
+function changeItem(e){  
+  if(document.all){//如果是IE  
+    var it=document.getElementById("ice").children[0];   //获取table表单元素  
+  }else{//其他浏览器  
+    var it=document.getElementById("ice");  
+  }  
+     
+ if(e.keyCode==37||e.keyCode==39){  
+    if(currentLine<0){//如果行小于0  
+        currentLine=it.rows.length-1;  
+      }  
+      if(currentLine==it.rows.length){  
+       currentLine=0;  
+      }  
+      var objtab=document.all.ice;  
+      var objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");  
+        
+       
+      if(currentCol<0){  
+         
+        if(e.keyCode==37){  
+            currentLine--;  
+            if(currentLine<0){//如果行小于0  
+                currentLine=it.rows.length-1;  
+             }  
+            objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");    
+        }  
+        currentCol=objrow.length-1;  
+      }  
+        
+      if(currentCol>=objrow.length){  
+        if(e.keyCode==39){  
+            currentLine++;  
+             if(currentLine==it.rows.length){  
+              currentLine=0;  
+              }   
+              objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");      
+        }  
+        currentCol=0;    
+          
+      }    
+ }else{  
+    if(currentLine<0){//如果行小于0  
+        currentLine=it.rows.length-1;  
+        currentCol--;  
+        if(currentCol<0){  
+            currentCol=colums-1;  
+        }  
+      }  
+      if(currentLine==it.rows.length){  
+         currentLine=0;  
+         currentCol++;  
+         if(currentCol>=colums){  
+            currentCol=0;  
+         }  
+      }  
+      var objtab=document.all.ice;  
+      var objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");  
+      while(e.keyCode==40&&objrow[currentCol]==undefined){  
+        currentLine++;  
+        objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");        
+      }  
+      while(e.keyCode==38&&objrow[currentCol]==undefined){  
+        currentLine--;        
+        objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");    
+      }  
+        
+ }    
+  objrow[currentCol].focus();  
+}  
+
+
+
+
+
+//-->  
+</script>
+
+
+
+
+
+</body>
+</html>

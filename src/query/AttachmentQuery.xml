@@ -1,0 +1,41 @@
+<pmsquery>
+	<query id="attachmentQuery" header="地址文件列表信息" filter="file_type=1 or file_type is null"  baseclass="com.cnpc.pms.personal.entity.Attachment" order="create_time desc">
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="true" align="center"/>
+        <column key="file_name" 	        header="文件名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="20%" align="center"/>
+        <column key="file_type_name" 			header="文件类型" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="10%" align="center" />
+        <column key="storeName" 			header="门店名称" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />        
+        <column key="create_user" 	header="导入人" 		display="true" 		type="String" 			allowSearch="true" 	allowSort="true" width="10%" align="center"/>
+        <column key="create_time" 			header="上传日期" 		display="true" 		type="java.util.Date" operator="between" allowSearch="true" 	allowSort="true" width="10%" align="center"  format="yyyy-MM-dd"/>    
+    </query>
+    <query id="attachmentDataQuery" header="地址文件列表信息" filter="file_type=1 or file_type is null"  baseclass="com.cnpc.pms.personal.entity.Attachment" order="create_time desc">
+        <column key="id" header="序号" display="false" type="java.lang.Long" allowSearch="true"	allowSort="true" align="center"/>
+        <column key="file_name" header="文件名称" display="true" 	type="String" allowSearch="true" 	allowSort="true" operator="like" 	width="20%" align="center"/>
+        <column key="file_type_name" header="文件类型" display="true" type="String" allowSearch="true" operator="like" allowSort="true" width="10%" align="center" />
+        <column key="townName" header="街道名称" display="true" type="String" allowSearch="true" operator="like" allowSort="true" width="15%" align="center" />
+        <column key="uploadType" header="上传状态" display="true" type="String" allowSearch="true" operator="like" allowSort="true" width="10%" align="center"/>
+        <column key="storeName" header="门店名称" display="true" type="String" allowSearch="true" operator="like" allowSort="true" width="15%" align="center"/>        
+        <column key="create_user" header="导入人" display="true" 	type="String" allowSearch="true" 	allowSort="true" width="10%" align="center"/>
+        <column key="create_time" header="上传日期" display="true" type="java.util.Date" operator="eq" allowSearch="true" 	allowSort="true" width="10%" align="center"  format="yyyy-MM-dd"/>
+    	<column key="operation" header="操作" display="true" type="String"  width="10%" align="center"/>
+    	<column key="message" header="消息" display="false" type="String"  width="10%" align="center"/>
+    </query>
+    
+    
+    <query id="newsQuery" header="消息信息"  baseclass="com.cnpc.pms.personal.entity.News" order="create_time desc">
+        <column key="key_id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="true" align="center"/>
+        <column key="name" 	        header="名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="20%" align="center"/>
+        <column key="type_id" 			header="类型" 		display="false" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+    </query>
+    
+    <query id="auditQuery" header="审核信息"  method="auditManager.showAuditData" >
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="true" align="center"/>
+        <column key="name" 	        header="名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="15%" align="center"/>
+        <column key="gb_code" 	        header="国标码" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" 	width="18%" align="center"/>
+        <column key="type_name" 			header="类型" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="type_id" 			header="类型id" 		display="false" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="check_id" 			header="状态" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+    	<column key="city_name" 			header="城市" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+    
+    </query>
+    
+</pmsquery> 

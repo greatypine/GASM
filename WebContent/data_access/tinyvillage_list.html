@@ -1,0 +1,1807 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>小区信息列表</title>
+    <script type="text/javascript" src="../startbootstrap/js/jquery.1.10.2.min.js"></script>
+    <script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+</head>
+<style type="text/css">
+    	/*.display tr td{
+    		word-wrap:break-word;
+    		white-space:normal;
+    	} */
+    	.panel-heading .but{float:right; text-align: center;}
+    	.but input {
+		background-color: transparent;
+		border: 1px solid #fff;
+		border-radius: 3px;
+		padding: 0 13px;
+		margin-right: 30px;}
+    	.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+    .increase{width:240px; height:160px; background-color:#fff; border:2px dashed #cecece; position:relative; margin:0 auto;}
+    .inc1{border:4px solid #c1bfc0; height:0; width:126px; border-radius:10px; position:absolute; top:50%; left:50%; margin:-4px 0 0 -63px;}
+    .inc2{border:4px solid #c1bfc0; height:126px; width:0; border-radius:10px; position:absolute; top:50%; left:50%; margin:-63px 0 0 -4px;}
+    .img_plus{margin-left: 5px;width: 14px;height: 14px;cursor: pointer}
+    .img_minus{margin-left: 5px;width: 14px;height: 14px;cursor: pointer}
+    .header_img{
+        width: 100%;
+        height: 100%;
+        float: right;
+        border-radius:50%
+    }
+    </style>
+<script type="text/javascript">
+var win;
+var familyArray=null;
+var position = "";
+var store_id = "";
+var storeno = "";
+var sourceFlag = getUrlParamByKey("s");
+var isExistServiceArea = true;//服务范围
+var isPrivilege=false;//是否国安侠和店长
+$(function () {
+    //页面加载成功后需要获取数据
+    searchList();
+    getServicePosition();
+});
+//记载页面时请求数据列表默认的方法
+function searchList() {
+    $$.executeSearch('tinyVillageQuery', 'conditionsDiv');
+    $(".operateHeader").width("14%");
+    var selectObj = $(".panel-footer").find('select')[0];
+    $(selectObj).change(function(){
+    	$(".checkboxHeader").find('input[type="checkbox"]').attr("checked",false);
+    });
+    $("#cstmz_actv").remove();
+}
+function doClean() {
+    document.service_qa.reset();
+    searchList();
+}
+//拆分调用此方法
+function doShowRelation(id,name,tinyvillage_type){
+	if(tinyvillage_type=='楼房'){
+		initaddfamit(id,name);
+	     $('#family_div').dialog({
+	        bgiframe : true,
+	        title : "小区拆分",
+	        width : 900,
+	        height : 600,
+	        open:function(event,ui){$(".ui-dialog-titlebar-close").hide();},
+	        buttons : {
+	            "确定" : function() {
+	                    var flag = domintss();
+	                if(flag){
+	                    $(this).dialog("close");
+	                    window.location.href = 'tinyvillage_list.html';
+	                } 
+	            	
+	            },
+	            "取消" : function() {
+	                $(this).dialog("close");
+	            }
+	        },
+	        modal : true
+	    }); 
+	}else{
+		alert("只能拆分楼房!");
+	}
+	
+}
+
+function domintss(){
+	var flags=true;
+	var ulArray = $('#family_div').find('.panel-primary');
+	for(var t=1;t<ulArray.length;t++){
+		var hh=$(ulArray[t]).find('input[name="buildings"]').val();
+		if(hh==null||hh==''){
+			flags=false;
+			alert("请完善小区信息,或删除不完整的信息");
+			return;
+		}
+	}
+	$($(".ui-button-text-only")[0]).attr("disabled","disabled");
+	            $($(".ui-button-text")[0]).html("正在拆分...");
+	if(flags){
+		var asses= Array();
+		for(var v=0;v<ulArray.length;v++){
+			var obf={
+					id:$(ulArray[v]).find('input[name="id"]').val(),
+					buildings:$(ulArray[v]).find('input[name="buildings"]').val(),
+					othername:$(ulArray[v]).find('input[name="anothername"]').val(),
+					name:$(ulArray[v]).find('input[name="name"]').val()
+			};
+			asses.push(obf);
+		}
+		doManager("TinyVillageManager", "saveTinyvillageList",[asses] , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				if(data.data!="null"){
+					alert("拆分成功！");
+					flags=true;
+					return;
+				}else{
+					alert("拆分失败！");
+					flags=false;
+					return ;
+				}
+			} else {
+				$$.showMessage("系统信息", "拆分失败");
+				flags=false; 
+				return;
+			}
+		},false);
+	}
+	return flags;
+}
+
+
+//单击拆分时调用此方法
+function initaddfamit(id,name){
+	$('#family_div').find('.panel-primary').remove();
+	var ulArray = $('#family_div').find('.panel-primary');
+    familyArray = new Array();
+    familyArray=[];
+    if(ulArray.length==0){
+   	 var family1 = {
+   			id:id,
+               name: name+"-"+"A1",
+               anothername: '',
+               buildings: ''
+           };
+   	var family2 = {
+   			id:'',
+               name: name+"-"+"A2",
+               anothername: '',
+               buildings: ''
+           };
+   	 familyArray.push(family1);
+ 	familyArray.push(family2); 
+ 	$(familyArray).each(function(i,obj){
+		addFamily(obj);
+	});
+	}
+}
+
+
+function getChilds(id,name){
+    var ulArray = $('#family_div').find('.panel-primary');
+    familyArray = new Array();
+    familyArray=[];
+    var allFamily = new Array();
+    allFamily=[];
+    for(var i = 0;i < ulArray.length;i++){
+        var name = $(ulArray[i]).find('input[name="name"]').val().replace(/(^\s*)|(\s*$)/g, "");
+        var anothername = $(ulArray[i]).find('input[name="anothername"]').val();
+        var buildings = $(ulArray[i]).find('input[name="buildings"]').val();
+        if(!checkValue(name) || !checkValue(buildings)){
+            $$.showMessage('提示','请完善小区信息,或删除不完整的信息');
+            return false;
+        }
+        if(!checkValue(buildings)) {
+                $$.showMessage('提示',"请选择楼房");
+                return false;
+        }
+        var family = {
+            name: name,
+            anothername: anothername,
+            buildings:buildings
+        };
+       	var info = name+"_"+buildings;
+       
+       	allFamily.push(info);
+       	
+        familyArray.push(family);
+        
+    }
+    var nary=allFamily.sort(); 
+    
+	for(var i=0;i<nary.length;i++){
+		if (nary[i]==nary[i+1]){
+			 $$.showMessage('提示',"拆分小区出现重复!");
+			return false;
+		} 
+	}
+    
+    childs = familyArray;
+    
+    //initFamily();
+    return true;
+}
+var win;
+function showCustomerWin(callback,t){
+	var jei=$(t).attr("id");
+	jei=jei.substring(3);
+	win = new checkWin(callback,jei);
+	$(".ui-icon-closethick").hide();
+	win.show();
+}
+/**
+*
+* @param {Object} callback 	回调函数
+* 返回值json
+*/
+var checkWin = function(callback,bb){
+    this.win = $("<div style='overflow-y: hidden'></div>");
+    var ulArray = $('#family_div').find('.panel-primary');
+  var tinyid=  $(ulArray[0]).find('input[name="id"]').val(); //小区id
+  var kk="";//获取其他所有的楼房id
+  for(var j=0;j<ulArray.length;j++){
+	  var nn=$(ulArray[j]).find('input[name="buildings"]').val();
+	  if(j!=(bb-1)&&nn!=null&&nn!=''){
+		  kk+=nn+",";
+	  } 
+  }
+  if(kk.length>0){
+	  kk=kk.substring(0,kk.length-1);
+  }else{
+	  kk="efs";
+  }
+  var c=bb-1;
+  var build=$(ulArray[c]).find('input[name="buildings"]').val();
+  /* if(build==null||build==''){
+	  build="ess";
+  } */
+  var _this = this;
+    var initWin = function(){
+        _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/selectbuildingcheckbox.html?id='+tinyid+'&bb='+bb+'&cc='+kk+'&dd='+build+'" scrolling="yes"></iframe>');
+        _this.win.dialog({
+            bgiframe: true,
+            title:"选择楼房",
+            autoOpen:false,
+            width:_this.width,
+            height:_this.height,
+            open:function(event,ui){$(".ui-dialog-titlebar-close").hide();},
+            buttons : {
+            	"确定": function(){
+            		var selVal=window.frames["selectWin"].yanzhen();
+            		if(selVal==0){
+            			window.frames["selectWin"].doSubmit();
+                  	   _this.win.remove();
+                 	   
+                    }else{
+                    	$$.showMessage("系统信息", "请选择楼房信息!");
+                    }
+                },
+                "取消":function(){
+                    _this.hide();
+                    _this.win.remove();
+                }
+            },
+            modal:true
+        });
+    };
+    this.width = 600;
+    this.height = 530;
+    this.callBack = function(json){
+        if (callback && typeof(callback) == 'function') {
+            callback(json);
+        }
+    };
+
+    this.show = function(){
+        _this.win.dialog("open");
+    };
+
+    this.hide = function(){
+        if(_this.onSubmitHandler){
+            _this.onSubmitHandler();
+        }
+        _this.win.dialog("close");
+    };
+    initWin();
+}
+function setCustomerSelect(jsons){
+	var selectStoreNames = "";
+	var selectStoreIds = "";
+	var mm;
+	var rr;
+	$.each(jsons,function(n,value) {
+		mm=value.bb;
+		rr=value.bb-1;
+		var objName = value.name;
+		selectStoreNames+=","+objName+",";
+		var objId = value.id;
+		selectStoreIds+=","+objId+",";
+	});
+	selectStoreNames=replacenull(selectStoreNames);
+	selectStoreIds=replacenull(selectStoreIds);
+	if(selectStoreNames!=null&&selectStoreNames.length>12){
+		selectStoreNames=selectStoreNames.substring(0,12)+"...";
+	}
+	var ulArray = $('#family_div').find('.panel-primary');
+	$(ulArray[rr]).find('input[name="buildings"]').val(selectStoreIds);
+	var ll='selectName'+mm;
+	$("#"+ll).text(selectStoreNames);
+ };
+function addFamily(family) {
+    if(typeof(family) == 'undefined') {
+        family = {
+        	id: '',
+            name: '',
+            anothername: '',
+            buildings: ''
+        };
+    }
+    var ulArray = $('#family_div').find('.panel-primary');
+    if(ulArray.length<=1){
+    	if(family.id==null||family.id==''){
+    		var ff=2;
+    		var $div_parent = $('#family_div');
+            var $div_btn = $div_parent.find('#div_btn');
+            $div_btn.before('<div style="min-height:220px;float: left;width: 30%;margin-top: 20px;margin-right: 2%" class="panel panel-primary"></div>');
+            var $div_content = $div_parent.find('.panel-primary:last');
+            $div_content.append('<div class="panel-heading">小区2</div><div class="panel-body">' +
+                    '<table cellpadding="0" cellspacing="0" style="min-width: 95%;margin: 10px 0; width: auto">' +
+                    '<tr><td>小区名称</td>' +
+                    '<td><input name="id" type="hidden" value="'+family.id+'"/><input name="buildings" type="hidden" value="'+family.buildings+'"/><input name="name" type="text" readonly="readonly" class="form-control" style="width: 90%; margin-left:10px;"  value="'+family.name+'" /></td></tr>' +
+                    '<tr><td>小区别名</td>' +
+                    '<td>' +
+                    '<input name="anothername" type="text" class="form-control" style="width: 90%; margin-left:10px;"  value="'+family.anothername+'" />' +
+                    '</td></tr>'+
+                    '<tr><td>楼房信息</td><td><button class="btn btn-primary" id="but'+ff+'" onclick="showCustomerWin(setCustomerSelect,this);" style="width: 90%; margin-left:10px;" >选择楼房</button></td></tr>'+
+                    '<tr><td colspan="2"><label id="selectName'+ff+'"></lable></td>'
+                    +'</tr></table></div>');
+    	}else{
+    		var ee=1;
+    		var $div_parent = $('#family_div');
+            var $div_btn = $div_parent.find('#div_btn');
+            $div_btn.before('<div style="min-height:220px;float: left;width: 30%;margin-top: 20px;margin-right: 2%" class="panel panel-primary"></div>');
+            var $div_content = $div_parent.find('.panel-primary:last');
+            $div_content.append('<div class="panel-heading">小区1</div><div class="panel-body">' +
+                    '<table cellpadding="0" cellspacing="0" style="min-width: 95%;margin: 10px 0; width: auto">' +
+                    '<tr><td>小区名称</td>' +
+                    '<td><input name="id" type="hidden" value="'+family.id+'"/><input name="buildings" type="hidden" value="'+family.buildings+'"/><input name="name" type="text" readonly="readonly" class="form-control" style="width: 90%; margin-left:10px;"  value="'+family.name+'" /></td></tr>' +
+                    '<tr><td>小区别名</td>' +
+                    '<td>' +
+                    '<input name="anothername" type="text" class="form-control" style="width: 90%; margin-left:10px;"  value="'+family.anothername+'" />' +
+                    '</td></tr>'+
+                    '<tr><td>楼房信息</td><td><span></span></td></tr>'+
+                    '<tr><td colspan="2"><label id="selectName'+ee+'">此小区管理分配后剩余的楼房</lable></td>'
+                    +'</tr></table></div>');
+    	}
+    	
+    }else if(ulArray.length>1&&ulArray.length<=8){
+    	var ee=$(ulArray[0]).find('input[name="name"]').val();
+    	var bb=ulArray.length+1;
+    	family.name=ee.substring(0,ee.length-1)+bb;
+    	var $div_parent = $('#family_div');
+        var $div_btn = $div_parent.find('#div_btn');
+        $div_btn.before('<div style="min-height:220px;float: left;width: 30%;margin-top: 20px;margin-right: 2%;" class="panel panel-primary"></div>');
+        var $div_content = $div_parent.find('.panel-primary:last');
+        $div_content.append('<div class="panel-heading"><span id="tname">小区'+bb+'</span><span class="but"><input type="button" value="删除"/></span></div><div class="panel-body">' +
+                '<table cellpadding="0" cellspacing="0" style="min-width: 95%;margin: 10px 0; width: auto">' +
+                '<tr><td>小区名称</td>' +
+                '<td><input name="id" type="hidden" value="'+family.id+'"/><input name="buildings" type="hidden" value="'+family.buildings+'"/><input name="name" type="text" readonly="readonly" class="form-control" style="width: 90%;  margin-left:10px;"  value="'+family.name+'" /></td></tr>' +
+                '<tr><td>小区别名</td>' +
+                '<td>' +
+                '<input name="anothername" type="text" class="form-control" style="width: 90%; margin-left:10px;"  value="'+family.anothername+'" />' +
+                '</td></tr>'+
+                '<tr><td>楼房信息</td><td><button class="btn btn-primary" id="but'+bb+'" onclick="showCustomerWin(setCustomerSelect,this);" style="width: 90%; margin-left:10px;" >选择楼房</button></td></tr>'+
+                '<tr><td colspan="2"><label id="selectName'+bb+'"></lable></td>'
+                +'</tr></table></div>');
+    }else{
+    	alert("一个小区最多可以拆分9个");
+    }
+
+    $div_content.find("input[name='name']").keyup(function () {
+        $(this).val( $(this).val().replace(/^\s+|\s+$/g,''));
+    });
+    $div_content.find("input[name='anothername']").keyup(function () {
+        $(this).val( $(this).val().replace(/^\s+|\s+$/g,''));
+    });
+    $div_content.find("input[type='button']").click(function(){
+        var flag = false;
+        $div_content.find('.form-control').each(function(){
+            var value = $(this).val();
+            if(!flag && value != null && value != ""){
+                flag = true;
+            }
+        });
+        if(flag){
+            $$.showConfirm("提示","包含已输入的数据是否删除？",function () {
+                $div_content.remove();
+                var ulArray = $('#family_div').find('.panel-primary:gt(1)');
+                for(var k=0;k<ulArray.length;k++){
+                	var ename=$(ulArray[k]).find('input[name="name"]').val();
+                	ename=ename.substring(0,ename.length-1)+(k+3);
+                	$(ulArray[k]).find('input[name="name"]').val(ename);
+                	$(ulArray[k]).find('span[id="tname"]').text("小区"+(k+3));
+                	$(ulArray[k]).find('label[id^="selectName"]').attr("id","selectName"+(k+3));
+                	$(ulArray[k]).find('button[id^="but"]').attr("id","but"+(k+3));
+                }
+                
+            });
+        }else{
+            $div_content.remove();
+        }
+    });
+}
+//替换,,
+function replacenull(stringss){
+	var ses="";
+	if(stringss.length>0){
+		var ars=stringss.split(",");
+		for(var i=0;i<ars.length;i++){
+			if(ars[i]!=''){
+				ses+=ars[i]+","
+			}
+		}
+		if(ses.length>0){
+			ses=ses.substring(0, ses.length-1);
+		}
+	}
+	return ses;
+}
+
+function checkValue(value){
+    if(value == null || value == ''){
+        return false;
+    }
+    return true;
+}
+
+function daishancu(){
+	alert("待删除小区不能进行拆分");
+}
+
+var COLUMNS = {
+		 "address": function(aData, iColumn, sColumnName, map){
+			 var tiny_address = map[sColumnName];
+			 if(tiny_address.length>8){
+				 tiny_address=tiny_address.substring(0,8)+"...";
+			 }
+	            return tiny_address;
+	        },
+        "tinyvillage_type": function(aData, iColumn, sColumnName, map){
+        	var str="";
+            var id = map[sColumnName];
+            if(id==0){
+            	str="平房";
+            }else if(id==1){
+            	str="楼房";
+            }else if(id==2){
+            	str="商业";
+            }else if(id==3){
+            	str="公园/广场";
+            }else if(id==4){
+            	str="混合类型";
+            }else if(id==5){
+            	str="其他";
+            }
+            return str;
+        },"caozuo": function(aData, iColumn, sColumnName, map){
+            var id = map['id'];
+            var name = map['name'];
+            var dellable=map['dellable'];
+            var tinyvillage_type = map['tinyvillage_type'];
+            var cc=id+","+name;
+            var ss;
+            if(dellable==1){
+                ss='<button  onclick="daishancu()">拆分</button>&nbsp;&nbsp;<button  onclick="hebing();" >合并</button>';
+            }else{
+                ss='<button  onclick="doShowRelation('+id+',\''+name+'\',\''+tinyvillage_type+'\')">拆分</button>&nbsp;&nbsp;<button  onclick="hebing();" >合并</button>';
+            }
+            return ss;
+        },"name": function(aData, iColumn, sColumnName, map){
+            var dellable = map['dellable'];
+            var name = map['name'];
+            if(dellable==1){
+            	var ses="imgmouse_files/575853325656055563.png";
+            	return "<span  style=\"background:url('"+ses+"') no-repeat;background-size:100% 110%; display: inline-block;padding:5px 5px 5px 10px; color:#fff;\">(待删除)</span>"+name;
+            }
+           
+            return name;
+        }
+    }
+
+var editObj = {
+		html : '<a href="#" class="blue">修改</a>',
+		resourceId: "tinyvillage_List_edit",
+		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+			var id = allColumnsDataMap.id;
+			window.location.href = "tinyvillage_list_edit.html?id="+id;
+		}
+	}
+	function insertList(){
+	window.location.href="tinyVillage_add.html";
+}
+ 
+ var delete_customer={};
+ var deleteObj = {
+		html : '<a class="blue" href="#">删除</a>',
+		resourceId : "village_List_delete",
+		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+			var id = allColumnsDataMap.id;
+			$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+				layer.load(0,{
+          		  shade: [0.2,'#333'] 
+          		});
+				delete_customer={};
+				doManager("customerManager", "selectCustomerByTinyVillage", id + '', function(
+						data, textStatus, XMLHttpRequest) {
+					if(data.result){
+						var customer = JSON.parse(data.data).customer;
+						if(customer.length>0){
+							$("#customer_title").nextAll().remove();
+							var cusHtml="";
+							for(var i=0;i<customer.length;i++){
+								 cusHtml =cusHtml+ "<tr id='customer_"+customer[i].id+"'><td>"+(i+1)+"</td><td>"+customer[i].name+"</td><td>"+customer[i].mobilephone+"</td><td><a href='javascript:editAddress("+customer[i].id+")'>修改地址</a></td></tr>";
+								 delete_customer[customer[i].id] = customer[i].address;
+							}
+							$("#customer_title").after(cusHtml);
+							//$("#customer_title").nextAll("tr:even").css("background-color","aliceblue");
+							$("#customer_title").nextAll("tr:odd").css("background-color","rgb(231, 233, 232)");
+							layer.closeAll();
+							$('#customer_info_div').dialog({
+								  closeOnEscape:false,
+								  open:function(event,ui){$(".ui-icon-closethick").hide()},  
+								  bgiframe : true,
+					              title : "小区绑定客户画像",
+					              width : 400,
+					              height : 423,
+					              buttons : {
+					            	  "确定" : function() {
+					            		  $(this).dialog("close");
+					            	  }
+					              },
+					              modal : true
+					          });
+							
+						}else{//所删除小区没有绑定用户画像，继续执行其他信息绑定查询
+							
+							doManager("tinyVillageManager", "findHouseOrBuilding", id + '', function(
+									data, textStatus, XMLHttpRequest) {
+								if (data.result) {
+									if(data.data==1){
+										layer.closeAll();
+										$$.showMessage("系统信息","请先删除该小区下的房屋信息和楼房信息并解除该小区绑定的片区,再删除该小区!");
+									}else if(data.data==0){
+										//delect(id);
+										//根据小区id查询小区是否绑定地图坐标
+										doManager("tinyVillageManager", "findTinyAreaByTinyvillageId", id + '', function(
+											data, textStatus, XMLHttpRequest) {
+												if (data.result) {
+													if(data.data=="null"){
+														delect(id);
+													}else{
+														layer.closeAll();
+														$$.showPromptDialog("系统提示", "该小区已录入坐标,确认将同步删除地图坐标？", false, 320, function() {
+															layer.load(0,{
+												          		  shade: [0.2,'#333'] 
+												          		});
+															delect(id);
+														})
+													}
+												}else {
+													$$.showMessage("系统信息", "删除失败!");
+												}})
+									}
+								} else {
+									$$.showMessage("系统信息", "删除失败!");
+								}
+							});
+							
+						}
+						
+					}else{
+						$$.showMessage("系统信息", "删除失败!");
+					}
+					
+					
+					
+				});
+				
+				
+				
+
+			});
+		}
+	} 
+ 
+ var addObj = {
+		 html : '<a href="#" class="blue">地图坐标录入</a>',
+			resourceId: "tinyvillage_List_edit",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {	
+				var id = allColumnsDataMap.id;
+				if(isExistServiceArea){
+					if(isPrivilege){
+						window.open("map_coordinates_input.html?id="+id+"&x="+position+"&storeno="+store_id,"_blank");
+					}else{
+						$$.showMessage("系统信息", "用户没有该权限!");
+					}
+				}else{
+					$$.showMessage("系统信息", "该门店服务范围不存在！");
+				}
+			}
+		}
+ 
+ 
+ 
+$pmspage.opArr = [ editObj, deleteObj,addObj];  
+ 
+ function delect(id){
+		doManager("tinyVillageManager", "deleteTinyVillageById", id + '', function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				if(data.data!="null"){
+					layer.closeAll();
+					alert("删除成功");
+					window.location.href = 'tinyvillage_list.html';
+				}else{
+					layer.closeAll();
+					$$.showMessage("系统信息", "删除失败!");
+				}
+			} else {
+				layer.closeAll();
+				$$.showMessage("系统信息", "删除失败!");
+			}
+		});
+	}
+ 
+ 
+ 
+
+function hebing(){
+	alert("暂未开放!");
+}
+
+
+
+
+function deleteList(){
+		var ems;
+		var objs = $$.getSelectedObj("tinyVillageQuery");
+		if(objs!=null&&objs.length>0){
+			var ids="";
+			for(var i=0;i<objs.length;i++){
+				ems=objs[i];
+				ids+=ems[0]+",";
+			}
+			
+			ids=ids.substring(0,ids.length-1);
+			
+			$("#villagebyty").dialog({
+				   closeOnEscape:false,
+					 open:function(event,ui){$(".ui-icon-closethick").hide()},
+			        bgiframe: true,
+			        title: '提示信息',
+			        width: 300,
+			        //height: 500,
+			        modal: true,
+			        buttons: {
+			            "${form.ui.ok}": function () {
+			            	$("#but1").attr("disabled",true);
+			           	 	$("#but1").html("正在删除...");
+			            	$("#villagebyty").dialog('close');
+			            	delete_customer={};
+							doManager("customerManager", "selectCustomerByTinyVillage", ids + '', function(
+									data, textStatus, XMLHttpRequest) {
+								if(data.result){
+									var customer = JSON.parse(data.data).customer;
+									if(customer.length>0){
+										$("#customer_title").nextAll().remove();
+										var cusHtml="";
+										for(var i=0;i<customer.length;i++){
+											cusHtml =cusHtml+ "<tr id='customer_"+customer[i].id+"'><td>"+(i+1)+"</td><td>"+customer[i].name+"</td><td>"+customer[i].mobilephone+"</td><td><a href='javascript:editAddress("+customer[i].id+")'>修改地址</a></td></tr>";
+											delete_customer[customer[i].id]=customer[i].address;
+										}
+										$("#customer_title").after(cusHtml);
+										//$("#customer_title").nextAll("tr:even").css("background-color","aliceblue");
+										$("#customer_title").nextAll("tr:odd").css("background-color","rgb(231, 233, 232)");
+										layer.closeAll();
+										$('#customer_info_div').dialog({
+											  closeOnEscape:false,
+											  open:function(event,ui){$(".ui-icon-closethick").hide()},   
+											  bgiframe : true,
+								              title : "小区绑定客户画像",
+								              width : 400,
+								              height : 423,
+								              buttons : {
+								            	  "确定" : function() {
+								            		  $(this).dialog("close");
+								            		  $("#but1").attr("disabled",false);
+										           	  $("#but1").html("批量删除");
+								            	  }
+								              },
+								              modal : true
+								          });
+										
+									}else{//所删除小区没有绑定用户画像，继续执行其他信息绑定查询
+										
+										//调用查找方法
+										 doManager("tinyVillageManager", "findTinyvillageofHouseandBuilding", ids, function(
+												data, textStatus, XMLHttpRequest) {
+											if (data.result) {
+												if(data.data!='null'){
+													 var arr = eval('('+data.data+')');
+										        	 $('ul').html("");
+										        	 if (arr!=null&&arr.length>0){
+										 				for(var i=0;i<arr.length;i++){
+										 						$("#village").append("<li>小区："+arr[i].name+"</li>");
+										 				}
+										 				showUserGroup();
+										 			}
+												}else if(data.data=='null'){
+													//delectList(ids);
+													doManager("tinyVillageManager", "findTinyAreaByTinyIds", ids + '', function(
+											data, textStatus, XMLHttpRequest) {
+												if (data.result) {
+													if(data.data=='null'){
+														delectList(ids);
+													}else{
+														$$.showPromptDialog("系统提示", "删除的数据中包含已录入坐标的小区,确认将同步删除地图坐标？", false, 320, function() {
+															delectList(ids);
+														})
+													}
+												}else {
+													$$.showMessage("系统信息", "删除失败!");
+												}})
+												}
+											} else {
+												$$.showMessage("系统信息", "删除失败!");
+												$("#but1").attr("disabled",false);
+												$("#but1").html("批量删除");
+											}
+										});
+						            	
+						            	
+										
+									}
+									
+								}else{
+									$$.showMessage("系统信息", "删除失败!");
+								}
+								
+								
+								
+							});
+			            	
+			            	
+			            	
+			            	
+			            	
+			            	
+			            },
+			            "${query.ui.cancel}": function () {
+			            	$("#but1").attr("disabled",false);
+			            	$("#but1").html("批量删除");
+			                $("#villagebyty").dialog('close');
+			                
+			            }
+			        }
+			    });
+		}else{
+			$$.showMessage("系统信息", "请选择数据!");
+			$("#but1").attr("disabled",false);
+			$("#but1").html("批量删除");
+		}
+	}
+	function delectList(ids){
+		doManager("tinyVillageManager", "deletemouthTinyVillage", ids, function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				if(data.data!="null"){
+					confirm( "删除成功!");
+					window.location.href = 'tinyvillage_list.html';
+				}else{
+					$$.showMessage("系统信息", "删除失败!");
+					$("#but1").attr("disabled",false);
+					$("#but1").html("批量删除");
+				}
+			} else {
+				$$.showMessage("系统信息", "删除失败!");
+				$("#but1").attr("disabled",false);
+				$("#but1").html("批量删除");
+			}
+		});
+	}
+	function showUserGroup() {
+	    $("#villageInfo").dialog({
+	    	closeOnEscape:false,
+			 open:function(event,ui){$(".ui-icon-closethick").hide()},
+	        bgiframe: true,
+	        title: '提示信息',
+	        width: 300,
+	        //height: 500,
+	        modal: true,
+	        buttons: {
+	            "${form.ui.ok}": function () {
+	            	$("#but1").attr("disabled",false);
+	            	$("#but1").html("批量删除");
+	            	$("#villageInfo").dialog('close');
+	            },
+	            "${query.ui.cancel}": function () {
+	            	$("#but1").attr("disabled",false);
+	            	$("#but1").html("批量删除");
+	                $("#villageInfo").dialog('close');
+	                
+	            }
+	        }
+	    });
+	}
+
+	$($(".ui-dialog-buttonset .ui-button-text-only .ui-button-text")[1]).click(function(){
+		 $("#but1").attr("disabled",false);
+			$("#but1").html("批量删除");
+});
+
+	function deleteListState(){
+		var ems;
+		var objs = $$.getSelectedObj("tinyVillageQuery");
+		if(objs!=null&&objs.length>0){
+			var ids="";
+			for(var i=0;i<objs.length;i++){
+				ems=objs[i];
+				ids+=ems[0]+",";
+			}
+			ids=ids.substring(0,ids.length-1);
+			 $$.showPromptDialog("系统提示", "确认添加删除标签？", false, 320, function() {
+				 //当添加待删除标记时检测是否绑定片区
+				 doManager("areaInfoManager", "findTinyVillageAreaByTindIds", ids, function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							if(data.data!='null'){
+								 var arr = eval('('+data.data+')');
+					        	 $('ul').html("");
+					        	 if (arr!=null&&arr.length>0){
+					 				for(var i=0;i<arr.length;i++){
+					 						$("#ellablebb").append("<li>小区："+arr[i].name+"</li>");
+					 				}
+					 				showGrouplable();
+					 			}
+							}else if(data.data=='null'){
+								doManager("tinyVillageManager", "addtinyvillagedellable", ids , function(
+										data, textStatus, XMLHttpRequest) {
+									if (data.result) {
+										alert("添加删除标签成功！");
+										window.location.href = 'tinyvillage_list.html';
+									} else {
+										$$.showMessage("系统信息", "添加删除标签失败!");
+									}
+								});
+							}
+						} else {
+							$$.showMessage("系统信息", "添加删除标签失败!");
+							
+						}
+					});
+				
+				
+				
+				
+			});
+			}else{
+				$$.showMessage("系统信息", "请选择数据!");
+			}
+		
+		
+		
+	}
+
+	function showGrouplable() {
+	    $("#dellabletest").dialog({
+	    	closeOnEscape:false,
+			 open:function(event,ui){$(".ui-icon-closethick").hide()},
+	        bgiframe: true,
+	        title: '提示信息',
+	        width: 300,
+	        //height: 500,
+	        modal: true,
+	        buttons: {
+	            /* "${form.ui.ok}": function () {
+	            	$("#dellabletest").dialog('close');
+	            }, */
+	            "${query.ui.cancel}": function () {
+	                $("#dellabletest").dialog('close');
+	                
+	            }
+	        }
+	    });
+	}
+	//地图坐标录入
+	function addCoordinates(){
+		if(isExistServiceArea){
+			if(isPrivilege){
+				window.open("map_coordinates_input.html?x="+position+"&storeno="+store_id,"tiny_area");
+			}else{
+				$$.showMessage("系统信息", "用户没有该权限!");
+			}
+		}else{
+			$$.showMessage("系统信息", "该门店服务范围不存在！");
+		}
+	}
+	var curr_user;
+	function getServicePosition(){
+		//取得当前登录人的门店
+		doManager("UserManager", "getCurrentUserDTO",null,
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						curr_user = JSON.parse(data.data);
+  						store_id = curr_user.store_id;
+  						getTownByStore();
+  						if(curr_user.usergroup.code=="DZ" ||curr_user.usergroup.code=="GAX"){
+  							isPrivilege=true;
+  							doManager("MongoDBManager", "getStorePosition", "1", function(
+  									data, textStatus, XMLHttpRequest) {
+  								if (data.result) {
+  									if(eval('('+data.data+')').code == 200){
+  										var positions = eval('('+data.data+')').data;
+  	  									var x= positions[0];
+  	  									var y= positions[1];
+  	  									position= x+","+y;
+  	  									
+	  	  								if(sourceFlag==2){
+	  	  						    		addCoordinates();
+	  	  						    	}
+  									}else if(eval('('+data.data+')').code == 9000003){
+  										isExistServiceArea = false;
+  										
+  										if(sourceFlag==2){
+  											$$.showMessage("系统信息", "该门店服务范围不存在！");
+	  	  						    	}
+  									}
+  								}
+  							});
+						}
+  					}
+  		},false);
+	}
+	
+	
+	
+	<!--------------------------------------------------小区绑定的客户画像的新地址搜索   开始------------------------------------------------------------>
+	function getTownByStore(){
+	    	if(curr_user.store_id==null||curr_user.store_id==""){
+	    		$("#city_id").val("");
+	    	}else{
+	    		 doManager('TownManager','getTownByStore',[curr_user.store_id],function(data){
+	 	            if(data.result){
+	 	            	
+	 	            	var town = JSON.parse(data.data);
+	 	                $("#city_id").val(town.cityId);
+//	  	            	$("#town_name").val(town.name);
+//	  	            	$("#town_id").val(town.id);
+	 	            	
+	 	            }else{
+	 	                $$.showMessage("提示",data.message);
+	 	            }
+	 	        });
+	    	}
+	       
+	    	
+	    }
+	
+	
+	    var lst_select_tiny = null;
+	    var lst_building = null;
+	    var map_house = null;
+	    var lst_house = null;
+	    var lst_select_village=null;
+	    //搜索小区
+	    $(document).ready(function(){
+	    	
+	        $('input[name="house_type"]').click(function(){
+	        	if(!isNewAddress){
+	        		if($('input[name="house_type"]:checked').val() == 0){
+	                    hideBuilding();
+	                    $("#tv_id").val("");
+	                    $('#tv_name').val("");
+	                    $('#tv_name-search').children().remove();
+	                    $('#house_no').val("");
+	                }else{
+	                    showBuilding();
+	                    $("#tv_id").val("");
+	                    $('#tv_name').val("");
+	                    $('#tv_name-search').children().remove();
+	                    $('#house_no').val("");
+	                }
+	        	}
+	            
+	        }); 	
+	    	
+	        
+// 	        //街道
+	        $('#town_name1').keyup(function(event){
+	    		var city_id =  $("#city_id").val();
+	    		if(city_id==""){
+	    			city_id=null;
+	    		}
+	            
+	            var str_name = $(this).val();
+		    	 var reg = /^\s+|\s+$/g;
+		         str_name = str_name.replace(reg,'');
+	            if(!(event.keyCode >= 37 && event.keyCode <= 40) && event.keyCode != 13){
+	            	$("#town_id1").val("");
+	                $('#town_name-search1').children().remove();
+	                if(str_name == null || str_name == "" || str_name.indexOf('\'') > -1){
+	                    return;
+	                }
+	                doManager('TownManager','selectAllTownByName',[str_name,city_id],function(data){
+	                    if(data.result){
+	                    	lst_select_village = JSON.parse(data.data);
+	                        $(lst_select_village).each(function(index,element){
+	                            $('#town_name-search1').append('<option value="'+element.name+'">');
+	                        });
+	                    }else{
+	                        $$.showMessage("提示",data.message);
+	                    }
+	                });
+	            }
+	        });
+	        
+	        
+	        $('#town_name1').change(function(){
+	        	
+	            $(lst_select_village).each(function(index,element){
+	                if(element.name == $('#town_name1').val()){
+	                    $('#town_id1').val(element.id);
+	                }
+	            });
+	        });
+	        
+	        
+	        
+	        $('#village_name1').keyup(function(event){
+
+	        	var str_name = $(this).val();
+		    	var reg = /^\s+|\s+$/g;
+		        str_name = str_name.replace(reg,'');
+	            if(!(event.keyCode >= 37 && event.keyCode <= 40) && event.keyCode != 13){
+	            	$('#village_id1').val("");
+	                $('#village_name-search1').children().remove();
+	                if(str_name == null || str_name == "" || str_name.indexOf('\'') > -1){
+	                    return;
+	                }
+	                var townId = $('#town_id1').val();
+	                if(townId==null||townId==""){
+	                	return;
+	                }
+	                doManager('VillageManager','searchVillageByTownAndName',[townId,str_name],function(data){
+	                    if(data.result){
+	                    	lst_select_village = JSON.parse(data.data);
+	                        $(lst_select_village).each(function(index,element){
+	                            $('#village_name-search1').append('<option value="'+element.name+'">');
+	                        });
+	                    }else{
+	                        $$.showMessage("提示",data.message);
+	                    }
+	                });
+	            }
+	        });
+	        
+	        
+	        $('#village_name1').change(function(){
+	        	
+	            $(lst_select_village).each(function(index,element){
+	                if(element.name == $('#village_name1').val()){
+	                    $('#village_id1').val(element.id);
+	                }
+	            });
+	        });
+	   
+	        
+	    $('#tv_name').keyup(function(event){
+	    	 var str_name = $(this).val();
+	    	 var reg = /^\s+|\s+$/g;
+	         str_name = str_name.replace(reg,'');
+	         $(this).val(str_name);
+	    	 $('#building_name-search').children().remove();
+	         $('#building_name').val("");
+	        
+	         $('#unit_no-search').children().remove();
+	         $('#unit_no').val("");
+	        
+	         $('#house_no-search').children().remove();
+	         $('#house_no').val("");
+			var city_id = $("#city_id").val();
+			if(city_id==""){
+				city_id = null;
+			}
+			
+	        str_name = $(this).val();
+	        
+	        if(!(event.keyCode >= 37 && event.keyCode <= 40) && event.keyCode != 13){
+	        	$("#tv_id").val("");
+	            $('#tv_name-search').children().remove();
+	            if(str_name == null || str_name == "" || str_name.indexOf('\'') > -1){
+	                return;
+	            }
+	            doManager('TinyVillageManager','getTinyVillageByNameAndCity',[str_name,$('input[name="house_type"]:checked').val(),city_id],function(data){
+	                if(data.result){
+	                    lst_select_tiny = JSON.parse(data.data);
+	                    $(lst_select_tiny).each(function(index,element){
+	                        $('#tv_name-search').append('<option value="'+element.name+'">');
+	                    });
+	                }else{
+	                    $$.showMessage("提示",data.message);
+	                }
+	            });
+	        }
+	    });
+
+	     $('#tv_name').change(function(){
+	    	 $('#building_name-search').children().remove();
+	         $('#building_name').val("");
+	        
+	         $('#unit_no-search').children().remove();
+	         $('#unit_no').val("");
+	        
+	         $('#house_no-search').children().remove();
+	         $('#house_no').val("");
+	         $(lst_select_tiny).each(function(index,element){
+	            if(element.name == $('#tv_name').val()){
+	                $('#tv_id').val(element.id);
+	                var house_type=$('input[name="house_type"]:checked').val();
+	                if(house_type=="1"){
+	                	building_option();
+	                }else{
+	                	house_option_pingfang();
+	                }
+	                
+	            }
+	         });
+	    }); 
+	
+	     function building_option(){
+	     	layer.msg("'楼号' 加载中", {
+	     		  icon: 16
+	     		  ,shade: 0.01,
+	     		  time:100000
+	     		}); 
+	        
+	        
+	         var tv_id = $('#tv_id').val();
+	         if(tv_id == '' || tv_id == null){
+	         	layer.closeAll();
+	             return;
+	         }
+	         doManager('BuildingManager','getBuildingListByTinyVillageId',tv_id,function(data){
+	             if(data.result){
+	             	
+	                 lst_building = JSON.parse(data.data);
+	                 $(lst_building).each(function(index,element){
+	                     $('#building_name-search').append('<option data="'+element.id+'" value="'+element.name+'">');
+	                 });
+	                 layer.closeAll();
+	             }else{
+	                 $$.showMessage("提示",data.message);
+	             }
+	         });
+	     }
+
+	     $('#building_name').change(function(){
+	     	$('#unit_no-search').children().remove();
+	         $('#unit_no').val("");
+	        
+	         $('#house_no-search').children().remove();
+	         $('#house_no').val("");
+	         building_value();
+	     });
+	     
+	     $('#building_name').keyup(function(event){
+	     	$('#building_name-search').children().remove();
+	     	$('#building_id').val("");
+	     	lst_building = null;
+	     	lst_unit=null;
+	     	lst_house=null;
+	     	map_house=null;
+	         building_option();
+	         building_value();
+	     })
+	     
+	     
+	     function building_value(){
+	         $(lst_building).each(function(index,element){
+	             if(element.name == $('#building_name').val()){
+	             	
+	                 $('#building_id').val(element.id);
+	                 unit_option();
+	             }
+	         });
+	     }
+
+	     $('#unit_no').change(function(){
+	         house_option();
+	     });
+	     $('#unit_no').keyup(function(event){
+	         house_option();
+	         $('#house_id').val("");
+	     });
+	     
+	     
+	     function unit_option(){
+	     	layer.msg("'单元' 加载中", {
+	     		  icon: 16
+	     		  ,shade: 0.01,
+	     		  time:100000
+	     		});
+	     	
+	         $('#unit_no-search').children().remove();
+	         $('#unit_no').val("");
+	         var b_id = $('#building_id').val();
+	         if(b_id == '' || b_id == null){
+	         	layer.closeAll();
+	             return;
+	         }
+	         doManager('HouseManager','getHouseListByBuildingId',b_id,function(data){
+	             if(data.result){
+	             	
+	                 var map_house_unit = JSON.parse(data.data);
+	                 var lst_unit = map_house_unit['unit'];
+	                 map_house = map_house_unit['house'];
+	                 $(lst_unit).each(function(index,element){
+	                     $('#unit_no-search').append('<option value="'+element+'">');
+	                 });
+	                layer.closeAll();
+	             }else{
+	                 $$.showMessage("提示",data.message);
+	             }
+	         });
+	     }
+	 	//平房的门牌号
+	     function house_option_pingfang(){
+	     	layer.msg("'门牌号' 加载中", {
+	   		  icon: 16
+	   		  ,shade: 0.01,
+	   		  time:100000
+	   		});
+	     	var tv_id = $('#tv_id').val();
+	         if(tv_id == '' || tv_id == null){
+	         	layer.closeAll();
+	             return;
+	         }
+	     	  doManager('HouseManager','getHouseOfTinyVillage',tv_id,function(data){
+	               if(data.result){
+	               	
+	                   var houseData = JSON.parse(data.data);
+	                   var hlist = houseData.houselist;
+	                  
+	                   $(hlist).each(function(index,element){
+	                       $('#house_no-search').append('<option value="'+element.house_no+'">');
+	                   });
+	                  layer.closeAll();
+	               }else{
+	                   $$.showMessage("提示",data.message);
+	               }
+	           });
+	     }
+	     //楼房的门牌号
+	     function house_option(){
+	     	
+	     	/* layer.msg("'房间号' 加载中", {
+	   		  icon: 16
+	   		  ,shade: 0.01,
+	   		  time:100000
+	   		});  */
+	         $('#house_no-search').children().remove();
+	         $('#house_no').val("");
+	         var unit_no = $('#unit_no').val();
+	       
+	         if(unit_no == '' || unit_no == null){
+	             return;
+	         }
+	         
+	         if(map_house == null || typeof(map_house) == 'undefined'){
+	             return;
+	         }
+	         
+	         lst_house = map_house[unit_no];
+	        
+	         $(lst_house).each(function(index,element){
+	             $('#house_no-search').append('<option value="'+element.building_house_no+'">');
+	         });
+	         
+	         //layer.closeAll();
+	     }
+
+	    
+	     $('#house_no').keyup(function(event){
+	        
+	         $('#house_id').val("");
+	     });
+	     
+	    });
+	     
+	
+	<!--------------------------------------------------小区绑定的客户画像的新地址搜索   结束------------------------------------------------------------>
+	
+	
+	 function hideBuilding(){
+	    	
+	        $('#building_name').hide();
+	        $('#building_name-search').children().remove();
+	        $('#building_name').val("");
+	        
+	        $('#unit_no-search').children().remove();
+	        $('#unit_no').val("");
+	        $('#building_span').hide();
+	        $("#unit_no").hide();
+	        
+	        $("#unit_span").hide();
+	        $('#span_tv').text('街(道)');
+	        $("#new_tinvillage_name").text("街(道)");
+	        $("#new_house_name").text('门牌号');
+	        $("#building_tr").hide();
+	        $("#unit_tr").hide();
+	        $('#house_span').text("门牌号");
+	    }
+
+	    function showBuilding(){
+	    	
+	    	$('#building_name').show();
+	    	$('#building_span').show();
+	    	$("#unit_no").show();
+	        $("#unit_span").show();
+	        $('#span_tv').text('小区');
+	        $("#new_tinvillage_name").text("小区");
+	        $("#new_house_name").text('房间号');
+	        $("#building_tr").show();
+	        $("#unit_tr").show();
+	        $('#house_span').text('房间号');
+	    }
+	
+	//编辑客户家庭住址
+	function editAddress(tt){
+		$("#tv_name").removeAttr("disabled");
+		$("#building_name").removeAttr("disabled");
+		$("#unit_no").removeAttr("disabled");
+		$("#house_no").removeAttr("disabled");
+		$("input[name='house_type']:not(:checked)").removeAttr("disabled","disabled");
+		 var trId ="customer_"+tt;
+		 var customerId = tt;
+		 $("#old_address").html(delete_customer[customerId]);
+		 $('#tv_name-search').children().remove();
+		 $('#tv_name').val("");
+		 
+		 $('#building_name-search').children().remove();
+         $('#building_name').val("");
+        
+         $('#unit_no-search').children().remove();
+         $('#unit_no').val("");
+        
+         $('#house_no-search').children().remove();
+         $('#house_no').val("");
+		 
+		 $('#customer_address_div').dialog({
+	            bgiframe : true,
+	            title : "新地址",
+	            width : 600,
+	            height : 200,
+	            buttons : {
+	                "确定" : function() {
+	                	 var tv_name = $('#tv_name').val();
+	                	 var house_type = $('input[name="house_type"]:checked').val();
+	                     var building_name = $('#building_name').val();
+	                     var unit_no = $('#unit_no').val();
+	                     var house_no = $('#house_no').val();
+	                     
+ 	                     if(tv_name != '' && tv_name != null){
+	                        
+	                        
+	                         var tv_id = $('#tv_id').val();
+	                         if((tv_id == "" || tv_id == null)){
+	                             //setBtnEnble();
+	                             $$.showConfirm("提示","地址库中无此小区无法添加,是否新增？",function () {
+	                                show_new_address();
+	                             });
+	                             return;
+	                         }
+	             			
+	                       
+	                         if(((building_name == "" || building_name == null)||(house_no == "" || house_no == null)
+	                             || (unit_no == "" || unit_no == null)) && house_type == '1'){
+	                             //setBtnEnble();
+	                             $$.showMessage('提示',"请完整填写地址信息。");
+	                             return;
+	                         }
+	                         
+	                         if((house_no == "" || house_no == null)&&house_type == '0'){
+	                         	 //setBtnEnble();
+	                             $$.showMessage('提示',"请完整填写地址信息。");
+	                             return;
+	                         }
+	                         
+	                         var customer_address = {
+	                                 tv_id:$('#tv_id').val(),
+	                                 tv_name:tv_name,
+	                                 building_id:$('#building_id').val(),
+	                                 building_name:building_name,
+	                                 house_no:house_no,
+	                                 unit_no:unit_no,
+	                                 house_id:$('#house_id').val(),
+	                                 house_type:house_type,
+	                                 customer_id:customerId
+	                             };
+	                         layer.load(0,{
+				          		  shade: [0.2,'#333'] 
+				          	  });
+	                       
+	                         doManager('CustomerManager','editCustomerAddress',[customer_address],function(data){
+	          	               if(data.result){
+	          	               	   layer.closeAll();
+	          	                   var resultJson = JSON.parse(data.data);
+	          	                   if(resultJson.code==200){
+	          	                	   
+		          	                   $$.showMessage("提示","修改地址成功！",function (data) {
+		          	                	   $($('#customer_address_div')).dialog("close");
+		          	                	   $("#"+trId).css("background-color","#70de5eb8");
+			          	                	
+		          	                   });
+	          	                	  
+	          	                   }else{
+	          	                	 $$.showMessage("提示","修改地址失败！");
+	          	                   }
+	          	               }else{
+	          	            	   layer.closeAll();
+	          	                   $$.showMessage("提示","修改地址失败！");
+	          	               }
+	          	           });
+	                     }
+	                	
+	                },
+	                "取消" : function() {
+	                    $(this).dialog("close");
+	                }
+	            },
+	            modal : true
+	        });
+	}
+	
+	function show_new_address(){
+	    $("#tin_village").val($("#tv_name").val());
+        $("#new_building").val($("#building_name").val());
+        $("#new_unit_no").val($("#unit_no").val());
+        $("#new_house_no").val($("#house_no").val());
+   	    $('#new_address_div').dialog({
+   	      closeOnEscape:false,
+		   open:function(event,ui){$(".ui-icon-closethick").hide()},   
+   	    	bgiframe : true,
+              title : "家庭住址",
+              width : 400,
+              height : 423,
+              buttons : {
+                  "确定" : function() {
+                	  var town = $("#town_id1").val();
+                	  if(town==null||town==""){
+                		  $$.showMessage('提示',"街道不存在，请到地采信息管理中维护！");
+                		  
+                		  return;
+                	  }
+                	  
+                	  var village = $("#village_id1").val();
+                	  if(village==null||village==""){
+                		  $$.showMessage('提示',"社区不存在，请到地采信息管理中维护！");
+                		  
+                		  return;
+                	  }
+                	  
+                     checkAndSaveAddress();
+                     
+                     
+                  },
+                  "取消" : function() {
+                      $(this).dialog("close");
+                  }
+              },
+              modal : true
+          });
+    }
+	
+	function setBtnEnble(){
+        $('#btnSave').val("保存");
+        $('#btnSave').attr("disabled",false);
+	}
+    
+    //检查并保存新地址
+    var isNewAddress=false;
+    function checkAndSaveAddress(){
+    	
+    	
+    	
+    	
+    	var tv = new Object();
+    	tv.town_id=$("#town_id1").val();
+    	tv.village_id = $("#village_id1").val();
+    	tv.name=$("#tin_village").val();
+    	//tv.tinyvillage_type  = $('input[name="house_type"]:checked').val()=="0"?0:1;
+    	doManager('TinyVillageManager','getTinyVilageByNameByTiny',tv,function(data){
+              if(data.result){
+              	
+              	var tinVillage = JSON.parse(data.data)
+                if(tinVillage!=null){
+                	 $$.showMessage('提示',"此小区已存在！");
+                	 
+                	 return;
+                }else{
+                	var houseType = $("input[name='house_type']:checked").val();
+                	if(houseType=="1"){//楼房
+                		var building_name = $("#new_building").val();
+                		var unit_no = $("#new_unit_no").val();
+                		var house_no = $("#new_house_no").val();
+                		var tv_name = $("#tin_village").val();
+                		if(tv_name.replace(/^\s+|\s+$/g, '')==""){
+               			 $$.showMessage('提示',"请输入小区！");
+               			 
+               			 return;
+               			}
+                		if(building_name.replace(/^\s+|\s+$/g, '')==""){
+                			 $$.showMessage('提示',"请输入楼号！");
+                			 
+                			 return;
+                		}
+                		
+                		if(unit_no.replace(/^\s+|\s+$/g, '')==""){
+               			 $$.showMessage('提示',"请输入单元号！");
+               			 
+               			 return;
+               			}
+                		
+                		if(house_no.replace(/^\s+|\s+$/g, '')==""){
+               			 $$.showMessage('提示',"请输入房间号！");
+               			 
+               			 return;
+               			}
+                		
+                	}else if(houseType=="0"){//平房
+                		var house_no = $("#new_house_no").val();
+                		var tv_name = $("#tin_village").val();
+                		if(tv_name.replace(/^\s+|\s+$/g, '')==""){
+               			 $$.showMessage('提示',"请输入街(道)！");
+               			 
+               			 return;
+               			}
+                		if(house_no.replace(/^\s+|\s+$/g, '')==""){
+                  			 $$.showMessage('提示',"请输入门牌号！");
+                  			 
+                  			 return;
+                  		}
+                	}
+                	
+                	 var customer = new Object();
+                	 customer.customer_address = {
+                            
+                			 town_id:$("#town_id1").val(),
+                	         village_id:$("#village_id1").val(),
+                	         tv_name:$("#tin_village").val(),
+                	         tv_address:$("#tin_village_address").val(),
+                             building_id:$('#building_id').val(),
+                             building_name:$("#new_building").val(),
+                             house_no:$("#new_house_no").val(),
+                             unit_no:$("#new_unit_no").val(),
+                             house_type:$("input[name='house_type']:checked").val(),
+                             update_user_id:curr_user.id,
+                             update_user:curr_user.name,
+                             store_id:curr_user.store_id
+                         };
+                	
+                	 var index = layer.load(0,{
+                		  shade: [0.2,'#333'] 
+                		});
+                	doManager('ViewAddressCustomerManager','saveOrUpdateCustomerAddressInfo',customer,function(data){
+                		if(data.result){
+                			var addressCustomer = JSON.parse(data.data)
+                			
+                			$("#tv_id").val(addressCustomer.tv_id);
+                			$('#building_id').val(addressCustomer.building_id);
+                			$('#house_id').val(addressCustomer.house_id);
+                			
+                			$("#tv_name").val(addressCustomer.tv_name);
+                			$("#tv_name").attr("disabled","disabled");
+                			$("#building_name").val(addressCustomer.building_name);
+                			$("#building_name").attr("disabled","disabled");
+                			$("#unit_no").val(addressCustomer.unit_no);
+                			$("#unit_no").attr("disabled","disabled");
+                			$("#house_no").val(addressCustomer.house_no);
+                			$("#house_no").attr("disabled","disabled");
+                			$("input[name='house_type']:not(:checked)").attr("disabled","disabled");
+                			isNewAddress=true;
+                			layer.closeAll();
+                			
+                			$('#new_address_div').dialog("close");
+                			
+                		}else{
+                			layer.closeAll();
+                			 $$.showMessage("提示",data.message);
+                			 
+                			 
+                		}
+                		 
+                	});
+                }
+              	
+              }else{
+            	  layer.closeAll();
+                  $$.showMessage("提示",data.message);
+                 
+              }
+              
+             
+          });
+      	
+    
+    }
+	
+</script>
+<body style="height: 100%; "><input type="hidden" id="city_id" />
+	<div class="panel panel-default" style="margin: 10px">
+	    <div class="panel-heading">
+	        <h4 class="panel-title">
+	           地址信息:小区信息
+	        </h4>
+	    </div>
+	</div>
+	    <div class="panel panel-primary">
+        <div class="panel-heading clearfix">
+          <div class="pull-left">小区信息查询</div>
+          <span onclick="addCoordinates();">地图坐标录入</span>
+          
+          <!-- <span class="but"><input name="" type="submit" onclick="addCoordinates();" value="地图坐标录入"></span> -->
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="10">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 80%; width: auto">
+                         <tr>
+                            <td width="3%">街道名称:</td>
+                            <td>
+                                <input id="town_name" onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" name="town_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="3%"> 社区名称:</td>
+                            <td>
+                                <input id="name" onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" name="name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="3%">小区名&nbsp;/&nbsp;街名:</td>
+                            <td>
+                                <input id="tinyvillage_name" onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" name="tinyvillage_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">社区名称是否为空:</td>
+                            <td width="10%">
+                                <select id="ifNull" name="ifNull" style="width:80%" class="form-control">
+                                	<option value="2" selected="selected"></option>
+                                	<option value="1">是</option>
+                                	<option value="0">否</option>
+                                </select>
+                            </td>
+                             <td width="3%">房屋类型:</td>
+                            <td width="10%">
+                                <select id="type_id" name="type_id" style="width:80%" class="form-control">
+                                	<option value="2" selected="selected"></option>
+                                	<option value="1">楼房</option>
+                                	<option value="0">平房</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+          <div class="clearfix" style="padding: 10px 0 15px 0;">
+            <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-primary" id="but1" onclick="deleteList()">批量删除</button>
+            </div>
+            <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-success" onclick="doClean();">重置</button>
+            </div>
+            <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-warning" onclick="insertList()">添加</button>
+            </div>
+            <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-danger" onclick="searchList()">查询</button>
+            </div>
+            <div class="col-sm-1 pull-right">
+        	<button class="btn btn-block btn-info" onclick="deleteListState()">添加删除标签</button>
+            </div>
+        </div>
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="tinyVillageQuery" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="true" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true" style="width: 99%"></div>
+    <div id="family_div" style="display: none;">
+                <div id="div_btn" style="float: left;width: 30%;margin-top: 7%;margin-right: 2%;" onclick="addFamily()">
+                    <div class="increase">
+                        <div class="inc1"></div>
+                        <div class="inc2"></div>
+                    </div>
+                </div>
+            </div>
+            <div id="villageInfo" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<ul class="vill" id="village">
+ 		</ul>
+ 		<span>请先删除该小区下的房屋信息和楼房信息并解除该小区绑定的片区,再删除该小区!</span>
+ </div>
+ 
+ <div id="villagebyty" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<ul class="villbb" id="villagebb">
+ 		</ul>
+ 		<span>确认删除？</span>
+ </div>
+ 
+ <div id="dellabletest" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<ul class="ellablebb" id="ellablebb">
+ 		</ul>
+ 		<span>请移除已被绑定片区的小区，再添加删除标签!</span>
+ </div>
+</body>
+
+<div id="customer_info_div" style="display:none;height:360px">
+      <div>
+       	 <table style="width:100%;text-align:center;border-collapse:separate;border-spacing:2px" border="0" cellspacing="3" cellpadding="2" id="customer_info">
+       		<tr id="customer_title" style="height:25px;background-color:#337ab7;color:white;text-align:center;font-weight:600"><td>序号</td><td>名称</td><td>电话</td><td>操作</td></tr>
+       	 </table>
+      </div>	
+</div>
+
+<div id="customer_address_div" style="display:none;height:100px">
+      <div>
+       	 <table style="width:100%;text-align:center;border-collapse:separate;border-spacing:2px" border="1" cellspacing="3" cellpadding="2" id="customer_info">
+       		 <tr><td width="10%">原地址</td><td id="old_address"></td></tr>
+       		 <tr>
+            	<td >房&nbsp;屋&nbsp;类&nbsp;型</td>
+            	<td>
+            		<input  name="house_type" type="radio" value="1" bidTableFlag="true"  checked/>楼房&nbsp;
+              		<input  name="house_type" type="radio" value="0" bidTableFlag="true" />平房&nbsp;
+            	</td>
+            </tr>
+       		<tr>
+                <td>家&nbsp;庭&nbsp;住&nbsp;址</td>
+                <td>
+                    <input id="tv_id" name="tv_id" type="hidden" bidTableFlag="true" />
+                    <input id="tv_name" name="tv_name" maxlength="40" type="text" class="form-control" bidTableFlag="true" list="tv_name-search" style="display: inherit;width: 20%"/>&nbsp;&nbsp;<span id="span_tv">小区</span>
+                    <datalist id="tv_name-search">
+<!--                                     <option value="1"> -->
+<!--                                     <option value="2"> -->
+                    </datalist>
+                    <input id="building_id" name="building_id" bidTableFlag="true" type="hidden" />
+                    <input id="building_name" maxlength="10" name="building_name" type="text"  list="building_name-search" class="form-control" bidTableFlag="true" style="display: inherit;width: 10%"/>&nbsp;&nbsp;<span id="building_span">号楼</span>
+                    <datalist id="building_name-search">
+                    </datalist>
+                    <input id="house_id" name="house_id" type="hidden" bidTableFlag="true" />
+                    <input id="unit_no" name="unit_no" maxlength="10" type="text"  list="unit_no-search" class="form-control building" bidTableFlag="true" style="display: inherit;width: 10%"/>&nbsp;&nbsp;<span id="unit_span">单元</span>
+                    <datalist id="unit_no-search">
+                    </datalist>
+                    <input id="house_no" name="house_no" type="text"  list="house_no-search"  bidTableFlag="true" class="form-control building" style="display: inherit;width: 10%"/>&nbsp;&nbsp;<span id="house_span">房间号</span>
+                    <datalist id="house_no-search">
+                    </datalist>
+                </td>
+            </tr>
+       	 </table>
+      </div>	
+</div>
+
+
+<div id="new_address_div" style="display:none;height:360px">
+   <div>
+      	<table  id="new_address" style="min-width: 100%;width: auto;border-collapse:separate;border-spacing:2px" border="0" cellspacing="3" cellpadding="2">
+      		<tr><td width="8px">街道<span style="color:red">*</span></td>
+      			<td>
+       			<input type="text" name="town_name1" id="town_name1" list="town_name-search1" bidTableFlag="true" class="form-control"  style= "width:100%"/>
+       			<input type="hidden" class="form-control"   name="new_town_id" id="town_id1"/>
+      				<datalist id="town_name-search1">
+             		</datalist>
+      			</td>
+      		</tr> 
+      		<tr><td width="8px">社区<span style="color:red">*</span></td>
+       		<td>
+       			<input type="hidden" name="village_id1" id="village_id1"/>
+       			<input type="text" class="form-control" list="village_name-search1" bidTableFlag="true"  name="village_name1" id="village_name1" style= "width:100%"> 
+        		<datalist id="village_name-search1">
+             </datalist>
+       		</td>
+       	</tr>
+      		<tr><td width="8px" ><span id="new_tinvillage_name">小区</span><span style="color:red">*</span></td><td><input type="text" maxlength="40" class="form-control" name="tin_village" id="tin_village" style= "width:100%"></td></tr>
+      		<tr><td width="8px">小区地址&nbsp;</td><td><input type="text" class="form-control" name="tin_village_address" maxlength="50" id="tin_village_address" style= "width:100%"></td></tr>
+      		<tr id="building_tr"><td  width="8px">楼号<span style="color:red">*</span></td><td><input type="text" class="form-control"  maxlength="10" name="building" id="new_building" style= "width:100%"></td></tr>
+      		<tr id="unit_tr"><td width="8px">单元<span style="color:red">*</span></td><td><input type="text" class="form-control"  maxlength="10" name="unit_no" id ="new_unit_no" style= "width:100%"></td></tr>
+      		<tr ><td  width="8px"><span id="new_house_name">房间号</span><span style="color:red">*</span></td><td><input type="text" class="form-control" maxlength="10" name="house_no" id="new_house_no" style= "width:100%"></td></tr>
+       	 </table>
+      </div>	
+</div>
+</html>

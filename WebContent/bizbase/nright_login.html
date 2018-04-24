@@ -1,0 +1,96 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible"content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Cache-Control" content="max-age:3600000">
+<title></title>
+
+<link rel="stylesheet" type="text/css" href="../scripts/css/validation.css" media="all" />
+<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+<link rel="stylesheet" type="text/css" href="script/datepicter/jquery.ui.all.css" media="all" />
+<!--
+
+-->
+
+	
+</head>
+<body>
+<form id="loginForm" class="pmsForm" validate=true clientValidate="true">
+	<table border="0" cellspacing="0" cellpadding="0">
+		<td height="120"></td>
+		<tr>
+			<td class="f02">欢迎使用!</td>
+			<td height="40"></td>
+		</tr>
+		<tr>
+			<td height="40"><hr width="640" align="left"></td>
+		</tr>
+		<tr>
+			<td height="40" class="f03">请在下面输入用户 ID 和密码。</td>
+		</tr>
+		<tr>
+			<td style="padding:8px;">
+				<table width="50%" border="0" cellspacing="0" cellpadding="0">
+					<tr>
+						<td>
+							<table width="70%" border="0" cellspacing="0" cellpadding="0">
+								<tr>
+									<td style="white-space:nowrap;" width="45px" height="26" align="right" class="f03">用户名：</td>
+									<td width="82px" style="white-space:nowrap;"><input  validate="{required:true}" type="text" name="USER_NAME" id="textfield" style="width:120px"/></td>
+									</tr>
+									<tr>
+									<td style="white-space:nowrap;" height="26" align="right" class="f03" >密&nbsp;&nbsp; 码：</td>
+									<td style="white-space:nowrap;"><input type="password" name="PASSWORD" validate="{required:true}" id="textfield2" style="width:120px"/></td>
+								</tr>
+							</table>
+						</td>
+					</tr>
+					<tr>
+						<td height="30" align="left" style="padding-left:80px;">
+							<button class="buttonu" onclick="doLogin()">登录</button>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+</form>
+<script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js"></script>
+<script language="javascript" src="../scripts/common/common-tool.js"></script>
+<script language="javascript" src="../scripts/common/common-core.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/validate/jquery.validate.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/validate/lib/jquery.metadata.js"></script>
+<script language="javascript" src="../scripts/common/common-validation.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+<script>
+	function doLogin() {
+		var $validator = new PMSValidator($("#loginForm")[0], 
+			{
+				bNormalDisplay: false,
+				iDisplayLength: 999
+			});
+		var flag = $validator.clientValidate();
+		if (!flag) {
+			return false;
+		}
+		var url = "../login.do";
+		var userCode = $("#textfield").val();
+		var psw = $("#textfield2").val();
+		var reObj = new PMSRequestObject("userManager", "isValidUser", [userCode,psw]);
+		var callback = function callback(data, textStatus, XMLHttpRequest) {
+			window.parent.location = "indexMain.html";
+		};
+		var failureCallback = function failureCallback(data,textStatus,XMLHttpRequest){
+			$$.showMessage("${system.info}","登录信息错误，请确认输入或联系管理员!");
+			return false;
+		}
+		$$.ajax(url, "requestString=" + reObj.toJsonString(), callback,failureCallback);
+	}
+	$(document).ready(function(){
+		$("#textfield").focus();
+	});
+</script>
+</body>
+</html>

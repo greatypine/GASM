@@ -1,0 +1,165 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <title>岗位管理</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="author" content="kang guolong">
+        <script type="text/javascript" src="../scripts/lib-main.js"></script>
+		<script type="text/javascript" src="./js/bizbaseTab.js"></script>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/common-app.css"/>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<script language="JavaScript">
+			function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+			$(function(){
+				var activeTabIndex = getRequestParams()['activeTabIndex'];
+				if (activeTabIndex != null) {
+					supTabs[0].setActiveTab(activeTabIndex);
+				}
+			});
+			
+			function doSearch(){
+				$$.executeSearch('cnpcPositionSearch', 'searchDiv');
+			}
+			var userObj = 
+				{
+					html: '<a href="#" class="blue">查看人员</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						window.location = 'positionUserList.html?positionCode='+allColumnsDataMap.code;
+					}
+				}
+			var editObj = 
+				{
+					html: '<a href="#" class="blue">编辑</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						window.location = 'positionAddOrEdit.html?positionId='+allColumnsDataMap.id;
+					}
+				}
+				
+			$pmspage.opArr = [editObj,userObj];
+			
+			function addCnpcPosition(){
+				window.location = 'positionAddOrEdit.html';
+			}
+			
+		</script>
+    </head>
+	
+    <!-- Body -->
+    <body>
+        <div class="rightcont clear">
+	    	<div class="title clear">
+				<div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();"></div>
+                <div class="ico1"></div>
+                <div class="ico2"></div>
+	            <a href="#">用户与权限:   岗位管理</a>&nbsp;
+	        </div>
+	        <table class="Querytable">
+	            <tr class="Colorbar1">
+	                <td>
+	                    <strong>&nbsp;岗位管理</strong>
+	                </td>
+	            </tr>
+	        </table>
+			<div id="mainTabDiv" class="supTabPage" defaults="{
+                height:'100%',
+                tabId:'supDailyManagerTabPanel',
+                width:'100%',
+                scroll:false,
+                tabClickAble:true,
+                items:[
+                    {
+                        title:'岗位分配 ',
+                        active:true,
+                        resourceId:'bizbase_assignPostion',
+                        contentEl:'positionMaintance'
+                    },{
+                        title:'岗位维护',
+                        resourceId:'bizbase_maintainPosition',
+                        contentEl:'accessProductsMaintance'
+                    }
+                ]
+            }">
+            </div>
+			
+		
+<!-------------------------------------------------------   岗位分配         ----------------------------------------------------------------->		
+		
+            <table id="positionMaintance" class="bigteble">
+                <tr>
+                    <td style="border:none;" bgcolor="#FFFFFF">
+						<iframe id='showDialog111' src='rightManage.html' frameborder='0' style='width:100%;height:480px;'scrolling='no'></iframe>
+                    </td>
+                </tr> 
+            </table>
+			
+<!-------------------------------------------------------   岗位维护         ----------------------------------------------------------------->
+			
+			<table id="accessProductsMaintance" class="bigteble" style="width:100%">
+                <tr>
+                    <td style="padding:5px;" bgcolor="#FFFFFF">
+                        <table class="Querytable">
+                            <tr class="Colorbar1">
+                                <td width="20" align="center">
+                                    <a href="#" onclick="toggleBiz('conditionsDiv','pic3');"><img src="../scripts/images/22.png" align="absmiddle" id="pic3" /></a>
+                                </td>
+                                <td>
+                                    <strong>搜索条件</strong>
+                                </td>
+                            </tr>
+                        </table>
+                        <div id="conditionsDiv" class="searchCondition">
+                            <form id="searchForm" class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+                                <table class="bigteble">
+                                    <tr>
+                                    	<td class="Querytext">
+                                            岗位名称：
+                                        </td>
+                                        <td class="Queryform">
+                                            <input type="text" id="name" name="name" class="inputtext"/>
+                                        </td>
+										<td class="Querytext">
+                                            岗位编码：
+                                        </td>
+                                        <td class="Queryform">
+                                            <input type="text" id="code" name="code" class="inputtext"/>
+                                        </td>
+                                    </tr>
+                                    <tr class="Colorbar3">
+                                        <td colspan="4">
+                                            <input align="right" role="button" class="buttonu" onClick="doSearch()" value="查询" type="button" />
+											<input align="right" role="button" class="buttonu" onClick="javascript:$('#searchForm')[0].reset()" value="重置" type="button" />
+											<input align="right" role="button" class="buttonu" onClick="addCnpcPosition()" value="新增岗位" type="button" />
+                                        </td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+						<div style="padding:2px;"></div>
+						<div id="cnpcPositionSearchContainer" queryid="cnpcPositionSearch"
+							searchDiv="conditionsDiv" defaultsort="createDate-desc" 
+							queryformat="simple" showsearch="false" 
+							showdisplay="false" showtitle="false" 
+							showprint="false" showpaging="true" 
+							showcheckbox="false" autoload="true" style="width:100%"
+							operators=$pmspage.opArr>
+						</div>
+                    </td>
+                </tr>
+            </table>
+			
+        </div>
+    </body>
+</html>
+

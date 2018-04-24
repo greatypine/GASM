@@ -1,0 +1,64 @@
+﻿/*CSS reset*/ 
+ul {margin:0;padding:0;} 
+td {margin:0;padding:0;} 
+th {margin:0;padding:0;} 
+blockquote {margin:0;padding:0;} 
+span {margin:0;padding:0;} 
+p {margin:0;padding:0;} 
+textarea {margin:0;padding:0;} 
+input {margin:0;padding:0;} 
+fieldset {margin:0;padding:0;} 
+form {margin:0;padding:0;} 
+pre {margin:0;padding:0;} 
+h6 {margin:0;padding:0;} 
+h5 {margin:0;padding:0;} 
+h4 {margin:0;padding:0;} 
+h3 {margin:0;padding:0;} 
+h2 {margin:0;padding:0;} 
+h1 {margin:0;padding:0;} 
+li {margin:0;padding:0;} 
+ol {margin:0;padding:0;} 
+dd {margin:0;padding:0;} 
+dt {margin:0;padding:0;} 
+dl {margin:0;padding:0;} 
+div {margin:0;padding:0;} 
+body {margin:0;padding:0;} 
+table {border-collapse:collapse;border-spacing:0;} 
+img {border:0} 
+fieldset {border:0} 
+var 
+{font-style:normal;font-weight:normal} 
+th 
+{font-style:normal;font-weight:normal} 
+strong 
+{font-style:normal;font-weight:normal} 
+em 
+{font-style:normal;font-weight:normal} 
+dfn 
+{font-style:normal;font-weight:normal} 
+code 
+{font-style:normal;font-weight:normal} 
+cite 
+{font-style:normal;font-weight:normal} 
+caption 
+{font-style:normal;font-weight:normal} 
+address 
+{font-style:normal;font-weight:normal} 
+ul {list-style-type:none} 
+ol {list-style-type:none} 
+th {text-align:left} 
+caption {text-align:left} 
+h6 {font-size:100%;font-weight:normal} 
+h5 {font-size:100%;font-weight:normal} 
+h4 {font-size:100%;font-weight:normal} 
+h3 {font-size:100%;font-weight:normal} 
+h2 {font-size:100%;font-weight:normal} 
+h1 {font-size:100%;font-weight:normal} 
+q:after {content:''} 
+q:before {content:''} 
+acronym { border:0} 
+ 
+
+abbr { border:0} 
+ 
+

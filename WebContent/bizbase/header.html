@@ -1,0 +1,61 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script type="text/javascript" src="js/lib.js"></script>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+	</head>
+	<body  topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" class="shellBody"  background="images/i2/i2shellbackground.gif">
+		<div class="header">
+			<div class="info">
+				<span>User:</span>
+				<a id="userName" href="loginuser_info.html" target="appFrame"></a>
+				<a href="../logout.do">Logout |</a>
+				<a href="#">Help   |</a>
+				<a href="#">About </a>
+			</div>
+			<div class="info" id="navigation">
+			</div>
+			<div class="headerlogo">
+			</div>
+			<div class="yuanjiaobg clear">
+				<div class="yuanjiaoright">
+				</div>
+				<div class="yuanjiaoleft">
+				</div>
+			</div>
+			<script language="JavaScript">
+				var data = new PMSRequestObject("functionManager", "getNavigations", [getI2UrlType()]);
+				$$.ajax("/pmsapp/dispatcher.action", "requestString=" + data.toJsonString(), function(datas, textStatus, XMLHttpRequest) {
+					if (datas.result) {
+						var navigations = $.fromJSON(datas.data);
+						for (var i = 0; i < navigations.length; i++) {
+							$("#navigation").append(navigations[i]);
+						}
+					}
+				});
+				
+				/**
+				 * 显示登录用户名
+				 */
+				$(function() {
+					var url = $$.PMSDispatchActionUrl;
+					var data = new PMSRequestObject("userManager", "getCurrentUserDTO");
+					$$.ajax(url, "requestString=" + data.toJsonString(), function(datas, textStatus, XMLHttpRequest) {
+						var str = datas.data;
+						var userObj = $.fromJSON(str);
+						var userid = userObj.id;
+						var data2 = new PMSRequestObject("userManager", "getUserDTO", [userid]);
+						$$.ajax(url, "requestString=" + data2.toJsonString(), function(datas2, textStatus, XMLHttpRequest) {
+							var str2 = datas2.data;
+							var userDTO = $.fromJSON(str2);
+							$("#userName").html(userDTO.name);
+						});
+						
+					});
+				})
+			</script>
+		</div>
+	</body>
+</html>

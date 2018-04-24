@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" type="text/css" href="../data_access/dist/css/bootstrap1.css" >
+   <!-- Font Awesome -->
+  <link rel="stylesheet" href="../custom_css/font-awesome.min.css">  
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../custom_css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../custom_css/AdminLTE.min.css">
+  <script type="text/javascript" src="../startbootstrap/js/jquery.1.10.2.min.js"></script>
+<script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+  <style>
+    body{background-color: #f1f1f1;}
+    .lf_xinxi img{max-height: 100px;}
+    .bd_infor h5{font-size: 16px; font-weight: bold; height: 35px; line-height: 35px; margin: 10px 0;}
+    .bd_infor li{border-bottom: 1px solid #d5d5d5; padding:0 0 10px 0; overflow: hidden; margin:0 20px 10px 30px;}
+    .bd_infor li:nth-last-child(1){border: none;}
+    .bd_infor li .border-yellow{min-width: 120px; height: 30px; line-height: 30px; margin: 10px 10px 5px 10px; display: inline-block; position: relative; border: 1px solid #f39c12; text-align: center;}
+    .close{float: none; position: absolute; top: -14px; right: -8px; opacity: 0.8; text-shadow: none; margin: 0;}
+    .bd_infor-fj input{width: 100px; display: inline-block; height: 28px;}
+    .bd_infor-fj>div{margin: 10px 10px 5px 0; position: relative; width: 100px; display: inline-block;}
+  </style>
+  <script type="text/javascript">
+  var tinyvillage_id=getUrlParamByKey("tinyvillage_id");
+  var addid=getUrlParamByKey("addid");
+  var tinyname=decodeURIComponent(getUrlParamByKey("tinyname"));
+  var tinyaddress=decodeURIComponent(getUrlParamByKey("address"));
+  var building_id=getUrlParamByKey("building_id");
+  var building_name=decodeURIComponent(getUrlParamByKey("building_name"));
+  var housedata=new Array();//新添加的数据
+  var loadunitdata=new Array();//重后台加载的数据
+ $(function(){
+	 $("#tinyname").text(tinyname);
+	  $("#tinyaddress").text(tinyaddress);
+	  doManager("HouseManager", "findBuildingHouseForBuildingId",building_id , function(data,
+	  			textStatus, XMLHttpRequest) {
+	  		if (data.result) {
+	  			if(data.data!="[]"){
+	  				var arr = eval('('+data.data+')');
+	  				var $lastli=$(".no-padding").find("li:last");
+	  				var building_unit_no="";
+	  				var str='';
+	  				for(var i=0;i<arr.length;i++){
+	  					var sbb=arr[i].building_unit_no+"-"+arr[i].building_house_no;
+	  					loadunitdata.push(sbb);
+	  					if(arr[i].building_unit_no!=building_unit_no){
+	  						building_unit_no=arr[i].building_unit_no;
+	  						str+='</div></li><li class="loadunit"><h5 class="clearfix"><span class="col-lg-2 bg-aqua text-center">'+building_name+'</span> <span class="col-lg-1 text-red"><lable>'+arr[i].building_unit_no+'</lable>单元</span></h5><div class="clearfix"><span class="border-yellow"><input type="hidden" value="'+arr[i].id+'"/><lable>'+arr[i].building_house_no+'</lable><button type="button" onclick="deletehouse(this);" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>';
+	  					}else{
+	  						str+=' <span class="border-yellow"><input type="hidden" value="'+arr[i].id+'"/><lable>'+arr[i].building_house_no+'</lable><button type="button" onclick="deletehouse(this);" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>';
+	  					}
+	  				}
+	  				if(str.length>0){
+	  					str=str.substring(11,str.length+1);
+	  					str=str+'</div></li>';
+	  				}
+	  				$lastli.before(str);
+	  			}
+	  		} else {
+	  			$$.showMessage("系统信息", "信息加载异常");
+	  		}
+	  	},false); 
+	  
+  }) 
+  //当点击添加单元时调用此方法
+  function addbuildingunit(){
+	  var $lastli=$(".no-padding").find("li:last");
+	  var stt='<li class="addunit">'+
+          '<h5 class="clearfix"><span class="col-lg-2 bg-aqua text-center">'+building_name+'</span> <span class="col-lg-2"><input type="text" placeholder="单元号例:1" class="form-control col-lg-2"></span>单元</h5>'+
+          '<div class="clearfix bd_infor-fj">'+
+            '<div><input type="text"  placeholder="房间号" class="form-control"/><button type="button" onclick="deletenothouseid(this);" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div><span><button type="button" onclick="addBuildingHouse(this);" class="btn btn-block btn-default btn-sm">添加房间号</button></span></li>'
+           $lastli.before(stt);
+	
+}
+//当单击添加房间时调用此方法
+function addBuildingHouse(_this){
+	//获取当前button所在的span
+	var $butspan=$(_this).parent();
+	$butspan.before('<div><input type="text" placeholder="房间号"  class="form-control"/><button type="button" onclick="deletenothouseid(this);" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');	
+}
+
+
+ //当添加时验证是否有空值和是否有重复数据
+ function datacheck(){
+	 var flag=true;
+	 housedata.splice(0,housedata.length);
+	 //获取所有的li的数据
+	 var arr=$(".no-padding").find(".addunit");
+	 if(arr.length>0){
+		 for(var m=0 ;m<arr.length;m++){
+			 var $li=$(".no-padding").find(".addunit").eq(m);
+			 //获取单元号
+			 var $unit=$li.find("h5 span").find(":input");
+			 var unit=$unit.val().replace(/(^\s+)|(\s+$)/g,'');
+			 if(unit==null||unit==''){
+				 $$.showMessage("系统信息", "请完善数据或删除空数据!");
+				 flag=false;
+				 break;
+				 return false;
+			 }
+			 //获取房间号
+			 var house_div=$li.find("div div");
+			 if(house_div.length==0){
+				 $$.showMessage("系统信息", "请添加房间号!");
+				 flag=false;
+				 break;
+				 return false;
+			 }else{
+				 //$li.find("div").find(":input");
+				 for(var n=0;n<house_div.length;n++){
+					 console.log($(house_div[n]).find(":input").val());
+					 if($(house_div[n]).find(":input").val().replace(/(^\s+)|(\s+$)/g,'')==null||$(house_div[n]).find(":input").val().replace(/(^\s+)|(\s+$)/g,'')==''){
+						 $$.showMessage("系统信息", "请添加或移除空房间号!"); 
+						 flag=false;
+						 break;
+						 return false;
+					 }else{
+						 var obj=new Object();
+						 obj.tinyvillage_id=tinyvillage_id;
+						 obj.building_id=building_id;
+						 obj.building_unit_no=unit;
+						 obj.building_house_no=$(house_div[n]).find(":input").val();
+						 housedata.push(obj);
+					 }
+				 }
+			 }
+		 }
+	 }
+	 var nary=housedata.sort();
+		for(var i=0;i<nary.length;i++){
+			var str = JSON.stringify(nary[i]);
+			var str1 = JSON.stringify(nary[i+1]);
+			if (str==str1){
+				 $$.showMessage('提示',"房间号出现重复,请移除重复数据！");
+				 flag=false;
+				return false;
+			} 
+		}
+	 //判断是否有已添加过的数据
+	 if(loadunitdata.length>0){
+		 for(var h=0;h<housedata.length;h++){
+			 var m=housedata[h].building_unit_no+"-"+housedata[h].building_house_no;
+			 for(var k=0;k<loadunitdata.length;k++){
+				 if(loadunitdata[k]==m){
+					 flag=false;
+					 $$.showMessage('提示',"存在已添加的数据,请移除后在保存！");
+					 return false;
+				 }
+			 }
+		 }
+		 if(flag){
+			 savehousedata(); 
+		 }
+	 }else{
+		 if(flag){
+			 savehousedata(); 
+		 }
+	 }
+	 
+ }
+ 
+ //调用删除方法(当没有id时调用此方法)
+ function deletenothouseid(_this){
+	 var div_mount=$(_this).parent().parent().find("div");
+	 if(div_mount.length==1){
+		 $(_this).parent().parent().parent().remove(); 
+	 }else{
+		 $(_this).parent().remove();
+	 }
+	 
+ }
+ //当删除房间时调用此方法
+ function deletehouse(_this){
+	 var house_id=$(_this).parent().find(":input").val();
+	 $$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+			//调用查找方法
+			doManager("houseManager", "findHouseCustomerOrHouseStyle", house_id + '', function(
+					data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					if(data.data==1){
+						$$.showMessage("系统信息","该房屋信息关联用户画像,请移除后再删除!");
+					}else if(data.data==0){
+						delect(house_id,_this);
+					}
+				} else {
+					$$.showMessage("系统信息", "删除失败!");
+				}
+			});
+		});
+ }
+ function delect(id,_this){
+		doManager("houseManager", "deleteHouseById", id + '', function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				//获取当前的单元号
+				var buildunit=$(_this).parent().parent().parent().find("h5 span lable").text();
+				var buildhouse=$(_this).parent().find("lable").text();
+				var deleteunithouse=buildunit+"-"+buildhouse;
+				for(var r=0;r<loadunitdata.length;r++){
+					if(loadunitdata[r]==deleteunithouse){
+						loadunitdata.splice(r, 1);
+						break;
+					}
+				}
+				var dele_house=$(_this).parent().parent().find(".border-yellow");
+				if(dele_house.length==1){
+					$(_this).parent().parent().parent().remove();
+				}else{
+					//循环判断当前div的数据
+					$(_this).parent().remove();
+				}
+				confirm( "删除成功!");
+			} else {
+				$$.showMessage("系统信息", "删除失败!");
+			}
+		});
+	}
+ //调用保存接口
+ function savehousedata(){
+	 doManager("houseManager", "insertBuildingHouseData", [housedata], function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				//$(_this).parent().remove();
+				confirm( "保存成功!");
+				  window.location.href="loufang_dy.html?building_id="+building_id+"&addid="+addid+"&building_name="+building_name+"&tinyvillage_id="+tinyvillage_id+"&tinyname="+tinyname+"&address="+tinyaddress;
+
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		});
+ }
+ function doback(){
+	 window.location.href="tiny_building.html?id="+tinyvillage_id+"&addid="+addid+"&name="+tinyname+"&address="+tinyaddress;
+ }
+  </script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <div class="container">
+      <!-- Main content -->
+      <section class="content-header">
+          <div class="box box-default">
+            <div class="box-header with-border text-light-blue"><b>小区信息</b></div>
+            <!-- /.box-header -->
+            <div class="box-body lf_xinxi">
+              <div class="col-lg-8">
+                <p>小区名称：<span id="tinyname"></span><!-- <span style="display: inline-block; width: 100px; margin-left: 20px;"><button type="button" class="btn btn-block btn-default btn-sm">小区地图</button></span> --></p>
+                <p>小区地址：<span id="tinyaddress"></span></p>
+              </div>
+              <div class="col-lg-4 text-right">
+                <!-- <img src="dist/img/avatar5.png"> -->
+              </div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+
+      </section>
+      <section class="content-header">
+        <div class="box box-default">
+          <div class="box-header text-light-blue"><strong>楼房信息</strong><span class="col-lg-1 pull-right"><button type="button" onclick="datacheck();" class="btn btn-block btn-primary btn-sm">保存</button></span><span class="col-lg-1 pull-right"><button type="button" onclick="doback();" class="btn btn-block btn-primary btn-sm">返回</button></span></div>
+          <div class="box-body no-padding bd_infor">
+            <ul class="no-padding">
+              <!-- <li>
+                <h5 class="clearfix"><span class="col-lg-1 bg-aqua text-center">9号楼</span> <span class="col-lg-1 text-red">一单元</span></h5>
+                <div class="clearfix">
+                  <span class="border-yellow">内复式三层别墅<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">102<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">103<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">104<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">101<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">102<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">103<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">104<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">101<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">102<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">103<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">104<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">101<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">102<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">103<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                  <span class="border-yellow">104<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>
+                </div>
+              </li> -->
+              <!-- <li>
+                <h5 class="clearfix"><span class="col-lg-2"><input type="text" placeholder="楼号" class="form-control"></span> <span class="col-lg-2"><input type="text" placeholder="单元号" class="form-control col-lg-2"></span>单元</h5>
+                <div class="clearfix bd_infor-fj">
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div ><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div ><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div ><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  <div><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>
+                  
+                  <span><button type="button" class="btn btn-block btn-default btn-sm">添加房间号</button></span>
+                </div>
+              </li> -->
+              <li><span class="col-sm-2"><button type="button" onclick="addbuildingunit();" class="btn btn-block btn-default btn-sm">添加单元</button></span></li>
+            </ul>
+            <!-- /.item -->
+          </div>
+
+        </div>
+      </section>
+      <!-- /.content -->
+
+
+    </div>
+  </div>
+  <!-- /.content-wrapper -->
+
+
+</div>
+<!-- ./wrapper -->
+
+</body>
+</html>

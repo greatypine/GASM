@@ -1,0 +1,345 @@
+<html>
+<head>
+<link rel="StyleSheet" type="text/css" href="scripts/css/common-app.css">
+<link rel="StyleSheet" type="text/css" href="scripts/css/datatables.css">
+<link rel="StyleSheet" type="text/css" href="scripts/css/style_sheet_core.css">
+<script type="text/javascript" src="scripts/common/common-ieprintsetup.js">
+	
+</script>
+<script type="text/javascript" src="scripts/lib/jquery/jquery-1.5.js">
+	
+</script>
+<script type="text/javascript" src="scripts/lib/jquery/datatables/jquery.dataTables.js">
+	
+</script>
+<script type="text/javascript" src="scripts/common/common-tool.js">
+	
+</script>
+<script type="text/javascript" src="scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js">
+	
+</script>
+<script type="text/javascript" src="scripts/common/common-core.js">
+	
+</script>
+<script type="text/javascript" src="scripts/common/common-expand.js">
+	
+</script>
+<script type="text/javascript" src="scripts/common/common-dict.js">
+	
+</script>
+<script type="text/javascript" src="scripts/common/common-form.js">
+	
+</script>
+<script type="text/javascript" src="scripts/default-ready.js">
+	
+</script>
+<script type="text/javascript">
+	var path = getAbsolutePath();
+	var sTaskForm = "businessForm";
+	var sTaskQueryId = "TaskQuery";
+	$(function() {
+		$(sTaskForm).attr("action", path + "/dispatcher.action");
+	});
+	function getRootPath() {
+		var href = window.location.pathname;
+		href = href.substr(0, href.indexOf("/", 1));
+		return href;
+	}
+
+	/**
+	 * 获取绝对路径(http://localhost:8080/pmsexp/)
+	 */
+	function getAbsolutePath() {
+		var locations = window.location;
+		var http = locations.protocol;
+		var hostname = locations.host;
+		var path = http + '//' + hostname + getRootPath() + '/';
+		return path;
+	}
+
+	var addObj = function(colums) {
+		var form = $("#" + sTaskForm);
+		var $validator = form.data("PMSValidator");
+		if ($validator) {
+			$validator.clean();
+		}
+		form.find(":hidden[name='id']").val("");
+		$form.dialog(form, {
+			title : form.attr("pmsTitle"),
+			width : form.attr("width"),
+			height : form.attr("height"),
+			reset : true, //是否重置
+			modal : true,
+			callback : doSuccess,
+			beforeSubmit : beforeSubmitFunc,
+			buttons : "ok,cancel"
+		});
+	}
+	var editObj = {
+		html : '<a href="#">Edit</a>',
+		func : function(queryid, data, nTr, allColumns) {
+			var reqObj = new PMSRequestObject("taskManager", "getObject", [ data[0] ]);
+			$form.loadFormData(sTaskForm, path + "dispatcher.action", "requestString=" + reqObj.toJsonString(),
+					$form.show);
+		}
+	};
+	var delObj = {
+		html : '<a href="#">Delete</a>',
+		func : $$.removeObj
+	};
+	var stopObj = {
+		html : '<a href="#">Stop</a>',
+		func : function(queryid, data, nTr, allColumns) {
+			var div = $("<div></div>");
+			div.html("确定要停止任务吗?");
+			var doStop = function(data) {
+				var url = $$.PMSDispatchActionUrl;
+				var data = new PMSRequestObject("taskManager", "stopTask", [ data[0] ]);
+				$$.ajax(url, "requestString=" + data.toJsonString(), function(data, textStatus, XMLHttpRequest) {
+					div.dialog("close");
+					if (data.result) {
+						alert("停止任务成功");
+					} else {
+						alert("停止任务失败")
+					}
+					doSuccess();
+				});
+			}
+			div.dialog({
+				bgiframe : true,
+				title : "${query.ui.prompt}",
+				width : 320,
+				buttons : {
+					"${query.ui.ok}" : function() {
+						doStop(data);
+					},
+					"${query.ui.cancel}" : function() {
+						$(this).dialog("close");
+					}
+				},
+				modal : true
+			});
+		}
+	};
+	var startObj = {
+		html : '<a href="#">Start</a>',
+		func : function(queryid, data, nTr, allColumns) {
+			var div = $("<div></div>");
+			div.html("确定要启动任务吗?");
+			var doStart = function(data) {
+				var url = $$.PMSDispatchActionUrl;
+				var data = new PMSRequestObject("taskManager", "startTask", [ data[0] ]);
+				$$.ajax(url, "requestString=" + data.toJsonString(), function(data, textStatus, XMLHttpRequest) {
+					div.dialog("close");
+					if (data.result) {
+						alert("启动任务成功");
+					} else {
+						alert("启动任务失败");
+					}
+					doSuccess();
+				});
+			}
+			div.dialog({
+				bgiframe : true,
+				title : "${query.ui.prompt}",
+				width : 320,
+				buttons : {
+					"${query.ui.ok}" : function() {
+						doStart(data);
+					},
+					"${query.ui.cancel}" : function() {
+						$(this).dialog("close");
+					}
+				},
+				modal : true
+			});
+		}
+	};
+
+	var removeTaskObj = function(queryid, data, nTr, allColumns) {
+		var div = $("<div></div>");
+		div.html("${query.ui.confirm.delete}");
+		var doDelete = function(data) {
+			var url = $$.PMSDispatchActionUrl;
+			var data = new PMSRequestObject("taskManager", "removeObjectById", [ data[0] ]);
+			$$.ajax(url, "requestString=" + data.toJsonString(), function(data, textStatus, XMLHttpRequest) {
+				div.dialog("close");
+				if (data.result) {
+					$$.executeSearch('queryOfTask', 'conditionsDiv');
+				}
+			});
+		}
+		div.dialog({
+			bgiframe : true,
+			title : "${query.ui.prompt}",
+			width : 320,
+			buttons : {
+				"${query.ui.ok}" : function() {
+					doDelete(data);
+				},
+				"${query.ui.cancel}" : function() {
+					$(this).dialog("close");
+				}
+			},
+			modal : true
+		});
+	};
+	var removeObj = {
+		html : '<a href="#">Remove</a>',
+		func : removeTaskObj
+	};
+	//var opArr = [editObj, delObj];
+	var opArr = [ startObj, stopObj, editObj, removeObj ];
+
+	function doSuccess() {
+		$$.executeSearch('queryOfTask', 'conditionsDiv');
+	}
+
+	
+	var exportDataTable = function(gridContainer){
+		var queryConditions = $$.buildQueryConditions($('#' + gridContainer));
+		var data = decodeURIComponent($.toJSON(queryConditions));
+		var exportFrm = $("<form></form>");
+		exportFrm.attr("target", "_blank");
+		exportFrm.attr("method", "post");
+		exportFrm.attr("action", $$.PMSReportActionUrl);
+		var requestStringElement = $("<input type='hidden' name='requestString' />");
+		requestStringElement.val(data);
+		exportFrm.append(requestStringElement);
+		var requestTypeElement = $("<input type='hidden' name='requestType' value='4' />");
+		exportFrm.append(requestTypeElement);
+		var dynamic = $("<input type='hidden' name='dynamic' value='true'/>");
+		exportFrm.append(dynamic);
+		$("body").append(exportFrm);
+		exportFrm.submit();
+	};
+	
+	function beforeSubmitFunc() {
+		return true;
+	}
+
+	//展开/收起div
+	function toggle(targetid, imgId) {
+		var target = $("#" + targetid);
+		if (target.is(":visible")) {
+			target.hide();
+			$("#" + imgId).attr("src", "scripts/images/33.png");//变成加号
+		} else {
+			target.show();
+			$("#" + imgId).attr("src", "scripts/images/22.png");//变成减号
+		}
+	}
+</script>
+</head>
+<body>
+	<div class="rightcont body_bg clear">
+		<div class="containerheader">
+			<a href="#" onclick="toggle('containerbody','pic');"><img src="scripts/images/22.png" align="absmiddle" id="pic" /></a>任务管理
+		</div>
+		<div id="containerbody">
+			<table class="bigteble">
+				<tr>
+					<td style="padding: 5px;" bgcolor="#FFFFFF">
+						<div style="padding: 0px 0px 4px 0px">
+							<table class="Querytable">
+								<tr class="Colorbar1">
+									<td width="20" class="Querytext">
+										<div>
+											<a href="#" onClick="toggle('conditionsDiv','plusMinus1')"><img id="plusMinus1"
+												src="scripts/images/22.png" /></a><strong>搜索条件</strong>
+										</div>
+									</td>
+								</tr>
+							</table>
+							<div id="conditionsDiv">
+								<form id="Form1" class="pmsForm">
+									<table class='bigteble'>
+										<tr>
+											<td class="Querytext">任务名称:</td>
+											<td class="Queryform"><input type="text" name="taskName" class="inputtext" /></td>
+											<td class="Querytext">表达式:</td>
+											<td class="Queryform"><input type="text" name="cronTrigger" class="inputtext" /></td>
+										</tr>
+										<tr>
+											<td class="Querytext">对象名称:</td>
+											<td class="Queryform"><input type="text" name="managerName" class="inputtext" /></td>
+											<td class="Querytext">方法名称:</td>
+											<td class="Queryform"><input type="text" name="methodName" class="inputtext" /></td>
+										</tr>
+										<tr>
+											<td class="Querytext">单例:</td>
+											<td class="Queryform"><select name="singleton" style="width: 175px;">
+													<option value="">All</option>
+													<option value=1>true</option>
+													<option value=0>false</option>
+											</select></td>
+											<td class="Querytext">状态:</td>
+											<td class="Queryform"><select name="taskStatus" style="width: 175px;">
+													<option value="">All</option>
+													<option value="Common">Common</option>
+													<option value="Discarded">Discarded</option>
+													<option value="Exception">Exception</option>
+											</select></td>
+										</tr>
+										<tr class="Colorbar3">
+											<td colspan="4">
+												<div style="padding: 0px 5px 0px 0px;">
+													<input class="buttonu" type="button" value="查询" onclick="$$.executeSearch('TaskQuery', 'conditionsDiv');" />
+													<input class="buttonu" type="button" value="导出" onclick="exportDataTable('gridContainer');" />
+												</div>
+											</td>
+										</tr>
+									</table>
+								</form>
+							</div>
+							<!--searchCondition div-->
+						</div>
+						<div id="gridContainer" queryid="TaskQuery" showsearch="false" searchDiv="conditionsDiv" queryformat="simple"
+							showdisplay="true" addFunc=addObj operators=opArr showdisplay="true" showcheckbox="true" checkmode="single" showExport="true"
+							showdetail="true"></div>
+					</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<form id="businessForm" queryid="TaskQuery" class="pmsForm" display="false" dialog="true" modal="true" width="400"
+		height="500" ajax="true" pmsTitle="添加任务" method="post" pmsmanager="taskManager" pmsmethod="saveObj">
+		<table style='border-collapse: collapse; border: none;' class="bigteble">
+			<tr>
+				<td class="Querytext">任务名称：</td>
+				<td class="Queryform"><input name="taskName" type="text" class="inputtext" /></td>
+			</tr>
+			<tr>
+				<td class="Querytext">表达式：</td>
+				<td class="Queryform"><input type="text" name="cronTrigger" class="inputtext" /></td>
+			</tr>
+			<tr>
+				<td class="Querytext">对象名称：</td>
+				<td class="Queryform"><input type="text" name="managerName" class="inputtext" /></td>
+			</tr>
+			<tr>
+				<td class="Querytext">方法名称：</td>
+				<td class="Queryform"><input type="text" name="methodName" class="inputtext" /></td>
+			</tr>
+			<tr>
+				<td class="Querytext">单例：</td>
+				<td class="Queryform"><input type="radio" name="singleton" value="true" />是<input type="radio"
+					name="singleton" value="false" />否</td>
+			</tr>
+			<tr>
+				<td class="Querytext">状态：</td>
+				<td class="Queryform"><select name="taskStatus" style="width: 175px;">
+						<option value=""></option>
+						<option value="Common">Common</option>
+						<option value="Discarded">Discarded</option>
+						<option value="Exception">Exception</option>
+				</select></td>
+			</tr>
+			<tr style="display: none;">
+				<td class="Querytext">最后修改时间：</td>
+				<td class="Queryform"><input type="text" name="lastModified" class="inputtext" disabled="true" /></td>
+			</tr>
+		</table>
+	</form>
+</body>
+</html>

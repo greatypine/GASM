@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link
+	href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css"
+	rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+ <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+<link
+	href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+</head>
+<style type="text/css">
+	td {
+		width=50%;
+	}
+	
+	p{margin-left: 200px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	}
+	table{margin-left: 40px;
+		margin-top: 10px;
+	}
+	.read{
+		margin-left:200px;
+	}
+	#cityName{
+		background-color: #FFF;
+	}
+	#open_shop_time{
+		background-color: #FFF;
+	}
+	.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+    textarea{ resize:none;}
+</style>
+<script type="text/javascript">
+	 var win;
+	var obj;
+	var store_id_vall;
+	var id = getUrlParamByKey("id");
+	var daymonth;
+	$(function(){
+		var myDate = new Date();
+		if(myDate.getMonth()+1<10){
+			daymonth=myDate.getFullYear()+"-"+0+(myDate.getMonth()+1)+"-"+myDate.getDate();
+		}else{
+			daymonth=myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+myDate.getDate();
+		}
+		doManager("UserManager", "getCurrentUserInfo","", function(data, textStatus,
+				XMLHttpRequest) {
+			if(data.result){
+				if(data.data!="null"){
+					var jsonData = $.fromJSON(data.data);
+					for ( var key in jsonData) {
+						if(key=="store_id"){
+							store_id_vall=jsonData[key];
+						}
+					}
+				}else{
+					$$.showMessage("系统信息", "加载信息错误");
+				}	
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}
+		},false)
+		$("id").val(id);
+		initview();
+	})
+	
+	Date.prototype.toLocaleString = function() {
+	  var ccc=this.getDate();
+	  if(ccc<10){
+		  ccc="0"+ccc;
+	  }
+	  if(this.getMonth() + 1<10){
+	      return this.getFullYear() + "-" + 0+(this.getMonth() + 1) + "-" + ccc + " " + this.getHours() + ":" + this.getMinutes() + ":" + this.getSeconds();
+	  }
+      return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + ccc + " " + this.getHours() + ":" + this.getMinutes() + ":" + this.getSeconds();
+};
+	function initview(){
+		if(id == null || id == ''){
+			$("#tijiao").show();
+			return;
+		}
+	doManager("DailyReportManager", "findDailyReportById",id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+					if(key=="report_date"){
+						var unixTimestamp = new Date(va) ;
+			            var ret = unixTimestamp.toLocaleString().substring(0, 10);
+			            $("#"+key).val(ret);
+					}
+				}
+				if($('#report_date').val()==daymonth&&store_id_vall==$('#store_id').val()){
+					$("#tijiao").show();
+				}
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+		})
+	}
+	
+	//验证值
+	function doCheck(){
+		if(store_id_vall==""||store_id_vall==null){
+			alert("该用户未绑定任何门店,请先绑定门店");
+			return;
+		}
+		var enter_num=$("#enter_num").val();
+		var test_num=$("#test_num").val();
+		var reg_num=$("#reg_num").val();
+		var purchase_num=$("#purchase_num").val();
+		var life_test=$("#life_test").val();
+		var life_card=$("#life_card").val();
+		var health_request=$("#health_request").val();
+		if(enter_num == "" || enter_num == null){
+			alert("请输入数字类型的进店客数!");
+			return;
+		}
+		if(test_num == "" || test_num == null){
+			alert("请输入数字类型体验人数!");
+			return;
+		}
+		if(reg_num == "" || reg_num == null){
+			alert("请输入数字类型店内注册APP人数!");
+			return;
+		}
+		if(purchase_num == "" || purchase_num == null){
+			alert("请输入数字类型店内下单人数!");
+			return;
+		}
+		if(life_test == "" || life_test == null){
+			alert("请输入数字类型生活宝体验人数!");
+			return;
+		}
+		if(life_card == "" || life_card == null){
+			alert("请输入数字类型生活宝办卡人数!");
+			return;
+		}
+		if(health_request == "" || health_request == null){
+			alert("请输入数字类型生活宝健康屋业务人数!");
+			return;
+		}
+		yanzheng();
+	}
+	//验证当天是否提交
+	function yanzheng(){
+		var c = {};
+		c['report_date']=daymonth;
+		c['store_id']=store_id_vall;
+		doManager("DailyReportManager", "findDailyReportByDayAndStore_id", c, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.data=="null"){
+					doSave();
+			}else{
+				var path = getRootPath();
+				showUserGroup(path);
+			}
+		});
+	}
+	//弹出已存在的社区名称及gb_code
+    function showUserGroup(path) {
+        $("#villageInfo").dialog({
+            bgiframe: true,
+            title: '系统信息',
+            width: 300,
+            //height: 500,
+            modal: true,
+            buttons: {
+                "${form.ui.ok}": function () {
+                	$("#villageInfo").dialog('close');
+                	doSave();
+                },
+                "${query.ui.cancel}": function () {
+                    $("#villageInfo").dialog('close');
+                }
+            }
+        });
+    }
+	
+	function doSave(){
+		var arr = [ "enter_num","test_num","reg_num","purchase_num", "life_test", "life_card","health_request","report_date"];
+			var o = {};
+			for ( var i in arr) {
+				var v = arr[i];
+				var va = $("#" + v).val();
+				o[v] = va;
+			}
+			o['report_date']=daymonth;
+			doManager("DailyReportManager", "saveStoreDaily", o, function(data,
+					textStatus, XMLHttpRequest) {
+				if (data.result){
+						alert("提交成功！");
+						window.location.href = 'dailyList.html';
+				} else {
+					$$.showMessage("系统信息", "提交失败!");
+				}
+			}); 
+		
+	}
+</script>
+<body>
+	<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">
+        <a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+        <span id="vill_des">门店日常</span><br/>
+    </div>
+    <div class="panel-body" id="temp1">
+	<form action="" method="post" class="pmsForm">
+	<input type="hidden" name="store_id" id="store_id"/>
+	<input type="hidden" name="report_date" id="report_date"/>
+	<table>
+		<tr>
+			<td>
+				<p>进店客数(人)：<span style="color: red">*</span></p>
+				<p> <input type="text" id="enter_num" name="enter_num" maxlength="9" class="form-control" onkeyup="value=this.value.replace(/\D+/g,'')"/>
+				</p>
+			</td>
+			<td>
+				<p>体验人数(人)：<span style="color: red">*</span></p>
+				<p>
+					<input type="text" id="test_num" name="test_num" maxlength="9" class="form-control" onkeyup="value=this.value.replace(/\D+/g,'')"/>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p >店内注册APP(人)：<span style="color: red">*</span></p>
+				<p >
+					<input type="text" class="form-control" maxlength="9" name="reg_num" id="reg_num" onkeyup="value=this.value.replace(/\D+/g,'')"/>
+				</p>
+			</td>
+			<td>
+				<p >店内下单(人)：<span style="color: red">*</span></p>
+				<p >
+					<input type="text" class="form-control" maxlength="9" name="purchase_num" id="purchase_num" onkeyup="value=this.value.replace(/\D+/g,'')"/>
+				</p>
+			</td>
+			
+		</tr>
+	</table>
+	</form>
+		</div>
+	<div class="panel-heading">
+        <a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+        <span id="vill_des">生活宝试用</span><br/>
+    </div>
+     <div class="panel-body" id="temp2">
+	<form action="" method="post" class="pmsForm">
+	<table>
+		<tr>
+			<td>
+				<p>体验人数(人)：<span style="color: red">*</span></p>
+				<p> <input type="text" id="life_test" name="life_test" maxlength="9" class="form-control" onkeyup="value=this.value.replace(/\D+/g,'')"/>
+				</p>
+			</td>
+			<td>
+				<p>办卡人数(人)：<span style="color: red">*</span></p>
+				<p>
+					<input type="text" id="life_card" name="life_card" maxlength="9" class="form-control" onkeyup="value=this.value.replace(/\D+/g,'')"/>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p >健康屋的业务(人)：<span style="color: red">*</span></p>
+				<p >
+					<input type="text" class="form-control" maxlength="9" name="health_request" id="health_request" onkeyup="value=this.value.replace(/\D+/g,'')"/>
+				</p>
+			</td>
+		</tr>
+	</table>
+	</form>
+		</div>
+<div class="panel-footer" align="right">
+        <button class="btn btn-primary" style="display: none;" id="tijiao" onclick="doCheck();">
+            提交
+        </button>
+        &nbsp &nbsp
+        <button class="btn btn-primary" onclick="javascript:history.go(-1);">
+            返回
+        </button>
+    </div>
+</div>
+ <div id="villageInfo" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<ul class="vill" id="village">
+ 		</ul>
+ 		<span>当天的门店体验率已填写是否覆盖?</span>
+ </div>
+</body>
+
+</html>

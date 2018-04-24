@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>写字楼信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+</head>
+<style type="text/css">
+    	 .display{
+    		width:100%
+    	} 
+    	.display tr td{
+    		word-wrap:break-word;
+    		white-space:normal;
+    	}
+    </style>
+<script type="text/javascript">
+var win;
+$(function () {
+    //页面加载成功后需要获取数据
+    searchList();
+    $("#cstmz_actv").remove();
+});
+//记载页面时请求数据列表默认的方法
+function searchList() {
+    $$.executeSearch('officeQuery', 'conditionsDiv');
+    $(".operateHeader").width("5%");
+}
+function doClean() {
+    document.service_qa.reset();
+    searchList();
+}
+//导出未审核的数据
+function excelData(fileName){
+	  var path = getRootPath();
+	  var town_name = $("#town_name").val();
+	  var store_name = $("#store_name").val();
+	  var province_name = $("#province_name").val();
+	  window.open(path + "/downloadExcel.action"
+			  +"?fileName="+fileName+"&town_name="+town_name+"&store_name="+store_name+"&province_name="+province_name);
+}
+
+
+
+/**
+ * 文件上传前端处理
+ */
+function uploadBuildExcel() {
+	//alert(1);
+    var content = $('#uploadBuildInfo')[0].files;
+    
+    
+    for( var i=0; i<content.length; i++ ) {
+        var _name = content[i].name;
+        //文件不能为空
+        if (isnull(_name)) {
+            $$.showMessage("${system.info}", "请选择文件!");
+            return false;
+        }
+        //后缀必须为xls,不支持2007
+        var suffix = _name.match(/^(.*)(\.)(.{1,8})$/)[3];
+        if ("xls" != suffix && "xlsx" != suffix) {
+            $$.showMessage("${system.info}", "请上传xls文件或者xlsx文件!");
+            return false;
+        }
+        fileList.push(_name);
+    }
+    
+    var path = getRootPath();
+    submitBuildForm(path,"aaaa");
+    
+    
+    
+    
+    //version(content);
+   
+    
+}
+ function insertCompany(){
+	 window.location.href="add_company.html";
+ }
+//验证文件格式
+function version(content){
+	 var fileList= new Array();
+        if(content.length == 0){
+        	alert("请选择上传的表格");
+        	return false;
+        }
+        for( var i=0; i<content.length; i++ ) {
+            var _name = content[i].name;
+            //alert(_name);
+            //文件不能为空
+            /* if (isnull(_name)) {
+                $$.showMessage("${system.info}", "请选择文件!");
+                return false;
+            } */
+            //后缀必须为xls,不支持2007
+            var suffix = _name.match(/^(.*)(\.)(.{1,8})$/)[3];
+            if ("xls" != suffix && "xlsx" != suffix) {
+                $$.showMessage("${system.info}", "请上传xls文件或者xlsx文件!");
+                return false;
+            }
+            fileList.push(_name);
+        }
+}
+function submitBuildForm(path, _type) {
+	$("#uploadBuildFrom").attr("action", path + "/excelUpload.action?model=t_update_company");
+    $("#uploadBuildFrom").submit();
+	$("#uploadBuildInfo").val("");
+}
+
+var editObj = {
+		html : '<a href="#" class="blue" style="white-space:nowrap;" nowrap>修改</a>',
+		resourceId: "company_List_edit",
+		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+			var id = allColumnsDataMap.office_id;
+			window.location.href = "company_list_edit.html?id="+id;
+		}
+	}
+$pmspage.opArr = [ editObj ]; 
+</script>
+<body style="height: 100%">
+	<div class="panel panel-default" style="margin: 10px">
+	    <div class="panel-heading">
+	        <h4 class="panel-title">
+	           地址信息:写字楼信息
+	        </h4>
+	    </div>
+	</div>
+	    <div class="panel panel-primary">
+        <div class="panel-heading">写字楼信息查询</div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="3%">编号:</td>
+                            <td>
+                               <input id="office_id" name="office_id" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="3%">省:</td>
+                            <td>
+                                <input id="province_name" name="province_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">街道名称:</td>
+                            <td>
+                                <input id="town_name" name="town_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">门店名称:</td>
+                            <td>
+                                <input id="store_name" name="store_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">写字楼名称:</td>
+                            <td>
+                                <input id="office_name" name="office_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        
+        
+         <div class="clearfix" style="padding: 10px 0 15px 0;">
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-success" onclick="doClean();">重置</button>
+          </div>
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-warning" onclick="searchList()">查询</button>
+          </div>
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-danger"  onclick="insertCompany()">添加</button>
+          </div>
+        </div>
+        
+        
+        <!-- <div class="panel-footer" style="text-align: right"> -->
+       	 	<!-- <button class="btn btn-primary" onclick="excelData('office_list')">导出社区服务指数数据</button>
+       	 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+       	 	<button class="btn btn-primary" onclick="excelData('office_whole_list')">按条件导出写字楼信息</button>
+       	 	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; -->
+       	 	<!-- <button class="btn btn-primary" onclick="insertCompany()">添加</button>
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+        </div>
+    </div> -->
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="officeQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+         
+</body>
+</html>

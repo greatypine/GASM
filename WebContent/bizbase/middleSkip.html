@@ -1,0 +1,72 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="js/lib.js" type="text/javascript">
+        </script>
+        <link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+        <link type="text/css" rel="stylesheet" href="../scripts/css/datetime.css" />
+        <script language="JavaScript">
+        var I2Location="";  
+		function getRequestParams() {
+			var url = window.location.search;
+			var theRequest = new Object();
+			if (url.indexOf('?') != -1) {
+				var str = url.substr(1);
+				var strs = str.split('&');
+				for (var i = 0; i < strs.length; i++) {
+					theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+				}
+			}
+			return theRequest;
+		}
+       $(function(){
+			var data = new PMSRequestObject("workFlowManager", "getOrderI2Host", [getI2UrlType()]);
+        	$$.ajax("/pmsapp/dispatcher.action", "requestString=" + data.toJsonString(), function(datas, textStatus, XMLHttpRequest){
+				I2Location = $.fromJSON(datas.data);
+				var request = getRequestParams();
+				var skipURL = request['skipURL'];
+				var targetURL = '';
+				if(skipURL=='rep_busi_rfxorder1'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchPurchaseOrder&pg=1";
+				}
+				if(skipURL=='rep_busi_rfxorder2'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchPurchaseOrder&pg=2";
+				}
+				if(skipURL=='rep_busi_orderbyproc'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderPriceByProcurement";
+				}
+				if(skipURL=='rep_busi_orderbysup'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderPriceBySupplier";
+				}
+				if(skipURL=='rep_busi_orderbycomm'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderPriceByCommodity";
+				}
+				if(skipURL=='rep_busi_orderbyunitlist'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderPriceByUnitList";
+				}
+				if(skipURL=='rep_busi_orderbycatesum'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderByCategorySummaryTwo";
+				}
+				if(skipURL=='rep_busi_orderbycatesum2'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderByCategorySummary";
+				}
+				if(skipURL=='rep_busi_orderbymaterialA'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderByAClassOfMaterial_A";
+				}
+				if(skipURL=='rep_busi_orderbymaterialB'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderByAClassOfMaterial_B";
+				}
+				if(skipURL=='rep_busi_orderbymaterialC'){
+					targetURL="/omxclient/start.x2ps?SERVICE_NAME=PMS_REPORTING&START_WORKFLOW=SearchOrderByAClassOfMaterial_C";
+				}
+				window.location=I2Location+targetURL;
+        	});
+        });
+        </script>
+    </head>
+    <body>
+    </body>
+</html>

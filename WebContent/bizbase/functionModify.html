@@ -1,0 +1,269 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="" content="">
+        <title>组织机构</title>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script src="js/lib.js" type="text/javascript">
+        </script>
+        <script src="js/refDialog.js" type="text/javascript">
+        </script>
+        <script src="js/orgModify.js" type="text/javascript">
+        </script>
+        <script type="text/javascript">
+            //用于下级默认继承上级的组织机构所属
+            var bidflag = false;
+            var purflag = false;
+            $(document).ready(function(){
+                $(":text").attr("readonly", "true");
+                $(":text").addClass("inputtext_dis");
+                $(":radio").attr("disabled", "true");
+                $("#NewAdd").show();
+                $("#editData").show();
+				$("#Return").hide();
+                $("#Save").hide();
+            });
+            function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+            
+            var request = getRequestParams();
+            var id = request['id'];
+            var parentName = '';
+			var onlyforedit = request['onlyforedit'];
+            $(function(){
+				if(onlyforedit=='true'){
+				$("#onlyforedit").hide();
+				}
+                var url = $$.PMSDispatchActionUrl;
+                var data = new PMSRequestObject("functionManager", "getFunctionById", [id]);
+				     
+                if (id || "" == id) {
+                    var url = $$.PMSDispatchActionUrl;
+                    var data = new PMSRequestObject("functionManager", "getFunctionById", [id]);
+                    $$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(datas, textStatus, XMLHttpRequest){
+                        var str = datas.data;
+                        var func = $.fromJSON(str);
+                        $("#activityCode").val(func.activityCode);
+                        $("#activityName").val(func.activityName);
+                       	$("#parentCode").val(func.parentCode);
+						$("#functionId").val(func.id);
+						$("#url").val(func.url);
+						$("#module").val(func.module);
+						$("#version").val(func.version);
+						$("#orderNo").val(func.orderNo);
+						$("#remark").val(func.remark);
+						
+						if (func.type == 1) {
+                            $("input[name=radioF]").eq(0).attr("checked", true);
+                        }else{
+							$("input[name=radioF]").eq(1).attr("checked", true);
+						}
+                    });
+                }
+            });
+            
+			
+            function add(){
+                window.parent.appFrame.location = "addFunction.html?parentId=" + $("#functionId").val();
+            }
+            
+            function save1(){
+                var $validator = new PMSValidator($("#funcModify")[0], {
+                    bNormalDisplay: false,
+                    iDisplayLength: 999
+                });
+                var flag = $validator.clientValidate();
+                if (!flag) {
+                    return false;
+                }
+                var orgUnit = {
+                    id:$("#functionId").val(),
+                    activityCode:$("#activityCode").val(),
+                    activityName: $("#activityName").val(),
+                    parentCode:$("#parentCode").val(),
+					orderNo:$("#orderNo").val(),
+					module:$("#module").val(),
+                    url:$("#url").val(),
+					type:getRadioVal("radioF"),
+					remark:$("#remark").val()
+                };
+                transportInformation(orgUnit);
+            }
+            
+            function transportInformation(orgUnit){
+                doManager("functionManager", "modify", orgUnit, function(data, textStatus, XMLHttpRequest){
+                    if (data.result) {
+                        var orgData = $.fromJSON(data.data);
+							$$.showMessage("${system.info}", "修改功能成功!");
+							window.setTimeout(function() {
+								window.parent.appFrame.location = "functionModify.html?id=" + orgData.id;
+							}, "1000");
+                    }else{
+						$$.showMessage("${system.info}", data.message);
+						return false;
+					}
+                }, true, {
+		            showWaiting: true
+		        });
+            }
+            
+            function editData(){
+                $("#activityName").removeAttr("readonly");
+                $("#activityName").removeClass("inputtext_dis");
+				$("#url").removeAttr("readonly");
+                $("#url").removeClass("inputtext_dis");
+				$("#orderNo").removeAttr("readonly");
+                $("#orderNo").removeClass("inputtext_dis");
+				$("#activityCode").removeAttr("readonly");
+                $("#activityCode").removeClass("inputtext_dis");
+				$("#module").removeAttr("readonly");
+                $("#module").removeClass("inputtext_dis");
+				$("#activityName").removeAttr("readonly");
+                $("#activityName").removeClass("inputtext_dis");
+				$("#remark").removeAttr("readonly");
+                $("#remark").removeClass("inputtext_dis");
+				
+                $("#Return").show();
+                $("#Save").show();
+                $("#NewAdd").hide();
+                $("#editData").hide();
+				$(":radio").removeAttr("disabled");
+            }
+			
+            function backPage(){
+                window.location.reload();
+            }
+        </script>
+
+        <style type="text/css">
+            td{
+                padding-top: 5px;
+            }
+        </style>
+    </head>
+    <body>
+        <div style="padding: 5px 10px 0 10px">
+            <div class="panel panel-default" >
+                <div class="panel-heading" align="left" id="onlyforedit">
+                    <button class="btn btn-primary" id="NewAdd" onclick="add()">
+						新增下级功能
+                    </button>&nbsp;
+                    <button class="btn btn-primary" id="editData" onclick="editData();">
+                    	 编辑
+                    </button>&nbsp;
+                </div>
+                <div class="panel-body">
+                    <div id="info">
+                    </div>
+                    <form id="funcModify" class="pmsForm" validate="true" clientvalidate="true">
+                        <table class="layout" cellpadding="0" cellspacing="0" border="0" bordercolor="red">
+                            <tr>
+                                <td align="left" nowrap="true" colspan="4">
+                                    <strong>基本信息:</strong>
+                                </td>
+                            </tr>
+                            <tr>
+                            	 <td align="left">
+                                	上级编码:
+									<font color="red">
+                                        *
+                                    </font>
+                                </td>
+                                <td>
+                                    <input type="text" id="parentCode" name="parentCode" class="form-control" style="width: 50%" readonly/>
+                                </td>
+                                <td align="left">
+                                	功能编码:
+                                    <label style="color: red">
+                                        *
+                                    </label>
+                                </td>
+                                <td>
+                                    <input type="text" id="activityCode" name="activityCode" class="form-control" style="width: 50%" readonly/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left" nowrap="true">
+									功能名称:
+                                    <label style="color: red">
+                                        *
+                                    </label>
+                                </td>
+								 <td align="left" nowrap="true">
+									<input type="text" id="activityName" name="activityName" class="form-control" style="width: 50%" />
+                                </td>
+								<td align="left" nowrap="true">
+									跳转路径:
+                                    <label style="color: red">
+                                        *
+                                    </label>
+                                </td>
+								 <td align="left" nowrap="true">
+									<input type="text" id="url" name="url" class="form-control" style="width: 50%" />
+                                </td>
+                            </tr>
+							<tr>
+                            	 <td align="left">
+                                	业务模块:
+									<font color="red">
+                                        *
+                                    </font>
+                                </td>
+                                <td>
+                                    <input type="text" id="module" name="module" class="form-control" style="width: 50%"/>
+                                </td>
+                               <td align="left" nowrap="true">
+                                	功能类型:
+                                </td>
+                                <td width="42%">
+                                    <input class="pmsRadio" name="radioF" data="[['1','菜单'],['2','按钮']]" />
+                                </td>
+                            </tr>
+							<tr>
+								<td align="left" nowrap="true">
+									排序:
+                                    <font color="red">
+                                        *
+                                    </font>
+                                </td>
+								 <td width="42%">
+                                	<input type="text" id="orderNo" name="orderNo" class="form-control" style="width: 50%"/>
+                                </td>
+								<td align="left" nowrap="true">
+									备注:
+                                </td>
+								 <td align="left" nowrap="true">
+									<input type="text" id="remark" name="remark" class="form-control" style="width: 50%" />
+                                </td>
+							</tr>
+                        </table>
+                    </form>
+  					<input type="hidden" id="functionId">
+                </div>
+                <div class="panel-footer" align="right">
+                    <button class="btn btn-primary" id="Save" onclick="save1();">
+                        保存
+                    </button>&nbsp;
+                    <button class="btn btn-primary" id="Return" onclick="backPage();">
+                        返回
+                    </button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

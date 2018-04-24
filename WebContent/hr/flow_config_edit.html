@@ -1,0 +1,260 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>任务配置修改</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script> 
+
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+.panel{border-radius:0; border:0; margin:0;}
+form{border:1px solid #337ab7;background-color:#fff;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	height:55px; line-height:55px; padding:5px 0;
+}
+table tr:nth-child(2n){background-color:#f2f2f2;}
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 58%;
+	height: 35px;
+	line-height: 35px;
+	border: 1px solid #e2e2e2;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;outline:none; border-radius:3px;
+}
+table td label{padding-left:10px; color:#999;}
+table te .letter{ letter-spacing:2em;}
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.form-control{margin:0; height:40px;}
+.input-group-btn button{height:40px;}
+</style>
+
+<script type="text/javascript">
+
+
+	//取得ID 
+	var id = getUrlParamByKey("id");
+
+	$(function(){
+		//加载时 查询所有的角色组 赋值给select 
+		doManager("UserGroupManager", "queryAllUserGroup",null, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonDatas = $.fromJSON(data.data);
+				var selectShow=null;
+				selectShow = "<option></option>";
+				$(jsonDatas).each(function(i,usergroup){
+					selectShow+="<option value=\""+usergroup.id+"\">"+usergroup.name+"</option>";
+				});
+				$("#start_usergroup_id").append(selectShow);
+				$("#first_usergroup_id").append(selectShow);
+				$("#second_usergroup_id").append(selectShow);
+				$("#third_usergroup_id").append(selectShow);
+			}else{
+				$$.showMessage("系统信息", "获取失败!");
+			}
+		},false);
+		
+		queryFlowConfigObjectById(id);
+		
+	});
+	
+	
+	//根据ID查询 
+	function queryFlowConfigObjectById(id){
+		doManager("FlowConfigManager", "queryFlowConfigObjectById",[id], function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonDatas = $.fromJSON(data.data);
+				
+				$("#work_name").val(jsonDatas.work_name);
+				
+				$("#start_usergroup_id").attr("value",jsonDatas.start_usergroup_id);
+				//$("#start_usergroup_id option[text='"+jsonDatas.start_usergroup_id+"']").attr("selected", true);
+				
+				$("#first_usergroup_id").attr("value",jsonDatas.first_usergroup_id);
+				
+				$("#second_usergroup_id").attr("value",jsonDatas.second_usergroup_id);
+				
+				$("#third_usergroup_id").attr("value",jsonDatas.third_usergroup_id);
+				
+				$("#isshowname").attr("value",jsonDatas.isshowname);
+				
+			}else{
+				$$.showMessage("系统信息", "获取失败!");
+			}
+		});
+	}
+	
+	
+	
+	function doBack(){
+		window.location.href = 'flow_config_list.html';
+	}
+	
+	
+	function doSave(){
+		//$$.showMessage("系统信息", "开发中!");
+		var work_name = $("#work_name").val();
+		var start_usergroup_id = $("#start_usergroup_id option:selected").val();
+		var first_usergroup_id = $("#first_usergroup_id option:selected").val();
+		var second_usergroup_id=$("#second_usergroup_id option:selected").val();
+		var third_usergroup_id = $("#third_usergroup_id option:selected").val();
+		
+		var isshowname = $("#isshowname option:selected").val();
+		
+		var obj = new Object();
+		obj.id=id;
+		obj.work_name=work_name;
+		obj.start_usergroup_id = start_usergroup_id;
+		obj.first_usergroup_id = first_usergroup_id;
+		obj.second_usergroup_id = second_usergroup_id;
+		obj.third_usergroup_id = third_usergroup_id;
+		obj.isshowname = isshowname;
+		
+		doManager("FlowConfigManager", "saveFlowConfig",obj, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				window.location.href = 'flow_config_list.html';
+			}else{
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		}); 
+	}
+	
+    
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">门店数据维护 :任务配置修改
+        	<span class="but">
+        		<input name="" type="button" onclick="doSave();" value="保存"/>
+                <input name="" type="button" onclick="doBack();" value="返回"/>
+            </span>
+        </div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<p>
+						任务名称：<input type="text" id="work_name" value="" style="width: 30%;" readonly="readonly" disabled="disabled"/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>
+						任务发起角色组：<select id="start_usergroup_id" style="width: 30%;background-color: #e2e2e2;" disabled="disabled"></select>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>
+						第一审批角色组：<select id="first_usergroup_id" style="width: 30%;background-color: #e2e2e2;" disabled="disabled"></select>
+					</p>
+				</td>
+			</tr>
+            
+             <tr>
+             	<td>
+					<p>
+						第二审批角色组：<select id="second_usergroup_id" style="width: 30%;background-color: #e2e2e2;" disabled="disabled"></select>
+					</p>
+				</td>
+			</tr>
+               <td>
+					<p>
+						第三审批角色组：<select id="third_usergroup_id" style="width: 30%;background-color: #e2e2e2;" disabled="disabled"></select>
+					</p>
+				</td>
+			</tr> 
+			
+			</tr>
+               <td>
+					<p>
+						审批用户显示：<select id="isshowname" style="width: 30%;">
+						<option value="0">显示用户名</option>
+						<option value="1">显示用户组</option>
+						</select>
+					</p>
+				</td>
+			</tr>        
+		</table>
+	</form>
+	
+	
+</body>
+
+
+</html>

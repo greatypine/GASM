@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="author" content="Zhong Youyuan">
+		<title>新建岗位</title>
+		<link rel="stylesheet" type="text/css" href="css/i2/style_sheet_core.css" />
+		<link rel="stylesheet" href="script/datepicter/jquery.ui.all.css" />
+		<link rel="stylesheet" href="script/tree/userGroupTree.css" />
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		<script src="js/lib.js" type="text/javascript"></script>
+		<script type="text/javascript" src="js/common-validation-bizbase.js"></script>
+		<script type="text/javascript">
+			function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+			var request = getRequestParams();
+			var orgid = request['orgId'];
+			var orgName = request['orgName'];
+			
+			$(function(){
+				$("#orgName").val(orgName);
+				$("#orgId").val(orgid);
+			});
+		</script>
+		<script language="JavaScript">
+			/*
+			 * 检测岗位名称是否存在
+			 */
+			function checkPositionName() {
+				var nowPositionName = $("#name").val();
+				if (validateExists("com.cnpc.pms.bizbase.rbac.position.entity.Position", "name", nowPositionName)) {
+					return true;
+				}
+				return false;
+			}
+			$.validator.addMethod("positionNameValid", function(value, element) {
+				var flag;
+				if (checkPositionName()) {
+					flag = false;
+				}
+				else {
+					flag = true;
+				}
+				return flag;
+				
+			}, "岗位名称已存在");
+			/*
+			 * 检测岗位编码是否存在
+			 */
+			function checkPositionCode() {
+				var nowPositionCode = $("#code").val();
+				if (validateExists("com.cnpc.pms.bizbase.rbac.position.entity.Position", "code", nowPositionCode)) {
+					return true;
+				}
+				return false;
+			}
+			$.validator.addMethod("checkPositionCode", function(value, element) {
+				var flag;
+				if (checkPositionCode()) {
+					flag = false;
+				}
+				else {
+					flag = true;
+				}
+				return flag;
+				
+			}, "岗位编码已存在");
+			/*
+			 * 保存
+			 */
+			function doSave() {
+				var $validator = new PMSValidator($("#rightAddForm")[0], 
+					{
+						bNormalDisplay: false,
+						iDisplayLength: 999
+					});
+				var passed = $validator.clientValidate($("#rightAddForm")[0]);
+				if (!passed) {
+					return false;
+				}
+				var positionObj = 
+					{
+						name: $("#name").val(),
+						orgId:  $("#orgId").val(),
+						code:	$("#code").val(),
+						note: $("#memo").val()
+					};
+				doManager("positionManager", "addNewPosition", $.toJSON(positionObj), function(data, textStatus, XMLHttpRequest) {
+					if(data.result){
+						window.location="rightManagement.html?orgid="+orgid;
+					}
+				});
+			}
+			
+			function backPage(){
+				window.location="rightManagement.html?orgid="+orgid;
+			}
+			
+		</script>
+		<style type="text/css">
+			table {
+			    border: 0px solid #000;
+			}
+			
+			td {
+			    border: 0px solid #000;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="rightcont clear">
+			<div class="containerheader">
+				岗位新建
+			</div>
+			<div class="containerbody">
+				<table class="layout" cellpadding="0" cellspacing="0">
+					<tr>
+					<td>
+						<form id="rightAddForm" class="pmsForm" validate="true" clientvalidate="true">
+							<table class="layout" style=" background:#f7f8fd;" cellpadding="0" cellspacing="0" border="0" bordercolor="red">
+								<tr style="width:500px">
+									<td width="15%" align="left">
+										岗位名称:<font color="red">
+										*
+									</font>
+									</td>
+									<td>
+										<input type="text" name="name" id="name"  validate="required: true,positionNameValid: true" size="23"/>
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										单位名称:
+									</td>
+									<td style=>
+										<input type="text" name="orgName" id="orgName" class="inputtext_dis" readonly/>
+										<input type="hidden" name="orgId" id="orgId" />
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										岗位编码:<font color="red">
+										*
+									</font>
+									</td>
+									<td>
+										<input type="text" name="code" id="code" validate="required: true,checkPositionCode: true" size="23">
+									</td>
+								</tr>
+								<tr>
+									<td align="left">
+										岗位简述:
+									</td>
+									<td>
+										<input type="text" name="textarea" id="memo" class="memo" size="23">
+									</td>
+								</tr>
+							</table>
+						</form>
+					</td>
+					</tr>
+				</table>	
+			</div>
+			<div align="right" class="containerheader" style="padding:2px 5px 2px 0px">
+					<button class="buttonu" onclick="doSave();">
+						保存
+					</button>
+					<button class="buttonu" onclick="backPage();">
+						返回
+					</button>
+				</div>
+		</div>
+	</body>
+</html>

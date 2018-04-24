@@ -1,0 +1,21 @@
+<script>
+	rowindex+=1;
+	var flag = false;
+	if(r[0] == "set") {
+		var x = createBy("com.cnpc.pms.expense.entity.ExpenseAppropriationDetail",{});
+		x.approId=appid;
+		x.projectName = r[2];
+		x.detailCode=r[3];
+		x.subjectName=r[4];
+		x.startAnnual=r[5];
+		x.endAnnual=r[6];
+		x.projectOrgName=r[7];
+		x.accountNum=r[8];
+		x.annualFund=r[9];
+		x.batchAppro=r[10];
+		x.note=r[11];
+		save(x);
+		flag = true;
+	}
+	flag;
+</script>

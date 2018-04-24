@@ -1,0 +1,73 @@
+.uploadFileTableHeader {
+    text-align: center;
+    background: #ADB6E1 url(tablebg.jpg) repeat-x;
+    border: 1px solid #888888;
+    height: 18px;
+    line-height: 22px;
+    padding-top: 3px;
+    padding-left: 3px;
+    color: #28356F;
+    font-weight: bold;
+}
+
+.uploadFileTableDataCenter {
+    text-align: center;
+}
+
+.uploadFileTableBorder {
+	white-space:normal;
+	WORD-BREAK: break-all;
+	border: 1px solid #888888;
+	text-align: left;
+}
+
+.uploadFileTableBtn {
+    border-top: 1px solid #FFFFFF;
+    border-right: 1px solid #E4DB83;
+    border-bottom: 1px solid #E4DB83;
+    border-left: 1px solid #fff;
+    background: #FFF6A6;
+    padding: 0px 5px;
+    cursor: pointer;
+}
+
+.biddingTableTextBorder{
+	border: 1px solid #888888;
+}
+
+.uploadFileTable{
+	border-collapse:collapse;
+}
+
+.fileInputWidth{
+	width:99%
+}
+
+.displayNone{
+	display:none
+}
+
+.uploadTableRowLineHeight{
+	line-height: 22px;
+}
+
+.uploadTableRow_evenBg{
+	background-color:#ECEEF8;
+}
+
+.uploadTableRow_oddBg{
+	background-color:#ffffff;
+}
+
+a:link.downloadFontClass {
+	color: #00F;
+}
+a:active.downloadFontClass {
+	color: #00F;
+}
+a:hover.downloadFontClass {
+	color: #00F;
+}
+a:visited.downloadFontClass {
+	color: #00F;
+}

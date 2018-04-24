@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>雅迪CRM接入平台</title>
+<link rel="stylesheet" href="css/base.css" />
+<link rel="stylesheet" href="css/page.css" />
+<script type="text/javascript" src="js/png.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js"></script>
+<script language="javascript" src="../scripts/common/common-tool.js"></script>
+<script language="javascript" src="../scripts/common/common-core.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/validate/jquery.validate.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/validate/lib/jquery.metadata.js"></script>
+<script language="javascript" src="../scripts/common/common-validation.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+<script>
+	//PNG.fix('*');
+
+	Date.prototype.format = function(fmt) { //author: meizz 
+		var o = {
+			"M+" : this.getMonth() + 1, //月份 
+			"d+" : this.getDate(), //日 
+			"h+" : this.getHours(), //小时 
+			"m+" : this.getMinutes(), //分 
+			"s+" : this.getSeconds(), //秒 
+			"q+" : Math.floor((this.getMonth() + 3) / 3), //季度 
+			"S" : this.getMilliseconds()
+		//毫秒 
+		};
+		if (/(y+)/.test(fmt))
+			fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+		for ( var k in o)
+			if (new RegExp("(" + k + ")").test(fmt))
+				fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+		return fmt;
+	}
+
+	/**
+	 * 重要科技活动
+	 */
+	function getGeneralEventLists() {
+		var url = "../dispatcher.action";
+		var reObj = new PMSRequestObject("generalEventManager", "getGeneralEventList", [ "" ]);
+		var callback = function callback(data, textStatus, XMLHttpRequest) {
+			var returnObj = $.fromJSON(data.data);
+			$.each(returnObj, function(index, item) {
+				if (index == 4) {
+					return false;
+				}
+				var monday = item.MONDAY;
+				var title = item.eventTime;
+				$("#zykjhd").append('<li><a href="#" onClick="window.open(\'' + getRootPath() + '/indexs/generalEventPublisFindView.html?monday=' + monday + '&title=' + title + '\')" >' + title + '</a></li>');
+			});
+		};
+		var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
+			$$.showMessage("系统提示", "取得信息出错!" + data.message);
+			return false;
+		}
+		//不再试图获取重要科技活动,已无此功能.
+		//$$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
+	}
+
+	/**
+	 * 通知公告
+	 */
+	function getGeneralPortalContentDtos() {
+		var url = "../dispatcher.action";
+		var reObj = new PMSRequestObject("generalPortalContentManager", "getGeneralPortalContentDTOList", [ "" ]);
+		var callback = function callback(data, textStatus, XMLHttpRequest) {
+			var returnObj = $.fromJSON(data.data);
+			$.each(returnObj, function(index, item) {
+				var title = item.title;
+				var publishDate = new Date(parseInt(item.publishDate)).format("yyyy-MM-dd");
+				$("#tzgg").append('<li><a href="#" onClick="window.open(\'' + getRootPath() + '/indexs/generalPortalContentView.html?id=' + item.id + '&publishDate=' + publishDate + '\')" >' + title + '</a></li>');
+			});
+		};
+		var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
+			$$.showMessage("系统提示", "取得信息出错!" + data.message);
+			return false;
+		}
+		//此功能屏蔽掉,已经没有通知公告的功能了.
+		//$$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
+	}
+	/**
+	 * 帮助信息
+	 */
+  	function getGeneralPortalHelpContents() {
+		var url = "../dispatcher.action";
+		var reObj = new PMSRequestObject("generalPortalContentManager", "getGeneralPortalContentList", [ "" ]);
+		var callback = function callback(data, textStatus, XMLHttpRequest) {
+			var returnObj = $.fromJSON(data.data);
+			$.each(returnObj, function(index, item) {
+				if (index == 3) {
+					return false;
+				}
+				var title = item.title;
+				var publishDate = new Date(parseInt(item.publishDate)).format("yyyy-MM-dd");
+				$("#bzxx").append('<li><a href="#" onClick="window.open(\'' + getRootPath() + '/indexs/generalPortalContentView.html?id=' + item.id + '&publishDate=' + publishDate + '\')" >' + title + '</a></li>');
+			});
+		};
+		var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
+			$$.showMessage("系统提示", "取得信息出错!" + data.message);
+			return false;
+		}
+		//现在没有帮助信息了,此功能屏蔽掉
+		//$$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
+	}
+	
+	$(function() {
+		// 重大科技活动
+		getGeneralEventLists();
+		// 通知公告
+		getGeneralPortalContentDtos();
+		//帮助信息
+		getGeneralPortalHelpContents();
+	});
+
+	function doLogin() {
+		var userName = $("#textfield").val();
+		var userPwd = $("#textfield2").val();
+		if (userName == "" || userName == null) {
+			alert("请输入用户名！");
+			$("#textfield").focus();
+			return;
+		}
+		if (userPwd == "" || userPwd == null) {
+			alert("请输入密码！");
+			$("#textfield2").focus();
+			return;
+		}
+		var url = "../login.do";
+		var userCode = $("#textfield").val();
+		var psw = $("#textfield2").val();
+		var reObj = new PMSRequestObject("userManager", "isValidUser", [ userCode, psw ]);
+		var callback = function callback(data, textStatus, XMLHttpRequest) {
+			window.parent.location = "indexMain.html";
+		};
+		var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
+			alert("登录信息错误，请确认输入或联系管理员!");
+			return false;
+		}
+		$$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
+	}
+	$(document).ready(function() {
+		$("#textfield").focus();
+		
+		//$("#curDate").text(new Date().toLocaleString());
+	});
+	
+	document.onkeydown=function(event){ 
+        e = event ? event :(window.event ? window.event : null); 
+        if(e.keyCode==13){ 
+            //执行的方法  
+            $("#loginBtn").click();
+        } 
+    }
+	
+	setInterval(function(){
+		var localTime=new Date();
+        document.getElementById('curDate').innerHTML = time2String(localTime);
+    }, 1000)
+	
+	function time2String(t){
+        with (t) 
+        return [getFullYear(), '-', ('0' + (getMonth() + 1)).slice(-2), '-', ('0' + getDate()).slice(-2), ' ', ('0' + getHours()).slice(-2), ': ', ('0' + getMinutes()).slice(-2), ': ', ('0' + getSeconds()).slice(-2)].join('')
+    }
+	
+	function openNoticeMore() {
+		window.open(getRootPath() + "/indexs/generalPortalContentMore.html?contentType=0");
+	}
+	
+	function openImportentMore() {
+		window.open(getRootPath() + "/indexs/generalEventContentMore.html");
+	}
+	
+	function openGeneralHelpInfoMore() {
+		window.open(getRootPath() + "/indexs/generalPortalContentMore.html?contentType=2");
+	}
+	//添加收藏夹
+	function AddFavorite(sTitle) {
+		var sTitle = "科研管理公共信息平台";
+		var sURL = getRootPath();
+		try {
+	        window.external.addFavorite(sURL, sTitle);
+	    } catch(e) {
+	        try {
+	            window.sidebar.addPanel(sTitle, sURL, "");
+	        } catch (e) {
+	        	alert("加入收藏失败，请使用Ctrl+D进行添加!");
+	        }
+	    }		
+	}
+	
+	//设为首页
+	function SetHome(obj) {
+		var vrl = getRootPath();
+		try {           
+			obj.style.behavior='url(#default#homepage)';obj.setHomePage(vrl);
+		} catch(e){
+			if(window.netscape) {
+		    	try {
+					netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+		        } catch (e) {
+		        	alert("此操作被浏览器拒绝！\n请在浏览器地址栏输入“about:config”并回车\n然后将 [signed.applets.codebase_principal_support]的值设置为'true',双击即可。");
+		        }
+			    var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
+			    prefs.setCharPref('browser.startup.homepage',vrl);
+			}
+		}
+	}
+	
+
+</script>
+<style type="text/css">
+    .centerbody{
+        margin-left: 110px !important;
+    }
+</style>
+</head>
+
+<body>
+	<div id="all">
+		<!--头部-->
+		<div id="top">
+			<div class="shouye">
+				<a href="#" onclick="SetHome(this);">设为首页</a><a href="#" onclick="AddFavorite();">加入收藏</a>
+			</div>
+			<div class="date" id="curDate"></div>
+		</div>
+		<div class="ceenter">
+			<div class="centerbody">
+
+				<div class="dl" style="float: right;">
+					<form id="loginForm" validate=true clientValidate="true">
+						<ul>
+							<li>用户：<input type="text" class="txt" name="USER_NAME" id="textfield" /></li>
+							<li>密码：<input type="password" class="txt" name="PASSWORD" id="textfield2" /></li>
+							<li style="text-align: center"><span class="trt"><input id="loginBtn" type="button" onclick="doLogin();" /></span></li>
+							<!-- 							<li class="current" style="text-align: center"><span class="trt" ><input type="button" onclick="doLogin();" /></span></li> -->
+							<!--<span class="myspan">|</span><span class="tit"><input type="checkbox" /></span><span class="myspan2"><font size="2">记住密码</font></span> -->
+						</ul>
+					</form>
+				</div>
+			</div>
+		</div>
+		<div class="ceenterB"></div>
+		<div id="footer">技术支持热线：(010)88106688  技术支持： 技术支持邮箱：xpwh@yahoo.com.cn</div>
+	</div>
+</body>
+</html>
+

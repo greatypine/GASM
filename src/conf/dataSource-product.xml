@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<dataSources>
+
+	<dataSource id="localdev">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://10.20.0.4:4006/gemini?useOldAliasMetadataBehavior=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true" />
+		<property name="user" value="DataCollection" />
+		<property name="password" value="ZXgasjZx2016_dateanPlant@WSX@7d" />
+		<property name="initialPoolSize" value="5" />
+		<property name="maxPoolSize" value="150" />
+		<property name="minPoolSize" value="5" />
+		<property name="checkin" value="false" />
+		<property name="checkout" value="true" />
+		<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+		<property name="hibernate.cache.provider_class" value="org.hibernate.cache.EhCacheProvider" />
+		<property name="hibernate.cache.region.factory_class" value="net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory" />
+		<property name="hibernate.hbm2ddl.auto" value="update"/>
+	</dataSource>
+
+	<dataSource id="localdevmysql">
+		<property name="driverClass" value="com.mysql.jdbc.Driver" />
+		<property name="jdbcUrl" value="jdbc:mysql://10.20.0.4:4006/daqWeb?useOldAliasMetadataBehavior=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true" />
+		<property name="user" value="dataaq" />
+		<property name="password" value="fcnXoXFGgz@^*n9#" />
+		<property name="initialPoolSize" value="5" />
+		<property name="maxPoolSize" value="150" />
+		<property name="minPoolSize" value="5" />
+		<property name="checkin" value="false" />
+		<property name="checkout" value="true" />
+		<property name="hibernate.dialect" value="org.hibernate.dialect.MySQLDialect" />
+		<property name="hibernate.cache.provider_class" value="org.hibernate.cache.EhCacheProvider" />
+		<property name="hibernate.cache.region.factory_class" value="net.sf.ehcache.hibernate.SingletonEhCacheRegionFactory" />
+		<property name="hibernate.hbm2ddl.auto" value="update"/>
+	</dataSource>
+</dataSources>

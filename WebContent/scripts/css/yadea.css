@@ -1,0 +1,68 @@
+/*
+�ŵ���ɫ
+chenwei 2014��6��4��
+*/
+
+/*
+����ͷ����ɫ
+*/
+.ui-widget-header { 
+	background-color:#DDDDDD !important;
+}
+
+/*
+��������б���ɫ
+*/
+tr.odd {
+	background-color: #ffffff;
+}
+
+/*
+�Ҳ�ҳ�汳��ɫ
+*/
+body,.containerbody{
+	background-color: #f0f0f0 !important;
+}
+
+.containerheader {
+	background-color:#FFF !important;
+}
+
+
+/*
+ȥ���Ҳ�ҳ��߿�
+*/
+.padding4px {
+	padding: 0px !important;
+}
+
+/*
+����ҳ�����壬�ź�����
+*/
+body *{
+	font-family:Microsoft Yahei,Arial, Helvetica, sans-serif !important;
+}
+
+/*
+���ñ���ͷ�ͱ�β����ɫ
+*/
+tr.Colorbar3,tr.Colorbar1{
+	background-color:#FFF !important;
+}
+
+.buttonu {
+	border-top-color: #FFF;
+	border-right-color: #2f7fbe;
+	border-bottom-color: #2f7fbe;
+	border-left-color: #FFF;
+	background-color: #2f7fbe;
+	color:#fff;
+}
+
+A:link {
+	color:#666666 !important;
+}
+
+a:hover {
+	text-decoration: underline;
+}

@@ -1,0 +1,997 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>门店划片列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <!-- 引入css和js即可 -->
+    <link rel="stylesheet" href="../scripts/css/cityselect.css">
+    <script type="text/javascript" src="../scripts/cityselect.js"></script>
+    <style type="text/css">
+        .display tr td {
+            word-wrap: break-word;
+            white-space: normal;
+        }
+
+    </style>
+</head>
+<script type="text/javascript">
+    var win;
+    var current_user;
+    $(function () {
+        doManager('UserManager','getCurrentUserDTO',null,function(data){
+            if(data.result){
+            	
+                current_user = JSON.parse(data.data);
+                store_id = current_user.store_id;
+                var regex_zb = new RegExp("^(ZB|zb)\w*");//总部角色
+                var regex_cs = new RegExp("^(CS|cs)\w*");//城市级别
+//                 if(current_user.usergroup.code=="CSZJJSZ"||current_user.usergroup.code=="CSZHGLZ"||current_user.usergroup.code=="CSPTYYZ"||current_user.usergroup.code=="CSMDGLZ"||current_user.usergroup.code=="GLY"){
+				if(regex_zb.test(current_user.usergroup.code)){
+					    $("#city_name").show();
+	                    $("#city_id").show();
+	                    $("#storeName").show();
+	                	$("#storeId_select").show();
+	              	  	$("#searchbtn").show();
+	              	    $("#resetbtn").show();
+	              	    //$("#exportbtn").show();
+	              	    
+	              	  doManager('dynamicManager','selectAllCity',null,function(data){
+	                      if(data.result){
+	                      	
+	                      	var cityList = JSON.parse(data.data);
+	                      	var more_city="";
+	                      	for(var i=0;i<cityList.length;i++){
+ 								more_city=more_city+"<option value='"+cityList[i].id+"'>"+cityList[i].cityname+"</option>"
+ 							}
+ 							$("#city_id").append(more_city);
+	                      }
+	                  },false);
+	                	
+	                	doManager("areaManager", "getStoreOfByCSZJ_QYJL",[current_user.id,$("#city_id").val(),"ZB"],
+	              				function(data, textStatus, XMLHttpRequest) {
+	              					if (data.result) {
+	              						var storelist= JSON.parse(data.data);
+	              						
+	              						if(storelist==null||storelist.length==0){
+	              							
+	              							var more_store="<option value=''>全部</option>";
+	              							$("#storeId_select").append(more_store);
+	              						}else{
+	              							if(storelist!=null&&storelist.length>0){
+	                  							var more_store="<option value=''>全部</option>";
+	                 							for(var i=0;i<storelist.length;i++){
+	                 								more_store=more_store+"<option value='"+storelist[i].store_id+"'>"+storelist[i].name+"</option>"
+	                 							}
+	                 							$("#storeId_select").append(more_store);
+	                 						}
+	              							 $pmspage.opArr = [allTinyVillage,areaMap]; 
+	              							 searchList();
+	              							//initEmployeeSelect(store_id);
+	              						}
+	              					}
+	              			},false); 
+				}else if(regex_cs.test(current_user.usergroup.code)||current_user.usergroup.code=="GLY"){
+                    $("#city_name").show();
+                    $("#city_id").show();
+                    $("#storeName").show();
+                	$("#storeId_select").show();
+              	  	$("#searchbtn").show();
+              	    $("#resetbtn").show();
+              	    $("#exportbtn").show();
+                	doManager("StoreManager", "getCityNameOfCSZJ",[current_user.id,null],
+              				function(data, textStatus, XMLHttpRequest) {
+              					if (data.result) {
+              						var cityinfo= JSON.parse(data.data);
+              						var cityList = cityinfo.citylist;
+              						if(cityList==null){
+              							$("#btnlist").hide();
+              							
+              							return;
+              						}else{
+              							if(cityList!=null&&cityList.length>0){
+                  							var more_city="";
+                 							for(var i=0;i<cityList.length;i++){
+                 								more_city=more_city+"<option value='"+cityList[i].ctid+"'>"+cityList[i].name+"</option>"
+                 							}
+                 							$("#city_id").append(more_city);
+                 						}
+              							//searchList();
+              							//initEmployeeSelect(store_id);
+              						}
+              					}
+              			},false); 
+                	
+                	
+                	doManager("areaManager", "getStoreOfByCSZJ_QYJL",[current_user.id,$("#city_id").val(),"CSZJ"],
+              				function(data, textStatus, XMLHttpRequest) {
+              					if (data.result) {
+              						var storelist= JSON.parse(data.data);
+              						
+              						if(storelist==null||storelist.length==0){
+              							
+              							var more_store="<option value=''>全部</option>";
+              							$("#storeId_select").append(more_store);
+              						}else{
+              							if(storelist!=null&&storelist.length>0){
+                  							var more_store="<option value=''>全部</option>";
+                 							for(var i=0;i<storelist.length;i++){
+                 								more_store=more_store+"<option value='"+storelist[i].store_id+"'>"+storelist[i].name+"</option>"
+                 							}
+                 							$("#storeId_select").append(more_store);
+                 						}
+              							 $pmspage.opArr = [allTinyVillage,areaMap]; 
+              							 searchList();
+              							//initEmployeeSelect(store_id);
+              						}
+              					}
+              			},false); 
+                	  
+                	
+                }else if (current_user.usergroup.code=="DZ"){
+                	  getStoreServicePosition();//获取服务范围
+                	  $("#addbtn").show();
+                	  $("#searchbtn").show();
+                	  $("#resetbtn").show();
+                	  $("#exportbtn").show();
+                	  $("#checkareabtn").show();
+                	  $("#checkareabtn1").show();
+                	  $("#checkareabtn2").show();
+                	  $("#checkareabtn3").show();
+                	  $pmspage.opArr = [employeeObj,editObj,deleteObj,allTinyVillage]; 
+                	  $('#store_id').val(current_user.store_id);
+                	  searchList();
+                      initEmployeeSelect(store_id);
+                }else if(current_user.usergroup.code=="QYJL"){
+                	$("#storeName").show();
+                	$("#storeId_select").show();
+                	$("#resetbtn").show();
+                	doManager("areaManager", "getStoreOfByCSZJ_QYJL",[current_user.id,null,"QYJL"],
+              				function(data, textStatus, XMLHttpRequest) {
+              					if (data.result) {
+              						var storelist= JSON.parse(data.data);
+              						
+              						if(storelist==null||storelist.length==0){
+              							
+              							 $$.showMessage('提示',"该运营经理没有管辖的门店！");
+              						}else{
+              							$("#searchbtn").show();
+              							if(storelist!=null&&storelist.length>0){
+                  							var more_store="";
+                 							for(var i=0;i<storelist.length;i++){
+                 								more_store=more_store+"<option value='"+storelist[i].store_id+"'>"+storelist[i].name+"</option>"
+                 							}
+                 							$("#storeId_select").append(more_store);
+                 						}
+              							$('#store_id').val(storelist[0].store_id);
+              							searchList();
+              							//initEmployeeSelect(store_id);
+              						}
+              					}
+              			},false); 
+                }
+              
+            }else{
+                $$.showMessage('提示',data.message);
+            }
+                
+                
+                
+        });
+
+        
+    });
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+    	if(current_user.usergroup.code=="DZ"){
+    		doManager('areaManager','checkCurrentStore',[store_id],function (data) {
+                if(data.result){
+                    var result = JSON.parse(data.data);
+                    if(result.cur_store=='1'){
+                   	    $$.executeSearch('aboutAreaDtoQuery', 'conditionsDiv');
+                        $(".operateHeader").attr("style","width:9%;text-align: center;");
+                        $("#cstmz_actv").remove();
+                    }else if(result.cur_store=='2'){
+                    	$$.showMessage('提示',"当前账号正在 '"+result.cur_name+"' 登录,请重新加载");
+                    }
+                }else{
+                	$$.showMessage('提示',data.result);
+                }
+            });
+    	}else{
+    		$$.executeSearch('aboutAreaDtoQuery', 'conditionsDiv');
+            $(".operateHeader").attr("style","width:9%;text-align: center;");
+    	}
+    	$("#cstmz_actv").remove();
+    }
+
+    function initEmployeeSelect(store_id) {
+        doManager('areaManager','queryEmployeeOfGAX',[store_id],function (data) {
+            if(data.result){
+                var result = JSON.parse(data.data);
+                var lst_employee = result;
+                $(lst_employee).each(function(index,employee){
+                    $('#select_employeeA_no').append('<option value="'+employee.employeeId+'">'+employee.name+'</option>');
+                    $('#select_employeeB_no').append('<option value="'+employee.employeeId+'">'+employee.name+'</option>');
+                });
+            }
+        });
+    }
+
+    function doClean() {
+        document.service_qa.reset();
+        var regex_cs = new RegExp("^(CS|cs)\w*");//城市级别
+        var regex_zb = new RegExp("^(ZB|zb)\w*");//总部角色
+        if(regex_cs.test(current_user.usergroup.code)){
+//         if(current_user.usergroup.code=="CSZJJSZ"||current_user.usergroup.code=="CSZHGLZ"||current_user.usergroup.code=="CSPTYYZ"||current_user.usergroup.code=="CSMDGLZ"){
+        	$("#storeId_select").empty();
+        	doManager("areaManager", "getStoreOfByCSZJ_QYJL",[current_user.id,$("#city_id").val(),"CSZJ"],
+      				function(data, textStatus, XMLHttpRequest) {
+      					if (data.result) {
+      						var storelist= JSON.parse(data.data);
+      						
+      						if(storelist==null||storelist.length==0){
+      							
+      							var more_store="<option value=''>全部</option>";
+      							$("#storeId_select").append(more_store);
+      						}else{
+      							if(storelist!=null&&storelist.length>0){
+          							var more_store="<option value=''>全部</option>";
+         							for(var i=0;i<storelist.length;i++){
+         								more_store=more_store+"<option value='"+storelist[i].store_id+"'>"+storelist[i].name+"</option>"
+         							}
+         							$("#storeId_select").append(more_store);
+         						}
+      							 $("#store_id").val($("#storeId_select").val());
+      							 searchList();
+      							//initEmployeeSelect(store_id);
+      						}
+      					}
+      			},false); 
+        }else if(current_user.usergroup.code=="QYJL"){
+        	 $("#store_id").val($("#storeId_select").val());
+        	 searchList();
+        }else if(regex_zb.test(current_user.usergroup.code)){
+        	$("#storeId_select").empty();
+        	doManager("areaManager", "getStoreOfByCSZJ_QYJL",[current_user.id,$("#city_id").val(),"ZB"],
+      				function(data, textStatus, XMLHttpRequest) {
+      					if (data.result) {
+      						var storelist= JSON.parse(data.data);
+      						
+      						if(storelist==null||storelist.length==0){
+      							
+      							var more_store="<option value=''>全部</option>";
+      							$("#storeId_select").append(more_store);
+      						}else{
+      							if(storelist!=null&&storelist.length>0){
+          							var more_store="<option value=''>全部</option>";
+         							for(var i=0;i<storelist.length;i++){
+         								more_store=more_store+"<option value='"+storelist[i].store_id+"'>"+storelist[i].name+"</option>"
+         							}
+         							$("#storeId_select").append(more_store);
+         						}
+      							 $("#store_id").val($("#storeId_select").val());
+      							 searchList();
+      							//initEmployeeSelect(store_id);
+      						}
+      					}
+      			},false); 
+        }
+       
+        searchList();
+    }
+    function addVillage() {
+    	if(current_user.usergroup.code=="DZ"){
+    		doManager('areaManager','checkCurrentStore',[store_id],function (data) {
+                if(data.result){
+                    var result = JSON.parse(data.data);
+                    if(result.cur_store=='1'){
+                    	window.location.href = 'area_add.html?store='+$('#store_id').val()+"&actionType=add";
+                    }else if(result.cur_store=='2'){
+                    	$$.showMessage('提示',"当前账号正在 '"+result.cur_name+"' 登录,请重新加载");
+                    }
+                }else{
+                	$$.showMessage('提示',data.result);
+                }
+            });
+    	}else{
+    		window.location.href = 'area_add.html?store='+$('#store_id').val()+"&actionType=add";
+    	}
+        
+        
+    }
+
+    var editObj = {
+        html: '<a href="#"  class="blue">编辑</a>',
+        resourceId: "add_store",
+        func: function (queryid, data, nTr, allColumns, allColumnsDataMap) {
+        	if(current_user.usergroup.code=="DZ"){
+        		doManager('areaManager','checkCurrentStore',[store_id],function (data) {
+                    if(data.result){
+                        var result = JSON.parse(data.data);
+                        if(result.cur_store=='1'){
+                        	 var id = allColumnsDataMap.id;
+                             window.location.href = "area_add.html?id=" + id+"&actionType=edit";
+                        }else if(result.cur_store=='2'){
+                        	$$.showMessage('提示',"当前账号正在 '"+result.cur_name+"' 登录,请重新加载");
+                        }
+                    }else{
+                    	$$.showMessage('提示',data.result);
+                    }
+                });
+        	}else{
+        		var id = allColumnsDataMap.id;
+                window.location.href = "area_add.html?id=" + id+"&actionType=edit";
+        	}
+        	
+           
+        }
+    };
+    var deleteObj = {
+        html: '<a href="#"  class="blue">删除</a>',
+        resourceId: "add_store",
+        func: function (queryid, data, nTr, allColumns, allColumnsDataMap) {
+        	if(current_user.usergroup.code=="DZ"){
+        		doManager('areaManager','checkCurrentStore',[store_id],function (data) {
+                    if(data.result){
+                        var result = JSON.parse(data.data);
+                        if(result.cur_store=='1'){
+    	                   	 $$.showConfirm("提示","数据是否删除？",function () {
+    	                		 var id = allColumnsDataMap.id;
+    	                         doManager('areaManager','deleteArea',[id],function(data){
+    	                            if(data.result){
+    	                                searchList();
+    	                            }else{
+    	                                $$.showMessage('提示',data.message);
+    	                            }
+    	                         });
+    	                     });
+                        }else if(result.cur_store=='2'){
+                        	$$.showMessage('提示',"当前账号正在 '"+result.cur_name+"' 登录,请重新加载");
+                        }
+                    }else{
+                    	$$.showMessage('提示',data.result);
+                    }
+                });
+        	}else{
+        		 $$.showConfirm("提示","数据是否删除？",function () {
+            		 var id = allColumnsDataMap.id;
+                     doManager('areaManager','deleteArea',[id],function(data){
+                        if(data.result){
+                            searchList();
+                        }else{
+                            $$.showMessage('提示',data.message);
+                        }
+                     });
+                 });
+        	}
+        	
+        
+        }
+    };
+    var employeeObj = {
+        html: '<a href="#"  class="blue">国安侠</a>',
+        resourceId: "add_store",
+        func: function (queryid, data, nTr, allColumns, allColumnsDataMap) {
+        	if(current_user.usergroup.code=="DZ"){
+        		doManager('areaManager','checkCurrentStore',[store_id],function (data) {
+                    if(data.result){
+                        var result = JSON.parse(data.data);
+                        if(result.cur_store=='1'){
+                        	  var employee_no = allColumnsDataMap.employee_no;
+                              var id = allColumnsDataMap.id;
+                              doManager('areaManager','queryArea',id,function (data) {
+                                  if(data.result){
+                                  	 var json = JSON.parse(data.data);
+                                  	 
+                                  	 $('#select_employeeA_no').val(json.employee_a_no);
+                                  	 $('#select_employeeB_no').val(json.employee_b_no);
+                                       $('#area_id').val(id);
+                                       showEmployee();
+                                  }
+                              });
+                        }else if(result.cur_store=='2'){
+                        	$$.showMessage('提示',"当前账号正在 '"+result.cur_name+"' 登录,请重新加载");
+                        }
+                    }else{
+                    	$$.showMessage('提示',data.result);
+                    }
+                });
+        	}else{
+        		var employee_no = allColumnsDataMap.employee_no;
+                var id = allColumnsDataMap.id;
+                doManager('areaManager','queryArea',id,function (data) {
+                    if(data.result){
+                    	 var json = JSON.parse(data.data);
+                    	 
+                    	 $('#select_employeeA_no').val(json.employee_a_no);
+                    	 $('#select_employeeB_no').val(json.employee_b_no);
+                         $('#area_id').val(id);
+                         showEmployee();
+                    }
+                });
+        	}
+        }
+    };
+    
+    var allTinyVillage = {
+            html: '<a href="#"  class="blue">片区范围</a>',
+            resourceId: "area_tinyvillage",
+            func: function (queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var employee_no = allColumnsDataMap.employee_no;
+                var id = allColumnsDataMap.id;
+                doManager('areaManager','queryAreaByEmployeeNo',[employee_no,id],function (data) {
+                    if(data.result){
+                    	 var json = JSON.parse(data.data);
+                    	 var areaInfo = json.areaInfo;
+                    	 var areaHtml=""
+                    	 for(var i=0;i<areaInfo.length;i++){
+                    		 areaHtml = areaHtml+"<tr><td>"+areaInfo[i].name+"</td><td>"+areaInfo[i].villname+"</td><td>"+areaInfo[i].tinyname+"</td></>";
+                    	 }
+                    	 $("#areaInfoTable").empty();
+                    	 $("#areaInfoTable").append(areaHtml);
+                    	 
+                    	   $('#areaInfoDetail').dialog({
+                               bgiframe : true,
+                               title : "片区范围",
+                               width : 400,
+                               height : 423,
+                               buttons : {
+                                  
+                                   "确认" : function() {
+                                       $(this).dialog("close");
+                                   }
+                               },
+                               modal : true
+                           });
+                    }
+                });
+               
+            }
+        };    
+    
+    var areaMap = {
+            html: '<a href="#"  class="blue">混片区域分布</a>',
+            resourceId: "area_map",
+            func: function (queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var store_id = allColumnsDataMap.store_id;
+                doManager('areaManager','getStoreServiceAreaAndPosition',[store_id],function (data) {
+                    if(data.result){
+                    	 var resultJson = JSON.parse(data.data);
+                    	 if(resultJson.code == 200){
+                    		
+                        	 var positions = resultJson.position;
+             				 var x= positions[0];
+             				 var y= positions[1];
+             				 servicePosition = x+","+y;
+             				window.open("area_map_set.html?c="+servicePosition+"&sid="+store_id,"area_map");
+                    	 }else{
+                    		 $$.showMessage("系统信息", "该门店服务范围不存在！");
+                    	 }
+                    	
+                    	  
+                    }
+                });
+        		
+            }
+        };    
+	
+    var COLUMNS = {
+            "name": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                if(value.length > 10){
+                    value = value.substring(0,8) + "...";
+                }
+                return value;
+            },
+            "townName": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                
+                if(value!=null&&value!=""&&value.length>10){
+                	value=value.substring(0,8)+"...";
+                }
+                return value;
+            },
+            "villageName": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                
+                if(value!=null&&value!=""&&value.length>10){
+                	value=value.substring(0,8)+"...";
+                }
+                return value;
+            },
+            "tinVillageName": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                
+                if(value!=null&&value!=""&&value.length>10){
+                	 value=value.substring(0,8)+"...";
+                }
+                return value;
+            },
+            "employeeName": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+               
+                if(value!=null&&value!=""&&value.length>7){
+                	 value=value.substring(0,7)+"...";
+                }
+                return value;
+            }
+        }
+
+    function showEmployee(){
+        $('#employeeConfig').dialog({
+            bgiframe : true,
+            title : "设置国安侠",
+            width : 500,
+            height:200,
+            buttons : {
+                "确定" : function() {
+                	
+                	$($(".ui-button-text")[0]).parent().attr("disabled","disabled");
+                	$($(".ui-button-text")[0]).html("正在保存...");
+                	
+                    updateEmployeeNo($(this))
+                    
+                },
+                "取消" : function() {
+                    $(this).dialog("close");
+                }
+            },
+            modal : false
+        });
+    }
+
+    function updateEmployeeNo(_this){
+        var $option1 = $('#select_employeeA_no option:selected');
+        var $option2 = $('#select_employeeB_no option:selected');
+        var areaId = $('#area_id').val();
+//         if($option1.val()==$option2.val()){
+//         	$$.showMessage('提示',"国安侠A不能和国安侠B相同!");
+//         	return;
+//         }
+        var area = {
+            id:areaId,
+            employee_a_no:$option1.val(),
+            employee_a_name:$option1.text(),
+            employee_b_no:$option2.val(),
+            employee_b_name:$option2.text()
+        }
+        doManager('areaManager','updateAreaEmployeeNo',area,function(data){
+            if(data.result){
+                searchList();
+                _this.dialog("close");
+            }else{
+                $$.showMessage('提示',data.message);
+            }
+        });
+        
+      
+    }
+    
+    //导出片区信息
+    function exportAreaInfo(){ 
+    	
+    	if(current_user.usergroup.code=="DZ"){
+    		store_id =  $('#store_id').val();
+    		doManager('areaManager','checkCurrentStore',[store_id],function (data) {
+                if(data.result){
+                    var result = JSON.parse(data.data);
+                    if(result.cur_store=='1'){
+                    	
+                  	  
+                  	    var store_id = "";
+                    	var store_name = "";
+                    	var areaDto = {};
+                    	
+                    	var area_name = $("#name").val();
+                    	var townName = $("#townName").val();
+                    	var villageName = $("#villageName").val()==''?null:$("#villageName").val();
+                    	var tinVillageName = $("#tinVillageName").val()==''?null:$("#tinVillageName").val();
+                    	var employeeName = $("#employeeName").val()==''?null:$("#employeeName").val();
+                    	var area_no = $("#area_no").val()==''?null:$("#area_no").val();
+                    	 var regex_cs = new RegExp("^(CS|cs)\w*");//城市级别
+                         if(regex_cs.test(current_user.usergroup.code)||current_user.usergroup.code=="GLY"){
+//                         if(current_user.usergroup.code=="CSZJJSZ"||current_user.usergroup.code=="CSZHGLZ"||current_user.usergroup.code=="CSPTYYZ"||current_user.usergroup.code=="CSMDGLZ"||current_user.usergroup.code=="GLY"){//城市
+                        	store_id = $("#storeId_select").val();
+                        	store_name = $("#storeId_select").find("option:selected").text();
+                        	var city_id = $("#city_id").val();
+                        	areaDto = {
+                        			store_id:store_id,
+                        			city_id:city_id,
+                        			area_no:area_no,
+                        			name:area_name,
+                        			townName:townName,
+                        			villageName:villageName,
+                        			tinVillageName:tinVillageName,
+                        			employeeName:employeeName,
+                        			target:1
+                        	};
+                        }else if(current_user.usergroup.code=="DZ"){//店长
+                        	store_id =  $('#store_id').val();
+                        	store_name = current_user.store_name;
+                        	areaDto = {
+                        			store_id:store_id,
+                        			city_id:-10000,
+                        			area_no:area_no,
+                        			name:area_name,
+                        			townName:townName,
+                        			villageName:villageName,
+                        			tinVillageName:tinVillageName,
+                        			employeeName:employeeName,
+                        			target:2
+                        	};
+                        }else if(current_user.usergroup.code=="QYJL"){//运营经理
+                        	areaDto = {
+                        			store_id:store_id,
+                        			city_id:-10000,
+                        			area_no:area_no,
+                        			name:area_name,
+                        			townName:townName,
+                        			villageName:villageName,
+                        			tinVillageName:tinVillageName,
+                        			employeeName:employeeName,
+                        			target:4
+                        	};
+                        }
+
+                    
+                    	 doManager('areaManager','exportAreaInfo',[areaDto],function(data){
+                             if(data.result){
+                            	 var path = JSON.parse(data.data);
+                                 if(path == null){
+                                     $$.showMessage('提示','下载失败，没有'+current_user.store_name+'划片数据！');
+                                 }else{
+                                     window.location.href=path;
+                                 }
+                                
+                             }else{
+                                 $$.showMessage('提示',data.message);
+                             }
+                         });
+                  	  
+                  	  
+                  	  
+                    }else if(result.cur_store=='2'){
+                    	$$.showMessage('提示',"当前账号正在 '"+result.cur_name+"' 登录,请重新加载");
+                    }
+                }else{
+                	$$.showMessage('提示',data.result);
+                }
+            });
+    	}else{
+      	    var store_id = "";
+        	var store_name = "";
+        	var areaDto = {};
+        	
+        	var area_name = $("#name").val();
+        	var townName = $("#townName").val();
+        	var villageName = $("#villageName").val()==''?null:$("#villageName").val();
+        	var tinVillageName = $("#tinVillageName").val()==''?null:$("#tinVillageName").val();
+        	var employeeName = $("#employeeName").val()==''?null:$("#employeeName").val();
+        	var area_no = $("#area_no").val()==''?null:$("#area_no").val();
+        	
+        	 var regex_cs = new RegExp("^(CS|cs)\w*");//城市级别
+//           if(current_user.usergroup.code=="CSZJJSZ"||current_user.usergroup.code=="CSZHGLZ"||current_user.usergroup.code=="CSPTYYZ"||current_user.usergroup.code=="CSMDGLZ"||current_user.usergroup.code=="GLY"){
+			if(regex_cs.test(current_user.usergroup.code)||current_user.usergroup.code=="GLY"){
+            	store_id = $("#storeId_select").val();
+            	store_name = $("#storeId_select").find("option:selected").text();
+            	var city_id = $("#city_id").val();
+            	areaDto = {
+            			store_id:store_id,
+            			city_id:city_id,
+            			area_no:area_no,
+            			name:area_name,
+            			townName:townName,
+            			villageName:villageName,
+            			tinVillageName:tinVillageName,
+            			employeeName:employeeName,
+            			target:1
+            	};
+            }else if(current_user.usergroup.code=="DZ"){//店长
+            	store_id =  $('#store_id').val();
+            	store_name = current_user.store_name;
+            	areaDto = {
+            			store_id:store_id,
+            			city_id:-10000,
+            			area_no:area_no,
+            			name:area_name,
+            			townName:townName,
+            			villageName:villageName,
+            			tinVillageName:tinVillageName,
+            			employeeName:employeeName,
+            			target:2
+            	};
+            }else if(current_user.usergroup.code=="QYJL"){//运营经理
+            	areaDto = {
+            			store_id:store_id,
+            			city_id:-10000,
+            			area_no:area_no,
+            			name:area_name,
+            			townName:townName,
+            			villageName:villageName,
+            			tinVillageName:tinVillageName,
+            			employeeName:employeeName,
+            			target:4
+            	};
+            }
+
+        
+        	 doManager('areaManager','exportAreaInfo',[areaDto],function(data){
+                 if(data.result){
+                	 var path = JSON.parse(data.data);
+                     if(path == null){
+                         $$.showMessage('提示','下载失败，没有'+current_user.store_name+'划片数据！');
+                     }else{
+                         window.location.href=path;
+                     }
+                    
+                 }else{
+                     $$.showMessage('提示',data.message);
+                 }
+             });
+      	  
+    	}
+ 
+    }
+    
+    function checkAreaInfoOfEmployee(){
+    	doManager('areaManager','getAreaInfoOfStore',[current_user.store_id],function(data){
+            if(data.result){
+           	 var data = JSON.parse(data.data);
+             if(data!="all"){
+            	 $$.showMessage('提示',data+'  还未分配片区！');
+             }else{
+            	 $$.showMessage('提示','所有国安侠均已经分配片区！');
+             }  
+             
+                
+               
+            }else{
+                $$.showMessage('提示',data.message);
+            }
+        });
+    }
+    
+    //查询未划片小区
+    function checkAreaInfoOfTinyVillage(){
+    	doManager('areaManager','getAreaInfoOfTinVillageByStore',[current_user.store_id],function(data){
+            if(data.result){
+           	 var tinvillage = JSON.parse(data.data).info;
+             if(tinvillage.length>0){
+            	var infostr = ""; 
+            	for(var i=0;i<tinvillage.length;i++){
+            		infostr = infostr+"、 "+tinvillage[i].aname;
+            	}
+            	 $$.showMessage('提示',"门店所辖    "+infostr+"  这些小区还未分片");
+             }else{
+            	 $$.showMessage('提示',"门店所辖 小区全部已经划片");
+             }
+            
+                
+               
+            }else{
+                $$.showMessage('提示',data.message);
+            }
+        });
+    }
+    function clearAreaInfo(){
+    	doManager('areaManager','clearAreaInfo',null,function(data){
+            if(data.result){
+           	 var path = JSON.parse(data.data);
+                if(path == null){
+                    $$.showMessage('提示','下载失败，没有'+current_user.store_name+'划片数据！');
+                }else{
+                    window.location.href=path;
+                }
+               
+            }else{
+                $$.showMessage('提示',data.message);
+            }
+        });
+    }
+    
+    function manageStore(){
+    	$("#store_id").val($("#storeId_select").val());
+    }
+    
+    function manageCity(){
+    	$("#storeId_select").empty();
+    	doManager("areaManager", "getStoreOfByCSZJ_QYJL",[current_user.id,$("#city_id").val(),"CSZJ"],
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						var storelist= JSON.parse(data.data);
+  						
+  						if(storelist==null||storelist.length==0){
+  							
+  							var more_store="<option value=''>全部</option>";
+  							$("#storeId_select").append(more_store);
+  						}else{
+  							if(storelist!=null&&storelist.length>0){
+      							var more_store="<option value=''>全部</option>";
+     							for(var i=0;i<storelist.length;i++){
+     								more_store=more_store+"<option value='"+storelist[i].store_id+"'>"+storelist[i].name+"</option>"
+     							}
+     							$("#storeId_select").append(more_store);
+     						}
+  							
+  						}
+  					}
+  			},false); 
+    }
+    
+    //获取门店的服务范围
+    var servicePositionIsExist = false;
+    var servicePosition = "";
+    function getStoreServicePosition(){
+    	doManager("mongoDBManager", "getStorePosition", "1", function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var resultJson = JSON.parse(data.data);
+				if(resultJson.code == 200){
+					var positions = resultJson.data;
+					var x= positions[0];
+					var y= positions[1];
+					servicePosition = x+","+y;
+					servicePositionIsExist = true;
+				}else{
+					servicePositionIsExist = false;
+				}
+			}
+		});
+    }
+    
+    function openMapOfArea(){
+    	if(servicePositionIsExist){
+			window.open("area_map_set.html?c="+servicePosition+"&sid="+store_id,"area_map");
+		}else{
+			$$.showMessage("系统信息", "该门店服务范围不存在！");
+		}
+    }
+    
+    function  openAreaPrintView(){
+    	if(servicePositionIsExist){
+    		
+			window.open("area_show_print_view.html?c="+servicePosition+"&sid="+store_id,"area_show_print");
+		}else{
+			$$.showMessage("系统信息", "该门店服务范围不存在！");
+		}
+    }
+    
+</script>
+<body style="height: 100%">
+<div class="panel panel-primary">
+    <div class="panel-heading clearfix">
+      <div class="pull-left">划片查询</div>
+      <span id="checkareabtn1" onclick="checkAreaInfoOfTinyVillage();">检查未划片小区</span>
+      <span id="checkareabtn" onclick="checkAreaInfoOfEmployee();">检查无片区国安侠</span>
+      <span id="checkareabtn2" onclick="openMapOfArea();">混片区域分布</span>
+      <span id="checkareabtn3" onclick="openAreaPrintView();">片区地图概况</span>
+    </div>
+    <div class="panel-body">
+        <div id="conditionsDiv" style="margin-top: 10px">
+            <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                  displaynumber="7">
+                <table id="searchTable"  cellpadding="0" cellspacing="0"  style="min-width: 100%; width: auto;border-collapse:separate; border-spacing:0px 10px;">
+                    <tr>
+                    	<td>
+           				<span style="display:none" id="city_name">城市:</span>
+                        </td>
+                        <td width="12%">
+                           <select id="city_id" name="city_id" onchange="manageCity()" style="width:100px;display:none" class="form-control">
+                           	
+                           </select>
+                        </td>
+                        <td> 
+           	片区名称:
+                        </td>
+                        <td>
+                            <input id="store_id" name="store_id" type="hidden"/>
+                            <input id="name" name="name" type="text" style="width:68%" class="form-control" onkeyup="value=value.replace(/^\s+|\s+$/g,'')"/>
+                        </td>
+                         <td> 
+           	片区编号:
+                        </td>
+                        <td>
+                            <input id="area_no" name="area_no" type="text" style="width:68%" class="form-control" onkeyup="value=value.replace(/^\s+|\s+$/g,'')"/>
+                        </td>
+                        <td> 
+                            街道名称:
+                        </td>
+                        <td>
+                            <input id="townName" name="townName" type="text" style="width:68%" class="form-control" onkeyup="value=value.replace(/^\s+|\s+$/g,'')"/>
+                        </td>
+                   </tr>
+                   <tr >
+                   		<td>
+           				<span style="display:none" id="storeName">门店:</span>
+                        </td>
+                        <td width="12%">
+                           <select id="storeId_select" name="storeId_select" onchange="manageStore()" style="width:100px;display:none" class="form-control">
+                           	
+                           </select>
+                        </td>
+                   
+                        <td>
+                            社区名称:      
+                        </td>
+                        <td>
+                            <input id="villageName" name="villageName" type="text" style="width:68%" class="form-control" onkeyup="value=value.replace(/^\s+|\s+$/g,'')"/>	
+                        </td>
+                  
+                        <td>
+                            小区名称:		
+                        </td> 	
+                        <td>  
+                            <input id="tinVillageName" name="tinVillageName" type="text" style="width:68%" class="form-control" onkeyup="value=value.replace(/^\s+|\s+$/g,'')"/>	
+                        </td>
+                        <td>
+                            国安侠名称:			
+                        </td>
+                        <td>    
+                            <input id="employeeName" name="employeeName" type="text" style="width:68%" class="form-control" onkeyup="value=value.replace(/^\s+|\s+$/g,'')"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        </div>
+    </div>
+    <div class="clearfix" style="padding: 10px 0 15px 0;">
+      <div class="col-sm-1 pull-right">
+        <button id="exportbtn" style="display:none" class="btn btn-block btn-success" onclick="exportAreaInfo();">导出</button>
+      </div>
+      <div class="col-sm-1 pull-right">
+        <button id="resetbtn" style="display:none" class="btn btn-block btn-warning" onclick="doClean();">重置</button>
+      </div>
+      <div class="col-sm-1 pull-right">
+        <button id="searchbtn" style="display:none" class="btn btn-block btn-danger" onclick="searchList()">查询</button>
+      </div>
+      <div class="col-sm-1 pull-right">
+        <button id="addbtn" style="display:none" class="btn btn-block btn-primary" onclick="addVillage()">添加</button>
+      </div>
+    </div>
+</div>
+<div id="centerQueryGridContainer" class="panel panel-primary" queryid="aboutAreaDtoQuery" operators="$pmspage.opArr"
+     titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+     showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+     showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+<div id="employeeConfig"  style="display: none">
+    <div class="panel-body">
+        <table cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+            <tr>
+                <td width="20%">国安侠A<span style="color: red"></span></td>
+                <td width="80%">
+                    <input type="hidden" id="area_id" name="area_id"/>
+                    <select id="select_employeeA_no" name="select_employeeA_no" style="width:80%;" class="form-control">
+
+                    </select>
+                </td>
+            </tr>
+            <tr>
+                <td width="20%">国安侠B<span style="color: red"></span></td>
+                <td width="80%">
+                    <select id="select_employeeB_no" name="select_employeeB_no" style="width:80%;" class="form-control">
+
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>
+</body>
+</html>
+
+<div id="areaInfoDetail" style="display:none">
+	<div class="panel-body">
+        <table cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto" id="areaInfoTable">
+           
+        </table>
+    </div>
+</div>

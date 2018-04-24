@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>用户体验率</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+   <style type="text/css">
+    	.display{
+    		width:100%
+    	}
+    	.display tr td{
+    		word-wrap:break-word;
+    		white-space:normal;
+    	}
+    </style>
+</head>
+<script type="text/javascript">
+var win;
+$(function () {
+    //页面加载成功后需要获取数据
+    searchList();
+});
+
+//记载页面时请求数据列表默认的方法
+function searchList() {
+    $$.executeSearch('userAdviceQuery', 'conditionsDiv');
+    $(".operateHeader").width("5%");
+    $("#xuhaoid").width("6%");
+}
+function doClean() {
+    document.service_qa.reset();
+    searchList();
+}
+function addVillage(){
+	window.location.href = 'userOpinion.html';
+}
+function doBack(){
+	window.location.href ='userOpinionList.html';
+}
+
+  var editObj = {
+		html : '<a href="#"  class="blue">查看</a>',
+		resourceId: "add_store",
+		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+			var id = allColumnsDataMap.id;
+			window.location.href = "userOpinion.html?id="+id;
+		}
+	}
+  //列表中 列的处理
+  var COLUMNS = {
+          "sex": function(aData, iColumn, sColumnName, map){
+              var value = map[sColumnName];
+              var ret = "";
+              if(value==0){
+              	ret="<font>男</font>";
+              }
+              if(value==1){
+              	ret="<font >女</font>";
+              }
+				
+              return ret;
+          }
+      }
+$pmspage.opArr = [ editObj ];
+</script>
+<body style="height: 100%">
+	<div class="panel panel-default" style="margin: 10px">
+	    <div class="panel-heading">
+	        <h4 class="panel-title">
+	           客户意见
+	        </h4>
+	    </div>
+	</div>
+	    <div class="panel panel-primary">
+        <div class="panel-heading">客户意见查询</div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="4">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="4%">姓名:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:60%" onkeyup="this.value=this.value.replace(/\s+/g,'')" class="form-control"/>
+                            </td>
+                            <td width="4%">电话:</td>
+                            <td>
+                                <input id="mobilephone" name="mobilephone" type="text" style="width:60%" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11" class="form-control"/>
+                            </td >
+                           
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+            <button class="btn btn-primary" onclick="addVillage();">新增</button>
+        </div>
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="userAdviceQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+</body>
+</html>

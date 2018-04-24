@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>选择客户</title>
+    <script type="text/javascript" src="../../scripts/bidLib.js"></script>
+    <link href="../../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript">
+
+        var house_id = getUrlParamByKey('house_id');
+
+        $(function () {
+            doManager('CustomerManager','findCustomerByHouseId',house_id,function(data, textStatus, XMLHttpRequest){
+                if(data.result){
+                    var lst_customer = JSON.parse(data.data);
+                    $(lst_customer).each(function (index,element) {
+                        $('#ul_customer').append(' <li style="margin-bottom: 10px">' +
+                                '<input type="radio" name="customer_id" value="'+element.id+'">&nbsp;' +element.name+
+                                '</li>');
+                    });
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        });
+
+        function doSubmit(){
+            var json;
+            var $selected = $('input[name="customer_id"]:checked');
+            if($selected.length == 0){
+                $$.showMessage('提示','请选择客户');
+            }else{
+                json = {house_id:house_id,customer_id:$selected.val()};
+            }
+            parent.win.callBack(json);
+            parent.win.hide();
+        }
+    </script>
+    <style type="text/css">
+        html,body{
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="bodyDiv">
+        <div id="userGroupInfo" class="panel panel-primary">
+            <div class="panel-body" style="overflow: auto">
+                <ul id="ul_customer">
+                </ul>
+            </div>
+        </div>
+    </body>
+</html>

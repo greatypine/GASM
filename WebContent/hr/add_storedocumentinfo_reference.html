@@ -1,0 +1,612 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>门店补充信息</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+          <style type="text/css">
+	td {
+		width:50%;
+	}
+	p{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	}
+	table input,table select{border:1px solid #ccc; border-radius:3px; line-height: 30px; height: 30px; width:200px;}
+	.panel-heading .but{float:right; text-align: center;}
+	.but input {
+		background-color: transparent;
+		border: 1px solid #fff;
+		border-radius: 3px;
+		padding: 0 13px;
+		margin-right: 30px;}	
+	.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+    #open_shop_time{
+		background-color: #FFF;
+	}
+	
+	#submit_date{
+		background-color: #FFF;
+	}
+	#audit_date{
+		background-color: #FFF;
+	}
+	#enter_date,#enter_end_date{
+		background-color: #FFF;
+	}
+	#audit_file,#plane_plan,#record_drawing,#business_license,#food_card,#tobacco_card,#book_card,#xx_card,#other_card{
+		width: 200px;
+	}
+	
+</style>
+<script type="text/javascript">
+var lst_select_tiny;
+//var id = getUrlParamByKey("id");
+var id = getUrlParamByKey("store_id");
+var work_id = getUrlParamByKey("work_id");
+
+	$(function(){
+		initview();
+		//获取门店信息
+		$('#name').keyup(function(event){
+			 $('#town-search').children().remove();
+			var name=$("#name").val();
+			 $('#town-search').children().remove();
+			doManager('StoreManager','findStoreByNameAndauditor_status',name==''?'null':name,function(data){
+	            if(data.result){
+	               lst_select_tiny = JSON.parse(data.data);
+	                $(lst_select_tiny).each(function(index,element){
+	                    $('#town-search').append('<option value="'+element.name+'">');
+	                });
+	            }else{
+	                $$.showMessage("提示",data.message);
+	            }
+	        });
+		})
+		$('#name').change(function(){
+	        $(lst_select_tiny).each(function(index,element){
+	            if(element.name == $('#name').val()){
+	                $('#store_id').val(element.store_id);
+	                if($('#store_id').val()!=null&&$('#store_id').val()!=''){
+	                	findstoreDocumentInfoByStoreId($('#store_id').val());
+	                }else{
+	                	alert("门店不存在,或门店正在审核中");
+	                }
+	            }
+	        });
+	    });
+	})
+	
+	function initview(){
+		/* if(id == null || id == ''){
+			$("#id1").hide();
+			$("#name").show();
+			return;
+		} */
+		//$("#id").val(id);
+		$("#name").attr("readOnly","true");
+		$("#id1").show();
+		$("#name").hide();
+		doManager('StoreDocumentInfoManager','findStoreDocumentInfoByStoreId',id,function(data){
+	        if(data.result){
+	        	if(data.data!="null"){
+					var jsonData = $.fromJSON(data.data);
+					for ( var key in jsonData) {
+						var va = jsonData[key];
+						$("#"+key).val(va);
+						if(key=='audit_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(audit_file);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='plane_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(plane_plan);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='record_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(record_drawing);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='business_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(business_license);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='food_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(food_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='tobacco_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(tobacco_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='book_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(book_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='xx_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(xx_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='other_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(other_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=="name"){
+							$("#"+key).val(va);
+							$("#id1").text(va);
+						}
+					}
+				}
+	        }else{
+	            $$.showMessage("提示",data.message);
+	        }
+	    },false);
+	}
+	
+	
+	
+	
+	function findstoreDocumentInfoByStoreId(storeid){
+		doManager('StoreDocumentInfoManager','findStoreDocumentInfoByStoreId',storeid,function(data){
+	        if(data.result){
+	        	if(data.data!="null"){
+					var jsonData = $.fromJSON(data.data);
+					for ( var key in jsonData) {
+						var va = jsonData[key];
+						$("#"+key).val(va);
+						if(key=='audit_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(audit_file);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='plane_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(plane_plan);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='record_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(record_drawing);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='business_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(business_license);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='food_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(food_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='tobacco_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(tobacco_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='book_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(book_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='xx_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(xx_card);">'+va.substring(0,25)+'</a>')
+							}
+						}else if(key=='other_pic'){
+							if(va!=null&&va!=''){
+								$("#"+key).show();
+								$("#"+key).html('<a href="javascript:void(0);" onclick="downloadFile(other_card);">'+va.substring(0,25)+'</a>')
+							}
+						}
+					}
+				}
+	        }else{
+	            $$.showMessage("提示",data.message);
+	        }
+	    },false);
+	}
+	var path = getRootPath();
+	function downloadFile(pic_name){
+		console.log(pic_name.id);
+		window.open(path + "/downloadExcel.action"
+				  +"?fileName="+pic_name.id+"&store_id="+$("#store_id").val());
+	}
+	function doSave(){
+		var arr =["store_id","submit_date","audit_date","enter_date","enter_end_date","card_content"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		o['card_content']=$("#card_content option:selected").val();
+		doManager("StoreDocumentInfoManager", "saveOrUpdateStoreDocumentInfo", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				var model="card";
+				$("#uploadForm").attr("action", path + "/uploadStoreFileAction.action?model="+model+"&store_id="+$("#store_id").val());
+			    $("#uploadForm").submit();
+			}
+		},false)
+	}
+</script>
+</head>
+<body>
+		<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading"><span id="vill_des">门店详情</span>
+		<span class="but">
+			<input name="" type="submit" onclick="doSave();" value="保存">
+			<input name="" type="button" onclick="javascript:history.go(-1);" value="返回">
+		</span>
+	</div>
+    <div class="panel-body" id="temp1">
+	<form id="uploadForm" action="uploadStoreFileAction.action" enctype="multipart/form-data" method="post" class="pmsForm">
+	<input type="hidden" id="store_id" name="store_id"/>
+	<input type="hidden" id="id" name="id"/>
+	    <p style="color: #337ab7;font-size: 18px;font-weight: bolder;">门店信息</p>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p class="read">门店名称：<span style="color: red">*</span></p>
+				<p class="read"> 
+					  <input type="text" name="name" id="name"   list="town-search"/>
+					  <datalist id="town-search"></datalist>
+					 <label for="name" id="id1"></label>
+				</p>
+			</td>
+			<td width="33.33%">
+			</td>
+			<td></td>
+		</tr>
+	</table>
+
+	<p style="color: #337ab7;font-size: 18px;font-weight: bolder;">门店装修信息</p>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p class="read" style="position:relative;"><span id="comtractfile" style="color:#ffcc00;font-size:16px;font-weight:bold;padding-right: 5px;">!</span>功能方案提交日期
+					<span id="fileshow" style="position: absolute;top: -20px;left: 15px;color:#8E8E8E;display:none;">
+					首次提交设计方案的日期!
+					</span>
+				</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="submit_date" name="submit_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read" style="position:relative;"><span id="contr_file" style="color:#ffcc00;font-size:16px;font-weight:bold;padding-right: 5px;">!</span>设计审核提交单:<span style="color: red;">*</span>
+					<span id="showent" style="position: absolute;top: -20px;left: 0px;color:#8E8E8E;display:none;">
+					上传设计审核提交单扫描件!
+					</span>
+				</p>
+				<p class="read"> 
+					<input type="file" name="audit_file" class="form-control"  id="audit_file" isuploadtable="true"/>
+					<lable id="audit_pic" name="audit_pic" style="display:none;"></lable>
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read" style="position:relative;"><span id="audit" style="color:#ffcc00;font-size:16px;font-weight:bold;padding-right: 5px;">!</span>功能方案通过日期
+					<span id="showaudit" style="position: absolute;top: -20px;left: 0px;color:#8E8E8E;display:none;">
+					设计方案通过日期!
+					</span>
+				</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="audit_date" name="audit_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="33.33%">
+				<p class="read" style="position:relative;"><span id="tiantu" style="color:#ffcc00;font-size:16px;font-weight:bold;padding-right: 5px;">!</span>终版平面方案图：<span style="color: red;">*</span>
+					<span id="showtiantu" style="position: absolute;top: -20px;left: 15px;color:#8E8E8E;display:none;background-color: #fff;">
+					门店终版平面图、天花图、地面图、门头立面图!
+					</span>
+				</p>
+				<p class="read">
+                       <input type="file" name="plane_plan" id="plane_plan" class="form-control" isuploadtable="true" />
+						<label name="plane_pic" id="plane_pic" style="display: none;"></label>
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">装修进场日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="enter_date" name="enter_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">装修竣工日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="enter_end_date" name="enter_end_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="33.33%">
+				<p class="read" style="position:relative;"><span id="jungong" style="color:#ffcc00;font-size:16px;font-weight:bold;padding-right: 5px;">!</span>竣工照片：<span style="color: red;">*</span>
+					<span id="showjungong" style="position: absolute;top: -20px;left: 15px;color:#8E8E8E;display:none;background-color: #fff;">
+					1. 室外门头立面照片1张（包含门头全部和全部玻璃隔断）<br/>
+					2. 收银台区域 1张（包含天花地面照片）<br/>
+					3. 日销区域照片1张<br/>
+					4. 月销区域照片1张<br/>
+					5. 专业服务区域照片1张<br/>
+					6. 库房区域照片1张<br/>
+					7. 门店各区域全景照片（至少3张）<br/>
+					8. 办公室和卫生间照片各1张<br/>
+					9. 其他重要区域<br/>
+					当附件为多个，建议转换成压缩包ZIP格式上传。
+					</span>
+				</p>
+				<p class="read">
+                       <input type="file" name="record_drawing" id="record_drawing" class="form-control" isuploadtable="true" />
+					<label id="record_pic" name="record_pic" style="display: none;"></label>
+				</p>
+			</td>
+			<td width="33.33%">
+			</td>
+			<td width="33.33%">
+			</td>
+		</tr>
+	</table>
+	<p style="color: #337ab7;font-size: 18px;font-weight: bolder;">证照信息</p>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p class="read">证照内容：</p>
+				<p class="read">
+                       <select id="card_content" name="card_content">
+                       		<option></option>
+                       		<option>单证(营业执照)</option>
+                       		<option>单证(食品流通证)</option>
+                       		<option>双证(营业执照和食品流通证)</option>
+                       		<option>均无</option>
+                       </select>
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">营业执照：<span style="color: red;">*</span></p>
+				<p class="read">
+                       <input type="file"  name="business_license" id="business_license" class="form-control" isuploadtable="true"/>
+                    <label id="business_pic" name="business_pic" style="display: none;"></label>		
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">食品流通证：</p>
+				<p class="read">
+                       <input type="file"  name="food_card" id="food_card" class="form-control" isuploadtable="true"/>
+                    <label id="food_pic" name="food_pic" style="display: none;"></label>		
+				</p>
+			</td>
+		</tr>
+		<tr>
+			
+			<td width="33.33%">
+				<p class="read">烟草专卖许可证：</p>
+				<p class="read">
+                       <input type="file" name="tobacco_card" id="tobacco_card" class="form-control" isuploadtable="true"/>
+                    <label id="tobacco_pic" name="tobacco_pic" style="display: none;"></label>		
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">图书售卖许可证：</p>
+				<p class="read">
+                       <input type="file"  name="book_card" id="book_card" class="form-control" isuploadtable="true"/>
+                    <label id="book_pic" name="book_pic" style="display: none;"></label>		
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">其它一：</p>
+				<p class="read">
+                       <input type="file"  name="xx_card" id="xx_card" class="form-control" isuploadtable="true"/>
+                    <label id="xx_pic" name="xx_pic" style="display: none;"></label>		
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="33.33%">
+				<p class="read">其他二：</p>
+				<p class="read">
+                       <input type="file" name="other_card" id="other_card" class="form-control" isuploadtable="true">
+                    <label id="other_pic" name="other_pic" style="display: none;"></label>		
+				</p>
+			</td>
+		</tr>
+	</table>
+	<div style="height: 30px;"></div>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+	$(function(){
+		/* jeDate({
+	         dateCell:"#open_shop_time",//isinitVal:true,
+	         format:"YYYY-MM-DD hh:mm:ss",
+	         isTime:true,
+	         isinitVal:false,
+	         zIndex:2000,
+	         
+	     }); */
+		jeDate({
+	         dateCell:"#submit_date",//isinitVal:true,
+	         format:"YYYY-MM-DD",
+	         isTime:false,
+	         isinitVal:false,
+	         zIndex:2000,
+	         
+	     });
+		jeDate({
+	         dateCell:"#audit_date",//isinitVal:true,
+	         format:"YYYY-MM-DD",
+	         isTime:false,
+	         isinitVal:false,
+	         zIndex:2000,
+	         
+	     });
+		jeDate({
+	         dateCell:"#enter_date",//isinitVal:true,
+	         format:"YYYY-MM-DD",
+	         isTime:false,
+	         isinitVal:false,
+	         zIndex:2000,
+	         
+	     });
+		jeDate({
+	         dateCell:"#enter_end_date",//isinitVal:true,
+	         format:"YYYY-MM-DD",
+	         isTime:false,
+	         isinitVal:false,
+	         zIndex:2000,
+	         
+	     });
+		//当鼠标移上时调用此方法
+		$("#comtractfile").mouseover(function(event){
+			$("#fileshow").show();
+	  	});
+	  	$("#comtractfile").mouseout(function(event){
+	  		$("#fileshow").hide();
+	  	});
+	  	
+	  	$("#contr_file").mouseover(function(event){
+			$("#showent").show();
+	  	});
+	  	$("#contr_file").mouseout(function(event){
+	  		$("#showent").hide();
+	  	});
+	  	
+	  	$("#audit").mouseover(function(event){
+			$("#showaudit").show();
+	  	});
+	  	$("#audit").mouseout(function(event){
+	  		$("#showaudit").hide();
+	  	});
+		
+	  	$("#tiantu").mouseover(function(event){
+			$("#showtiantu").show();
+	  	});
+	  	$("#tiantu").mouseout(function(event){
+	  		$("#showtiantu").hide();
+	  	});
+	  	
+	  	$("#jungong").mouseover(function(event){
+			$("#showjungong").show();
+	  	});
+	  	$("#jungong").mouseout(function(event){
+	  		$("#showjungong").hide();
+	  	});
+	  	$("#audit_file").change(function(){
+			$("#audit_pic").show();
+			var content = $('#audit_file')[0].files;
+			$("#audit_pic").text(content[0].name.substring(0,25));
+		}) 
+		$("#plane_plan").change(function(){
+			$("#plane_pic").show();
+			var content = $('#plane_plan')[0].files;
+			$("#plane_pic").text(content[0].name.substring(0,25));
+		}) 
+		$("#record_drawing").change(function(){
+			$("#record_pic").show();
+			var content = $('#record_drawing')[0].files;
+			$("#record_pic").text(content[0].name.substring(0,25));
+		}) 
+		$("#business_license").change(function(){
+			$("#business_pic").show();
+			var content = $('#business_license')[0].files;
+			$("#business_pic").text(content[0].name.substring(0,25));
+		}) 
+		$("#food_card").change(function(){
+			$("#food_pic").show();
+			var content = $('#food_card')[0].files;
+			$("#food_pic").text(content[0].name.substring(0,25));
+		}) 
+		$("#tobacco_card").change(function(){
+			$("#tobacco_pic").show();
+			var content = $('#tobacco_card')[0].files;
+			$("#tobacco_pic").text(content[0].name.substring(0,25));
+		}) 
+		$("#book_card").change(function(){
+			$("#book_pic").show();
+			var content = $('#book_card')[0].files;
+			$("#book_pic").text(content[0].name.substring(0,25));
+		}) 
+		$("#xx_card").change(function(){
+			$("#xx_pic").show();
+			var content = $('#xx_card')[0].files;
+			$("#xx_pic").text(content[0].name.substring(0,25));
+		}) 
+		$("#other_card").change(function(){
+			$("#other_pic").show();
+			var content = $('#other_card')[0].files;
+			$("#other_pic").text(content[0].name.substring(0,25));
+		}) 
+		
+		try{
+			window.parent.setIframeHeight();
+		}catch(error){
+		}
+		//全部只读
+		$("input[type='file']").attr("disabled","true");
+		$("input[type='text']").attr("disabled","true");
+		$("select").attr("disabled","true");
+		$("input[type='submit']").remove();
+		//$("input[type='button']").remove();
+		$(".panel-footer").hide();
+		$(".btn-primary").hide();
+		showFlowDetail(work_id);
+		
+	})
+	
+	
+	
+	function showFlowDetail(work_record_id){
+			doManager('flowDetailManager','queryAllFlowDetailByWorkId',[work_record_id],function(data){
+	               if(data.result){
+		            	var process_flow = $("#process_flow_tbl");
+		              	var work_detail_list = JSON.parse(data.data);
+		            	$(work_detail_list).each(function(i,obj){
+		              		var app_ret = obj.approv_ret;
+		              		if(app_ret=='审批中'){
+		              			app_ret='审核通过';
+		              		}
+		              		var approv_content = obj.approv_content==null?"":obj.approv_content;
+		              		var flowHtml="<tr>"+
+		                   	"<td align=\"center\">"+obj.create_user+":&nbsp;&nbsp;</td>"+
+		                   	"<td align=\"center\">"+obj.update_user+"</td>"+
+		                   	"<td align=\"left\">"+app_ret+"</td>"+
+		                   	"<td align=\"left\" width=\"60%\">"+approv_content+"</td>"+
+		                	"</tr>";
+		              		process_flow.append(flowHtml);
+		              	});
+	               }
+			 },false);
+		}
+	
+</script>
+
+<div id="process_flow">
+	<table id="process_flow_tbl" cellpadding="0" cellspacing="0" style="min-width: 100%; width: 50%;">
+                   
+    </table>
+</div> 
+
+</body>
+</html>

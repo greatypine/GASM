@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>门店、管理信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="../scripts/auto.js"></script> 
+	
+	<!-- 引入css和js即可 -->
+	<link rel="stylesheet" href="../scripts/css/cityselect.css">
+	<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+</head>
+<script>
+    var win;
+    var array=new Array();
+	//初始化所有门店 
+	function initallstore() {
+		doManager("StoreManager", "findStoreAll", null,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					for(i=0;i<jsonData.length;i++){
+						array.push(jsonData[i].name);
+					}
+				}
+			}, false);
+	}
+	
+    $(function () {
+    	initallstore();
+    	
+    	doClean();
+        //页面加载成功后需要获取数据
+        searchList();
+        
+        $("#display_base_div").click(function(){
+            $("#base_data_div").toggle(500);
+            if($("#display_base_div").html()=="-"){
+            	$("#display_base_div").html("+");
+            }else{
+            	$("#display_base_div").html("-");
+            }
+        });
+        
+        
+        $("#imp_base_div").click(function(){
+            $("#imp_data_div").toggle(500);
+            if($("#imp_base_div").html()=="-"){
+            	$("#imp_base_div").html("+");
+            }else{
+            	$("#imp_base_div").html("-");
+            }
+        });
+        
+    });
+
+    //操作列
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('storekeeperQuery', 'conditionsDiv');
+    }
+
+    //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str === "" || str == "undefined" || typeof(str) == "undefined";
+    }
+
+    function downloadTemplate(){
+        var path = getRootPath();
+        window.open(path + "/downloadExcel.action?fileName=xx_express_template&skip=true");
+    }
+
+    //自定义一个上传Excel的方法
+    function uploadExcel() {
+        var content = $('input[name="file"]').val();
+        //文件不能为空
+        if (isnull(content)) {
+            $$.showMessage("${system.info}", "请选择文件!");
+            return false;
+        }
+        //后缀必须为xls,不支持2007
+        var suffix = content.match(/^(.*)(\.)(.{1,8})$/)[3];
+        if ("xls" != suffix && 'rar' != suffix && 'zip' != suffix && "xlsx" != suffix) {
+            $$.showMessage("${system.info}", "请上传xls,xlsx,rar或zip文件");
+            return false;
+        }
+        var path = getRootPath();
+        var $form_upload = $("#uploadFrom");
+        $form_upload.attr("action", path + "/excelUpload.action?model=human_template");
+        $form_upload.submit();
+    }
+    
+    
+    
+    
+  //自定义一个上传Excel的方法
+    function uploadHSTKExcel() {
+        var content = $('input[name="filehstk"]').val();
+        //文件不能为空
+        if (isnull(content)) {
+            $$.showMessage("${system.info}", "请选择文件!");
+            return false;
+        }
+        //后缀必须为xls,不支持2007
+        var suffix = content.match(/^(.*)(\.)(.{1,8})$/)[3];
+        if ("xls" != suffix && 'rar' != suffix && 'zip' != suffix && "xlsx" != suffix) {
+            $$.showMessage("${system.info}", "请上传xls,xlsx,rar或zip文件");
+            return false;
+        }
+        var path = getRootPath();
+        var $form_upload = $("#uploadFromhstk");
+        $form_upload.attr("action", path + "/excelUpload.action?model=human_template_hstk");
+        $form_upload.submit();
+    }
+
+    function importSuccess() {
+        $$.showMessage("系统信息", "导入成功");
+        $('input[name="filehstk"]').val("");
+        searchList();
+    }
+
+    function doClean() {
+        document.service_qa.reset();
+        $("#store\\.id").val("");
+    }
+
+    function doAdd(){
+    	window.location.href="store_keeper_add.html";
+    }
+
+    function exportExcel(){
+        var path = getRootPath();
+        window.open(path + "/downloadExcel.action?fileName=storekeeper_list");
+    }
+
+    //列表中 列的处理
+    var COLUMNS = {
+            "humanstatus": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value!=""&&value==0){
+                	ret="<font color='red'>未分配门店</font>";
+                }
+                if(value!=null&&value!=""&&value==1){
+                	ret="<font color='green'>在职</font>";
+                }
+				if(value!=null&&value!=""&&value==2){
+                	ret="<font color='grey'>离职</font>";
+                }
+                return ret;
+            },"storenames": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value.length>20){
+                	ret=value.substring(0,20)+"...";
+                }else{
+                	ret=value;
+                }
+                return ret;
+            }
+        }
+    
+    var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "xxExpress_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("XxExpressManager", "deleteXxExpress", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'xx_express_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		}
+    var editObj = {
+			html : '<a href="#">编辑 </a>',
+			resourceId : "humanstore_List_update",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "store_keeper_edit.html?id="+id;
+			}
+		}
+    var publishObj = {
+			html : '<a href="#">查看 </a>',
+			resourceId : "humanstore_List_detail",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "human_store_detail.html?id="+id;
+			}
+		}
+    $pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
+    
+    
+</script>
+<style type="text/css">
+    .but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+	.auto{max-height:100px; overflow-y:scroll;}
+</style>
+<body style="height: 100%">
+<div class="panel panel-default" style="margin: 10px">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+              门店数据维护:门店经理数据管理
+        </h4>
+    </div>
+</div>
+<div class="rightcont clear">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <label id="imp_base_div">-</label>&nbsp;门店经理查询
+            <span class="but">
+                <input type="button" onclick="exportExcel();" value="门店经理花名册生成 "/>
+            </span>
+        </div>
+        <div class="panel-body" id="imp_data_div">
+            <!-- <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+                <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom"
+                      target="hframe">
+                    <div class="form-group">
+                        <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                            <input type="file" isuploadtable="true" name="file" class="form-control">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="();" name="upload">
+                                    <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+                                </button>
+                            </span>
+                        </div>
+                        <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                        <button name="download" class="btn btn-outline btn-default" onclick="downloadTemplate();">下载模板</button>
+                    </div>
+                </form>
+            </div> -->
+            <div id="conditionsDiv" style="margin-top: 0px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">员工姓名:</td>
+                            <td width="20%">
+                                <input id="name" name="name" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                            <td width="5%">城市：</td>
+                      		<td width="20%">
+								<input type="text" class="form-control" id="citySelect" name="citySelect" placeholder="" style="width: 60%;" />
+							</td>
+                            <td width="5%"> 门店：</td>
+                            <td width="20%">
+                               <div class="input-group" style="width:60%;">
+                                    <input type="text" id="storenames" name="storenames" class="auto-inp form-control" likeOption="false">
+                                    <div class="auto hidden" id="auto">
+                                        <div class="auto_out">1</div>
+                                        <div class="auto_out">2</div>
+                                    </div>
+				               </div>
+                            </td>
+                            <td width="5%">状态:</td>
+                            <td width="20%">
+                                <select name="humanstatus" style="width: 60%;" class="form-control">
+                                	<option value="">全部</option>
+                                	<!-- <option value="0">未分配门店</option> -->
+                                	<option value="1">在职</option>
+                                	<option value="2">离职</option>
+                                </select>
+                            </td>
+				
+                        </tr>
+                       
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+            <button class="btn btn-primary" onclick="doAdd();">新增</button>
+        </div>
+    </div>
+    <input type="hidden" id="store_id" isautotab="true" />
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="storekeeperQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+</div>
+</body>
+
+<script>
+	var autoComplete = new AutoComplete("storenames","auto",array);
+	document.getElementById("storenames").onkeyup = function(event){
+		autoComplete.start(event);
+	}
+	
+	var test=new Vcity.CitySelector({input:'citySelect'});
+
+</script>
+
+</html>

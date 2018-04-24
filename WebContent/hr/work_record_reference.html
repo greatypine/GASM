@@ -1,0 +1,1865 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>考勤填报表</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/datatables.css" rel="stylesheet">
+
+<script type="text/javascript" src="../scripts/bidLibjs.js"></script>
+<!-- <script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+<script language="javascript" src="../scripts/common/common-tool.js"></script>
+<script language="javascript" src="../scripts/common/common-core.js"></script>
+<script language="javascript" src="../scripts/common/common-form.js"></script>
+<script language="javascript" src="../scripts/common/processingdialog.js"></script>
+<script language="javascript" src="../scripts/common/common-messagedialog.js"></script>
+<script language="javascript" src="../scripts/common/common-expand.js"></script>
+<script language="javascript" src="../forecast/js/scripts/bidCommon.js"></script>
+<script language="javascript" src="../scripts/default-ready.js"></script> -->
+
+<style>
+*{margin:0; padding:0;}
+table{border-collapse:collapse; font-size:12px; text-align:center;margin:10px -1px 0 -1px;background-color:#eee;}
+table input{width:100%; border:0; height:30px; text-align:center; outline:none; position:relative;}
+table input::-webkit-outer-spin-button,table input::-webkit-inner-spin-button{-webkit-appearance: none !important;  margin: 0; }
+table input[type="number"]{-moz-appearance:textfield;}
+table td{height:30px; min-height:30px;}
+table th{height:40px; min-height:40px;}
+tfoot td{border:1px solid #000;}
+.prompt{padding:10px 20px; line-height:30px; font-size:14px;}
+.panel{
+	margin-bottom: 0px;
+}
+.but {
+        float: right;
+        text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+
+
+.popup{position:absolute; width:50px; background-color:#FFF; border:1px solid #ccc; z-index:1000; line-height:20px; color:#000;}
+.popup p{margin:0;}
+.popup p:nth-child(1){background-color:#4876FF;}
+.popup p:nth-child(2){background-color:#4876FF;}
+.popup p:nth-child(3){background-color:#33ccff;}
+.popup p:nth-child(4){background-color:#33ccff;}
+
+.popup p:nth-child(5){background-color:#ffffff;} 
+
+
+.popup8{position:absolute; width:50px; background-color:#FFF; border:1px solid #ccc; z-index:1000; line-height:20px; color:#000;}
+.popup8 p{margin:0;}
+.popup8 p:nth-child(1){background-color:#4876FF;}
+.popup8 p:nth-child(2){background-color:#4876FF;}
+.popup8 p:nth-child(3){background-color:#33ccff;}
+.popup8 p:nth-child(4){background-color:#33ccff;}
+
+
+.popup8 p:nth-child(5){background-color:#BCEE68;}
+.popup8 p:nth-child(6){background-color:#BCEE68;}
+.popup8 p:nth-child(7){background-color:#43CD80;}
+.popup8 p:nth-child(8){background-color:#43CD80;}
+
+
+/* rgba(0,0,0,0) */
+</style>
+<script>
+function mGetDate(year, month){
+    var d = new Date(year, month, 0);
+    return d.getDate();
+}
+
+    var nowObj = "";
+    var workrecord_id="";
+    var store_id = getUrlParamByKey('store_id');
+    var workMonth = getUrlParamByKey('workMonth');
+    var isTotalView = getUrlParamByKey('isTotalView');
+    var loginstore_id="";
+    var totalDay=0;
+    
+	$(function(){
+		//加载完数据之前 不可用
+		$("#btnSave").attr("disabled",true);
+		$("#btnCommit").attr("disabled",true);
+		
+		//取得当前登录人的门店
+		doManager("UserManager", "getCurrentUserDTO",null,
+    				function(data, textStatus, XMLHttpRequest) {
+    					if (data.result) {
+    						var current_uesr = JSON.parse(data.data);
+    						loginstore_id=current_uesr.store_id;
+    					}
+    	},false);
+		
+		
+		var date=new Date;
+		var year = date.getFullYear();
+		var month=date.getMonth()+1;
+
+        var methodName = "getMaxWorkMonth";
+        var params = null;
+        if(workMonth != null){
+            methodName = 'findWorkMonthByCity';
+            doManager("StoreManager", "findStore",store_id,
+    				function(data, textStatus, XMLHttpRequest) {
+    					if (data.result) {
+    						var store = JSON.parse(data.data);
+    						params = [workMonth,store.cityName];
+    					}else{
+    						$$.showMessage("系统信息", "获取失败!");
+    					}
+    		},false);
+        }
+		var work_month = "";
+
+		doManager("WorkMonthManager", methodName,params,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if(jsonData==null){
+							year="";
+							month="";
+							$$.showMessage("系统信息", "考勤还未发起!");
+							$("#btnSave").remove();
+							$("#btnCommit").remove();
+							$("#expBtn").remove();
+						}else{
+							
+							work_month=jsonData.work_month;
+							year=work_month.split("-")[0];
+							month=work_month.split("-")[1];
+							
+							//判断月份有多少天 就显示多少列 
+							var nummonth = Number(month);
+							totalDay = mGetDate(year,nummonth);
+							if(totalDay==28){
+								$(".c29").html("");
+								$(".c30").html("");
+								$(".c31").html("");
+							}
+							if(totalDay==29){
+								$(".c30").html("");
+								$(".c31").html("");
+							}
+							if(totalDay==30){
+								$(".c31").html("");
+							}
+							
+							
+							
+							var totalworktime = jsonData.totalworktime;
+							$("#totalworktime").html(totalworktime);
+							
+							var week = "日一二三四五六".split("")[new Date(Date.UTC(year, month-1, 1)).getDay()];
+							var weekdaystr = "日一二三四五六";
+							var firstindex = weekdaystr.indexOf(week);
+							var retWeek = weekdaystr.substring(firstindex,weekdaystr.length);
+							for(i=0;i<5;i++){
+								retWeek+="日一二三四五六";
+							}
+							retWeek=retWeek.substring(0,31);
+							var weekch="";
+							for(n=0;n<retWeek.length;n++){
+								if(n<totalDay){
+									weekch+="<td>"+retWeek.split("")[n]+"</td>";
+								}else{
+									weekch+="<td></td>";
+								}
+							}
+							$(".weekch").html(weekch);
+							$("#ym").html(year+"年"+month+"月");
+						}
+		
+					}else{
+						$$.showMessage("系统信息", "获取失败!");
+					}
+		},false);
+		
+		
+		
+		
+		
+		//取得门店以及员工信息
+		var obj;
+
+        obj = year+"-"+month;
+
+        nowObj=obj;
+		if(obj!="-"){
+			updatestoreid(obj);
+		}
+	
+	
+		//查询该月的提交状态 如果为1审核中 不允许保存。
+		doManager("WorkRecordTotalManager", "queryWorkRecordTotal",[nowObj,store_id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if(jsonData!=null){
+							var commit_status=jsonData.commit_status;
+							if(commit_status==0){
+								$("#pro_status").html("状态：【保存】");
+							}else if(commit_status==1){
+								$("#pro_status").html("状态：【待审批】");
+								$("#btnSave").remove();
+								$("#btnCommit").remove();
+								$("#expBtn").show();
+							}else if(commit_status==2){
+								var msg = jsonData.remark;
+								if(msg.length>60&&msg.length<120){
+									var appendStr = msg.substring(60,msg.length);
+									msg=msg.substring(0,60)+"<br>"+appendStr;
+								}
+								$("#pro_status").html("状态：【退回】");
+								
+								if(isTotalView!=null&&isTotalView.length>0){
+									$("#back_msg").html("");
+								}else{
+									$("#back_msg").html("退回信息： <font color='red' size='2'>"+msg+"</font>");
+								}
+								
+								
+							}else if(commit_status==3){
+								$("#pro_status").html("状态：【已通过】");
+								$("#btnSave").remove();
+								$("#btnCommit").remove();
+								$("#expBtn").show();
+							}else{
+								$("#pro_status").html("状态：【保存】");
+							}
+						}
+						//window.location.href="work_record.html";
+					}else{
+						$$.showMessage("系统信息", "提交失败!");
+					}
+		});
+		
+	});
+	
+	
+	
+	function doSave(){
+		$("#btnSave").attr("disabled",true);
+		var arr = Array(); //存所有数据
+		$(".addemp").each(function(){
+			var obj = {};
+			$("input",this).each(function(i,value){ //便利行内的input select的值
+				if($(this).attr('alt')!=""){
+					obj[$(this).attr('name')] = $(this).attr('alt');
+				}else{
+					obj[$(this).attr('name')] = $(this).val();
+				}
+				
+	        });
+			arr.push(obj); 
+		});
+		
+		
+		doManager("WorkRecordManager", "saveWorkRecordList",[arr,nowObj,loginstore_id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						window.location.href="work_record.html";
+					}else{
+						$$.showMessage("系统信息", "保存失败!");
+					}
+		},false);
+	}
+	
+	
+	function preCommit(){
+		var arr = Array(); //存所有数据
+		$(".addemp").each(function(){
+			var obj = {};
+			$("input",this).each(function(i,value){ //便利行内的input select的值
+				if($(this).attr('alt')!=""){
+					obj[$(this).attr('name')] = $(this).attr('alt');
+				}else{
+					obj[$(this).attr('name')] = $(this).val();
+				}
+	        });
+			arr.push(obj); 
+		});
+		doManager("WorkRecordManager", "saveWorkRecordList",[arr,nowObj,loginstore_id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						doManager("WorkRecordTotalManager", "updateCommitStatus",[jsonData.id],
+								function(data, textStatus, XMLHttpRequest) {
+									if (data.result) {
+										window.location.href="work_record.html";
+									}else{
+										$$.showMessage("系统信息", "提交失败!");
+									}
+							});
+						
+					}else{
+						$$.showMessage("系统信息", "保存失败!");
+					}
+		},false);
+	}
+	
+	/* function checkScore(){
+		var isnull = true;
+		$("input[name='score']").each(function(){
+			var scoreval = $(this).val();
+			if(scoreval==null||scoreval==''||scoreval.trim()==''){
+				isnull=false;
+				$$.showMessage("系统信息", "绩效分 存在空值！");
+			}
+			if(scoreval<0){
+				isnull=false;
+				$$.showMessage("系统信息", "绩效分 不合法 ！");
+			}
+		});
+		return isnull;
+	} */
+	
+	function doCommit(){
+		var pro_status = $("#pro_status").html();
+		var scoreisnull="";
+		
+		/* if(!checkScore()){
+			//$$.showMessage("系统信息", "绩效分 存在空值！");
+			return;
+		} */
+		$$.showConfirm('提示','提交后不可修改，确认提交到人力资源中心？',function(){
+			$("#btnCommit").attr("disabled",true);
+			if(pro_status=="状态：【填报】"||pro_status==""){
+				preCommit();
+			}else{
+				var id=workrecord_id;
+				doManager("WorkRecordTotalManager", "updateCommitStatus",[workrecord_id],
+						function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								window.location.href="work_record.html";
+							}else{
+								$$.showMessage("系统信息", "提交失败!");
+							}
+					});
+			}
+        });
+		
+	}
+	
+	
+	function updatestoreid(obj){
+		//更改店长用户的 store_id
+		var url = "../dispatcher.action";
+		var data = new PMSRequestObject("WorkRecordManager", "queryWorkRecordListByTop",[obj,store_id]);
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+			if (datas.result) {
+				var jsonData = $.fromJSON(datas.data);
+				var retcontent="";
+				var storename="";
+				if(jsonData!=null&&jsonData.length>0){
+					for(i=0;i<jsonData.length;i++){
+						workrecord_id=jsonData[i].workrecord_id;
+						storename=jsonData[i].store_name;
+						var authorized =  jsonData[i].isauth;
+						var leavedate = jsonData[i].leavedate;
+						var topostdate = jsonData[i].topostdate;
+						var overtime = jsonData[i].overtime;
+						/* var isauth=authorized;
+						if(authorized.indexOf("实习")>=0){
+							isauth="否";
+						}
+						if(authorized.indexOf("正式")>=0){
+							isauth="是";
+						} */
+						retcontent += "<tr class=\"addemp\"><td>"+jsonData[i].employee_no+"</td>"+
+			            "<td>"+jsonData[i].employee_name+"</td>";
+			            
+			            var appenddays = "";
+			            var htype=jsonData[i].humanstatus;
+			            for(j=1;j<32;j++){
+			            	if(htype!=null&&htype==2){
+			            		if(leavedate!=null){
+			            			var formatleaveday = new Date(leavedate).getDate();
+			            			var ym = new Date(leavedate).format("yyyy-MM");
+				            		if(j>formatleaveday&&ym==obj){
+				            			appenddays+="<td><input type=\"text\" idxrow='"+i+"' name='day"+j+"' readonly='true'  maxlength='1' value=\""+jsonData[i]['day'+j]+"\"></td>";
+				            		}else{
+				            			var formattopostday = new Date(topostdate).getDate();
+				            			var topostym = new Date(topostdate).format("yyyy-MM");
+				            			//如果离职和在职在同一个月 
+				            			if(j<formattopostday&&ym==topostym){
+					            			appenddays+="<td><input type=\"text\" idxrow='"+i+"' name='day"+j+"' readonly='true'  maxlength='1' value=\""+jsonData[i]['day'+j]+"\"></td>";
+					            		}else{
+				            				appenddays+="<td><input type=\"text\" idxrow='"+i+"' name='day"+j+"'  maxlength='1' value=\""+jsonData[i]['day'+j]+"\"></td>";
+					            		}				            		
+					            	}
+				            		
+			            		}
+			            	}else if(htype!=null&&htype==1){
+			            		if(topostdate!=null){
+			            			var formattopostday = new Date(topostdate).getDate();
+			            			var ym = new Date(topostdate).format("yyyy-MM");
+				            		if(j<formattopostday&&ym==obj){
+				            			appenddays+="<td><input type=\"text\" idxrow='"+i+"' name='day"+j+"' readonly='true'  maxlength='1' value=\""+jsonData[i]['day'+j]+"\"></td>";
+				            		}else{
+				            			appenddays+="<td><input type=\"text\" idxrow='"+i+"' name='day"+j+"'  maxlength='1' value=\""+jsonData[i]['day'+j]+"\"></td>";
+				            		}
+			            		}else{
+				            		appenddays+="<td><input type=\"text\" idxrow='"+i+"' name='day"+j+"'  maxlength='1' value=\""+jsonData[i]['day'+j]+"\"></td>";
+			            		}
+			            		
+			            	}
+			            }
+			            
+			           /*  "<td><input type=\"text\" idxrow='"+i+"' name='day1'  maxlength='1' value=\""+jsonData[i].day1+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day2'  maxlength='1' value=\""+jsonData[i].day2+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day3'  maxlength='1' value=\""+jsonData[i].day3+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day4'  maxlength='1' value=\""+jsonData[i].day4+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day5'  maxlength='1' value=\""+jsonData[i].day5+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day6'  maxlength='1' value=\""+jsonData[i].day6+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day7'  maxlength='1' value=\""+jsonData[i].day7+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day8'  maxlength='1' value=\""+jsonData[i].day8+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day9'  maxlength='1' value=\""+jsonData[i].day9+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day10' maxlength='1' value=\""+jsonData[i].day10+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day11' maxlength='1' value=\""+jsonData[i].day11+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day12' maxlength='1' value=\""+jsonData[i].day12+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day13' maxlength='1' value=\""+jsonData[i].day13+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day14' maxlength='1' value=\""+jsonData[i].day14+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day15' maxlength='1' value=\""+jsonData[i].day15+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day16' maxlength='1' value=\""+jsonData[i].day16+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day17' maxlength='1' value=\""+jsonData[i].day17+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day18' maxlength='1' value=\""+jsonData[i].day18+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day19' maxlength='1' value=\""+jsonData[i].day19+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day20' maxlength='1' value=\""+jsonData[i].day20+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day21' maxlength='1' value=\""+jsonData[i].day21+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day22' maxlength='1' value=\""+jsonData[i].day22+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day23' maxlength='1' value=\""+jsonData[i].day23+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day24' maxlength='1' value=\""+jsonData[i].day24+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day25' maxlength='1' value=\""+jsonData[i].day25+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day26' maxlength='1' value=\""+jsonData[i].day26+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day27' maxlength='1' value=\""+jsonData[i].day27+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day28' maxlength='1' value=\""+jsonData[i].day28+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day29' maxlength='1' value=\""+jsonData[i].day29+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day30' maxlength='1' value=\""+jsonData[i].day30+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='day31' maxlength='1' value=\""+jsonData[i].day31+"\"></td>"+ */
+			            var appendtotal = "<td><input type=\"number\" readonly='true' name='workdays' value=\""+jsonData[i].workdays+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='adjholiday' value=\""+jsonData[i].adjholiday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='eventday' value=\""+jsonData[i].eventday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='badday' value=\""+jsonData[i].badday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='wedday' value=\""+jsonData[i].wedday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='proday' value=\""+jsonData[i].proday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='loseday' value=\""+jsonData[i].loseday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='yearholiday' value=\""+jsonData[i].yearholiday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='tripday' value=\""+jsonData[i].tripday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='workhurtday' value=\""+jsonData[i].workhurtday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='absenceday' value=\""+jsonData[i].absenceday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='lateday' value=\""+jsonData[i].lateday+"\"></td>"+
+			            "<td><input type=\"number\" readonly='true' name='leaveearlyday' value=\""+jsonData[i].leaveearlyday+"\"></td>"+
+			            "<td><input type=\"text\" idxrow='"+i+"' name='overtime' value=\""+jsonData[i].overtime+"\"></td>"+
+ 			            "<td><input type=\"number\" readonly='true' name='allowdays' value=\""+jsonData[i].allowdays+"\">"+
+			            "<input type=\"hidden\" name='employee_name' value=\""+jsonData[i].employee_name+"\"/><input type=\"hidden\" name='employee_no' value=\""+jsonData[i].employee_no+"\"/><input type=\"hidden\" name='workrecord_id'  value=\""+jsonData[i].workrecord_id+"\"/><input type=\"hidden\" name='id'  value=\""+jsonData[i].id+"\"/></td></tr>";
+			           	//<input type=\"text\" idxrow='"+i+"' name='score' value=\""+jsonData[i].score+"\">
+			            retcontent+=(appenddays+appendtotal);
+					}
+				}
+				
+				$(".content").append(retcontent);
+				$("#storename").text(storename);
+				
+				var maxday = totalDay;
+				if(maxday==28){
+					$(".content").find("input[name='day29'],input[name='day30'],input[name='day31']").each(function(){
+						$(this).attr('readonly',true);
+					});
+				}
+				if(maxday==29){
+					$(".content").find("input[name='day30'],input[name='day31']").each(function(){
+						$(this).attr('readonly',true);
+					});
+				}
+				if(maxday==30){
+					$(".content").find("input[name='day31']").each(function(){
+						$(this).attr('readonly',true);
+					});
+				}
+				
+			}else{
+				$$.showMessage("系统信息", "获取失败!");
+			}
+			
+			
+			if($("#pro_status").html()!="状态：【已通过】"&&$("#pro_status").html()!="状态：【待审批】"){
+				//有异动 就为填报状态
+				$("input[type='text']").blur(function(){
+					$("#pro_status").html("状态：【填报】");
+				});
+				$("input[type='number']").blur(function(){
+					$("#pro_status").blur("状态：【填报】");
+				});
+				
+				
+				
+				///////////保存时 也显示工时未满 红色提示//////////
+				var totalworktime = $("#totalworktime").html();
+				i=0;
+				$(".content").find("tr").each(function(){
+					//AB为10小时
+					//CD为8小时
+					var $this = $(this);
+					var oneworktime=0;
+					$this.find("input[maxlength='1']").each(function(){
+						if($(this).val().indexOf('A')>=0||$(this).val().indexOf('B')>=0){
+							oneworktime+=10;
+						}
+						if($(this).val().indexOf('C')>=0||$(this).val().indexOf('D')>=0){
+							oneworktime+=8;
+						}
+						if($(this).val()!=""&&$(this).val()!=null&&!isNaN($(this).val())){
+							oneworktime+=parseInt($(this).val());
+						}
+						if($(this).val().indexOf('※')>=0){
+							oneworktime+=8;
+						}
+						if($(this).val().indexOf('◎')>=0){
+							oneworktime+=8;
+						} 
+						//$(this).attr('readonly',true);
+					});
+					i++;
+					if(i>3){
+						if(oneworktime<totalworktime){
+							$this.children('td').eq(0).css('color','red');
+							//$this.css('color','red');
+						}
+					}
+				});
+				///////////保存时 也显示工时未满 红色提示//////////
+				
+				
+			}else{
+				//状态为 已确认 和 提交 状态  显示 颜色工时提示。
+				var totalworktime = $("#totalworktime").html();
+				i=0;
+				$(".content").find("tr").each(function(){
+					//AB为10小时
+					//CD为8小时
+					var $this = $(this);
+					var oneworktime=0;
+					$this.find("input[maxlength='1']").each(function(){
+						if($(this).val().indexOf('A')>=0||$(this).val().indexOf('B')>=0){
+							oneworktime+=10;
+						}
+						if($(this).val().indexOf('C')>=0||$(this).val().indexOf('D')>=0){
+							oneworktime+=8;
+						}
+						if($(this).val()!=""&&$(this).val()!=null&&!isNaN($(this).val())){
+							oneworktime+=parseInt($(this).val());
+						}
+						if($(this).val().indexOf('※')>=0){
+							oneworktime+=8;
+						}
+						if($(this).val().indexOf('◎')>=0){
+							oneworktime+=8;
+						}
+						//$(this).attr('readonly',true);
+					});
+					
+					$this.find("input[type='text'],input[type='number']").each(function(){
+						$(this).attr('readonly',true);
+					});
+					
+					i++;
+					if(i>3){
+						if(oneworktime<totalworktime){
+							$this.children('td').eq(0).css('color','red');
+							//$this.css('color','red');
+						}
+					}
+				});
+				
+			}
+			
+			
+			//$(".content").find("input").attr("readonly",true);
+			$(".content").find("input[readonly]").css("background",'#f5f5f5');
+			//$(".content").find("input[value='是']").css("background",'#f5f5f5');
+            if(isTotalView != null){
+                window.parent.setIframeHeight();
+            }
+			
+			
+			
+			//初始化坐标
+			$("input[type='text'],input[type='number']").click(function(){
+				currentLine=parseInt(parseInt($(this).attr('idxrow'))+4);
+				var colno=$(this).attr('name');
+				if($(this).attr('name')=="score"){
+					colno="day47";
+				}
+				if($(this).attr('name')=="adjholiday"){
+					colno="day33";
+				}
+				currentCol=parseInt(parseInt(colno.substring(3,$(this).attr('name').length))-1);
+			});
+			
+			//校验考勤
+			$("input[maxlength='1']").blur(function(){
+				var chr = $(this).val();
+				var chrattr=$(this).attr('alt');
+				var chrs = "∧△☆□﹢◎※◇×﹤﹥ABCD123456789";
+				var lowerchr='abcd';
+				var isnum = '123456789';
+				var holicode = '◎※';
+				//☆﹢□◇
+				var isreadonly=$(this).attr("readonly");
+				if(!isreadonly||typeof(isreadonly)=='undefined'){
+					if(lowerchr.indexOf(chr)>=0){
+						chr=chr.toUpperCase();
+						$(this).val(chr);
+						$(this).attr("alt",'');
+						$(this).css('background-color','white');
+					}
+					if(holicode.indexOf(chr)>=0&&chrattr.indexOf('0.5')<0){
+						$(this).val(chr);
+						$(this).attr("alt",'');
+						$(this).css('background-color','white');
+					}
+					if(isnum.indexOf(chr)>=0){
+						$(this).val(chr);
+						$(this).attr("alt",'');
+						$(this).css('background-color','white');
+					}
+					if(chr==''){
+						$(this).val("");
+						$(this).attr("alt",'');
+						$(this).css('background-color','white');
+					}
+					if(chrs.indexOf(chr)==-1){
+						$$.showMessage('提示',"输入内容不合法！");
+						$(this).val("");
+						$(this).attr("alt",'');
+						$(this).css('background-color','white');
+						$(this).focus();
+					}
+					if(chr.indexOf('﹤')>=0&&chrattr.indexOf('﹤')<0){
+						$(this).val("﹤");
+						$(this).attr("alt",'﹤C');
+						$(this).css('background-color','#33ccff');
+					}
+					if(chr.indexOf('﹥')>=0&&chrattr.indexOf('﹥')<0){
+						$(this).val("﹥");
+						$(this).attr("alt",'﹥C');
+						$(this).css('background-color','#33ccff');
+					}
+					if(chr.indexOf('×')>=0&&chrattr.indexOf('×')<0){
+						$(this).val("×");
+						$(this).attr("alt",'×C');
+						$(this).css('background-color','#33ccff');
+					}
+					
+					//事假 和 病假 默认值的设置∧△
+					if(chr.indexOf('∧')>=0&&chrattr.indexOf('∧')<0){
+						$(this).val("∧");
+						$(this).attr("alt",'∧C');
+						$(this).css('background-color','#33ccff');
+					}
+					if(chr.indexOf('△')>=0&&chrattr.indexOf('△')<0){
+						$(this).val("△");
+						$(this).attr("alt",'△C');
+						$(this).css('background-color','#33ccff');
+					}
+				}
+				
+				//$(".popup").remove();
+				//$("input[maxlength='1']").next().hide();
+			});
+			$("input[maxlength='1']").focus(function(){
+				$(".popup").remove();
+				$(".popup8").remove();
+			});
+			
+			$("input[maxlength='1']").keyup(function(){
+				var chr = $(this).val();
+				var chrs = "◎";
+				var opr = "﹤﹥";  //迟到 早退
+				var hjsg="☆﹢□◇";  //婚假 产假 丧假 工伤
+				var sbj="∧△×";      //事假 病假  旷工
+				/* if(chrs.indexOf(chr)>=0&&chr!=""){
+					//关闭所有 提示
+					$(".popup").remove();
+					//$(this).next().show();
+					
+					var $input=$(this);
+					var $parent=$(this).parent();
+					$parent.append('<div class=\"popup\"><p>1天</p><p>0.5天</p></div>');
+					var $this = $(this).next();
+					$this.find("p").each(function (index,ele){
+						$(ele).click(function (){
+							if(index==0){
+								$input.attr("alt",'');
+								$input.css('background-color','white');
+								$("input[maxlength='1']").next().remove();
+							}else{
+								$input.attr("alt",'0.5'+chr);
+								$input.css('background-color','#33ccff');
+								$("input[maxlength='1']").next().remove();
+							}
+						});
+					});
+				}else  */
+				if(opr.indexOf(chr)>=0&&chr!=""){
+					$(".popup").remove();
+					//$(this).next().show();
+					
+					var $input=$(this);
+					var $parent=$(this).parent();
+					$parent.append('<div class="popup"><p>A</p><p>B</p><p>C</p><p>D</p></div>');
+					var $this = $(this).next();
+					$this.find("p").each(function (index,ele){
+						$(ele).click(function (){
+							$input.attr("alt",chr+$(ele).html());
+							$input.css('background-color',$(ele).css('background-color'));
+							$("input[maxlength='1']").next().remove();
+						});
+					});
+				}else if(hjsg.indexOf(chr)>=0&&chr!=""){
+					$(".popup").remove();
+					//$(this).next().show();
+					
+					var $input=$(this);
+					var $parent=$(this).parent();
+					$parent.append('<div class="popup"><p>A</p><p>B</p><p>C</p><p>D</p></div>');
+					$parent.find("div").append("<p>无</p>");
+					var $this = $(this).next();
+					$this.find("p").each(function (index,ele){
+						$(ele).click(function (){
+							var vhtml = $(ele).html();
+							var tchr = chr;
+							if(vhtml!="无"){
+								tchr=chr+$(ele).html();
+							}
+							$input.attr("alt",tchr);
+							$input.css('background-color',$(ele).css('background-color'));
+							$("input[maxlength='1']").next().remove();
+						});
+					});
+				}else if(sbj.indexOf(chr)>=0&&chr!=""){
+					//事假 和病假 
+					$(".popup").remove();
+					$(".popup8").remove();
+					//$(this).next().show();
+					
+					var $input=$(this);
+					var $parent=$(this).parent();
+					$parent.append('<div class="popup8"><p>A</p><p>B</p><p>C</p><p>D</p></div>');
+					$parent.find("div").append("<p>0.5A</p><p>0.5B</p><p>0.5C</p><p>0.5D</p>");
+					var $this = $(this).next();
+					$this.find("p").each(function (index,ele){
+						$(ele).click(function (){
+							$input.attr("alt",chr+$(ele).html());
+							$input.css('background-color',$(ele).css('background-color'));
+							$("input[maxlength='1']").next().remove();
+						});
+					});
+				}
+			});
+			
+			
+			//页面加载时 对如果有半天假的 处理 显示当前格为正常值  设置alt值为0.5天+正常值，设置颜色
+			$("input[maxlength='1']").each(function(){
+				var chr = $(this).val();
+				
+				//事假病假  全天的   △B     半天的格式 △0.5B
+				if(chr.indexOf('∧')>=0||chr.indexOf('△')>=0||chr.indexOf('×')>=0){
+					if(chr.indexOf('0.5')>=0){
+						$(this).val(chr.split('0.5')[0]);
+						$(this).attr("alt",chr);
+					}else{
+						$(this).val(chr.substring(0,1));
+						$(this).attr("alt",chr);
+					}
+					
+					if(chr.indexOf('A')>=0){
+						 if(chr.indexOf('0.5')>=0){
+							 $(this).css('background-color','#BCEE68'); 
+						 }else{
+							 $(this).css('background-color','#4876FF'); 
+						 }
+					 }
+					 if(chr.indexOf('B')>=0){
+						 if(chr.indexOf('0.5')>=0){
+							 $(this).css('background-color','#BCEE68'); 
+						 }else{
+							 $(this).css('background-color','#4876FF'); 
+						 }
+					 }
+					 if(chr.indexOf('C')>=0){
+						 if(chr.indexOf('0.5')>=0){
+							 $(this).css('background-color','#43CD80'); 
+						 }else{
+							 $(this).css('background-color','#33ccff'); 
+						 }
+					 }
+					 if(chr.indexOf('D')>=0){
+						 if(chr.indexOf('0.5')>=0){
+							 $(this).css('background-color','#43CD80'); 
+						 }else{
+							 $(this).css('background-color','#33ccff'); 
+						 }
+					 }
+					
+				}
+				
+				/* if(chr.indexOf('0.5')>=0){
+					 $(this).val(chr.split('0.5')[0]);
+					 $(this).attr("alt",'0.5'+$(this).val());
+					 $(this).css('background-color','#33ccff');
+				} */
+				if(chr.indexOf('﹤')>=0||chr.indexOf('﹥')>=0){
+					 $(this).val(chr.substring(0,1));
+					 $(this).attr("alt",chr);
+					 if(chr.indexOf('A')>=0){
+						 $(this).css('background-color','#4876FF');
+					 }
+					 if(chr.indexOf('B')>=0){
+						 $(this).css('background-color','#4876FF');
+					 }
+					 if(chr.indexOf('C')>=0){
+						 $(this).css('background-color','#33ccff');
+					 }
+					 if(chr.indexOf('D')>=0){
+						 $(this).css('background-color','#33ccff');
+					 }
+				}
+				
+				//添加   婚假/产假/丧假/工伤  //显示的时候只显示符号  真实值存alt
+				//var hjsg="☆﹢□◇";  //婚假 产假 丧假 工伤
+				if(chr.indexOf('☆')>=0||chr.indexOf('﹢')>=0||chr.indexOf('□')>=0||chr.indexOf('◇')>=0){
+					 $(this).val(chr.substring(0,1));
+					 $(this).attr("alt",chr);
+					 if(chr.indexOf('A')>=0){
+						 $(this).css('background-color','#4876FF');
+					 }
+					 if(chr.indexOf('B')>=0){
+						 $(this).css('background-color','#4876FF');
+					 }
+					 if(chr.indexOf('C')>=0){
+						 $(this).css('background-color','#33ccff');
+					 }
+					 if(chr.indexOf('D')>=0){
+						 $(this).css('background-color','#33ccff');
+					 }
+					 if(chr.indexOf('无')>=0){
+						 $(this).css('background-color','#ffffff');
+					 }
+				}
+				
+			});
+			
+			
+			//校验月统计
+			$("input[name='adjholiday']").blur(function(){
+				var chr = $(this).val();
+				if(!isNaN(chr)){
+					if(parseInt(chr)>31||parseInt(chr)<0){
+						$$.showMessage('提示',"输入内容不合法！");
+						$(this).val("");
+						$(this).focus();
+					}
+				}else{
+					$$.showMessage('提示',"输入内容不合法！");
+					$(this).val("");
+					$(this).focus();
+				}
+			});
+			//校验月统计
+			$("input[name='score']").blur(function(){
+				var chr = $(this).val();
+				if(!isNaN(chr)){
+					if(parseInt(chr)>100){
+						$$.showMessage('提示',"输入内容不合法！");
+						$(this).val("");
+						$(this).focus();
+					}
+				}else{
+					$$.showMessage('提示',"输入内容不合法！");
+					$(this).val("");
+					$(this).focus();
+				}
+			});
+			
+			
+			
+			//法定加班校验
+			$("input[name='overtime']").blur(function(){
+				var chr = $(this).val();
+				if(!isNaN(chr)){
+					if(parseInt(chr)>70||parseInt(chr)<0){
+						$$.showMessage('提示',"输入内容不合法！");
+						$(this).val("");
+						$(this).focus();
+					}
+				}else{
+					$$.showMessage('提示',"输入内容不合法！");
+					$(this).val("");
+					$(this).focus();
+				}
+			});
+			
+		});
+		
+		
+		//加载完成后,按钮可用
+		$("#btnSave").attr("disabled",false);
+		$("#btnCommit").attr("disabled",false);
+		
+		
+	}
+	
+	
+	function doExport(){
+		var pro_status = $("#pro_status").html();
+		
+    	var wrid=workrecord_id;
+    	doManager("WorkRecordManager", "saveWorkRecordForExcel",[wrid], function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				//alert("导出成功！ ");
+				var ret = JSON.parse(data.data); 
+				window.location.href=ret;
+			} else {
+				$$.showMessage("系统信息", "导出失败!");
+			}
+		});
+	}
+
+</script>
+</head>
+<body>
+<input type="hidden" id="idxrow" value=""/>
+<div class="panel panel-primary">
+		<div class="panel-heading"><label id="ym"></label><label>份员工考勤情况统计表</label><label id="pro_status"></label>
+        	<span class="but">
+                <input id="btnSave" name="" type="button" onclick="doSave();" value="保存"/>
+                <input id="btnCommit" name="" type="button" onclick="doCommit();" value="提交"/>
+            </span>
+        </div>
+        <div class="panel-body" style="padding: 0 10px 0 10px;">
+        	<label id="back_msg"></label>
+            <table width="100%" border="0" cellpadding="0" cellspacing="0" id="ice">
+                <thead>
+                <!--  <tr>
+                     <th colspan="49" style="font-size:24px;"></th>
+                 </tr> -->
+                <tr style="font-size:16px;background-color: white;">
+                    <th colspan="2">填报单位:</th>
+                    <th colspan="44" align="left"><label id="storename"></label></th>
+                    <th colspan="3"><input class="btn btn-primary" style="display: none;" id="expBtn" type="button" onclick="doExport();"  value="导出"></th>
+                </tr>
+                </thead>
+                <tfoot class="content">
+                <tr>
+                    <td width="5%" rowspan="3">工号</td>
+                    <td width="4%" rowspan="3">出勤<br>情况</td>
+                    <td colspan="31">日期</td>
+                    <td colspan="15">月累计</td>
+                   <!--  <td width="2%" rowspan="3">绩效分</td> -->
+                </tr>
+                <tr>
+                    <td width="1.8%">1</td>
+		            <td width="1.8%">2</td>
+		            <td width="1.8%">3</td>
+		            <td width="1.8%">4</td>
+		            <td width="1.8%">5</td>
+		            <td width="1.8%">6</td>
+		            <td width="1.8%">7</td>
+		            <td width="1.8%">8</td>
+		            <td width="1.8%">9</td>
+		            <td width="1.8%">10</td>
+		            <td width="1.8%">11</td>
+		            <td width="1.8%">12</td>
+		            <td width="1.8%">13</td>
+		            <td width="1.8%">14</td>
+		            <td width="1.8%">15</td>
+		            <td width="1.8%">16</td>
+		            <td width="1.8%">17</td>
+		            <td width="1.8%">18</td>
+		            <td width="1.8%">19</td>
+		            <td width="1.8%">20</td>
+		            <td width="1.8%">21</td>
+		            <td width="1.8%">22</td>
+		            <td width="1.8%">23</td>
+		            <td width="1.8%">24</td>
+		            <td width="1.8%">25</td>
+		            <td width="1.8%">26</td>
+		            <td width="1.8%">27</td>
+		            <td width="1.8%">28</td>
+		            <td width="1.8%" class="c29">29</td>
+		            <td width="1.8%" class="c30">30</td>
+		            <td width="1.8%" class="c31">31</td>
+		            <td width="2%" rowspan="2">出勤</td>
+		            <td width="1.8%" rowspan="2">倒休</td>
+		            <td width="2%" rowspan="2">事假</td>
+		            <td width="2%" rowspan="2">病假</td>
+		            <td width="1.8%" rowspan="2">婚假</td>
+		            <td width="1.8%" rowspan="2">产假</td>
+		            <td width="1.8%" rowspan="2">丧假</td>
+		            <td width="1.8%" rowspan="2">年休</td>
+		            <td width="1.8%" rowspan="2">出差</td>
+		            <td width="1.8%" rowspan="2">工伤</td>
+		            <td width="1.8%" rowspan="2">旷工</td>
+		            <td width="2%" rowspan="2">迟到</td>
+		            <td width="2%" rowspan="2">早退</td>
+		            <td width="1.5%" rowspan="2">法定加班[时]</td>
+		            <td width="2%" rowspan="2">饭补天数</td>
+                </tr>
+                <tr class="weekch">
+                    <td>二</td>
+                    <td>三</td>
+                    <td>四</td>
+                    <td>五</td>
+                    <td>六</td>
+                    <td>日</td>
+                    <td>一</td>
+                    <td>二</td>
+                    <td>三</td>
+                    <td>四</td>
+                    <td>五</td>
+                    <td>六</td>
+                    <td>日</td>
+                    <td>一</td>
+                    <td>二</td>
+                    <td>三</td>
+                    <td>四</td>
+                    <td>五</td>
+                    <td>六</td>
+                    <td>日</td>
+                    <td>一</td>
+                    <td><p>二</p></td>
+                    <td>三</td>
+                    <td>四</td>
+                    <td>五</td>
+                    <td>六</td>
+                    <td>日</td>
+                    <td>一</td>
+                    <td>二</td>
+                    <td>三</td>
+                    <td>四</td>
+                </tr>
+
+                <!--  <tr class="content">
+                     <td>A000082</td>
+                     <td>杨婉琪</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>A000082</td>
+                     <td>杨婉琪</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>A000082</td>
+                     <td>杨婉琪</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>A000082</td>
+                     <td>杨婉琪</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>A000082</td>
+                     <td>杨婉琪</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>A000082</td>
+                     <td>杨婉琪</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>A000082</td>
+                     <td>杨婉琪</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>A000082</td>
+                     <td>杨婉琪</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>&nbsp;</td>
+                     <td>&nbsp;</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr>
+                 <tr>
+                     <td>&nbsp;</td>
+                     <td>&nbsp;</td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                     <td><input type="text"></td>
+                     <td><input type="number"></td>
+                     <td><input type="number"></td>
+                 </tr> -->
+                </tfoot>
+            </table>
+        </div>
+        <div class="panel-footer">
+            <div class="prompt">
+                <p>1、出勤根据A、B、C、D四种班次分别进行标注，A、B班工时数为10小时，C、D班工时数为8小时，班次总工时须满本月法定工时<span><label id="totalworktime"></label>小时</span>，事假∧，病假△，婚假☆，丧假□，产假﹢，年休假◎，出差※，工伤◇，旷工×，迟到﹤，早退﹥；</p>
+                <p>2、考勤表由考勤员如实填写；</p>
+                <p>3、月累计栏：出勤、事假、病假、婚假、丧假、年休假、出差、工伤假、旷工以天数累计，迟到、早退以次数累计；</p>
+                <p>4、考勤表电子版每月2日前交人力资源中心，纸质版每月15号前提交。</p>
+            </div>
+        </div>
+	</div>
+
+
+<!-- <table width="100%" border="0" cellpadding="0" cellspacing="0" id="ice">
+	<thead>
+        <tr>
+            <th colspan="49" style="font-size:24px;"></th>
+        </tr>
+        <tr style="font-size:16px;">
+            <th colspan="2">填报单位:</th>
+			<th colspan="44" align="left"><label id="storename"></label></th>
+			<th colspan="3"><input class="btn btn-primary" id="expBtn" type="button" onclick="doExport();"  value="导出"></th>
+        </tr>
+    </thead>
+    <tfoot class="content">
+        <tr>
+            <td width="5%" rowspan="3">工号</td>
+            <td width="4%" rowspan="3">出勤<br>情况</td>
+            <td colspan="31">日期</td>
+            <td colspan="13">月累计</td>
+            <td colspan="2">饭补</td>
+            <td width="2%" rowspan="3">绩效分</td>
+        </tr>
+        <tr>
+            <td width="2%">1</td>
+            <td width="2%">2</td>
+            <td width="2%">3</td>
+            <td width="2%">4</td>
+            <td width="2%">5</td>
+            <td width="2%">6</td>
+            <td width="2%">7</td>
+            <td width="2%">8</td>
+            <td width="2%">9</td>
+            <td width="2%">10</td>
+            <td width="2%">11</td>
+            <td width="2%">12</td>
+            <td width="2%">13</td>
+            <td width="2%">14</td>
+            <td width="2%">15</td>
+            <td width="2%">16</td>
+            <td width="2%">17</td>
+            <td width="2%">18</td>
+            <td width="2%">19</td>
+            <td width="2%">20</td>
+            <td width="2%">21</td>
+            <td width="2%">22</td>
+            <td width="2%">23</td>
+            <td width="2%">24</td>
+            <td width="2%">25</td>
+            <td width="2%">26</td>
+            <td width="2%">27</td>
+            <td width="2%">28</td>
+            <td width="2%">29</td>
+            <td width="2%">30</td>
+            <td width="2%">31</td>
+            <td width="2%" rowspan="2">出勤</td>
+            <td width="2%" rowspan="2">倒休</td>
+            <td width="1.5%" rowspan="2">事假</td>
+            <td width="1.5%" rowspan="2">病假</td>
+            <td width="1.5%" rowspan="2">婚假</td>
+            <td width="1.5%" rowspan="2">产假</td>
+            <td width="1.5%" rowspan="2">丧假</td>
+            <td width="1.5%" rowspan="2">年休</td>
+            <td width="1.5%" rowspan="2">出差</td>
+            <td width="1.5%" rowspan="2">工伤</td>
+            <td width="1.5%" rowspan="2">旷工</td>
+            <td width="1.5%" rowspan="2">迟到</td>
+            <td width="1.5%" rowspan="2">早退</td>
+            <td width="1.5%" rowspan="2">是否正式</td>
+            <td width="2%" rowspan="2">饭补天数</td>
+      </tr>
+        <tr class="weekch">
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+            <td>五</td>
+            <td>六</td>                                                                                                                                                                                                                              
+            <td>日</td>
+            <td>一</td>
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+            <td>五</td>
+            <td>六</td>
+            <td>日</td>
+            <td>一</td>
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+            <td>五</td>
+            <td>六</td>
+            <td>日</td>
+            <td>一</td>
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+            <td>五</td>
+            <td>六</td>
+            <td>日</td>
+            <td>一</td>
+            <td>二</td>
+            <td>三</td>
+            <td>四</td>
+        </tr> -->
+       
+      <!-- 
+        <tr>
+            <td>&nbsp;</td>
+            <td>&nbsp;</td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="text"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+            <td><input type="text"></td>
+            <td><input type="number"></td>
+            <td><input type="number"></td>
+        </tr> -->
+<!--     </tfoot>
+</table>
+<div class="prompt">
+	<p>1、出勤根据A、B、C、D四种班次分别进行标注，A、B班工时数为10小时，C、D班工时数为8小时，班次总工时须满本月法定工时<span><label id="totalworktime"></label>小时</span>，事假∧，病假△，婚假☆，丧假□，产假﹢，年休假◎，出差※，工伤◇，旷工×，迟到﹤，早退﹥；</p>
+    <p>2、考勤表由考勤员如实填写；</p>
+    <p>3、月累计栏：出勤、事假、病假、婚假、丧假、年休假、出差、工伤假、旷工以天数累计，迟到、早退以次数累计；</p>
+    <p>4、考勤表电子版每月2日前交人力资源中心，纸质版每月15号前提交。</p>
+</div> -->
+
+
+
+
+
+
+
+
+
+<script>  
+<!--  
+//定义初始化行列  
+var currentLine=4;  // 目前的行号  
+var currentCol=0;  
+
+
+
+var objtab=document.all.ice;  
+//var colums = objtab.rows[4].cells.length; 
+var colums = 31;
+var objrow=objtab.rows[0].getElementsByTagName("INPUT");  
+ objrow[0].select();  
+document.body.onkeydown=function(e){  
+  e=window.event||e;  
+  switch(e.keyCode){  
+    case 37: //左键  
+      currentCol--;  
+      changeItem(e);  
+      break;  
+    case 38: //向上键  
+      currentLine--;  
+      changeItem(e);  
+      break;  
+    case 39: //右键  
+      currentCol++;  
+      changeItem(e);  
+      break;  
+    case 40: //向下键  
+      currentLine++;  
+      changeItem(e);  
+      break;  
+    default:  
+      break;  
+  }  
+}  
+//方向键调用  
+function changeItem(e){  
+  if(document.all){//如果是IE  
+    var it=document.getElementById("ice").children[0];   //获取table表单元素  
+  }else{//其他浏览器  
+    var it=document.getElementById("ice");  
+  }  
+     
+ if(e.keyCode==37||e.keyCode==39){  
+    if(currentLine<0){//如果行小于0  
+        currentLine=it.rows.length-1;  
+      }  
+      if(currentLine==it.rows.length){  
+       currentLine=0;  
+      }  
+      var objtab=document.all.ice;  
+      var objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");  
+        
+       
+      if(currentCol<0){  
+         
+        if(e.keyCode==37){  
+            currentLine--;  
+            if(currentLine<0){//如果行小于0  
+                currentLine=it.rows.length-1;  
+             }  
+            objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");    
+        }  
+        currentCol=objrow.length-1;  
+      }  
+        
+      if(currentCol>=objrow.length){  
+        if(e.keyCode==39){  
+            currentLine++;  
+             if(currentLine==it.rows.length){  
+              currentLine=0;  
+              }   
+              objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");      
+        }  
+        currentCol=0;    
+          
+      }    
+ }else{  
+    if(currentLine<0){//如果行小于0  
+        currentLine=it.rows.length-1;  
+        currentCol--;  
+        if(currentCol<0){  
+            currentCol=colums-1;  
+        }  
+      }  
+      if(currentLine==it.rows.length){  
+         currentLine=0;  
+         currentCol++;  
+         if(currentCol>=colums){  
+            currentCol=0;  
+         }  
+      }  
+      var objtab=document.all.ice;  
+      var objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");  
+      while(e.keyCode==40&&objrow[currentCol]==undefined){  
+        currentLine++;  
+        objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");        
+      }  
+      while(e.keyCode==38&&objrow[currentCol]==undefined){  
+        currentLine--;        
+        objrow=objtab.rows[currentLine].getElementsByTagName("INPUT");    
+      }  
+        
+ }    
+  objrow[currentCol].focus();  
+}  
+
+
+
+
+
+//-->  
+</script>
+
+
+
+
+
+</body>
+</html>

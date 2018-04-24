@@ -1,0 +1,866 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>编辑店长经理信息</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script> 
+
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+.panel{border-radius:0; border:0; margin:0;}
+form{border:1px solid #337ab7;background-color:#fff;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	height:55px; line-height:55px; padding:5px 0;
+}
+table tr:nth-child(2n){background-color:#f2f2f2;}
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 58%;
+	height: 35px;
+	line-height: 35px;
+	border: 1px solid #e2e2e2;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;outline:none; border-radius:3px;
+}
+table td label{padding-left:10px; color:#999;}
+table te .letter{ letter-spacing:2em;}
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.form-control{margin:0; height:40px;}
+.input-group-btn button{height:40px;}
+</style>
+
+<script type="text/javascript">
+Date.prototype.format=function(fmt) {        
+    var o = {        
+    "M+" : this.getMonth()+1, //月份        
+    "d+" : this.getDate(), //日        
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
+    "H+" : this.getHours(), //小时        
+    "m+" : this.getMinutes(), //分        
+    "s+" : this.getSeconds(), //秒        
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度        
+    "S" : this.getMilliseconds() //毫秒        
+    };        
+    var week = {        
+    "0" : "\u65e5",        
+    "1" : "\u4e00",        
+    "2" : "\u4e8c",        
+    "3" : "\u4e09",        
+    "4" : "\u56db",        
+    "5" : "\u4e94",        
+    "6" : "\u516d"       
+    };        
+    if(/(y+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
+    }        
+    if(/(E+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
+    }        
+    for(var k in o){        
+        if(new RegExp("("+ k +")").test(fmt)){        
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
+        }        
+    }        
+    return fmt;        
+} 
+
+	var id = getUrlParamByKey("id");
+	var isexist=false;
+	var exit_store="";
+	function dataCheck() {
+		exit_store = "";
+		isexist=false;
+		var name = $('#name').val();
+		if (name == "" || name == null||name.trim()=="") {
+			$$.showMessage("系统信息","请填写姓名 !");
+			return;
+		}
+		var phone = $('#phone').val();
+		if (phone == "" || phone == null) {
+			$$.showMessage("系统信息","请填写电话!");
+			return;
+		}
+		if(phone.length!=11){
+			$$.showMessage("系统信息","电话格式不正确 !");
+			return;
+		}else{
+			//校验电话是否重复
+			if(srcphone!=phone){
+				var ishavephone = true;
+				doManager("StoreKeeperManager", "queryStoreKeeperByPhone", phone ,
+						function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								var jsonData = $.fromJSON(data.data);
+								if(jsonData!=null){
+									ishavephone=false; 
+								}
+							}
+						}, false);
+				if(!ishavephone){
+					$$.showMessage("系统信息","系统中存在相同电话的信息！   ");
+					return;
+				}
+			}
+			
+		}
+		var store_name = $('#selectStoreIds').val();
+		if (store_name == "" || store_name == null) {
+			$$.showMessage("系统信息","请选择门店 !");
+			return;
+		}
+		var citySelect = $("#citySelect").val();
+		var nocity = false;
+		if (citySelect == "" || citySelect == null ||citySelect.trim()=="") {
+			$$.showMessage("系统信息","请选择城市!");
+			return;
+		}else{
+			doManager("DistCityCodeManager", "queryDistCityCodeByName", citySelect ,
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData==null){
+								nocity=true;
+							}
+						}
+					}, false);
+			
+		}
+		if(nocity){
+			$$.showMessage("系统信息","不存在的城市 ！请先维护城市编码！");
+			return;
+		}
+		
+		
+		var zwval = $("#zw  option:selected").val(); 
+		var store_ids = store_name;
+		var emp_no =  $('#employee_no').val();
+		
+		if(zwval=="RM"){
+			var region = $("#region").val();
+			if (region == "" || region == null||region.trim()=="") {
+				$$.showMessage("系统信息","请填写区域名称 !");
+				return;
+			}
+			doManager("StoreManager", "findStoreByStoreIds", [store_ids,emp_no,'RM'],
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData!=null){
+								isexist=true;
+								exit_store = jsonData.name;
+							}
+						}
+					}, false);
+		}else{
+			doManager("StoreManager", "findStoreByStoreIds", [store_ids,emp_no,'SK'],
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData!=null){
+								isexist=true;
+								exit_store = jsonData.name;
+							}
+						}
+					}, false);
+		}
+		
+		
+		
+		
+		
+		
+		return true;
+	}
+	
+	//初始化快递公司 
+	function initExpressCompany() {
+		doManager("ExpressCompanyManager", "queryAllExpressName", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						var emList = jsonData.expressCompany;
+						//$("#express_company").append("<option></option>");
+						for (i = 0; i < emList.length; i++) {
+							$("#express_company").append("<option>" + emList[i].express_name + "</option>");
+						}
+					}
+				}, false);
+	}
+	
+	var array=new Array();
+	//初始化所有门店 
+	function initallstore() {
+		doManager("StoreManager", "findStoreAll", null,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					for(i=0;i<jsonData.length;i++){
+						array.push(jsonData[i].name);
+					}
+					var autoComplete = new AutoComplete("storename","auto",array);
+					document.getElementById("storename").onkeyup = function(event){
+						autoComplete.start(event);
+					}
+				}
+			}, false);
+	}
+	
+	
+	function defaultva(key,va,msg){
+		if(va==null||va==""){
+			document.getElementById(key).value=msg;
+		}else{
+			document.getElementById(key).value = va;
+		}
+	}
+	
+	
+	//记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('storekeepersubQuery', 'conditionsDiv');
+    }
+	
+    var tmpCitySelect = "";
+    var srcphone="";
+	$(function() {
+		initallstore();
+		
+		doManager("StoreKeeperManager", "queryStoreKeeperById", id , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				
+				$("#id").val(jsonData.id);
+				$("#name").val(jsonData.name);
+				$("#phone").val(jsonData.phone);
+				srcphone=jsonData.phone;
+				tmpCitySelect=jsonData.citySelect;
+				$("#citySelect").val(jsonData.citySelect);
+				$("#employee_no").val(jsonData.employee_no);
+				//真实的ID和名称
+				$("#selectStoreName").val(jsonData.storenames.replace(/,,/g,","));
+				$("#selectStoreIds").val(jsonData.store_ids.replace(/,,/g,","));
+				
+				var showStoreName = $("#selectStoreName").val();
+				if(showStoreName.length>12){
+					showStoreName=showStoreName.substring(0, 12)+"...";
+				}
+				//临时界面的显示 
+				$("#showSelectName").html(showStoreName);
+				
+				var zwcode = jsonData.zw=="店长"?"SK":"RM";
+				$("#zw").attr("value",zwcode);
+				if(zwcode=="RM"){
+					$(".region").show();
+					$("#region").val(jsonData.remark);
+				}else{
+					$(".region").hide();
+				}
+				
+				
+				var zwname = zwcode=="SK"?"店长":"运营经理";
+				$("#zw option[text='"+zwname+"']").attr("selected", true);
+				
+				$("#humanstatus").attr("value",jsonData.humanstatus);
+				$("#humanstatus option[text='"+jsonData.humanstatus+"']").attr("selected", true);
+				if(jsonData.humanstatus=="2"){
+					$(".leavediv").show();
+					$("#leavetype").attr("value",jsonData.leavetype);
+					$("#leavetype option[text='"+jsonData.leavetype+"']").attr("selected", true);
+					$("#leavereason").val(jsonData.leavereason);
+					$("#leavedate").val(jsonData.leavedate);
+					$("#leavercvlistdate").val(jsonData.leavercvlistdate);
+				}else{
+					$(".leavediv").hide();
+				}
+				
+			}
+		});
+		
+		
+		$("#humanstatus").change(function(){
+			var humanstatus = $("#humanstatus  option:selected").val();
+			if(humanstatus=="2"){
+				$(".leavediv").show();
+			}else{
+				$(".leavediv").hide();
+			}
+		});
+		
+		$(".leavediv").hide();
+		
+		
+		$(".panel-heading").eq(1).hide();
+		
+		
+		
+		$("#zw").change(function(){
+			var zwval = $("#zw  option:selected").val();
+			if(zwval =="RM"){
+				$(".region").show();
+			}else{
+				$(".region").hide();
+			}
+		});
+		
+	});
+
+	
+	function doSave() {
+		var humanstatus = $("#humanstatus  option:selected").val();
+		if(humanstatus!="2"){
+			if (!dataCheck()) {
+				return;
+			}
+		}
+		//var arr = ["id","name","employee_no","orgname","deptlevel1","deptlevel2","deptlevel3","reporthigher","store_id","storename","zw","jobchannel","offername","citySelect","interndate","cardnumber","birthday","nation","censusregister","education","school","profession","marriage","phone","relationname","tel","relationtype","isofficial","topostdate","contractdate","contractdatestart","contractdateend"];
+		var arr =["id","name","phone","citySelect","employee_no","region"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		//职务
+		o["zw"] = $("#zw  option:selected").val();
+		//状态
+		o["humanstatus"] = $("#humanstatus  option:selected").val();
+		o["storenames"]=$("#selectStoreName").val();
+		o["store_ids"]=$("#selectStoreIds").val();
+		
+		if(o["humanstatus"]=="2"){
+			o["leavereason"]=$("#leavereason").val();
+			//o["leavetype"]=$("#leavetype").val();
+			o["leavetype"] = $("#leavetype  option:selected").text();
+			o["leavedate"]=$("#leavedate").val().replace(/-/g, "/");
+			o["leavercvlistdate"]=$("#leavercvlistdate").val();
+		}
+		
+		
+		var zwval = $("#zw  option:selected").val();
+		var ch_zw = "";
+		if(zwval=="RM"){
+			ch_zw="区域经理";
+		}else{
+			ch_zw="店长";
+		}
+		
+		
+		if(isexist){
+			 $$.showConfirm("提示","门店"+exit_store+" 已分配其它"+ch_zw+"!是否继续保存？",function () {
+				 doManager("StoreKeeperManager", "updateStoreKeeper", o , function(data,
+							textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							window.location.href = 'store_keeper_list.html';
+						} else {
+							$$.showMessage("系统信息", "保存失败!");
+						}
+					});
+			 });
+		} else{
+			doManager("StoreKeeperManager", "updateStoreKeeper", o , function(data,
+					textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					window.location.href = 'store_keeper_list.html';
+				} else {
+					$$.showMessage("系统信息", "保存失败!");
+				}
+			});
+		}
+	
+		
+	}
+
+	
+	function doBack(){
+		window.location.href = 'store_keeper_list.html';
+	}
+	
+	
+	
+	 var win;
+
+     /**
+      * 选择城市,创建一个城市列表并显示
+      * @param {Object} callback
+      *
+      */
+     function showStoreWin(callback){
+    	  
+    	var citySelect = $("#citySelect").val();
+  		if (citySelect == "" || citySelect == null ||citySelect.trim()=="") {
+  			alert("请选择城市!");
+  			return;
+  		}
+         win = new checkWin(callback);
+         win.show();
+         $('html, body').animate({scrollTop:0});
+         $(".ui-dialog-titlebar-close").remove();
+     }
+	
+    /* //删除当前行 
+    function deletetr(nowTr){ 
+       $(nowTr).closest('tr').remove();
+    } */
+	function setStoreSelect(jsons){
+    	var selectStoreNames = "";
+    	var selectStoreIds = "";
+		$.each(jsons,function(n,value) {
+			/* var obj="<tr>"+
+					"<th>"+value.id+"</th>"+
+					"<th>"+value.name+"</th>"+
+					"<th>"+value.address+"</th>"+
+					"<th><a href=\"#\" onclick=\"deletetr(this);\"><font color=\"blue\">删除</font></a></th>"+
+				    "</tr>"; */
+			var objName = value.name;
+			selectStoreNames+=","+objName+",";
+			var objId = value.id;
+			selectStoreIds+=","+objId+",";
+		});
+		
+		//真实的ID和名称
+		$("#selectStoreName").val(selectStoreNames.replace(/,,/g, ","));
+		$("#selectStoreIds").val(selectStoreIds.replace(/,,/g, ","));
+		
+		if(selectStoreNames.length>12){
+			selectStoreNames=selectStoreNames.substring(0, 12)+"...";
+		}
+		//临时界面的显示 
+		$("#showSelectName").html(selectStoreNames.replace(/,,/g, ","));
+		
+		
+    }
+	
+     
+	
+	 /**
+    *
+    * @param {Object} callback 	回调函数
+    * 返回值json
+    */
+   var checkWin = function(callback){
+       this.win = $("<div style='overflow-y: hidden'></div>");
+       var par = $("#selectStoreIds").val();
+       var city = encodeURIComponent($("#citySelect").val());
+       var _this = this;
+       var initWin = function(){
+           _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/select_view/select_store_checkbox.html?ids='+par+'&city='+city+'" scrolling="yes"></iframe>');
+           _this.win.dialog({
+               bgiframe: true,
+               title:"选择门店",
+               autoOpen:false,
+               width:_this.width,
+               height:_this.height,
+               buttons : {
+                   "确定": function(){
+                	   /* var selVal=window.frames["selectWin"].getcheckedstoreid();
+                	   this.callBack=selVal;  */
+                       window.frames["selectWin"].doSubmit();
+                       _this.win.remove();
+                   } ,
+                   "取消":function(){
+                       _this.hide();
+                       _this.win.remove();
+                   } 
+               },
+               modal:true
+           });
+       };
+       this.width = 900;
+       this.height = 730;
+       this.callBack = function(json){
+           if (callback && typeof(callback) == 'function') {
+               callback(json);
+           }
+       };
+
+       this.show = function(){
+           _this.win.dialog("open");
+       };
+
+       this.hide = function(){
+           if(_this.onSubmitHandler){
+               _this.onSubmitHandler();
+           }
+           _this.win.dialog("close");
+       };
+       initWin();
+   }
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    function updatestorekeeperpassword(){
+        var div = $("#setstorekeeperpassword");
+        div.dialog({
+            bgiframe : true,
+            title : "重置密码",
+            width : 380,
+            buttons : {
+                "确定" : function() {
+                	updatestorekeeperpwd($(this));
+                },
+                "取消" : function() {
+                    $(this).dialog("close");
+                }
+            },
+            modal : true
+        });
+    }
+
+    function updatestorekeeperpwd(_this){
+        var storepassword = $('#storepassword').val();
+        var confstorepassword = $('#confstorepassword').val();
+        var employee_no = $('#employee_no').val();
+        if(storepassword == null || storepassword == ''){
+            $$.showMessage('提示','请输入密码');
+            return;
+        }
+
+        if(confstorepassword == null || confstorepassword == ''){
+            $$.showMessage('提示','请再次输入密码');
+            return;
+        }
+        
+        if(confstorepassword.indexOf(' ')!=-1){
+        	 $$.showMessage('提示','密码不能包含空格');
+             return;
+        }
+        
+        if(storepassword!=confstorepassword){
+        	 $$.showMessage('提示','两次密码不一致,请重新输入');
+        	 $("#confstorepassword").val('');
+             return;
+        }
+		
+        doManager('storeKeeperManager','updatestorekeeperpassword',[storepassword,confstorepassword,employee_no],function(data){
+            if(data.result){
+                var path = JSON.parse(data.data);
+                if(path == null){
+                    $$.showMessage('提示','更改失败，员工号 '+employee_no+'，未分配门店！ ',function(){
+                        _this.dialog("close");
+                    });
+                }else{
+                	$$.showMessage('提示','更改成功 ',function(){
+                        _this.dialog("close");
+                    });
+                }
+            }else{
+                $$.showMessage('提示',data.message);
+            }
+        });
+    }
+    
+    
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">门店数据维护 :店长经理信息编辑
+        	<span class="but">
+                <input name="" type="submit" onclick="doSave();" value="保存"/>
+                <input name="" type="button" onclick="doBack();" value="返回"/>
+            </span>
+        </div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						<font color="red">*</font>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：<input type="text" id="name" isautotab="true" value="" style="width: 48%;"/>
+					</p>
+				</td>
+				
+				<td>
+					<p>
+						<font color="red">*</font>本人电话：<input type="text" id="phone" isautotab="true"  style="width: 39%;" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11"/>
+					</p>
+				</td>
+			</tr>
+            
+             <tr>
+             
+             <td>
+					<p>
+						<font color="red">*</font>职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：
+						<select id="zw" style="width: 50%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+							<option value="SK">店长</option>
+							<option value="RM">运营经理</option>
+						</select>
+					</p>
+				</td>
+				
+                <td>
+                	<p>
+						状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：
+						<select id="humanstatus" style="width: 40%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+							<option value="1">在职</option>
+							<option value="2">离职</option>
+						</select>
+					</p>
+                </td>
+            </tr>
+            
+            	<tr class="leavediv">
+	            	<td>
+	                	<p>
+							离职原因：<input type="text" id="leavereason" isautotab="true" />
+						</p>
+	                </td>
+	                <td>
+	                	<p>
+							离职类型：<!-- <input type="text" id="leavetype" isautotab="true" style="width:35%;" /> -->
+							<select id="leavetype" style="width: 40%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+								<option></option>
+								<option value="主动">主动</option>
+								<option value="被动">被动</option>
+							</select>
+						</p>
+	                </td>
+	            </tr>
+	            <tr class="leavediv">
+	            	<td>
+	                	<p>
+							<span style="float:left; margin-top:13px;">离职时间：</span>&nbsp;&nbsp;<!-- <input type="text" id="leavedate" isautotab="true" /> -->
+							<input id="leavedate" revalidate="true" type="text"
+									validate="formatDate:true" class="pmsDateField form-control"
+									readonly yearRange="-100:+0"
+									style="width: 33%; display: initial;"
+									likeOption="false" />
+						</p>
+	                </td>
+	                <td>
+		                <p>
+		                	<span style="float:left; margin-top:13px;">收单日期：</span>&nbsp;&nbsp;<!-- <input type="text" id="leavedate" isautotab="true" /> -->
+							<input id="leavercvlistdate" revalidate="true" type="text"
+									validate="formatDate:true" class="pmsDateField form-control"
+									readonly yearRange="-100:+0"
+									style="width: 33%; display: initial;"
+									likeOption="false" />
+		                </p>
+	                </td>
+	            </tr>
+            
+			<tr>
+                
+				<td>
+					<p>
+						<font color="red">*</font>城&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市：<input type="text" class="cityinput" id="citySelect" placeholder="请选择城市" style="width: 40%;"  readonly='true' />
+					</p>
+				</td>
+				
+				<td>
+                	<p style="float:left; padding-top:11px;"><font color="red">*</font>门&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;店：
+                  <!--   <div class="wrap" style="width:48%; float:left; position:relative;">
+                        <input type="text" id="storename" class="auto-inp">
+                        <div class="auto hidden" id="auto">
+
+                        </div>
+                    </div> -->
+                    <label id="showSelectName"></label>
+                    <input type="hidden" id="selectStoreName" value="" />
+                    <input type="hidden" id="selectStoreIds" value="" />
+                    <input type="hidden" id="id" value="" />
+                    <input type="hidden" id="employee_no" value="" />
+                    <button class="btn btn-primary" onclick="showStoreWin(setStoreSelect);">选择门店</button>
+                </td>
+			</tr>
+               
+               
+            <tr>
+				<td>
+					<p></p>
+					<p>
+						修改密码：<button class="btn btn-primary" onclick="updatestorekeeperpassword();"> 密码重置 </button>
+
+					</p>
+				</td>
+				
+				<td>
+					<p class="region">
+						<font color="red">*</font>区域名称：<input type="text" id="region" isautotab="true"  style="width: 39%;" />
+					</p>
+				</td>
+			</tr>
+               
+                       
+		</table>
+	</form>
+	
+	
+	
+	<!-- <div class="rightcont clear">
+	<div id="centerQueryGridContainer" class="panel panel-primary" queryid="storekeepersubQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showheader="false" 
+         showsearch="false" showpaging="false" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+    </div> 
+    
+    
+    <table class="display" style="width: 100%; table-layout: auto;" border="1">
+		<thead>
+			<tr>
+				<th class="ui-state-default" style="width: 10%; text-align: center;"><div
+						class="DataTables_sort_wrapper">
+						门店编号<span class="css_right ui-icon ui-icon-triangle-1-n"></span>
+					</div>
+				</th>
+				<th class="ui-state-default" style="width: 30%; text-align: center;"><div
+						class="DataTables_sort_wrapper">
+						门店名称<span class="css_right ui-icon ui-icon-triangle-1-n"></span>
+					</div>
+				</th>
+				<th class="ui-state-default" style="width: 50%; text-align: center;"><div
+						class="DataTables_sort_wrapper">
+						详细地址<span class="css_right ui-icon ui-icon-carat-2-n-s"></span>
+					</div>
+				</th>
+				<th class="ui-state-default" style="width: 10%; text-align: center;"><div
+						class="DataTables_sort_wrapper">
+						操作<span class="css_right ui-icon ui-icon-carat-2-n-s"></span>
+					</div>
+				</th>
+			</tr>
+		</thead>
+		<div id="t_storelist">
+		</div> -->
+		<!-- <tr>
+			<th>36</th>
+			<th>呼家楼门店</th>
+			<th>朝阳区呼家楼</th>
+			<th><a href="">删除</a></th>
+		</tr>
+		<tr>
+			<th>36</th>
+			<th>呼家楼门店</th>
+			<th>朝阳区呼家楼</th>
+			<th><a href="">删除</a></th>
+		</tr>
+		<tr>
+			<th>36</th>
+			<th>呼家楼门店</th>
+			<th>朝阳区呼家楼</th>
+			<th><a href="">删除</a></th>
+		</tr> 
+	</table>
+-->
+
+
+
+		<div id="setstorekeeperpassword" class="panel panel-primary" style="display: none;">
+            <div class="panel-body">
+                <table  cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                    <tr>
+                        <td align="right" >密码<label style="color:red;">*</label>：</td>
+                        <td >
+                           <input type="text" id="storepassword" name="storepassword" class="wicon form-control" maxlength="20" onkeyup="value=this.value.replace(/[ ]/g,'')" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right" width="20%" >再次输入密码<label style="color:red;">*</label>：</td>
+                        <td width="80%" >
+                            <input type="text" id="confstorepassword" name="confstorepassword" class="wicon form-control" maxlength="20" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        
+        
+</body>
+
+<script>
+	function clearStoreVal(obj){
+		var srcVal = tmpCitySelect;
+		if(srcVal!=obj){
+			$("#selectStoreName").val('');
+			$("#selectStoreIds").val('');
+			$("#showSelectName").html('');
+			tmpCitySelect = obj;
+		}
+	}
+	
+	var test=new Vcity.CitySelector({input:'citySelect'});
+	
+	
+	
+	
+</script>
+
+</html>

@@ -1,0 +1,491 @@
+<public:component>
+<public:attach event='onreadystatechange' onevent='i2uiHookOWCEvents()'/>
+<SCRIPT LANGUAGE="JScript">
+   function i2uiHookOWCEvents()
+   {
+     var classid = element.classid;
+     // spreadsheet
+     if (classid.indexOf("2E559") != -1)
+     {
+       element.attachEvent("CommandExecute",       i2uiSpreadsheetCommandHandler);
+       element.attachEvent("EndEdit",              i2uiSpreadsheetEditHandler);
+       element.attachEvent("SelectionChanging",    i2uiSpreadsheetSelectionHandler);
+     }
+     else
+     // pivot
+     if (classid.indexOf("2E55A") != -1)
+     {
+       element.attachEvent("SelectionChange",  i2uiPivotSelectionChange);
+       element.attachEvent("PivotTableChange", i2uiPivotTableChange);
+       element.attachEvent("DataChange",       i2uiPivotDataChange);
+       element.attachEvent("CommandExecute",   i2uiPivotCommandHandler);
+       element.attachEvent("BeforeContextMenu",i2uiPivotBeforeContextMenu);
+     }
+     return;
+   }
+   var i2uiPivotDataChangeRequest = null;
+   function i2uiPivotDataChange(reason)
+   {  
+     // use a delay approach to invoking callback since
+     // several similar events may occur
+     if (reason == 42 || reason == 1 || reason == 29 || reason == 5)
+     {
+       if (i2uiPivotDataChangeRequest != null)
+         clearTimeout(i2uiPivotDataChangeRequest);
+       i2uiPivotDataChangeRequest = setTimeout("i2uiDelayedPivotDataChange('"+element.id+"')",100);
+     }
+   }
+   function i2uiPivotTableChange()
+   {  
+     try 
+     {
+       i2uiDelayedPivotChange(element.id);
+     }
+     catch(e){}
+   }
+
+   function i2uiPivotSelectionChange()
+   {
+     var labelobj = element.document.getElementById(element.id+"EditLabel");
+     var editobj = element.document.getElementById(element.id+"Edit");
+     if (labelobj != null && editobj != null)
+     {
+       var itemName = "foo";
+       var itemValue = "bar";
+       var itemType = null;
+       var skip = true;
+
+       var pivot = element.document.getElementById(element.id);
+
+       // handling of row totals
+       if (element.SelectionType == "PivotAggregates" &&
+           (element.Selection.Item(0).Cell.RowMember.UniqueName == "Total" ||
+            element.Selection.Item(0).Cell.RowMember.UniqueName == "Grand Total"))
+       {
+         var cell = element.Selection.Item(0);
+         if (pivot.editableColumns[cell.Name] != null)
+         {
+           itemName = cell.Name;
+           itemValue = cell.Value;
+           skip = false;
+           element.oldTotalValue = cell.Value;
+         }
+       }
+       else
+       if (element.SelectionType == "PivotAggregates" &&
+           element.Selection.Item(0).Cell.RowMember.UniqueName.substr(0,1) == "[" &&
+           element.Selection.Item(0).Cell.ColumnMember.UniqueName.substr(0,1) == "[")
+
+       {
+         itemName = element.Selection.Item(0).Total.Caption;
+         if (pivot.editableColumns[itemName] != null)
+         {
+           if (element.Selection.Item(0).Cell.DetailRowCount > 1 &&
+               element.Selection.Item(0).Cell.DetailColumnCount > 1)
+           {
+             alert("You can not edit an aggregate.  Expand the cell and try again");
+           }
+           else
+           {
+             skip = false;
+             itemValue = element.Selection.Item(0).Value;
+             itemType = pivot.fieldTypes[pivot.MeasureToAttribute[itemName]];
+             if (itemType == "date")
+             {
+               var d = new Date(itemValue);
+               itemValue = (d.getMonth()+1)+"/"+d.getDate()+"/"+d.getFullYear();
+             }
+           }
+         }
+       }
+       else
+       if (element.SelectionType == "PivotDetailRange")
+       {
+         skip = false;
+         itemName = element.Selection.TopLeft.Field.BaseName;
+         itemValue = element.Selection.TopLeft.Value;
+         itemType = pivot.fieldTypes[pivot.MeasureToAttribute[itemName]];
+         if (itemType == "date")
+         {
+           var d = new Date(itemValue);
+           itemValue = (d.getMonth()+1)+"/"+d.getDate()+"/"+d.getFullYear();
+         }
+       }
+       else
+       if (element.SelectionType == "PivotTotals")
+       {
+         try
+         {
+           itemName = element.Selection.Item(0).Field.BaseName;
+           itemType = pivot.fieldTypes[pivot.MeasureToAttribute[itemName]];
+         }
+         catch(e){}
+         if (pivot.editableColumns[itemName] != null && itemType == "float")
+         {
+           try
+           {
+             element.document.getElementById(element.id+"MassEditLabel1").innerText = itemName;
+             element.document.getElementById(element.id+"MassEditLabel2").innerText = itemName;
+             editobj = element.document.getElementById(element.id+"MassEditFactor");
+             editobj.value = 1;
+             element.document.getElementById(element.id+"MassEditConstant").value = 0;
+             element.document.getElementById(element.id+"MassEditMeasure").value = itemName;
+             i2uiToggleItemVisibility(element.id+"MassEditForm","show");
+             i2uiToggleItemVisibility(element.id+"MassEditForm1","show");
+             i2uiToggleItemVisibility(element.id+"MassEditForm2","show");
+             editobj.focus();
+             editobj.select();
+           } 
+           catch(e){}
+         }
+         else
+         {
+           i2uiToggleItemVisibility(element.id+"MassEditForm","hide");
+         }
+         i2uiToggleItemVisibility(element.id+"EditForm","hide");
+         return;
+       }
+       else
+       if (element.SelectionType == "PivotFields")
+       {
+         // check if in data axis
+         try
+         {
+           itemName = element.Selection.Item(0).BaseName;
+           var test = pivot.activeView.dataaxis.fieldsets(itemName).Name;
+           itemType = pivot.fieldTypes[pivot.MeasureToAttribute[itemName]];
+           if (pivot.editableColumns[itemName] != null && itemType == "float")
+           {
+             try
+             {
+               element.document.getElementById(element.id+"MassEditLabel1").innerText = itemName;
+               element.document.getElementById(element.id+"MassEditLabel2").innerText = itemName;
+               editobj = element.document.getElementById(element.id+"MassEditFactor");
+               editobj.value = 1;
+               element.document.getElementById(element.id+"MassEditConstant").value = 0;
+               element.document.getElementById(element.id+"MassEditMeasure").value = itemName;
+               i2uiToggleItemVisibility(element.id+"MassEditForm","show");
+               editobj.focus();
+               editobj.select();
+             } 
+             catch(e){}
+           }
+           else
+           if (pivot.editableColumns[itemName] != null && itemType == "string")
+           {
+             labelobj.innerText = itemName+" : ";
+             editobj.value      = "";
+             editobj.readOnly   = false;
+             i2uiToggleItemVisibility(element.id+"EditForm","show");
+             editobj.focus();
+             i2uiToggleItemVisibility(element.id+"EditForm","show");
+             i2uiToggleItemVisibility(element.id+"MassEditForm","hide");
+             return;
+           }
+           else
+           {
+             i2uiToggleItemVisibility(element.id+"MassEditForm","hide");
+           }
+           i2uiToggleItemVisibility(element.id+"EditForm","hide");
+           return;
+         }
+         catch(e)
+         {
+           i2uiToggleItemVisibility(element.id+"EditForm","hide");
+           i2uiToggleItemVisibility(element.id+"MassEditForm","hide");
+           return;
+         }
+       }
+
+       i2uiToggleItemVisibility(element.id+"MassEditForm","hide");
+       if (!skip && pivot.editableColumns[itemName] == null)
+           skip = true;
+       if (skip)
+       {
+         labelobj.innerText = " ";
+         editobj.value = "";
+         editobj.readOnly = true;
+         i2uiToggleItemVisibility(element.id+"EditForm","hide");
+       }
+       else
+       {
+         labelobj.innerText = itemName+" : ";
+         editobj.value      = itemValue;
+         editobj.readOnly   = false;
+         i2uiToggleItemVisibility(element.id+"EditForm","show");
+         editobj.focus();
+         //editobj.select();
+       }
+     }
+   }
+   var i2uiSelectionRow = 1;
+   var i2uiSelectionColumn = 1;
+   var i2uiSelectionRowCount = 1;
+   var i2uiSelectionColumnCount = 1;
+   function i2uiSpreadsheetEditHandler()
+   {
+     // must delay in order for new values to be processed
+     setTimeout("i2uiSpreadsheetEditHandlerDelayed('"+element.id+"',"+i2uiSelectionRow+","+i2uiSelectionColumn+");",100);
+   }
+   function i2uiSpreadsheetSelectionHandler(SelectionRange)
+   {
+     i2uiSelectionRow = SelectionRange.Row;
+     i2uiSelectionRowCount = SelectionRange.Rows.Count;
+     i2uiSelectionColumn = SelectionRange.Column;
+     i2uiSelectionColumnCount = SelectionRange.Columns.Count;
+   }
+   function i2uiSpreadsheetCommandHandler(Cmd, Cancel)
+   {
+     if (Cmd == 10008)
+     {
+       // delete recently inserted rows in protected data region
+       if (!i2uiAllowRowManip(element))
+       {
+         var protection = element.activeSheet.Protection;
+         protection.Enabled = false;
+         var len = element.activeSheet.Application.Selection.Rows.Count;
+         for (i=0; i<len; i++)
+           element.activeSheet.Application.ActiveCell.EntireRow.Delete();
+         protection.Enabled = true;
+       }
+     }
+     else
+     if (Cmd == 10009)
+     {
+       // delete recently inserted columns in protected data region
+       if (!i2uiAllowColumnManip(element))
+       {
+         var protection = element.activeSheet.Protection;
+         protection.Enabled = false;
+         var len = element.activeSheet.Application.Selection.Columns.Count;
+         for (i=0; i<len; i++)
+           element.activeSheet.Application.ActiveCell.EntireColumn.Delete();
+         protection.Enabled = true;
+       }
+     }
+     if (Cmd == 1003 && Cancel == -1) // paste operation
+     {
+       setTimeout("i2uiSpreadsheetEditHandlerDelayed('"+element.id+"',"+i2uiSelectionRow+","+i2uiSelectionColumn+","+i2uiSelectionRowCount+","+i2uiSelectionColumnCount+");",100);
+     }
+
+   }
+   function i2uiAllowRowManip(element)
+   {
+     var activeCell = element.activeSheet.Application.ActiveCell.Address;
+     var at = activeCell.lastIndexOf("$");
+     var activeRow = activeCell.substring(at+1);
+     at = element.id.indexOf("Spreadsheet");
+     var objname = element.id.substring(0,at);
+     var numrows = 0;
+     try {
+       var tblobj = element.document.getElementById(objname+"_data");
+       if (tblobj == null)
+         numrows = element.document.getElementById(objname).rows.length;
+       else
+         numrows = tblobj.rows.length + 1;
+     } catch(e){}
+     if (activeRow <= numrows)
+       return false;
+     else
+       return true;
+   }
+   function i2uiAllowColumnManip(element)
+   {
+     var activeColumn = element.activeSheet.Application.ActiveCell.Column;
+     at = element.id.indexOf("Spreadsheet");
+     var objname = element.id.substring(0,at);
+     var numcols = 0;
+     try {
+       var tblobj = element.document.getElementById(objname+"_data");
+       if (tblobj == null)
+         numcols = element.document.getElementById(objname).rows[0].cells.length;
+       else
+         numcols = tblobj.rows[0].cells.length + 1;
+     } catch(e){}
+     if (activeColumn <= numcols)
+       return false;
+     else
+       return true;
+   }
+   function i2uiPivotBeforeContextMenu(x, y, Menu, Cancel)
+   {
+     if (element.SelectionType == "PivotColumnMembers")
+     {
+       var obj = element.ActiveObject;
+       if (obj.Name != "(Blank)" && obj.Name != "")
+       {
+         i2uiExtendMenu(Menu, "Drilldown", "Drilldown");
+         var appmenus = i2uiBuildAppMenu(element, 
+                                         element.Selection.Item(0).Field.Caption);
+         var len = appmenus.length;
+         for (var i=0; i<len; i++)
+           i2uiExtendMenu(Menu, "AppMenu"+i, appmenus[i]);
+       }
+     }
+     else
+     if (element.SelectionType == "PivotRowMembers")
+     {
+       var obj = element.ActiveObject;
+       if (obj.Name != "(Blank)" && obj.Name != "")
+       {
+         var appmenus = i2uiBuildAppMenu(element, 
+                                         element.Selection.Item(0).Field.Caption);
+         var len = appmenus.length;
+         for (var i=0; i<len; i++)
+           i2uiExtendMenu(Menu, "AppMenu"+i, appmenus[i]);
+       }
+     }
+     else
+     if (element.SelectionType == "PivotFields")
+       //LPM would be nice to know when 
+       // - it has a display order
+       // - is different from current
+       i2uiExtendMenu(Menu, "RestoreOrder", "Restore Display Order");
+     else
+     if (element.SelectionType == "PivotDetailRange")
+     {
+       var appmenus = i2uiBuildAppMenu(element, 
+                                       element.Selection.TopLeft.Field.BaseName);
+       var len = appmenus.length;
+       for (var i=0; i<len; i++)
+         i2uiExtendMenu(Menu, "AppMenu"+i, appmenus[i]);
+     }
+     else
+     if (element.SelectionType == "PivotAggregates")
+     {
+       // todo : must prevent processing attempt for menu of totals
+       var appmenus = i2uiBuildAppMenu(element, 
+                                       element.Selection.Item(0).Name);
+       var len = appmenus.length;
+       for (var i=0; i<len; i++)
+         i2uiExtendMenu(Menu, "AppMenu"+i, appmenus[i]);
+     }
+   }
+   function i2uiPivotCommandHandler(Cmd, Cancel)
+   {
+     if (Cmd == "Drilldown")
+     {
+       if (element.SelectionType == "PivotColumnMembers")
+       {
+         var obj = element.ActiveObject;
+         var key  = "";
+         var key2 = "";
+         if (obj.Name == "(Blank)" || obj.Name == "")
+           return;
+
+         while (obj != null)
+         {
+           if (obj.Name != "!")
+           {
+             key = "[@"+obj.Field.name+"=&quot;"+obj.Name+"&quot;]"+key;
+             key2 = obj.Name+key2;
+           }
+           obj = obj.ParentMember;
+         }
+         try
+         {
+           setTimeout("i2uiPivotDrilldown('"+key+"','"+key2+"')",150);
+         }
+         catch(e){}
+       }
+     }
+     else
+     if (Cmd == "RestoreOrder")
+     {
+       if (element.SelectionType == "PivotFields")
+       {
+         //must delay due to problem with component handling rearrangement within menu processing
+         var cmd = "i2uiRestoreCustomOrder('"+element.id+"','"+element.Selection.Item(0).Caption+"')";
+         setTimeout(cmd,150);
+       }
+     }
+     else
+     if (Cmd != null && Cmd.length != null && Cmd.indexOf("AppMenu") == 0)
+     {
+       var nameValuePairs = new Array();
+       var measure = "";
+       var value = "";
+       if (element.SelectionType == "PivotAggregates")
+       {
+         measure = element.Selection.Item(0).Total.Caption;
+         value   = element.Selection.Item(0).Value;
+         nameValuePairs.push(measure+"="+value);
+         var obj = element.Selection.Item(0).Cell.RowMember;
+         while (obj != null)
+         {
+           if (obj.Name != "!")
+             nameValuePairs.push(obj.Field.name+"="+obj.Name);
+           obj = obj.ParentMember;
+         }
+         var obj = element.Selection.Item(0).Cell.ColumnMember;
+         while (obj != null)
+         {
+           if (obj.Name != "!")
+             nameValuePairs.push(obj.Field.name+"="+obj.Name);
+           obj = obj.ParentMember;
+         }
+       }
+       else
+       if (element.SelectionType == "PivotDetailRange")
+       {
+         measure = element.Selection.TopLeft.Field.BaseName;
+         value   = element.Selection.TopLeft.Value;
+         nameValuePairs.push(measure+"="+value);
+         var obj = element.ActiveData.CurrentCell.RowMember;
+         while (obj != null)
+         {
+           if (obj.Name != "!")
+             nameValuePairs.push(obj.Field.name+"="+obj.Name);
+           obj = obj.ParentMember;
+         }
+         obj = element.ActiveData.CurrentCell.ColumnMember;
+         while (obj != null)
+         {
+           if (obj.Name != "!")
+             nameValuePairs.push(obj.Field.name+"="+obj.Name);
+           obj = obj.ParentMember;
+         }
+
+       }
+       else
+       if (element.SelectionType == "PivotRowMembers")
+       {
+         measure = element.Selection.Item(0).Field.Caption;
+         value   = element.Selection.Item(0).Value;
+         nameValuePairs.push(measure+"="+value);
+
+         var obj = element.ActiveObject;
+         if (obj.Name != "(Blank)" && obj.Name != "")
+           while (obj != null)
+           {
+             if (obj.Name != "!")
+             {
+               measure = obj.Field.name;
+               value = obj.Name;
+               nameValuePairs.push(measure+"="+value);
+             }
+             obj = obj.ParentMember;
+           }
+         measure = element.Selection.Item(0).Field.Caption;
+       }
+       i2uiInvokeAppMenu(element, 
+                         measure, 
+                         Cmd.substring(7),
+                         nameValuePairs);
+     }
+   }
+</SCRIPT>
+<SCRIPT LANGUAGE="VBScript">
+Sub i2uiExtendMenu(menu, cmdId, cmdText)
+   Dim vntMenu
+   vntMenu = menu.Value
+   iNumItems = UBound(vntMenu) + 1
+   Redim Preserve vntMenu(iNumItems)
+   If Len(cmdText) > 0 Then
+      vntMenu(iNumItems) = Array(cmdText, cmdId)
+   End If
+   menu.Value = vntMenu
+End Sub
+</SCRIPT>
+</PUBLIC:COMPONENT>
+

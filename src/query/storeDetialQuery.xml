@@ -1,0 +1,31 @@
+<pmsquery>
+	<query id="storeDetailQuery" header="门店详情列表"  method="storeDetailManager.showStoreDetailData">
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="true" align="center"/>  
+        <column key="caozuo" 			header="操作" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="storeno" 			header="门店编号" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="name" 	        header="门店名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" 	width="20%" align="center"/>
+        <column key="store_area" 			header="门店面积" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="sign_date" 	header="签约时间" 		display="true" 		type="java.util.Date" 	allowSearch="true" 	allowSort="true" width="15%" align="center" format="yyyy-MM-dd"/>
+        <column key="enter_date" 			header="装修进场日期" 		display="true" 		type="java.util.Date" allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+        <column key="accept_date" 			header="装修验收日期" 		display="true" 		type="java.util.Date"  allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+        <column key="business_license_date" 			header="营业执照发放日期" 		display="true" 		type="java.util.Date"  allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+        <column key="food_circulation_date" 			header="食品流通证发放日期" 		display="true" 		type="java.util.Date"  allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+        <column key="estate" 			header="门店状态" 		display="true" 		type="java.util.String"  allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="open_shop_time" 			header="开店日期" 		display="true" 		type="java.util.Date" allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+    </query> 
+    
+    <query id="storeDocumentInfoQuery" header="门店详情列表"  method="storeDocumentInfoManager.showStoreDocumentInfoData">
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="true" align="center"/>  
+        <column key="caozuo" 			header="操作" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="city_name" 			header="所属城市" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="name" 	        header="门店名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" 	width="20%" align="center"/>
+        <column key="submit_date" 	header="功能方案提交日期" 		display="true" 		type="java.util.Date" allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+        <column key="audit_date" 	header="功能方案通过日期" 		display="true" 		type="java.util.Date"  allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+        <column key="tenancy_term" 	header="租期" 		display="true" 		type="String" 	allowSearch="true" 	allowSort="true" width="15%" align="center" />
+        <column key="enter_date" 			header="装修进场日期" 		display="true" 		type="java.util.Date" allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+        <column key="enter_end_date" 			header="装修竣工日期" 		display="true" 		type="java.util.Date"  allowSearch="true" 	allowSort="true" width="15%" align="center"  format="yyyy-MM-dd"/>
+        <column key="nature" header="属性" 		display="true" 		type="java.util.String"  allowSearch="true" 	allowSort="true" width="15%" align="center" />
+    	<column key="audit_status" 			header="审批状态" 		display="true" 		type="java.util.String"  allowSearch="true" 	allowSort="true" width="15%" align="center" />
+    	
+    </query> 
+</pmsquery> 

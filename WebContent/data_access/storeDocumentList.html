@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>门店信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+    <!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+    <style type="text/css">
+    	/*   .display{
+    		width:100%
+    	}  
+    	  .display tr td{
+    		word-wrap:break-word;
+    		white-space:normal;
+    	}  */
+    	
+	/* .ui-state-default{
+		background-color: #337ab7;
+	} */
+    	.but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+    </style> 
+</head>
+<script type="text/javascript">
+var win;
+var lst_select_esta;
+var GLY=false;
+$(function () {
+	doManager('storeManager','getStoreEstateList',null,function(data){
+        if(data.result){
+        	lst_select_esta = JSON.parse(data.data);
+            $(lst_select_esta).each(function(index,element){
+                $('#vill-search').append('<option value="'+element.estate+'">');
+            });
+        }else{
+            $$.showMessage("提示",data.message);
+        }
+    });
+    //页面加载成功后需要获取数据
+    searchList();
+    $(".operateHeader").width("5%");
+    $("#xuhaoid").width("6%");
+    //serchStoreInfo();
+});
+
+//记载页面时请求数据列表默认的方法
+function searchList() {
+    $$.executeSearch('storeDocumentInfoQuery', 'conditionsDiv');
+    $(".operateHeader").width("5%");
+    $("#xuhaoid").width("6%");
+    doManager("UserManager", "getCurrentUserDTO", null, function(
+			data, textStatus, XMLHttpRequest) {
+		if (data.result) {
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				if(jsonData.usergroup.code=='MDCBTXJSZ'){
+					GLY=true;
+					$("#inser").show();
+					//$('#storeyyeeQuery_id table tr').find('td:eq(7)').hide();
+				}
+				//$('#storeDocumentInfoQuery_id table tbody tr').eq(1).find('td:eq(0)').hide();
+			}
+		} else {
+			$$.showMessage("系统信息", "信息加载异常!");
+		}
+	},false);
+    $("#storeDocumentInfoQuery_id table thead").prepend(' <tr ><td colspan="3" style="color: #FFFFFF;background-color: #337ab7;" class="ui-state-default">基本信息</td><td colspan="2" class="ui-state-default" style="color: #FFFFFF;background-color: #337ab7;">功能方案信息</td><td class="ui-state-default" style="color: #FFFFFF;background-color: #337ab7;">租赁信息</td><td colspan="2" class="ui-state-default" style="color: #FFFFFF;background-color: #337ab7;">门店装修信息</td><td colspan="2" class="ui-state-default" style="color: #FFFFFF;background-color: #337ab7;">开店信息</td></tr>') ;
+    //console.log(ll);
+}
+function doClean() {
+    document.service_qa.reset();
+    searchList();
+}
+function addVillage(){
+	window.location.href = 'add_storedocumentinfo.html';
+}
+
+
+  
+  
+  //导出门店详情数据
+  function excelData(fileName){
+	  var path = getRootPath();
+	  window.open(path + "/downloadExcel.action"
+			  +"?fileName="+fileName);
+}
+   var COLUMNS = {
+        "submit_date": function(aData, iColumn, sColumnName, map){
+           var value = map[sColumnName];
+           if(value!=null&&value!=""){
+        	   value = new Date(value).format('yyyy-MM-dd');
+           }
+           return value;
+       }, 
+       "caozuo": function(aData, iColumn, sColumnName, map){
+           
+           var id = map['id'];
+           var audit_status = map['audit_status'];
+           var ss='';
+           if(GLY){
+        	   if(audit_status==1){
+           	    ss='<a href="add_storedocumentinfo.html?id='+id+'">查看 </a>';
+              }else{
+           	    ss='<a href="add_storedocumentinfo.html?id='+id+'">编辑 </a>';
+              }
+           }
+           return ss;
+       },
+       "audit_date": function(aData, iColumn, sColumnName, map){
+           var value = map[sColumnName];
+           if(value!=null&&value!=""){
+        	   value = new Date(value).format('yyyy-MM-dd');
+           }
+           return value;
+       },
+       "enter_date": function(aData, iColumn, sColumnName, map){
+           var value = map[sColumnName];
+           if(value!=null&&value!=""){
+        	   value = new Date(value).format('yyyy-MM-dd');
+           }
+           return value;
+       },
+       "enter_end_date": function(aData, iColumn, sColumnName, map){
+           var value = map[sColumnName];
+           if(value!=null&&value!=""){
+        	   value = new Date(value).format('yyyy-MM-dd');
+           }
+           return value;
+       },"audit_status": function(aData, iColumn, sColumnName, map){
+           var value = map[sColumnName];
+           if(value==1){
+        	   return "审核中";
+           }else if(value==2){
+        	   return "驳回";
+           }else if(value==3){
+        	   return "已通过";
+           }else if(value==0){
+        	   return "未提交";
+           }
+           return value;
+       }/* ,"caozuos": function(aData, iColumn, sColumnName, map){
+       	var id = map['store_id'];
+        return '<a herf="add_storedocumentinfo.html?store_id='+id+'">完善门店信息</a>';
+    } */
+   }
+   var c=1;
+   
+   function serchStoreInfo(){
+	    /* $('#storeQueryGridContainer').dataTable({
+	    	"aoColumnDefs": [
+	    	                    { "sType": "html-percent", "aTargets": [0] },    //指定列号使用自定义排序
+	    	                ],
+		   "iDisplayLength": 4,
+		   "aLengthMenu": [4, 10, 25, 50]//也可以直接用一维数组设置数量
+		   }); */
+	   //$$.executeSearch('storeDocuQuery', 'conditionsDivs');
+	    //$(".operateHeader").width("5%");
+	   // $("#xuhaoid").width("10%");
+   }
+   
+</script>
+<body style="height: 100%">
+	<div class="panel panel-default" style="margin: 10px">
+	    <div class="panel-heading">
+	        <h4 class="panel-title">
+	           地址信息:门店详情
+	        </h4>
+	    </div>
+	</div>
+	    <div class="panel panel-primary">
+        <div class="panel-heading">门店详情查询 
+        	<span class="but">
+                <input type="button" onclick="excelData('storeDetaillist')" value="门店详细信息台账导出"/>
+            </span> 
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="11">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">所属城市:</td>
+                            <td>
+                                <input id="cityName" name="cityName" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">门店名称:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">门店编号:</td>
+                            <td>
+                                <input id="storeno" name="storeno" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">门店状态:</td>
+                            <td>
+                                <input name="estate" id="estate" style="width:60%" class="form-control"  onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" list="vill-search"/>
+								<datalist id="vill-search"></datalist>
+                            </td>
+                        </tr>
+                        <!-- <tr >
+                            <td width="5%" style="margin:20px 0px 0 0; "><span style="margin-top: 10px;">开店时间:</span></td>
+                            <td colspan="3">
+                                <input id="standUP" name="standUP" type="text"  style="margin:10px 0px 0 0;width:30%;float:left;display: inline;" class="wicon form-control" likeOption="false"/>
+                                <span style="margin-top: 15px;float: left;">至</span>
+                                <input id="endUP" name="endUP" type="text"  style=" margin:10px 0px 0 0;width:30%;float: left ;display: inline;" class="wicon form-control" likeOption="false" />
+                            </td>
+                            <td style="margin:10px 0px 0 0; " ></td>
+                        </tr> -->
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+        	<!-- <button class="btn btn-primary" onclick="excelData('storeDetaillist')">导出门店详情</button> -->
+        	<button class="btn btn-primary" id="inser" style="display:none;" onclick="addVillage()">添加</button>
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+        </div>
+    </div>
+    
+<!--     <div id="storeQueryGridContainer" class="panel panel-primary" queryid="storeDocuQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div> -->
+    
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="storeDocumentInfoQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="false"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+</body>
+</html>

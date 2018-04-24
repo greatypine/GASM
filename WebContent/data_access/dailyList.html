@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>门店体验率</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+<script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+   <style type="text/css">
+    	.display{
+    		width:100%
+    	}
+    	.display tr td{
+    		word-wrap:break-word;
+    		white-space:normal;
+    	}
+    </style>
+</head>
+<script type="text/javascript">
+var win;
+$(function () {
+	jeDate({
+        dateCell:"#report_date",//isinitVal:true,
+        format:"YYYY-MM-DD",
+        isTime:false,
+        isinitVal:false,
+        zIndex:2000,
+        choosefun:function(val) {
+            //findWorkTime(val);
+        }
+    });
+	doManager("UserManager", "getCurrentUserInfo","", function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					if(key=="zw"){
+						if(jsonData[key]=="国安侠"){
+							$("#addinert").show();
+						}else if(jsonData[key]=="店长"){
+							$("#addinert").show();
+						};
+					}
+				}
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+	},false)
+    //页面加载成功后需要获取数据
+    searchList();
+});
+
+//记载页面时请求数据列表默认的方法
+function searchList() {
+    $$.executeSearch('storeDailyQuery', 'conditionsDiv');
+    $(".operateHeader").width("5%");
+    $("#xuhaoid").width("6%");
+}
+function doClean() {
+    document.service_qa.reset();
+    searchList();
+}
+function addVillage(){
+	window.location.href = 'add_storedaily.html';
+}
+function doBack(){
+	window.location.href ='dailyList.html';
+}
+
+  var editObj = {
+		html : '<a href="#"  class="blue">查看</a>',
+		resourceId: "add_store",
+		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+			var id = allColumnsDataMap.id;
+			window.location.href = "add_storedaily.html?id="+id;
+		}
+	}
+  Date.prototype.toLocaleString = function() {
+	  var ccc=this.getDate();
+	  if(ccc<10){
+		  ccc="0"+ccc;
+	  }
+	  if(this.getMonth() + 1<10){
+	      return this.getFullYear() + "-" + 0+(this.getMonth() + 1) + "-" + ccc + " " + this.getHours() + ":" + this.getMinutes() + ":" + this.getSeconds();
+	  }
+      return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + ccc + " " + this.getHours() + ":" + this.getMinutes() + ":" + this.getSeconds();
+};
+  var COLUMNS = {
+          "report_date": function(aData, iColumn, sColumnName, map){
+              var value = map[sColumnName];
+              var ret = "";
+              var unixTimestamp = new Date(value) ;
+              ret = unixTimestamp.toLocaleString().substring(0, 10);
+              return ret;
+          }
+      }
+$pmspage.opArr = [ editObj ];
+</script>
+<body style="height: 100%">
+	<div class="panel panel-default" style="margin: 10px">
+	    <div class="panel-heading">
+	        <h4 class="panel-title">
+	           门店体验率
+	        </h4>
+	    </div>
+	</div>
+	    <div class="panel panel-primary">
+        <div class="panel-heading">门店经营指数查询</div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="6">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="4%">城市:</td>
+                            <td>
+                                <input id="city_name" name="city_name" type="text" onkeyup="this.value=this.value.replace(/\s+/g,'')" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="4%">门店名称:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:60%" onkeyup="this.value=this.value.replace(/\s+/g,'')"  class="form-control"/>
+                            </td >
+                           <td width="4%">日期:</td>
+                            <td>
+                                <input id="report_date" name="report_date" type="text" style="width:60%" class="wicon form-control" maxlength="20" likeOption="false"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+            <button class="btn btn-primary" style="display: none;" id="addinert" onclick="addVillage();">新增</button>
+        </div>
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="storeDailyQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+</body>
+</html>

@@ -1,0 +1,138 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>数据汇总</title>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <style>
+            *{margin:0; padding:0; font-family:"微软雅黑", Arial, Helvetica, sans-serif;}
+            a{ text-decoration:none;}
+            .nav_top{margin:30px 20px; column-count:4; -webkit-column-count:4; -moz-column-count:4; column-gap:25px; -webkit-column-gap:25px; -moz-column-gap:25px;}
+            .share_style{ height:78px; border:1px solid #ddd; vertical-align:middle; position:relative;}
+            .share_style:hover{border-color:#d01414;}
+            .share_l{width:95px; height:100%; position:absolute; top:0; left:0;}
+            .nav_user{ background-color:#4db1da;}
+            .nav_user span{ background:url(../images/icons1.png) no-repeat center center; width:100%; height:100%; display:block;}
+            .nav_express{background-color:#fcd12c;}
+            .nav_express span{ background:url(../images/icons2.png) no-repeat center center; width:100%; height:100%; display:block;}
+            .nav_order{background-color:#ff6d60;}
+            .nav_order span{ background:url(../images/icons3.png) no-repeat center center; width:100%; height:100%; display:block;}
+            .nav_more{background-color:#6ccac9;}
+            .nav_more span{ background:url(../images/icons4.png) no-repeat center center; width:100%; height:100%; display:block;}
+            .share_r{font-size:14px; color:#888; text-align:center; margin-left:95px; margin-top:10px;}
+            .f30{font-size:24px; color:#333;}
+            .change_mark{border-color:#d01414;}
+            .change_mark .f30{ color:#d01414;}
+            .change_mark .share_r{ color:#d01414;}
+            body{background-color: white;}
+        </style>
+        <script type="text/javascript">
+            var current_user = null;
+            $(function(){
+                doManager('UserManager','getCurrentUserDTO',null,function(data){
+                    if(data.result){
+                        current_user = JSON.parse(data.data);
+                        queryData();
+                        searchList();
+                    }else{
+                        $$.showMessage('提示',data.message);
+                    }
+                });
+
+            });
+            function searchList() {
+                $$.executeSearch('dataCardQuery', 'conditionsDiv');
+            }
+            function queryData(){
+                var manager_name = "interManager";
+                var method_name = null;
+                var params = null;
+                if(current_user.usergroup.cardtype == 0){
+                    method_name = "getExpressAndCustomerCount";
+                    params = current_user.employeeId;
+                    $('#employee_no').val(current_user.employeeId);
+                }else if(current_user.usergroup.cardtype == 1 || current_user.usergroup.cardtype == 2){
+                    method_name = "getExpressAndCustomerStoreCount";
+                    params = [current_user.store_id];
+                    $('#store_id').val(current_user.store_id);
+                }
+                if(method_name == null){
+                    return;
+                }
+                doManager(manager_name,method_name,params,function(data){
+                    if(data.result){
+                        var result = JSON.parse(data.data);
+                        $('#p_Customer').html(result.Customer);
+                        $('#p_Express').html(result.Express);
+                        $('#p_Relation').html(result.Relation);
+                    }else{
+                        $$.showMessage('提示',data.message);
+                    }
+                });
+            }
+
+            var COLUMNS = {
+                "customer_edit": function(aData, iColumn, sColumnName, map){
+                    var value = map['employee_no'];
+                    return "<a href='../data_access/customer_address_list.html?employee_no="+value+"'>查看</a>";
+                },
+                "express_edit": function(aData, iColumn, sColumnName, map){
+                    var value = map['employee_no'];
+                    return "<a href='../data_access/express_list.html?employee_no="+value+"'>查看</a>";
+                },
+                "relation_edit": function(aData, iColumn, sColumnName, map){
+                    var value = map['employee_no'];
+                    return "<a href='../data_access/relation_list.html?employee_no="+value+"'>查看</a>";
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+        <div class="rightcont clear">
+            <div class="nav_top">
+                <div class="share_style change_mark"><a href="../data_access/customer_address_list.html">
+                    <div class="share_l nav_user"><span></span></div>
+                    <div class="share_r">
+                        <p id="p_Customer" class="f30"></p>
+                        <p>用户画像</p>
+                    </div></a>
+                </div>
+                <div class="share_style"><a href="../data_access/express_list.html">
+                    <div class="share_l nav_express"><span></span></div>
+                    <div class="share_r">
+                        <p id="p_Express" class="f30"></p>
+                        <p>快递代送</p>
+                    </div></a>
+                </div>
+                <div class="share_style"><a href="../data_access/relation_list.html">
+                    <div class="share_l nav_more"><span></span></div>
+                    <div class="share_r">
+                        <p id="p_Relation" class="f30"></p>
+                        <p>拜访记录</p>
+                    </div></a>
+                </div>
+                <div class="share_style"><a href="#">
+                    <div class="share_l nav_order"><span></span></div>
+                    <div class="share_r">
+                        <p class="f30">暂无</p>
+                        <p>订单</p>
+                    </div></a>
+                </div>
+            </div>
+            <div id="conditionsDiv" style="display: none;">
+                <input type="text" id="store_id" name="store_id" likeOption="false" />
+                <input type="text" id="employee_no" name="employee_no"  likeOption="false" />
+            </div>
+            <div id="centerQueryGridContainer" class="panel panel-primary" queryid="dataCardQuery" operators="$pmspage.opArr"
+                 titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+                 showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+                 showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+        </div>
+    </body>
+</html>

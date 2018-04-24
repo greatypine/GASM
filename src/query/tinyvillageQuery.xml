@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmsquery>
+	<query id="tinyVillageQuery" header="小区信息"  order="id desc" method="tinyVillageManager.getTinyVillageBygb_code">
+         <column key="id" 			header="编码" 		display="false" type="java.lang.Long" 	allowSearch="true"	allowSort="false" align="center"/>
+        <column key="town_name" header="街道名称" width="10%" align="center" allowSort="false" type="String" />
+        <column key="village_name" header="社区名称" width="15%"  align="center" allowSort="false" type="String" />
+        <column key="name" header="小区名/街名"  align="center" width="20%"  allowSort="false" type="String" />
+        <!-- <column key="house_number" header="楼房数量"  align="center" allowSort="false" display="false"/> -->
+        <column key="address" header="小区地址" width="14%" align="center" allowSort="false" type="String" />
+        <column key="tinyvillage_type" header="房屋类型" width="8%" align="center"  allowSort="false" type="String" />
+        <column key="caozuo" header="拆分或合并操作" width="10%" align="center"  allowSort="false" type="String" />
+        <column key="dellable" header="待删除" width="1%" align="center" display="false" allowSort="false" type="String" />
+    </query>
+    
+    <query id="tinyVillageInfoQuery" header="错误信息"  order="id desc" method="tinyVillageManager.getTinyVillageInfo">
+         <column key="id"	header="序号"  width="15%" display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="false" align="center"/>
+        <column key="county_name" header="区(县)"  width="15%"  align="center" allowSort="false" type="String" />
+        <column key="town_name" header="街道名称"   width="15%" align="center" allowSort="false" type="String" />
+        <column key="village_name" header="社区名称"  width="15%" align="center" allowSort="false" type="String"/>
+        <column key="tinyvillage_name" header="小区名称"  width="20%"  align="center" allowSort="false" type="String"/>
+        <column key="address" header="小区地址"  align="center"  width="20%" allowSort="false" type="String" />
+    </query>
+
+<query id="selectTinyVillageDataQuery" header="小区信息列表"  order="id desc" method="tinyVillageManager.getTinyVillageDataOrderAddress">
+         <column key="id" 			header="选择" 	width="5%"	display="true" type="java.lang.Long" 	allowSearch="true"	allowSort="false" align="center"/>
+        <column key="name" header="小区名"  align="center" width="30%"  allowSort="false" type="String" />
+        <column key="village_name" header="社区名称" width="35%"  align="center" allowSort="false" type="String" />
+        <column key="town_name" header="街道名称" width="30%" align="center" allowSort="false" type="String" />
+    </query>
+</pmsquery>

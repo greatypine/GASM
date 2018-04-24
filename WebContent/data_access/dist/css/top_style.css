@@ -1,0 +1,68 @@
+html,body {
+	height:100%
+}
+html,body,form,input,span,p,img,ul,ol,li,dl,dt,dd {
+	margin:0;
+	padding:0;
+	border:0
+}
+ul,ol {
+	list-style:none
+}
+
+a {
+	text-decoration:none
+}
+a:hover {
+	text-decoration:underline
+}
+
+#moquu_top,#moquu_wshare {
+	z-index:2;
+	width:30px;
+	height:30px;
+	right:10px;
+	position:fixed;
+	cursor:pointer;
+	_position:absolute;
+	_bottom:auto;
+	_top:expression(eval(document.documentElement.scrollTop+document.documentElement.clientHeight-this.offsetHeight-(parseInt(this.currentStyle.marginTop,10)||0)-(parseInt(this.currentStyle.marginBottom,10)||0)))
+}
+
+
+
+
+#moquu_wshare {bottom:100px; right:10px;
+}
+#moquu_wshare a {
+	background:url(../images/sbtn.png) 0 -30px;
+	width:30px;
+	height:30px;
+	right:0;
+	float:left;
+	text-indent:-9999px
+}
+#moquu_wshare a:hover {
+	background:url(../images/sbtn.png) -30px -30px
+}
+
+.moquu_wshare {
+	position:relative;
+	z-index:2
+}
+.moquu_wshare a:hover .moquu_wshareh {
+	display:block
+}
+
+.moquu_wshare .moquu_wshareh {
+	position:absolute;
+	display:none;
+	right:36px;
+	bottom:-85px;
+	width:100px;
+	height:120px;
+	background:url(../images/weixin.png) no-repeat
+}
+
+
+#topcontrol{background:#393D49; height:30px; width:30px; border-radius:4px;}

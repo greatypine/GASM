@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>拜访记录</title>
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+
+    </head>
+
+    <script type="text/javascript">
+     	var month_one;
+		var month_last;
+		var dayNum; 
+        var employee_no = getUrlParamByKey("employee_no");
+        var month_date = getUrlParamByKey('month_date');
+        $(function () {
+        	 if(month_date!=null){
+    			var mon_arr=month_date.split("-");
+    			var month_val=parseInt(mon_arr[1]);
+    			if(month_val==1||month_val==3||month_val==5||month_val==7||month_val==8||month_val==10||month_val==12){
+    				dayNum=31;
+    			}else if(month_val==4||month_val==6||month_val==9||month_val==11){
+    				dayNum=30;
+    			}else if(month_val=2){
+    				dayNum=28;
+    			}
+    			month_one=month_date+"-01";
+    			month_last=month_date+"-"+dayNum;
+    			$("#s1").val(month_one);
+    			$("#s2").val(month_last);
+    		} 
+        	
+            doManager('UserManager','getCurrentUserDTO',null,function(data){
+                if(data.result){
+                    var userDto = JSON.parse(data.data);
+                    if(userDto.usergroup.cardtype == 0){
+                        $('#employee_no').val(userDto.employeeId);
+                        $('#employee_no').attr('readonly','readonly');
+                        $('#employee_no').attr('likeOption','false');
+                    }else if(userDto.usergroup.cardtype == 1){
+                        $('#store_id').val(userDto.store_id);
+                    }else if(userDto.usergroup.cardtype == 2){
+                        if(userDto.store_id != null && userDto.store_id != ''){
+                            $('#store_id').val(userDto.store_id);
+                        }
+                    }
+                    if(employee_no != null && employee_no != ''){
+                        $('#employee_no').val(employee_no);
+                    }
+                    searchList();
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+
+        });
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            $$.executeSearch('relationQuery', 'conditionsDiv');
+        }
+
+
+        function doClean() {
+            document.service_qa.reset();
+        }
+        var editObj = {
+            html : '<a href="#">查看 </a>',
+            resourceId : "humanstore_List_update",
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.id;
+                window.location.href = "relation_info.html?id="+id;
+            }
+        }
+        $pmspage.opArr = [editObj];
+
+
+        var COLUMNS = {
+            "mobilephone": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value!=""&&value.length>6){
+                    ret=value.substring(0,3)+"****"+value.substring(value.length-4,value.length);
+                }
+                return ret;
+            }
+        }
+    </script>
+    <body style="height: 100%">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+           拜访记录查询
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                                <td width="8%" align="right">员工编码：</td>
+                                <td width="26%">
+                                    <input type="text" id="employee_no" name="employee_no" class="form-control" maxlength="20" />
+                                    <input type="hidden" id="store_id" name="store_id" likeOption="false" />
+                                </td>
+                                <td width="8%" align="right">拜访时间：</td>
+                                <td width="58%">
+                                    <input id="s1" revalidate="true"
+                                           type="text" likeOption="false" name="start_date"
+                                           validate="formatDate:true" class="pmsDateField form-control"
+                                           yearRange="-100:+10" style="width: 27%; display: inline;"
+                                           readonly /> 至
+                                    <input id="s2" revalidate="true"
+                                           likeOption="false" type="text" name="end_date"
+                                            validate="formatDate:true" class="pmsDateField form-control"
+                                            yearRange="-100:+10" style="width: 27%; display: inline;"
+                                            readonly />
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <button class="btn btn-primary" onclick="searchList()">查询</button>
+            </div>
+        </div>
+        <div id="centerQueryGridContainer" class="panel panel-primary" queryid="relationQuery" operators="$pmspage.opArr"
+             titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+             showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+             showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+    </body>
+    </html>

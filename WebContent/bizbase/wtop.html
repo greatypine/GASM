@@ -1,0 +1,307 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta http-equiv="Pragma" content="no-cache">
+<meta http-equiv="Expires" content="-1">
+<meta http-equiv="Cache-Control" content="max-age:3600000">
+<link rel="stylesheet" type="text/css"
+	href="../forecast/css/datepicter/jquery.ui.all.css" />
+<link rel="stylesheet" type="text/css"
+	href="../scripts/css/datatables.css" />
+<script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js">
+	
+</script>
+<script language="javascript"
+	src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js">
+	
+</script>
+<script language="javascript" src="../scripts/common/common-tool.js">
+	
+</script>
+<script language="javascript" src="../scripts/common/common-core.js">
+	
+</script>
+<script language="javascript" src="../scripts/common/common-form.js">
+	
+</script>
+<script language="javascript"
+	src="../scripts/common/processingdialog.js">
+	
+</script>
+<script language="javascript"
+	src="../scripts/common/common-messagedialog.js">
+	
+</script>
+<script language="javascript" src="../scripts/common/common-expand.js">
+	
+</script>
+<script language="javascript" src="../forecast/js/scripts/bidCommon.js">
+	
+</script>
+<script language="javascript" src="../scripts/default-ready.js">
+	
+</script>
+
+<link rel="stylesheet" type="text/css" href="css/style_sheet_core.css" />
+<script language="JavaScript">
+	var indexUrl = "";
+	var employee_no="";
+	/**
+	 * 显示登录用户名
+	 */
+	$(function() {
+		var url = $$.PMSDispatchActionUrl;
+		var data = new PMSRequestObject("userManager", "getCurrentUserDTO");
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+			var str = datas.data;
+			var userObj = $.fromJSON(str);
+			var userid = userObj.id;
+			var store_name=userObj.store_name==null?"":userObj.store_name;
+			var employee_id=userObj.employeeId==null?"":userObj.employeeId;
+			employee_no=employee_id;
+			
+			$("#userName").html(employee_id+" | "+userObj.name+" | "+store_name);
+			initStore(userObj.store_id);
+			$("#version").html(userObj.currentVersion);
+			// 如果当前用户未配置个性化首页，则不显示个性化配置按钮
+			var userObj = parent.getCurrentUser();
+			if (userObj.indexPage != "" && userObj.indexPage != null
+					&& userObj.indexPage != "undefined") {
+				indexUrl = userObj.indexPage;
+				$("#customConfig").show();
+			}
+		});
+	});
+
+	function initStore(store_id){
+		
+		var url = "../dispatcher.action";
+		var data = new PMSRequestObject("StoreManager", "findStore",[store_id]);
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+			
+			if (datas.result) {
+				
+				var store = JSON.parse(datas.data);
+				if(store!=null){ 
+					$("#store_no").html(" "+store.storeno);
+				}
+				
+			}
+		});
+		
+	}
+	
+	function updatestoreid(selectobj){
+		var store_id=selectobj.value;
+		//更改店长用户的 store_id
+		var url = "../dispatcher.action";
+		var data = new PMSRequestObject("userManager", "updateUserStoreId",[store_id,employee_no]);
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+			if (datas.result) {
+				refreshView();
+			}else{
+				$$.showMessage("系统信息", "切换失败!");
+			}
+		});
+	}
+	
+	function doLogout() {
+		if (confirm("确定注销？")) {
+			urlStr = "../logout.do";
+			window.location.href = urlStr;
+			/* $.ajax({
+			    url: urlStr,
+			    async: false,
+			    success: function(){
+			        //window.top.opener = null;
+			        //window.top.open('', '_self');
+			        //window.top.close();
+					top.location.href="login.html"
+			    }
+			}); */
+		}
+	}
+
+	/**
+	//获取服务器时间   
+	   get = function(id){
+	       return document.getElementById(id)
+	   }
+	   if (document.all) {
+	       window.XMLHttpRequest = function(){
+	           var get = ['Microsoft.XMLHTTP', 'Msxml2.XMLHTTP'];
+	           for (var i = 0; i < get.length; i++) {
+	               try {
+	                   return new ActiveXObject(get[i])
+	               } 
+	               catch (e) {
+	               }
+	           };
+	               };
+	   }
+	   webDate = function(fn){
+	       var Htime = new XMLHttpRequest();
+	       Htime.onreadystatechange = function(){
+	           Htime.readyState == 4 && (fn(new Date(Htime.getResponseHeader('Date'))));
+	       };
+	       Htime.open('HEAD', '/?_=' + (-new Date()));
+	       Htime.send(null);
+	   }
+	   window.time = new Date();
+	   time2String = function(t){
+	       with (t) 
+	       return [getFullYear(), '-', ('0' + (getMonth() + 1)).slice(-2), '-', ('0' + getDate()).slice(-2), ' ', ('0' + getHours()).slice(-2), ': ', ('0' + getMinutes()).slice(-2), ': ', ('0' + getSeconds()).slice(-2)].join('')
+	   }
+	   setInterval(function(){
+	       webDate(function(webTime){
+	           get('timeSpan').innerHTML = time2String(time = webTime);
+	       })
+	   }, 1000)
+	 */
+	/* setInterval(function() {
+		var localTime = new Date();
+		document.getElementById('timeSpan').innerHTML = time2String(localTime);
+	}, 1000) */
+	function time2String(t) {
+		with (t)
+			return [ getFullYear(), '-', ('0' + (getMonth() + 1)).slice(-2),
+					'-', ('0' + getDate()).slice(-2), ' ',
+					('0' + getHours()).slice(-2), ': ',
+					('0' + getMinutes()).slice(-2), ': ',
+					('0' + getSeconds()).slice(-2) ].join('')
+	}
+	function resizeWindow() {
+		document.getElementById('midTd').width = (document.body.clientWidth - 24)
+				+ 'px';
+	}
+	window.onresize = resizeWindow;
+	window.onload = resizeWindow;
+
+	// 首页个性化设置
+	function customIndex() {
+		var url = $$.PMSDispatchActionUrl;
+		var data = new PMSRequestObject("userManager", "getCurrentUserDTO");
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+			var str = datas.data;
+			var userObj = $.fromJSON(str);
+			var userid = userObj.id;
+			var userUrl = userObj.indexPage;
+			var frameUrl = parent.frames['appFrame'].location;
+			frameUrl = frameUrl.toString();
+			var start = frameUrl.lastIndexOf("/", frameUrl.length);
+			if (frameUrl.substring(start + 1, frameUrl.length) != userUrl) {
+				parent.frames['appFrame'].location = "../indexs/" + userUrl;
+				if (parent.frames['appFrame'].attachEvent) {
+					parent.frames['appFrame'].attachEvent("onload", function() {
+						alert("已经加载完成！IE");
+						parent.frames['appFrame'].onload = function() {
+							parent.frames['appFrame'].showConfig();
+						}
+					});
+				} else {
+					alert("已经加载完成！Other");
+					parent.frames['appFrame'].onload = function() {
+						parent.frames['appFrame'].showConfig();
+					}
+				}
+			} else {
+				parent.frames['appFrame'].showConfig();
+			}
+		}, false);
+	}
+
+	// 个性化设置
+	function showConfig() {
+		/* var s = parent.frames["appFrame"].document.createElement('script');
+		s.setAttribute('src', '../scripts/indexPanel.js');
+		parent.frames["appFrame"].document.body.appendChild(s); */
+		parent.frames['appFrame'].showIndexPanel('../indexs/' + indexUrl);
+	}
+	
+	function refreshView(){
+		window.location.reload();
+	}
+</script>
+<style>
+A.userInfo:link {
+	font-size: 12px;
+	color: #ffffff;
+	text-decoration: none; font:"微软雅黑";
+}
+
+A.userInfo:visited {
+	font-size: 12px;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+A.userInfo:active {
+	font-size: 12px;
+	color: #ffffff;
+	text-decoration: none;
+}
+
+A.userInfo:hover {
+	font-size: 12px;
+	color: #05c3f9;
+	text-decoration: none;
+}
+s
+.userInfoTd {
+	margin-top: 10px;
+	margin-right: 40px; font:"微软雅黑"background-color:#1c2c4d;;
+}
+
+table {
+	background-color:#1c2c4d;
+}
+
+table a,strong,table span {
+	color: #fff !important;
+	font-weight: normal !important; 
+}
+</style>
+</head>
+<body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0"
+	class="shellBody">
+	<table width="100%" height="100%" border="0" cellspacing="0"
+		cellpadding="0" class="shellBackground">
+		<tr height="80">
+			<td nowrap="yes" colspan="3">
+				<table id="tableId" cellpadding="0" cellspacing="0"
+					style="background: url(images/logo.jpg) top left; background-repeat: no-repeat;"
+					width="100%">
+					<tr height="80">
+                    <td width="30%" onclick="refreshView();" style="cursor: pointer;"></td>
+                    <td width="50%"></td>
+					<td width="20%" align="right" valign="middle" nowrap="yes" class="f01" id="shellActions">
+							<div class="userInfoTd">
+								<strong>用户：</strong><a id="userName" class="userInfo"></a>
+								
+<!-- 								<strong>时间：</strong> -->
+<!-- 								<span id="timeSpan">refresh...</span> -->
+								|<span id="store_no"></span>
+								&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+								<span id="customConfig" style="display: none; font:'微软雅黑';">
+                                <a href="#"onclick="showConfig();" class="a02">首页个性化设置</a> | </span>
+                                
+                                <!-- <a	href="../crm/loginplatform.html" target="_top" class="a02">国安社区门店管理系统首页</a> | -->
+								<a	href="loginuser_info.html" target="appFrame" class="a02">查看用户信息</a>|
+								 <a target="_top" href="javascript:void(0)" class="a02"
+									onclick="doLogout();">注销</a>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		
+	</table>
+</body>
+</html>

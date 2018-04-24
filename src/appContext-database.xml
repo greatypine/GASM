@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:p="http://www.springframework.org/schema/p" xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+	
+	<!-- Data Source -->
+	<bean name="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource" destroy-method="close" lazy-init="true">
+		<property name="driverClass" value="${driverClass}" />
+		<property name="jdbcUrl" value="${jdbcUrl}" />
+		<property name="user" value="${user}" />
+		<property name="password" value="${password}" />
+		<property name="initialPoolSize" value="${initialPoolSize}" />
+		<property name="maxPoolSize" value="${maxPoolSize}" />
+		<property name="minPoolSize" value="${minPoolSize}" />
+	</bean>
+	
+	<!-- Complete the definition in java code
+	<bean id="dynDataSource" class="com.cnpc.pms.base.dynamicds.DynamicDataSource" lazy-init="false">
+		<property name="targetDataSources">
+			<map key-type="java.lang.String">
+			</map>            
+		</property>
+		<property name="defaultTargetDataSource" ref="dataSource"></property>
+	</bean>
+	-->
+	<bean id="dynDataSource" class="com.cnpc.pms.base.dynamicds.DynamicDataSource" lazy-init="false">
+		<property name="defaultTargetDataSource" ref="dataSource"></property>
+	</bean>
+	<bean id="sessionFactory" class="com.cnpc.pms.base.entity.PMSAnnotationSessionFactoryBean">
+		<property name="dataSource">
+			<ref bean="dataSource" />
+		</property>
+		<property name="lobHandler">
+			<ref bean="lobHandler" />
+		</property>
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<!-- Create/update the database tables automatically when the JVM starts up -->
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">true</prop>
+				<prop key="hibernate.max_fetch_depth">5</prop>
+				<prop key="hibernate.cache.provider_class">${hibernate.cache.provider_class}</prop>
+				<prop key="hibernate.cache.use_second_level_cache">true</prop>
+				<prop key="hibernate.cache.region.factory_class">${hibernate.cache.region.factory_class}</prop>
+				<prop key="hibernate.cache.use_query_cache">true</prop>
+			</props>
+		</property>
+		<property name="packagesToScan">
+			<list>
+				<value>com.cnpc.pms.**.entity.</value>
+				<value>com.yadea.crm.**.entity.</value>
+			</list>
+		</property>
+		<property name="entityCacheStrategies">
+			<props></props>
+		</property>
+		<property name="collectionCacheStrategies">
+			<props></props>
+		</property>
+		<!--
+		<property name="entityInterceptor">   
+        	<ref bean="pmsEntityInterceptor"/>   
+    	</property>
+		-->
+	</bean>
+	
+	<!-- Spring TxProxyTemplate -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	
+	<!-- should be optimized -->
+	<!--
+	<bean id="pmsEntityInterceptor" class="com.cnpc.pms.base.springbean.interceptor.PmsEntityInterceptor"/>
+	<bean id="PMSHibernateInterceptor" class="com.cnpc.pms.base.springbean.interceptor.PMSDaoInterceptor">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	-->
+
+
+</beans>

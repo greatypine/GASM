@@ -1,0 +1,192 @@
+﻿<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>小区或街/胡同信息</title>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <script type="text/javascript" src="./select_view/select_option.js"></script>
+    <script type="text/javascript">
+        function setSelectedStore(jsonData){
+            $('#store_id').val(jsonData.id);
+            $('#store_name').val(jsonData.name);
+            $('#town_id').val(jsonData.town_id);
+        }
+
+        function setSelectedTown(jsonData){
+            $('#town_id').val(jsonData.id);
+            $('#town_name').val(jsonData.name);
+        }
+
+        function setSelectedVillage(jsonData){
+            $('#village_id').val(jsonData.id);
+            $('#village_name').val(jsonData.name);
+        }
+
+        function doSave(){
+
+        }
+
+        function doValidate() {
+            $validator = new PMSValidator($(".pmsForm")[0], {
+                bNormalDisplay: false,
+                iDisplayLength: 999
+            });
+            var passed = $validator.clientValidate($(".pmsForm")[0]);
+            if (!passed) {
+                return false;
+            }else {
+                return true;
+            }
+        }
+
+    </script>
+    <style type="text/css">
+        td {
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">
+        <a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+        小区或街/胡同信息<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span id="info"></span>
+    </div>
+    <div class="panel-body" id="temp1">
+        <form  class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+            <table class="layout" cellpadding="0" cellspacing="0" border="0" style="width: 100%">
+                <tr>
+                    <td align="right" width="10%">
+                        名称
+                        <label style="color: red">
+                            *
+                       </label>:
+                    </td>
+                    <td width="40%">
+                        <input type="text" name="name" id="name" validate="{required:true,maxlength:100}" size="23" class="form-control" style="width: 70%"/>
+                    </td>
+                    <td align="right" width="10%">
+                        地址
+                        <label style="color: red">
+                            *
+                       </label>:
+                    </td>
+                    <td width="40%">
+                        <input type="text" name="address" id="address" validate="{required:true,maxlength:100}" size="23" class="form-control" style="width: 70%"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        百度X坐标:
+                    </td>
+                    <td>
+                        <input type="text" name="baidu_coordinate_x" id="baidu_coordinate_x" validate="{number:true;maxlength:100}" size="23" class="form-control" style="width: 70%"/>
+                    </td>
+                    <td align="right">
+                        百度Y坐标:
+                    </td>
+                    <td>
+                        <input type="text" name="baidu_coordinate_y" id="baidu_coordinate_y" validate="{number:true;maxlength:100}" size="23" class="form-control" style="width: 70%"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="right">
+                        高德X坐标:
+                    </td>
+                    <td>
+                        <input type="text" name="gaode_coordinate_x" id="gaode_coordinate_x" validate="{number:true;maxlength:100}" size="23" class="form-control" style="width: 70%"/>
+                    </td>
+                    <td align="right">
+                        高德Y坐标:
+                    </td>
+                    <td>
+                        <input type="text" name="gaode_coordinate_y" id="gaode_coordinate_y" validate="{number:true;maxlength:100}" size="23" class="form-control" style="width: 70%"/>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td align="right">
+                        搜狗X坐标:
+                    </td>
+                    <td>
+                        <input type="text" name="sogou_coordinate_x" id="sogou_coordinate_x" validate="{number:true;maxlength:100}" size="23" class="form-control" style="width: 70%"/>
+                    </td>
+                    <td align="right">
+                        搜狗y坐标:
+                    </td>
+                    <td>
+                        <input type="text" name="sogou_coordinate_y" id="sogou_coordinate_y" validate="{number:true;maxlength:100}" size="23" class="form-control" style="width: 70%"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        门店:
+                    </td>
+                    <td >
+                        <input type="hidden" id="store_id" name="store_id"/>
+                        <div class="input-group" style="width:70%;">
+                            <input type="text" id="store_name" name="store_name" class="form-control" placeholder="选择门店" readonly/>
+                            <span class="input-group-btn">
+                                 <button type="button" class="btn btn-default" name="upload" onclick="showStoreWin(setSelectedStore)">
+                                    <img src="../scripts/images/search.png" alt="查询" style="height: 18px"/>
+                                </button>
+                            </span>
+                        </div>
+                    </td>
+                    <td align="right">
+                        街道:
+                    </td>
+                    <td >
+                        <input type="hidden" id="town_id" name="town_id"/>
+                        <div class="input-group" style="width:70%;">
+                            <input type="text" id="town_name" name="town_name" class="form-control" placeholder="选择街道" readonly/>
+                            <span class="input-group-btn">
+                                 <button type="button" class="btn btn-default" name="upload" onclick="showTownWin(setSelectedTown)">
+                                    <img src="../scripts/images/search.png" alt="查询" style="height: 18px"/>
+                                </button>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        社区:
+                    </td>
+                    <td >
+                        <input type="hidden" id="village_id" name="village_id"/>
+                        <div class="input-group" style="width:70%;">
+                            <input type="text" id="village_name" name="village_name" class="form-control" placeholder="选择社区" readonly/>
+                            <span class="input-group-btn">
+                                 <button type="button" class="btn btn-default" name="upload" onclick="showVillageWin(setSelectedVillage)">
+                                    <img src="../scripts/images/search.png" alt="查询" style="height: 18px"/>
+                                </button>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </form>
+    </div>
+    <div class="panel-footer" align="right">
+        <button class="btn btn-primary" onclick="doSubmit();">
+            提交
+        </button>
+        &nbsp &nbsp
+        <button class="btn btn-primary" onclick="javascript:history.go(-1);">
+            返回
+        </button>
+    </div>
+
+
+
+</div>
+</body>
+</html>

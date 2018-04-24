@@ -1,0 +1,30 @@
+<script>
+	rowindex+=1;
+	var flag = false;	
+	if(r[0] == "head") {
+		var x = createBy("com.cnpc.pms.budget.entity.BudgetImport",{});
+		x.projectCode = r[1];
+ 		x.projectName = r[2];
+ 		x.total = r[3];
+ 		var detail = '';
+ 		for(var i=4;r[i]!='end';++i) {
+ 			detail += ',' + r[i];
+ 		}
+ 		x.detail = detail.substring(1);
+		save(x);
+		flag = true;
+	}else if(r[0] == "set") {
+		var x = createBy("com.cnpc.pms.budget.entity.BudgetImport",{}); 
+		x.projectCode = r[1];
+ 		x.projectName = r[2];
+ 		x.total = r[3];
+ 		var detail = '';
+ 		for(var i=4;r[i]!='end';++i) {
+ 			detail += ',' + r[i];
+ 		}
+ 		x.detail = detail.substring(1);
+		save(x);
+		flag = true;
+	}
+	flag;
+</script>

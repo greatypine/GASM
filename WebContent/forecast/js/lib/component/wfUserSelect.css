@@ -1,0 +1,35 @@
+div.wfSelectDiv{
+	border: 1px solid #8A8A8A;
+	width:260px;
+	height:130px;
+	padding:5px;
+}
+
+.wfSelectDivHeaderClass{
+	background-image: url(../../../image/wfHeaderBg.png);
+	height:22px;
+	text-align: center;
+	font-weight: bold;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #C5C5C5;
+	}
+
+.srcDivClass{
+	background-color: #FFF;
+}
+.srcDivClass ul{
+	overflow:auto;
+	height: 100px;
+}
+.srcDivClass li{
+	height:20px;
+	text-indent: 4px;
+}
+
+.srcLiOdd{
+	background-color: #FFF;	
+}
+.srcLiEven{
+	background-color: #FAFAFA;
+}

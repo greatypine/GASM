@@ -1,0 +1,369 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>异常订单审批</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/datatables.css" rel="stylesheet">
+
+
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.5.0/css/font-awesome.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/ionicons/2.0.1/css/ionicons.min.css">
+  <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+  <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
+  
+  
+<script type="text/javascript" src="../scripts/bidLibjs.js"></script>
+<!-- <script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+<script language="javascript" src="../scripts/common/common-tool.js"></script>
+<script language="javascript" src="../scripts/common/common-core.js"></script>
+<script language="javascript" src="../scripts/common/common-form.js"></script>
+<script language="javascript" src="../scripts/common/processingdialog.js"></script>
+<script language="javascript" src="../scripts/common/common-messagedialog.js"></script>
+<script language="javascript" src="../scripts/common/common-expand.js"></script>
+<script language="javascript" src="../forecast/js/scripts/bidCommon.js"></script>
+<script language="javascript" src="../scripts/default-ready.js"></script> -->
+
+<style>
+*{margin:0; padding:0;}
+.prompt{padding:10px 20px; line-height:30px; font-size:14px;}
+.panel{
+	margin-bottom: 0px;
+}
+.but {
+        float: right;
+        text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+
+
+    a{color: #444;}
+    .user-header span{margin-left:10px;}
+    .box span{margin-left:10px;}
+    .box .col-lg-2 img{width: 100px;}
+    .box .col-lg-10{line-height: 40px;}
+    .table img{max-height: 150px;}
+    .lh128{line-height: 128px!important;}
+    .pd20{padding:20px!important;}
+    .text-left{text-align: left!important;}
+    .text-right{text-align: right!important;}
+
+/* rgba(0,0,0,0) */
+</style>
+
+</head>
+<body>
+<input type="hidden" id="idxrow" value=""/>
+<div class="panel panel-primary">
+		<div class="panel-heading">异常申请明细<label id="pro_status"></label>
+        	<span class="but">
+                <!-- <input id="btnSave" name="" type="button" onclick="doSave();" value="保存"/>
+                <input id="btnCommit" name="" type="button" onclick="doCommit();" value="提交"/> -->
+            </span>
+        </div>
+        <div class="panel-body" style="padding: 0 10px 0 10px;">
+        	<label id="back_msg"></label>
+            
+           
+           
+           <div class="content-wrapper">
+    <div class="container">
+      <!-- Main content -->
+      <section class="content-header">
+          <div class="box box-default">
+            <div class="box-header with-border text-light-blue"><b>订单详情</b></div>
+            <!-- /.box-header -->
+            <div class="box-body">
+              <div class="col-lg-6">
+                <p>订单编号：<label id="order_sn">加载中..</label></p>
+                <p>订单金额：<label id="trading_price">加载中..</label></p>
+              </div>
+              <div class="col-lg-6">
+                <p>服务国安侠：<label id="service_emp">加载中..</label></p>
+                <p>联系电话：<label id="service_emp_phone">加载中..</label></p>
+              </div>
+              <div class="col-lg-2 pull-right"><button type="button" class="btn btn-default" id="btn_order_detail">订单详情</button></div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+
+      </section>
+      <section class="content-header">
+        <div class="box box-default">
+          <div class="box-header text-light-blue"><strong>异常原因</strong></div>
+          <div class="box-body">
+              <p>异常类型：<label id="description"></label></p>
+            <!-- <p>异常说明：<label id="detail"></label></p> -->
+            <!-- /.item -->
+          </div>
+
+        </div>
+      </section>
+      <!-- /.content -->
+      <section class="content-header">
+        <div class="box box-default">
+          <div class="box-header with-border text-light-blue"> <b>申诉理由</b></div>
+          <!-- /.box-header -->
+          <div class="box-body">
+              <textarea class="textarea" readonly="readonly" id="app_reason" placeholder="申诉理由" style="width: 100%; height: 125px; font-size: 14px; line-height: 18px; border: 1px solid #dddddd; padding: 10px;"></textarea>
+             
+             
+              <div id="uploadDiv" style="border-bottom: 1px solid #eee" >
+                <form name="file1" style="display: none;" action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom"
+                      target="hframe">
+                        <!-- <input id="upfile" type="file" isuploadtable="true" name="file" class="form-control" multiple="" onchange="upload_file_mult()"> -->
+                        <input id="upfile" type="file" isuploadtable="true" name="file" class="form-control" onchange="pre_upload_file_mult()">
+                        <span class="users-list-date">当附件为多个，建议转换成压缩包RAR格式上传</span>
+                        <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                </form>
+                <label id="ret"></label>
+            </div>
+              
+              <!-- <button type="button" class="btn btn-default">附件上传</button> -->
+              
+			  <div class="col-lg-12">
+                <button id="btn_appr" type="button" class="btn btn-primary pull-right" style=" padding:6px 35px;display: none;" onclick="doupload_file_mult()">提交申请</button>
+              </div>
+
+          </div>
+          <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+      </section>
+
+    </div>
+  </div>
+           
+           
+           
+           
+           
+           
+           
+            
+            
+        </div>
+        <div class="panel-footer">
+        
+        
+        </div>
+	</div>
+
+
+
+<div id="process_flow">
+	<table id="process_flow_tbl" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                   
+    </table>
+</div> 
+
+<!-- jQuery 2.2.0 -->
+<script src="plugins/jQuery/jQuery-2.2.0.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<!-- SlimScroll -->
+<script src="plugins/slimScroll/jquery.slimscroll.min.js"></script>
+<!-- FastClick -->
+<script src="plugins/fastclick/fastclick.js"></script>
+<!-- AdminLTE App -->
+<script src="dist/js/app.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="dist/js/demo.js"></script>
+
+<script type="text/javascript" src="../scripts/bidLibjsjquery2.0.js"></script>
+
+<script type="text/javascript">
+layer.config({
+  extend: 'skin/crmskin/style.css' //加载新皮肤
+});
+
+
+var work_type="异常订单申诉";
+var nowObj = "";
+var scorerecord_id="";
+var store_id = getUrlParamByKey('store_id');
+var workMonth = getUrlParamByKey('workMonth');
+
+var work_info_id = getUrlParamByKey('work_id');
+var isTotalView = getUrlParamByKey('isTotalView');
+
+//根据订单order_sn查询订单
+var order_sn="";
+var cur_user=null;
+$(function(){
+	initcuruserinfo();
+	//根据work_info_id查到order_sn
+	doManager("WorkInfoManager", "queryWorkInfoById",work_info_id,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var workInfo = JSON.parse(data.data);
+					order_sn = workInfo.order_sn;
+					var msg = workInfo.remark;
+					$("#app_reason").val(workInfo.app_reason);
+					var commit_status=workInfo.commit_status;
+					
+					if(commit_status==0){
+						$("#pro_status").html("状态：【保存】");
+					}else if(commit_status==1){
+						$("#pro_status").html("状态：【待审批】");
+					}else if(commit_status==2){
+						$("#pro_status").html("状态：【退回】");
+						if(isTotalView!=null&&isTotalView.length>0){
+							$("#back_msg").html("");
+						}else{
+							$("#back_msg").html("退回信息： <font color='red' size='2'>"+msg+"</font>");
+						}
+						
+						$("#app_reason").attr("readonly",false);
+						$("#uploadFrom").css("display","block");
+						$("#btn_appr").css("display","block");
+							if(cur_user.usergroup.code=="PTYYZXYCDDZ"){
+								$("#app_reason").attr("readonly",true);
+								$("#uploadFrom").css("display","none");
+								$("#btn_appr").css("display","none");					
+							}
+					}else if(commit_status==3){
+						$("#pro_status").html("状态：【已通过】");
+					}else{
+						$("#pro_status").html("状态：【保存】");
+					}
+					
+				}
+	},false);
+	
+	initOrderDetail(order_sn);
+	initExceptionType(order_sn);
+	
+	//根据SN 查找附件表中。所上传的附件 
+	doManager("AttachmentManager", "findAttachmentByOrderSN",[order_sn,2],
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var attachments = JSON.parse(data.data);
+					var att_href = $("<div></div>");
+					$(attachments).each(function(i,element){
+						 att_href.append('<a href="'+element.file_path+'">'+element.file_name+'</a><br />');
+					});
+					$("#ret").append(att_href);
+				}
+	},false);
+	
+	
+	$("#btn_order_detail").click(function(){
+		queryOrder(order_sn);
+	});
+	
+	
+	//$(".content").find("input[readonly]").css("background",'#f5f5f5');
+	//$(".content").find("input[value='是']").css("background",'#f5f5f5');
+    if(isTotalView != null){
+        window.parent.setIframeHeight();
+    }
+    
+});
+
+
+
+
+function initOrderDetail(order_sn){
+	doManager("OrderManager", "queryOrderInfoBySN",order_sn,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var order_obj = JSON.parse(data.data);
+					$("#service_emp").html(order_obj.employee_name);
+					$("#service_emp_phone").html(order_obj.employee_phone);
+					$("#order_sn").html(order_obj.order_sn);
+					//var start_date_str=new Date(order_obj.create_time).format('yyyy-MM-dd HH:mm:ss');
+					//$("#start_time").html(start_date_str);
+					//总价 
+					$("#trading_price").html(order_obj.trading_price+" 元");
+					//$("#payable_price").html(order_obj.payable_price);
+				}
+	},false);
+}
+
+
+function initExceptionType(order_sn){
+	doManager("DsAbnormalOrderManager", "queryDsAbnormalTypeBySN",order_sn,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var order_obj = JSON.parse(data.data);
+					if(order_obj!=null&&order_obj.description!=null){
+						$("#description").html(order_obj.description);
+					}
+					//$("#detail").html(order_obj.detail);
+				}
+	},false);
+}
+
+//弹订单详情 
+//弹出层 订单明细 
+function queryOrder(order_sn){
+			 var url = "../crm/order_detail_alert.html?order_sn="+encode64(order_sn);
+			 layer.open({
+       		  type: 2,
+          		  title:  ['订单信息', 'color:#fff'],
+          		  shadeClose: true,
+          		  shade:[0.1, '#393D49'],
+          		  moveOut:false,
+          		  move:false, 
+          		  skin: 'layer-ext-crmskin',
+          		  area: ['90%', '88%'],
+          		  offset: ['2px','65px'],
+          		  content: url,
+          		  success:function(layer,index){
+          			 
+          		  },
+          		  cancel: function(index, layero){ 
+          			 layer.close(index);
+          			}  
+          		});  
+}
+
+//验证是不是空
+function isnull(str) {
+    return str == null || str == "null" || str === "" || str == "undefined" || typeof(str) == "undefined";
+}
+
+
+
+
+
+function doupload_file_mult(){
+	var content = $('#upfile')[0].files;
+	var path = getRootPath();
+    var _type = "aaaa";
+    var app_reason = encodeURIComponent($("#app_reason").val());
+	$("#uploadFrom").attr("action", path + "/exceptionFileUpload.action?model=exceptionorderupdate&order_sn="+order_sn+"&app_reason="+app_reason);
+    $("#uploadFrom").submit();
+}
+function importSuccess() {
+	layer.alert('提交成功！', {
+		  closeBtn: 0
+		}, function(){
+			window.location.href="work_info_list.html";
+		});
+}
+function initcuruserinfo(){
+	//取得当前登录人的门店
+	doManager("UserManager", "getCurrentUserDTO",null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var current_uesr = JSON.parse(data.data);
+						cur_user=current_uesr;
+					}
+	},false);
+}
+
+</script>
+
+
+</body>
+</html>

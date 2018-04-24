@@ -1,0 +1,291 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>菜鸟驿站填报</title>
+<link
+	href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css"
+	rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	padding-top: 5px;
+}
+
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 80%;
+	height: 46px;
+	line-height: 46px;
+	border: 1px solid #dad9d7;
+	margin-top: 5px;
+}
+
+.other {
+	width: 76%;
+}
+
+.but {
+	margin-top: 10px;
+	text-align: center;
+}
+</style>
+
+<script type="text/javascript">
+
+
+	function checkExpressNo(express_no) {
+		var obj = new Object();
+		obj.express_no = express_no;
+		obj.id = $("#id").val();
+		var flag = true;
+		doManager("SelfExpressManager", "querySelfExpressByExpressNo", obj,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if (data.data != 0) {
+							alert("单号已存在！");
+							$('#express_no').val("");
+							flag = false;
+						}
+					}
+				}, false);
+		return flag;
+	}
+
+	
+	//初始化快递公司 
+	function initExpressCompany() {
+		doManager("ExpressCompanyManager", "queryAllExpressName", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						var emList = jsonData.expressCompany;
+						//$("#express_company").append("<option></option>");
+						for (i = 0; i < emList.length; i++) {
+							$("#express_company").append("<option>" + emList[i].express_name + "</option>");
+						}
+					}
+				}, false);
+	}
+	
+	
+	$(function(){
+		initExpressCompany();
+		$('[isautotab]').each(function(index) {
+			$(this).keydown(function(event) {
+				if (event.keyCode == 13) {
+					if (index == 1) {
+						if (checkExpressNo($("#express_no").val())) {
+							$('[isautotab]:eq(' + (index + 1) + ')').focus();
+						}
+					} else {
+						$('[isautotab]:eq(' + (index + 1) + ')').focus();
+					}
+
+				}
+			});
+		});
+	});
+	
+	
+	function dataCheck() {
+		var express_no = $('#express_no').val();
+		if (express_no == "" || express_no == null) {
+			alert("请输入快递单号!");
+			return;
+		}
+		/*
+		var obj = document.getElementsByName("isPhoneNo");
+		for (i = 0; i < obj.length; i++) {
+			if (!/^((0\d{2,3}-\d{7,8})|(1[35784]\d{9}))$/.test(obj[i].value)) {
+				alert("请输入正确的电话!");
+				return;
+			}
+		}*/
+		return true;
+	}
+	
+
+	function doSave() {
+		if (!dataCheck()) {
+			return;
+		}
+
+		if (!checkExpressNo($("#express_no").val())) {
+			return;
+		}
+
+		var arr = [ "express_date", "take_express_date", "express_company",
+				"express_no", "rcv_name", "rcv_tel", "rcv_address", "obj_name",
+				"remark" ];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		o["express_company"] = $("#express_company  option:selected").text();
+		doManager("SelfExpressManager", "saveSelfExpress", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				alert("保存成功！ ");
+				window.location.href = 'self_express_list.html';
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		});
+	}
+	
+	function goBack() {
+		window.location.href = 'self_express_list.html';
+	}
+	
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">门店数据采集管理 :菜鸟驿站信息填报</div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true"
+		displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<p>到件时间</p>
+					<p>
+						<input id="express_date" revalidate="true" type="text"
+							likeOption="false" name="express_date" validate="formatDate:true"
+							class="pmsDateField form-control" yearRange="-100:+10"
+							style="width: 80%; display: inline;" readonly />
+					</p></td>
+				<td>
+					<p>取件时间</p>
+					<p>
+						<input id="take_express_date" revalidate="true" type="text"
+							likeOption="false" name="express_date" validate="formatDate:true"
+							class="pmsDateField form-control" yearRange="-100:+10"
+							style="width: 80%; display: inline;" readonly />
+					</p></td>
+				<td>
+					<p>快递公司</p>
+					<p>
+						<select name="express_company" id="express_company"
+							isautotab="true">
+							<!-- <option>顺丰快递</option>
+							<option>圆通速递</option>
+							<option>韵达快递</option>
+							<option>申通速递</option>
+							<option>中通快递</option>
+							<option>EMS</option>
+							<option>天天快递</option>
+							<option>百世快递</option>
+							<option>如风达快递</option> -->
+						</select>
+					</p></td>
+
+			</tr>
+			<tr>
+
+				<td>
+					<p>快递单号</p>
+					<p>
+						<input type="text" id="express_no" isautotab="true" />
+					</p></td>
+				<td>
+					<p>用户姓名</p>
+					<p>
+						<input type="text" id="rcv_name" isautotab="true" />
+					</p></td>
+				<td>
+					<p>用户电话</p>
+					<p>
+						<input id="rcv_tel" type="text" name="isPhoneNo" isautotab="true"
+							onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11">
+					</p></td>
+			</tr>
+			<tr>
+				<td>
+					<p>寄件地址</p>
+					<p>
+						<input type="text" id="rcv_address" isautotab="true" />
+					</p></td>
+				<td>
+					<p>邮寄物品</p>
+					<p>
+						<input type="text" id="obj_name" isautotab="true" />
+					</p></td>
+
+				<td>
+					<p>备注</p>
+					<p>
+						<input type="text" id="remark" isautotab="true" />
+					</p></td>
+			</tr>
+
+		</table>
+	</form>
+	<div class="but">
+		<input name="" type="submit" value="保存" onclick="doSave();" />
+		<input name="" type="button" value="取消" onclick="javascript:goBack();" />
+	</div>
+</body>
+</html>

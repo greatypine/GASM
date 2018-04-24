@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>绩效下载</title>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+        <script type="text/javascript" src="../scripts/auto.js"></script>
+            
+
+
+    </head>
+    <style type="text/css">
+        td{
+            padding-top: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+
+        $(function () {
+            jeDate({
+                dateCell:"#work_month",
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:false,
+                maxDate: new Date().format('yyyy-MM-dd hh:mm:ss'),
+                zIndex:2000
+            });
+            
+            //初始化日期 为当前月的前一月 
+            var date = new Date();
+            var before_year=date.getFullYear();
+            var before_month=date.getMonth();
+            if(before_month==0){
+            	before_year=before_year-1;
+            	before_month=12;
+            }
+            if(before_month<10){
+            	before_month="0"+before_month;
+            }
+            var ret=before_year+"-"+before_month;
+            $('#work_month').val(ret);
+        });
+
+        function downloadHouseCustomer(){
+            var work_month = $('#work_month').val();
+            if(work_month == '' || work_month == null){
+                $$.showMessage('提示','请选择下载月份！');
+                return;
+            }
+            var dB = new Date(work_month + '-01');
+            var date = new Date();
+            if(dB.getFullYear()==date.getFullYear()){
+            	if((dB.getMonth())>=(date.getMonth())){
+            		$$.showMessage('提示','请选择当月以前的月份！');
+                    return;
+            	}
+            }else{
+            	if((dB.getFullYear())>(date.getFullYear())){
+            		$$.showMessage('提示','请选择当月以前的月份！');
+                    return;
+            	}
+            }
+            
+            doManager('houseCustomerManager','exportAchievements',work_month,function(data){
+                if(data.result){
+                    var path = JSON.parse(data.data);
+                    if(path == null){
+                        $$.showMessage('提示','下载失败，没有'+work_month+'的单体画像数据！');
+                    }else{
+                        window.location.href=path;
+                    }
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        }
+        
+        function downloadExpressCount(){
+        	var work_month = $('#work_month').val();
+            if(work_month == '' || work_month == null){
+                $$.showMessage('提示','请选择下载月份！');
+                return;
+            }
+            
+        	var path = getRootPath();
+            window.open(path + "/downloadExcel.action?fileName=express_count&month="+work_month);
+        }
+    </script>
+    <body style="height: 100%;">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+           绩效下载
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                                <td align="right" style="width: 10%">下载月份：</td>
+                                <td style="width: 40%">
+                                    <input type="text" id="work_month" name="work_month" class="wicon form-control" maxlength="20" likeOption="false"  />
+                                </td>
+                                <td align="right" ></td>
+                                <td >
+
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <button class="btn btn-primary" onclick="downloadHouseCustomer()">单体画像完成量下载</button>
+                <button class="btn btn-primary" onclick="downloadExpressCount()">快递代送完成量下载</button>
+            </div>
+        </div>
+
+    </body>
+
+
+</html>

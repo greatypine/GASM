@@ -1,0 +1,627 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>门店考勤记录</title>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        
+        <script type="text/javascript" src="../startbootstrap/js/jquery.1.10.2.min.js"></script>
+    	<script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+        
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+        <script type="text/javascript" src="../scripts/auto.js"></script>
+        
+    
+
+
+    </head>
+    <style type="text/css">
+        td{
+            padding-top: 10px;
+        }
+        .auto{max-height:100px; overflow-y:scroll;}
+    </style>
+    <script>
+    //取得当前登录人城市 
+    function installcity(){
+    	 doManager('UserManager','getCurrentUserCity',null,function(data){
+             if(data.result){
+                 var cityList = JSON.parse(data.data);
+                 var cityHtml = "";
+                 for(var o in cityList){
+                	var cityname =  cityList[o].cityname;
+                	cityHtml+="<option value='"+cityname+"'>"+cityname+"</option>";
+                 }
+                 $("#citySelect").html(cityHtml);
+                 $("#downloadCitySelect").html(cityHtml);
+             }
+         });
+    }
+    
+    var array=new Array();
+    
+    
+        var maxMonth = null;
+
+        $(function () {
+        	installcity();
+        	
+        	initallstore();
+        	
+            setMaxWorkMonth();
+            if(maxMonth == null){
+                maxMonth = new Date().format('yyyy-MM');
+            }
+            jeDate({
+                dateCell:"#add_work_month",//isinitVal:true,
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:true,
+                zIndex:2000,
+                choosefun:function(val) {
+                    findWorkTime(val);
+                }
+            });
+
+            jeDate({
+                dateCell:"#download_work_month",//isinitVal:true,
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:true,
+                zIndex:2000
+            });
+
+            jeDate({
+                dateCell:"#work_month",
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:true,
+                zIndex:2000
+            });
+
+            jeDate({
+                dateCell:"#s1",//isinitVal:true,
+                format:"YYYY-MM-DD",
+                isTime:false
+            });
+
+            jeDate({
+                dateCell:"#s2",//isinitVal:true,
+                format:"YYYY-MM-DD",
+                isTime:false
+            });
+            setNextWorkMonth();
+
+            searchList();
+            
+            
+            var date=new Date;
+    		var year = date.getFullYear();
+    		var month=date.getMonth();
+    		month = ("0"+month).slice(-2);
+    		$("#work_month").val(year+"-"+month);
+    		
+        });
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            $$.executeSearch('workRecordTotalQuery', 'conditionsDiv');
+        }
+
+        function setNextWorkMonth(){
+            doManager('workMonthManager','getNextWorkMonth',null,function(data){
+                if(data.result){
+                    var workMonth = JSON.parse(data.data);
+                    $('#add_work_month').val(workMonth.work_month);
+                }
+            });
+        }
+
+        function setMaxWorkMonth(){
+            doManager('workMonthManager','getMaxWorkMonth',null,function(data){
+                if(data.result){
+                    var workMonth = JSON.parse(data.data);
+                    $('#work_month').val(workMonth.work_month);
+                    $('#download_work_month').val(workMonth.work_month);
+                    maxMonth = workMonth.work_month;
+                }
+            },false);
+        }
+
+
+        function doClean() {
+            document.service_qa.reset();
+        }
+//        var exportObj = {
+//            html : '<a href="#">导出Excel </a>',
+//            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+//                var id = allColumnsDataMap.id;
+//                doManager("WorkRecordManager", "saveWorkRecordForExcel",[id], function(
+//                        data, textStatus, XMLHttpRequest) {
+//                    if (data.result) {
+//                        //alert("导出成功！ ");
+//                        var ret = JSON.parse(data.data);
+//                        window.location.href=ret;
+//                    } else {
+//                        alert("导出失败！！ ");
+//                    }
+//                });
+//            }
+//        };
+//        var returnObj = {
+//            html : '<a name="a_return" href="#">退回</a>',
+//            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+//                var id = allColumnsDataMap.id;
+//                window.location.href = "relation_info.html?id="+id;
+//                if(allColumnsDataMap.commit_status != 3){
+//                    showReturnTotal(id,allColumnsDataMap.store_name,allColumnsDataMap.work_month,2);
+//                }
+//            }
+//        };
+//
+//        var confirmObj = {
+//            html : '<a name="a_confirm" href="#">确认</a>',
+//            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+//                var id = allColumnsDataMap.id;
+//                if(allColumnsDataMap.commit_status != 3){
+//                    showReturnTotal(id,allColumnsDataMap.store_name,allColumnsDataMap.work_month,3);
+//                }
+//                window.location.href = "relation_info.html?id="+id;
+//            }
+//        };
+
+        var viewObj = {
+            html : '<a name="a_confirm" href="#">详情</a>',
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.id;
+                window.location.href = "work_record_view.html?id="+id+"&store_id="+allColumnsDataMap.store_id+"&workMonth="+allColumnsDataMap.work_month;
+            }
+        };
+        $pmspage.opArr = [viewObj];
+
+        function showAddWorkTime(){
+            var div = $("#addWorkMonth");
+            div.dialog({
+                bgiframe : true,
+                title : "发起考勤或修改总工时",
+                width : 380,
+                buttons : {
+                    "确定" : function() {
+                        checkSumitCount($(this));
+                    },
+                    "取消" : function() {
+                        $(this).dialog("close");
+                    }
+                },
+                modal : false
+            });
+        }
+
+        function checkSumitCount(_this){
+            var cityname = $('#citySelect option:selected').val();
+            if(cityname == '' || cityname == null){
+                $$.showMessage('提示','请选择考勤城市！');
+                return;
+            }
+            
+            //取得选择的月份。判断如果为当前或是大于当前月。则不允许保存。开始//
+            var add_work_month = $('#add_work_month').val();
+            var date=new Date;
+    		var year = date.getFullYear();
+    		var month=date.getMonth()+1;
+    		month = ("0"+month).slice(-2);
+            var ym = year+"-"+month;
+            var add_month_num = add_work_month.replace("-","");
+            var ym = ym.replace("-","");
+            /* if(add_month_num == ym){
+            	$$.showMessage('提示','不能发起当月考勤 ！ 请重新选择日期！');
+                return;
+            } */
+            if(add_month_num>ym){
+            	$$.showMessage('提示','发起月份错误 ！请重新选择日期！');
+                return;
+            } 
+            //取得选择的月份。判断如果为当前或是大于当前月。则不允许保存。结束//
+            
+            doManager('workRecordTotalManager','getMaxSubmitCount',[maxMonth,cityname],function(data){
+                if(data.result){
+                    var result = JSON.parse(data.data);
+                    if(result > 0){
+                        $$.showMessage('提示','还有提交未通过的数据无法发起考勤！');
+                    }else{
+                        addWorkTime(_this);
+                    }
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        }
+
+        function showStoreMessage(){
+            $$.executeSearch('workRecordTotalCheckQuery');
+            $('#label_message').text("发起开启新的月份考勤，之前"+maxMonth+"月份工时不可再输入，确定发起新的月考勤？");
+            $('#showStoreDiv').dialog({
+                bgiframe : true,
+                title : "确认",
+                width : 700,
+                height:550,
+                buttons : {
+                    "确定" : function() {
+                        showAddWorkTime();
+                        $(this).dialog("close");
+                    },
+                    "取消" : function() {
+                        $(this).dialog("close");
+                    }
+                },
+                modal : false
+            });
+        }
+        
+        function addWorkTime(_this) {
+            var workMonth = {
+                id:$('#work_month_id').val(),
+                cityname:$("#citySelect  option:selected").val(),
+                work_month:$('#add_work_month').val(),
+                totalworktime:$('#totalworktime').val()
+            };
+            if(!checkValue(workMonth.work_month)){
+                $$.showMessage('提示','请选择考勤月份！');
+                return;
+            }
+            if(!checkValue(workMonth.totalworktime)){
+                $$.showMessage('提示','请输入考勤月法定工时！');
+                return;
+            }
+            var maxdate = new Date(maxMonth + '-01');
+            var nextdate = new Date(workMonth.work_month + '-01');
+            /* if(nextdate < maxdate){
+                $$.showMessage('提示','不能选择当前考勤月之前的月份！');
+                return;
+            } */
+            var message = "发起开启"+workMonth.work_month+"月份考勤，之前月份工时不可再输入，确定发起下月考勤？";
+            if(checkValue(workMonth.id)){
+                message = "是否修改" + workMonth.work_month + "月份的工时数";
+            }
+            $$.showConfirm('提示',message,function(){
+                submitWorkTime(workMonth,_this);
+            });
+        }
+		
+        function submitWorkTime(workMonth,_this){
+        	//设置等待  
+        	     
+		    var index = layer.load(1, {
+		    	  shade: [0.1,'#fff'] //0.1透明度的白色背景
+		    	});
+        	
+            doManager('workMonthManager','saveWorkMonth',workMonth,function(data){
+                if(data.result){
+                	layer.close(index);
+                    $$.showMessage('提示','发起成功！',function(){
+                        var workMonth = JSON.parse(data.data);
+                        $('#work_month_id').val(workMonth.id);
+                        $('#add_work_month').val(workMonth.work_month);
+                        $('#totalworktime').val(workMonth.totalworktime);
+                        _this.dialog("close");
+                    });
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            }); 
+        }
+
+        function findWorkTime(value){
+            if(value != null && value != ''){
+                doManager('workMonthManager','findWorkMonthByCity',[value,$("#citySelect  option:selected").val()],function(data){
+                    if(data.result){
+                        var workMonth = JSON.parse(data.data);
+                        if(workMonth != null){
+                            $('#work_month_id').val(workMonth.id);
+                            $('#add_work_month').val(workMonth.work_month);
+                            $('#totalworktime').val(workMonth.totalworktime);
+                        }else{
+                            $('#work_month_id').val('');
+                            $('#totalworktime').val('');
+                        }
+
+                    }
+                });
+            }
+        }
+
+        function showReturnTotal(total_id,store_name,work_month,commit_status){
+            var div = $("#returnTotal");
+            $('#td_store').html(store_name);
+            $('#td_work_month').html(work_month);
+            $('#total_id').val(total_id);
+            var title = "退回";
+            if(commit_status == 3){
+                title = "确认";
+                $('#tr_explain').html('确认备注：');
+            }else{
+                $('#tr_explain').html('退回原因：');
+            }
+            div.dialog({
+                bgiframe : true,
+                title : title,
+                width : 400,
+                height:260,
+                buttons : {
+                    "确定" : function() {
+                        submitReturn(commit_status,title,$(this));
+                    },
+                    "取消" : function() {
+                        $(this).dialog("close");
+                    }
+                },
+                modal : true
+            });
+        }
+
+        function submitReturn(commit_status,title,_this){
+            var obj = {
+                id: $('#total_id').val(),
+                remark:$('#remark').val(),
+                commit_status:commit_status
+            };
+
+            if(commit_status == 2 && (obj.remark == null || obj.remark == '')){
+                $$.showMessage('提示','请填写退回原因');
+                return;
+            }
+
+            doManager('workRecordTotalManager','updateWorkRecordTotalToReturn',obj,function(data){
+                if(data.result){
+                    _this.dialog("close");
+                    $$.showMessage('提示',title + '成功！',function(){
+                        searchList();
+                    });
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        }
+
+        function checkValue(value){
+            if(value != null && value != ''){
+                return true;
+            }
+            return false;
+        }
+
+        //初始化所有门店
+        function initallstore() {
+        	doManager("StoreManager", "findStoreAll", null,
+        			function(data, textStatus, XMLHttpRequest) {
+        				if (data.result) {
+        					var jsonData = $.fromJSON(data.data);
+        					for(i=0;i<jsonData.length;i++){
+        						array.push(jsonData[i].name);
+        					}
+        				}
+        			}, false);
+        }
+
+        function downloadWorkRecord(){
+            var div = $("#downloadWorkMonth");
+            div.dialog({
+                bgiframe : true,
+                title : "下载工时文档",
+                width : 380,
+                buttons : {
+                    "确定" : function() {
+                        downloadWorkRecordTotal($(this));
+                    },
+                    "取消" : function() {
+                        $(this).dialog("close");
+                    }
+                },
+                modal : false
+            });
+        }
+	
+      /*   function wait_tip(){
+        	layer.msg('加载中', {
+        		  icon: 16
+        		  ,shade: 0.01
+        		});
+        } */
+        
+        function downloadWorkRecordTotal(_this){
+            var work_month = $('#download_work_month').val();
+            var cityname = $('#downloadCitySelect').val();
+            if(work_month == null || work_month == ''){
+                $$.showMessage('提示','请选择下载工时月份！');
+                return;
+            }
+
+            if(cityname == null || cityname == ''){
+                $$.showMessage('提示','请选择城市！');
+                return;
+            }
+			
+            var index = layer.load(1, {
+		    	  shade: [0.1,'#fff'] //0.1透明度的白色背景
+		    	});
+            
+            doManager('workRecordTotalManager','saveWorkRecordForExcel',[work_month,cityname],function(data){
+                if(data.result){
+                	layer.close(index);
+                    var path = JSON.parse(data.data);
+                    if(path == null){
+                        $$.showMessage('提示','下载失败，'+cityname+'没有'+work_month+'的考勤数据！',function(){
+                            _this.dialog("close");
+                        });
+                    }else{
+                        _this.dialog("close");
+                        window.location.href=path;
+                    }
+                }else{
+                	layer.close(index);
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        }
+
+    </script>
+    <body style="height: 100%;">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+           门店考勤记录
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                                <td width="8%" align="right">门店名称：</td>
+                                <td width="26%">
+                                    <div class="input-group" style="width:100%;">
+				                        <input type="text" id="store_name" name="store_name" class="auto-inp form-control" likeOption="false">
+				                        <div class="auto hidden" id="auto">
+				                            <div class="auto_out">1</div>
+				                            <div class="auto_out">2</div>
+				                        </div>
+				                    </div>
+                                </td>
+                                <td width="8%" align="right">提交时间：</td>
+                                <td width="58%">
+                                    <input id="s1" type="text" likeOption="false" name="start_date" class="wicon form-control"  style="width: 27%; display: inline;" />
+                                    至
+                                    <input id="s2" type="text" likeOption="false" name="end_date" class="wicon form-control" style="width: 27%; display: inline;" />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="right" >考勤月份：</td>
+                                <td >
+                                    <input type="text" id="work_month" name="work_month" class="wicon form-control" maxlength="20" likeOption="false"  />
+                                </td>
+                                <td align="right" ></td>
+                                <td >
+
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <button class="btn btn-primary" onclick="searchList()">查询</button>
+                <button class="btn btn-primary" onclick="showStoreMessage()">发起考勤</button>
+                <button class="btn btn-primary" onclick="downloadWorkRecord()">下载工时文档</button>
+            </div>
+        </div>
+        <div id="centerQueryGridContainer" class="panel panel-primary" queryid="workRecordTotalQuery" operators="$pmspage.opArr"
+             titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+             showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+             showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+        <div id="addWorkMonth" class="panel panel-primary" style="display: none;">
+            <!--<div class="panel-heading">-->
+                <!--发起考勤或修改总工时-->
+            <!--</div>-->
+            <div class="panel-body">
+                <table  cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                	<tr>
+                		<td align="right" >城市<label style="color:red;">*</label>：</td>
+                        <td >
+                           	<select id="citySelect" style="width: 100%;display:inline-block;padding:0;" class="form-control">
+                           		<option></option>
+                           	</select>
+                        </td>
+                	</tr>
+                    <tr>
+                        <td align="right" width="20%" >考勤月份<label style="color:red;">*</label>：</td>
+                        <td width="80%" >
+                            <input type="hidden" id="work_month_id" name="work_month_id" />
+                            <input type="text" id="add_work_month" name="add_work_month" class="wicon form-control" maxlength="20" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right" >考勤月法定工时<label style="color:red;">*</label>：</td>
+                        <td >
+                            <input type="text" id="totalworktime" name="totalworktime" class="form-control" maxlength="20" onkeyup="value=this.value.replace(/\D+/g,'')" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="downloadWorkMonth" class="panel panel-primary" style="display: none;">
+            <!--<div class="panel-heading">-->
+            <!--发起考勤或修改总工时-->
+            <!--</div>-->
+            <div class="panel-body">
+                <table  cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                    <tr>
+                        <td align="right" >城市<label style="color:red;">*</label>：</td>
+                        <td >
+                            <select id="downloadCitySelect" style="width: 100%;display:inline-block;padding:0;" class="form-control">
+                                <option></option>
+                            </select>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right" width="20%" >考勤月份<label style="color:red;">*</label>：</td>
+                        <td width="80%" >
+                            <input type="text" id="download_work_month" name="download_work_month" class="wicon form-control" maxlength="20" />
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="returnTotal" class="panel panel-primary" style="display: none;">
+            <div class="panel-body">
+                <table  cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                    <tr>
+                        <td align="right" width="10%" >门店：</td>
+                        <td width="40%" id="td_store">
+
+                        </td>
+                        <td align="right" width="10%" >考勤月份：</td>
+                        <td width="40%" id="td_work_month">
+
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right" id="tr_explain">退回原因：</td>
+                        <td colspan="3">
+                            <input type="hidden" id="total_id" name="total_id" />
+                            <textarea type="text" id="remark" name="remark" class="form-control" maxlength="120" ></textarea>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="showStoreDiv" class="panel panel-primary" style="display: none;">
+            <div class="panel-body">
+                <label id="label_message"></label>
+                <div id="storeQueryGridContainer" class="panel panel-default" queryid="workRecordTotalCheckQuery" operators="$pmspage.opArr1"
+                     titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+                     showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+                     showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true" style="width: 99%"></div>
+            </div>
+        </div>
+    </body>
+    
+    
+    <script>
+		var autoComplete = new AutoComplete("store_name","auto",array);
+		document.getElementById("store_name").onkeyup = function(event){
+			autoComplete.start(event);
+		}
+	</script>
+
+
+    </html>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/dataTablesLib.js"></script>
+        <script type="text/javascript" src="../scripts/common/pms.js"></script>
+        <script type="text/javascript" src="../scripts/common/pmsCommon.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			var authObj = 
+				{
+					html: '<a href="#" class="blue">授权</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						if(isNaN(allColumnsDataMap.id))
+							return ;
+						window.location.href = "roleAuth.html?id=" + allColumnsDataMap.id;
+					}
+				}
+			var editObj = 
+				{
+					html: '<a href="#" class="blue">编辑</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						doManager("roleManager", "getRoleDTOById", allColumnsDataMap.id, function(datas, textStatus, XMLHttpRequest) {
+							if (datas.result) {
+								window.location.href = "roleUpdate.html?id=" + allColumnsDataMap.id;
+							}
+						});
+					}
+				}
+			var delObj = 
+				{
+					html: '<a href="#" class="blue">删除</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						var div = $("<div></div>");
+						div.html("确定删除？");
+						var doDelete = function(data) {
+							var url = $$.PMSDispatchActionUrl;
+							var data = new PMSRequestObject("baseManager", "removeObj", [queryid, allColumnsDataMap.id]);
+							$$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+								div.dialog("close");
+								if (data.result) {
+									$(nTr).remove();
+								}
+							});
+						}
+						div.dialog(
+							{
+								bgiframe: true,
+								title: "提示",
+								width: 320,
+								buttons: 
+									{
+										"确定": function() {
+											doDelete(data);
+										},
+										"取消": function() {
+											$(this).dialog("close");
+										}
+									},
+								modal: true
+							});
+					}
+				}
+			var opArr = [authObj, editObj];
+			
+		var onSearch = function(){
+	    $$.executeSearch('roleQuery', 'roleDiv'); //queryid, the params div id.			
+		}
+					
+		$(function(){
+			$$.executeSearch('roleQuery', 'roleDiv');
+		});
+		function showDiffRole(obj,index){
+			
+			if(obj[8]==0&&index!=8&&index!=0){
+				return "<span class='red'>"+obj[index]+"</span>";
+			}
+			else{
+				return obj[index];
+			}
+		}
+</script>
+	</head>
+	<body>
+		<div class="rightcont body_bg clear">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						用户与权限:角色管理
+					</h4>
+				</div>
+			</div>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<a href="#" onClick="toggleBiz('roleDiv','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+					<strong>搜索条件</strong>
+				</div>
+				<div class="panel-body">
+
+					<form id="Form1" class="pmsForm">
+						<table class="bigteble">
+							<tr>
+								<td class="Querytext" style="width: 50%">
+									角色名称：
+									<input type="text" name="name" class="form-control" style="width: 50%"/>
+								</td>
+								<td class="Querytext" style="width: 50%">
+									角色编码：
+									<input type="text" name="code" class="form-control" style="width: 50%"/>
+								</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+				<div class="panel-footer" style="text-align: right">
+					<input align="right" role="button" class="btn btn-primary" onClick="onSearch()" value="查询" type="button" />
+					<input align="right" role="button" class="btn btn-primary" onClick="role_add()" value="新增" type="button" />
+				</div>
+			</div>
+				<!--searchCondition div-->
+				</div>
+					<div id="gridContainer" class="panel panel-primary" queryid="roleQuery" queryformat="simple"
+						showsearch="false" autoload="false" searchDiv="roleDiv" fnRender="showDiffRole"
+						showdisplay="false" showtitle="true" 
+						showprint="false" showpaging="true" 
+						showcheckbox="false" operators=opArr>
+					</div>
+				</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+	</body>
+	<script language="javascript">
+		function role_add() {
+			location = "newrole.html";
+		}
+		
+	</script>
+</html>

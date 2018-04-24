@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>城市人员信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="../scripts/auto.js"></script>
+    <style>
+        .panel-body{padding-bottom: 0;}
+        .panel-body td{padding-top:15px;}
+    </style>
+</head>
+<script>
+    var win;
+    var array=new Array();
+	//初始化所有门店 
+	function initallstore() {
+		doManager("StoreManager", "findStoreAll", null,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					for(i=0;i<jsonData.length;i++){
+						array.push(jsonData[i].name);
+					}
+				}
+			}, false);
+	}
+	var curr_user;
+	function initcurruser(){
+  		//取得当前登录人的门店
+		doManager("UserManager", "getCurrentUserDTO",null,
+    				function(data, textStatus, XMLHttpRequest) {
+    					if (data.result) {
+    						 curr_user = JSON.parse(data.data);
+    						
+    					}
+    	},false);
+  	}
+	
+	
+    $(function () {
+    	initcurruser();
+    	initallstore();
+    	
+    	doClean();
+        //页面加载成功后需要获取数据
+        searchList();
+        
+        $("#display_base_div").click(function(){
+            $("#base_data_div").toggle(500);
+            if($("#display_base_div").html()=="-"){
+            	$("#display_base_div").html("+");
+            }else{
+            	$("#display_base_div").html("-");
+            }
+        });
+
+        $("#display_base_div_hg").html("+");
+        $("#base_data_div_hg").hide();
+        
+        $("#display_base_div_hg").click(function(){
+            $("#base_data_div_hg").toggle(500);
+            if($("#display_base_div_hg").html()=="-"){
+            	$("#display_base_div_hg").html("+");
+            }else{
+            	$("#display_base_div_hg").html("-");
+            }
+        });
+        
+        $("#imp_base_div").click(function(){
+            $("#imp_data_div").toggle(500);
+            if($("#imp_base_div").html()=="-"){
+            	$("#imp_base_div").html("+");
+            }else{
+            	$("#imp_base_div").html("-");
+            }
+        });
+        
+    });
+
+    //操作列
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('cityHumanresourcesQuery', 'conditionsDiv');
+    }
+
+    //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str == "" || str == "undefined" || typeof(str) == "undefined";
+    }
+
+    //自定义一个上传Excel的方法
+    function uploadCSHumanExcel() {
+	  	$('button[name="uploadCSHuman"]').attr("disabled",true);
+        var content = $('input[name="filecshuman"]').val();
+        //文件不能为空
+        if (isnull(content)) {
+            $$.showMessage("${system.info}", "请选择文件!");
+            $('button[name="uploadCSHuman"]').attr("disabled",false);
+            return false;
+        }
+        //后缀必须为xls,不支持2007
+        var suffix = content.match(/^(.*)(\.)(.{1,8})$/)[3];
+        if ("xls" != suffix && 'rar' != suffix && 'zip' != suffix && "xlsx" != suffix) {
+            $$.showMessage("${system.info}", "请上传xls,xlsx,rar或zip文件");
+            $('button[name="uploadCSHuman"]').attr("disabled",false);
+            return false;
+        }
+        var path = getRootPath();
+        var $form_upload = $("#uploadFromcshuman");
+        $form_upload.attr("action", path + "/excelUpload.action?model=human_template_cshuman");
+        $form_upload.submit();
+        $('button[name="uploadCSHuman"]').attr("disabled",false);
+        $('input[name="filecshuman"]').val('');
+    }
+
+    function importSuccess() {
+        $$.showMessage("系统信息", "导入成功");
+        $('input[name="filecshuman"]').val("");
+        searchList();
+    }
+
+    function doClean() {
+        document.service_qa.reset();
+        $("#store\\.id").val("");
+    }
+
+    function doAdd(){
+    	window.location.href="human_city_add.html";
+    }
+
+    function exportExcel(){
+        var path = getRootPath();
+        window.open(path + "/downloadExcel.action?fileName=city_human_list");
+        
+        //$$.showMessage("系统信息", "功能开发中...");
+//        doManager("HumanresourcesManager","exportHumanExcel",null,function(
+//                data, textStatus, XMLHttpRequest) {
+//            if(data.result){
+//                var path = JSON.parse(data.data);
+//                window.open(path);
+//            }else{
+//                $$.showMessage(data.message);
+//            }
+//        });
+    }
+
+  //列表中 列的处理
+    var COLUMNS = {
+            "humanstatus": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+/*                 if(value!=null&&value==0){
+                	ret="<font color='red'>未分配门店</font>";
+                }
+ */                
+ 				if(value!=null&&value==1){
+                	ret="<font color='green'>在职</font>";
+                }
+				if(value!=null&&value==2){
+                	ret="<font color='grey'>离职</font>";
+                }
+                return ret;
+            },
+            "editdelete": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var id = map['id'];
+                var humanstatus = map['humanstatus'];
+                var create_user_id = map['create_user_id'];
+                var editbtn = "<a href='javascript:toEditPage("+id+")'>编辑</a>";
+                var delbtn = "";
+                if(humanstatus!=null&&humanstatus.indexOf("未分配门店")>-1&&create_user_id==curr_user.id){
+                    delbtn = "<a href='javascript:delHuman("+id+");'>删除</a>";
+                }
+                var ret = editbtn+" "+delbtn;
+                return ret;
+            }
+            
+        }
+    
+  
+  function delHuman(human_id){
+    	$$.showConfirm('提示','<font color="red">删除时，确保该人员信息的员工编号为最大员工号？</font>',function(){
+			//alert("执行删除 ！"+human_id);
+			doManager("HumanresourcesManager", "removeHumanresourceById",[human_id], function(
+					data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					if(data.data.length>10){
+						$$.showMessage("系统信息", data.data);
+					}else{
+						searchList();
+					}
+				} else {
+					$$.showMessage("系统信息", "删除失败!");
+				}
+			});
+			
+        });
+  }
+  
+  
+    var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "xxExpress_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("XxExpressManager", "deleteXxExpress", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'xx_express_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		}
+    var editObj = {
+			html : '<a href="#">编辑 </a>',
+			resourceId : "humanstore_List_update",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "human_store_edit.html?id="+id;
+			}
+		}
+    var publishObj = {
+			html : '<a href="#">查看 </a>',
+			resourceId : "humanstore_List_detail",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "human_store_detail.html?id="+id;
+			}
+		}
+    //$pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
+    
+  
+  function toEditPage(id){
+	  window.location.href = "human_city_edit.html?id="+id;
+  }
+    
+</script>
+<style type="text/css">
+    .but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+	.auto{max-height:100px; overflow-y:scroll;}
+</style>
+<body style="height: 100%">
+<div class="panel panel-default" style="margin: 10px">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+             城市数据维护:城市员工管理
+        </h4>
+    </div>
+</div>
+<div class="rightcont clear">
+<div class="panel panel-primary">
+        <div class="panel-heading"><label id="display_base_div">-</label>&nbsp;导入国安社区城市人员花名册&nbsp;&nbsp;<font color="red">请确保文件中只有当日入职的信息!!</font></div>
+        <div class="panel-body" id="base_data_div" style="padding-top: 0px;">
+            <div id="uploadDiv">
+                <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFromcshuman" target="hframecshuman" style="width:100%; float:left;">
+                    <div class="form-group">
+                        <div class="form-group input-group">
+                            	<table>
+                            		<tr>
+                            			<td>
+                            				<input type="file" isuploadtable="true" name="filecshuman" class="form-control" style="width:75%; height:35px;">
+			                                <span class="input-group-btn" style="width:10%; display:inline-block;">
+			                                    <button type="button" class="btn btn-default" onclick="uploadCSHumanExcel();" name="uploadCSHuman">
+			                                        <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+			                                    </button>
+			                                </span>
+                            			</td>
+                            			<td>
+                            				<font color='red'>提示:1.请确保导入文件与城市员工花名册表头一致 <a href="https://imagedata.guoanshequ.com/file_manager/CS_template.xlsx">下载模板（城市员工）</a><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.请确保导入文件中[员工编号]一列为空<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.导入前，确保Excel中无公式！</font>
+                            			</td>
+                            		<tr>
+                            	</table>
+                            	
+                        </div>
+                    </div>
+                    <iframe name="hframecshuman" id="hframecshuman" style="display: none"></iframe>
+                </form>
+                
+                
+            </div>
+        </div>
+    </div>
+
+
+    
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <label id="imp_base_div">-</label>&nbsp;导入人员查询
+            <span class="but">
+                <input type="button" onclick="exportExcel();" value="城市员工花名册生成"/>
+            </span>
+        </div>
+        <div class="panel-body" id="imp_data_div">
+            <div id="conditionsDiv" style="margin-top: 0px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">员工姓名:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                            <td width="5%">员工编号:</td>
+                            <td>
+                                <input id="employee_no" name="employee_no" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                            <td width="3%">状态:</td>
+                             <td>
+                                <select name="humanstatus" style="width:80%;" class="form-control">
+                                	<option value="">全部</option>
+                                	<!-- <option value="0">未分配门店</option> -->
+                                	<option value="1">在职</option>
+                                	<option value="2">离职</option>
+                                </select>
+                            </td>
+                            
+                        </tr>
+                        <tr>
+                        
+                        <!-- <td style="width: 30%">
+                             门店:<div class="input-group" style="width:70%;">
+                                    <input type="text" name="storename" id="storename" class="form-control" placeholder="选择门店" readonly/>
+                                    <span class="input-group-btn">
+                                         <button type="button" class="btn btn-default" name="upload" onclick="showStoreWin(setStoreSelect)">
+                                            <img src="../scripts/images/search.png" alt="查询" style="height: 20px"/>
+                                        </button>
+                                    </span>
+                                </div>
+                                
+                            </td> -->
+                            
+                            <td width="3%">职位:</td>
+                            <td>
+                                <input id="zw" name="zw" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                            <td width="3%">城市:</td>
+                            <td>
+                            	<input id="citySelect" name="citySelect" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+            <button class="btn btn-primary" onclick="doAdd();">新增</button> 
+        </div>
+    </div>
+    <input type="hidden" id="store_id" isautotab="true" />
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="cityHumanresourcesQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+</div>
+</body>
+
+<script>
+	var autoComplete = new AutoComplete("storename","auto",array);
+	document.getElementById("storename").onkeyup = function(event){
+		autoComplete.start(event);
+	}
+</script>
+
+</html>

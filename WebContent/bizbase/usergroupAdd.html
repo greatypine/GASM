@@ -1,0 +1,349 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+	<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+	<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+	<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<script src="../scripts/bidLib.js" type="text/javascript"></script>
+	<script src="js/bidCommon.js" type="text/javascript"></script>
+	<script type="text/javascript" src="js/bizbaseQuery.js"></script>
+	<script type="text/javascript" src="js/common-validation-bizbase.js"></script>
+	<style type="text/css">
+		td {
+			padding-top: 5px;
+		}
+	</style>
+	<script language="JavaScript" type="text/javascript">
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+			
+			var request = getRequestParams();
+			var id = request['orgId'];
+			
+			$(function() {
+				setDict('data_card_type', $("#cardtype"));
+				if (undefined != id && "" != id) {
+					$("#orgId").val(id);
+					var url = $$.PMSDispatchActionUrl;
+					var orgData = new PMSRequestObject("purStruOrgManager", "getDirectoryById", [id]);
+					$$.ajax(url, "requestString=" + encodeURIComponent(orgData.toJsonString()), function(datas, textStatus, XMLHttpRequest) {
+						$("#info").html("组织机构信息:("+datas.data+")");
+					});
+					var data = new PMSRequestObject("purStruOrgManager", "getPurOrgDTOById", [id]);
+					$$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+						var str = data.data;
+						var orgObj = $.fromJSON(str);
+						$("#orgName1").val(orgObj.name);
+						$("#orgCode").val(orgObj.code);
+						$("#orgId").val(id);
+					});
+				}
+				doManager("userManager", "getCurrentUserDTO", [], function(datas, textStatus, XMLHttpRequest) {
+					var currentUser = $.fromJSON(datas.data);
+					if(currentUser.usertype != 2){
+					$("#orgEntity\\.path").val(currentUser.orgPath+"%");
+					}
+				},false);
+			});
+
+			function setDict(dicname,resourceName){
+				var resourceId = resourceName[0];
+				var resource = $dict.getDictList(dicname);
+				var option = new Option('', '');
+				resourceId.add(option);
+				$(resource).each(function(i, element){
+					var option = new Option(element.dictText, element.dictCode);
+					resourceId.add(option);
+				});
+			}
+			
+			function Ysubmit() {
+				$validator = new PMSValidator($("#yonghuzuadd")[0], 
+					{
+						bNormalDisplay: false,
+						iDisplayLength: 999
+					});
+				//$validator.clean();
+				var passed = $validator.clientValidate();
+				if (!passed) {
+					return false;
+				}
+				else {
+					save();
+				}
+			}
+			
+			function save() {
+				var userGroupObj = 
+					{
+						name: $("#userGroupName").val(),
+						orgId: $("#orgId").val(),
+						code: $("#userGroupCode").val(),
+						cardtype: $("#cardtype").val(),
+						disabledFlag:getRadioVal("radioA"),
+						copyGroupId:$("#userGroupId").val()
+					};
+				doManager("userGroupManager", "addNewUserGroup", userGroupObj, function(data, textStatus, XMLHttpRequest) {
+					var returnObj = $.fromJSON(data.data);
+					window.location = "userGroupManagement.html?orgId=" + id;
+				},true,{showWaiting:true});
+			}
+			
+			
+			/**
+			 * 检测角色组名是否已存在
+			 */
+			function checkUserGroupName() {
+				var nowUserGroupName = $("#userGroupName").val();
+				if (validateExists("com.cnpc.pms.bizbase.rbac.usermanage.entity.UserGroup", "name", nowUserGroupName)) {
+					return true;
+				}
+				return false;
+			}
+			
+			/**
+			 * 检测角色组编码是否已存在
+			 */
+			function checkUserGroupCode() {
+				var nowUserGroupCode = $("#userGroupCode").val();
+				if (validateExists("com.cnpc.pms.bizbase.rbac.usermanage.entity.UserGroup", "code", nowUserGroupCode)) {
+					return true;
+				}
+				return false;
+			}
+			
+			$.validator.addMethod("userGroupNameValid", function(value, element) {
+				var flag;
+				if (checkUserGroupName()) {
+					flag = false;
+				}
+				else {
+					flag = true;
+				}
+				return flag;
+				
+			}, "角色组名已存在");
+			
+			/**
+			 * 验证角色组编码是否重复
+			 * @param {Object} value
+			 * @param {Object} element
+			 */
+			$.validator.addMethod("userGroupCodeValid", function(value, element) {
+				var flag;
+				if (checkUserGroupCode()) {
+					flag = false;
+				}
+				else {
+					flag = true;
+				}
+				return flag;
+			}, "角色组编码已存在");
+		</script>
+					<script>
+			/**
+             * 解决列表Css样式不一致的问题.
+             */
+            function doEditCssType(){
+                var table = $('.display');
+                table.each(function(){
+                    var th1 = $(this).find('th:first');
+                    if (th1.find("input[type=checkbox]").length > 0) {
+                        th1.css('width', '1%');
+                    }
+                    $(this).find('th').each(function(){
+                        $(this).css('border', '1px solid #999999').css('background', '#D1D6F0');
+                        ;
+                    });
+                });
+            }
+			function searchUserGroup(){
+                $("#orgDiv").find("input[name=code]").val($("#userGroupCode2").val());
+                $("#orgDiv").find("input[name=name]").val($("#userGroupName2").val());
+				$("#orgDiv").find("input[name=orgName]").val($("#orgEntity\\.path").val());
+                $$.executeSearch('userGroupQueryPage', 'orgDiv');
+            }
+			//弹出角色组选择框
+            function showUserGroup()
+			{
+				doEditCssType();
+               $$.executeSearch('userGroupQueryPage', 'orgDiv');
+				$("#userGroupInfo").dialog(
+					{
+						bgiframe: true,
+						title: '角色组选择',
+						width: 900,
+						height: 750,
+						modal: true,
+						buttons: 
+							{
+								"${form.ui.ok}": function() {
+									var selects = $$.getSelectedObj("userGroupQueryPage");
+									if (selects.length > 0) {
+										var ugInfo = 
+											{
+												ugId: selects[0][0],
+												ugName: selects[0][2]
+											};
+										$("#userGroup").val(ugInfo.ugName);
+										$("#userGroupId").val(ugInfo.ugId);
+										$("#userGroupInfo").dialog('close');
+									}
+								},
+								"${query.ui.cancel}": function() {
+									$("#userGroupInfo").dialog('close');
+								}
+							}
+					});
+            	}
+		</script>
+</head>
+<body>
+	<div style="padding: 5px 10px 0 10px">
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				<a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img
+					id="plusMinus1" src="../scripts/images/22.png" />
+				</a> 新增角色组 <br /> &nbsp;&nbsp;&nbsp;&nbsp; <span id="info"></span>
+			</div>
+			<div class="panel-body" id="temp1">
+				<form id="yonghuzuadd" class="pmsForm" validate="true"
+					clientvalidate="true" displaynumber="7">
+					<table style="width: 100%" class="layout" cellpadding="0"
+						cellspacing="0" border="0" bordercolor="red">
+						<tr>
+							<td align="left" width="12%">公司名称:</td>
+							<td width="38%"><input type="text" name=""
+								class="form-control" style="width: 60%" id="orgName1"
+								readonly="readonly" /></td>
+							<td align="left"  width="12%">公司代码:</td>
+							<td  width="38%"><input type="text"
+								name="companycode" class="form-control" style="width: 60%"
+								id="orgCode" readonly="readonly" /></td>
+						</tr>
+						<tr>
+							<td align="left">角色组名称: <font color="red"> * </font></td>
+							<td><input type="text" name="userGroupName"
+								class="form-control" style="width: 60%" id="userGroupName"
+								size="23" validate="{required:true,maxlength:100}" /></td>
+							<td>角色组编码:<font color="red"> * </font></td>
+							<td><input type="text" name="userGroupCode"
+								class="form-control" style="width: 60%" id="userGroupCode"
+								size="23"
+								validate="{required:true,userGroupCodeValid:true,isCorrectCode:true,maxlength:40}" />
+							</td>
+						</tr>
+						<tr>
+							<td>
+								数据卡类型:
+							</td>
+							<td>
+								<select id="cardtype" name="cardtype" class="form-control"  style="width: 60%" >
+								</select>
+							</td>
+							<td align="left">停用标志:</td>
+							<td><input class="pmsRadio" name="radioA"
+								data="[['0','是'],['1','否','checked']]">
+							</td>
+							<!--<td>复制角色组:</td>-->
+							<!--<td>-->
+								<!--<div class=" form-group input-group" style="width: 60%;">-->
+									<!--<input type="text" name="userGroup" class="form-control"-->
+										<!--id="userGroup" readonly="readonly" /> <span-->
+										<!--class="input-group-btn">-->
+										<!--<button class="btn btn-default" onClick="showUserGroup()">-->
+											<!--<img src="../scripts/images/search.png" alt="选择"-->
+												<!--style="height: 20px" />-->
+										<!--</button> </span>-->
+								<!--</div> <input type="text" style="display: none;" id="userGroupId" /></td>-->
+						</tr>
+					</table>
+				</form>
+			</div>
+			<div class="panel-footer" align="right">
+				<button class="btn btn-primary" onclick="Ysubmit();">提交</button>
+				&nbsp;&nbsp;
+				<button class="btn btn-primary" onclick="returnPage();">返回
+				</button>
+			</div>
+		</div>
+	</div>
+	<input type="hidden" id="orgId">
+		<div id="userGroupInfo" style="display: none; overflow-x: hidden;"
+			class="panel panel-primary">
+			<div class="panel-heading">
+				<a href="#" onclick="toggleBizBiz('ConditonMainDiv','pic');"><img
+					src="../scripts/images/22.png" align="absmiddle" id="pic" />
+				</a>&nbsp;搜索条件
+			</div>
+			<div id="ConditonMainDiv">
+				<div class="panel-body" id="searchConditionDiv"
+					style="min-width: 753px; overflow: auto; border: 1px solid #999999;">
+					<table class="bigteble" style="width: auto; border: none;">
+						<tr>
+							<td align="left" width="10%" class="basetext">角色组名称:</td>
+							<td class="baseform" align="left" width="25%"><input
+								type="text" name="userGroupName2" id="userGroupName2"
+								class="form-control" /></td>
+							<td class="basetext" align="left" width="10%">角色组编码:</td>
+							<td class="baseform" align="left" width="25%"><input
+								type="text" name="userGroupCode2" id="userGroupCode2"
+								class="form-control" /></td>
+						</tr>
+						<tr>
+							<td class="basetext" align="left">组织机构:</td>
+							<td class="baseform">
+								<div class=" form-group input-group">
+									<input type="text" name="orgEntity.name" id="orgName"
+										class="form-control" readonly /> <span class="input-group-btn">
+										<button class="btn btn-default" id="search"
+											onClick="getTenderInterface({inputName:'orgName',inputId:'orgEntity\\.path'})">
+											<img src="../scripts/images/search.png" alt="选择"
+												style="height: 20px" />
+										</button> </span>
+								</div></td>
+							<td></td>
+							<td></td>
+						</tr>
+					</table>
+				</div>
+				<div class="panel-footer" align="right">
+					<input class="btn btn-primary" onClick="searchUserGroup()"
+						value="查询" type="button" />
+				</div>
+			</div>
+			<div id="orgDiv">
+				<input name="code" id="code" codeForSearch="code" type="hidden" />
+				<input name="name" id="name" nameForSearch="name" type="hidden" />
+				<input name="disabledFlag" id="disabledFlag" type="hidden" value='1' />
+				<input name="orgEntity.path" id="orgEntity.path" type="hidden" /> <input
+					name="groupType" id="groupType" type="hidden" value='0' />
+			</div>
+			<div style="padding: 5px 0px 0px 0px;">
+				<div id="gridContainer" class="panel panel-primary"
+					searchDiv="orgDiv" queryid="userGroupQueryPage"
+					queryformat="simple" showprint="false" showsearch="false"
+					showtitle="true" showpaging="true" showcheckbox="true"
+					showno="false" checkmode="single" autoload="false"></div>
+			</div>
+		</div>
+</body>
+<script language="JavaScript">
+		function returnPage() {
+			window.location.href = "userGroupManagement.html?orgId=" + id;
+		}
+	</script>
+</html>

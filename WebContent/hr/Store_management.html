@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>人资数据系统</title>
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <!-- Bootstrap 3.3.6 -->
+    <link rel="stylesheet" href="bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="bootstrap/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="bootstrap/css/ionicons.min.css">
+    <!-- Morris charts -->
+    <link rel="stylesheet" href="plugins/morris/morris.css">
+    <!-- Theme style -->
+    <link rel="stylesheet" href="dist/css/AdminLTE.min.css">
+    <!-- AdminLTE Skins. Choose a skin from the css/skins
+         folder instead of downloading all of them to reduce the load. -->
+    <link rel="stylesheet" href="dist/css/skins/_all-skins.min.css">
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+    <script src="IE 9/html5shiv.min.js"></script>
+    <script src="IE 9/respond.min.js"></script>
+    <![endif]-->
+    <style>
+        .box-default{border-bottom: 1px solid #e1e1e1;}
+        .info_head{padding: 25px 0 35px 0;}
+        .info_head img{width:123px; margin-top:10px;}
+        .info_head span{padding-left: 20px;}
+        .info_bottom{padding: 35px 20px 0 35px; font-size: 12px;}
+        .info_bottom .text-right span{padding: 6px 12px; margin:0 20px 0 3px; display: inline-block;}
+        .box .h4{padding-left:20px;}
+        .nav-tabs-custom{padding:0 20px;}
+        .nav-tabs{border:0;}
+        .logo-lg li{float: left;}
+
+        .navbar{background-color: #2a3139!important; max-height: 70px!important;}
+        .logo-lg > ul > li{position: relative; min-width: 90px; font-size: 14px;}
+        .logo-lg > ul > li i{padding-left: 7px;}
+        .nav_dropdown{background-color: #1b1e27; overflow: hidden; position: absolute; left: 0; top: 70px; white-space: nowrap; padding: 15px 0; display: none;}
+        .nav_dropdown li{padding: 5px 25px; color: #fff; float: none; font-size: 14px; line-height: 20px; min-width: 120px;}
+        .nav_mark{background-color: #1b1e27;}
+        .logo-lg > ul > li:hover a{color: #00c0ef;}
+        .logo-lg > ul > li:hover i{ transform: rotateX(180deg); transition: all 0.3s linear; color: #00c0ef;}
+        .content-wrapper{min-height: 100%; overflow: hidden;}
+
+
+	.dropdown a,.dropdown:hover a{color: #fff!important;}
+    .navbar-custom-menu > .navbar-nav > li > .dropdown-menu{width: 140px!important;min-width: 140px; border: 0; background-color: rgba(0,0,0,0.5); right: -25px;}
+    .user-body1{padding: 10px 0;}
+    .user-body1 a{color: #fff;}
+    .dropdown-menu > li > a:hover{background-color: rgba(0,0,0,0.5);}
+    .logo-lg > ul > li:hover a{color: #fff; font-weight: normal;}
+    
+    </style>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+    <header class="main-header">
+        <!-- Logo -->
+
+        <!-- Header Navbar: style can be found in header.less -->
+        <nav class="navbar navbar-static-top">
+            <!-- Sidebar toggle button-->
+            <div class="container">
+
+                <div class="pull-left">
+                    <div class="logo-lg clearfix">
+                        <ul>
+                            <li><a href="Store_management.html" class="h2"> <img src="dist/img/logo2.png"> </a></li>
+                            <li class="">
+                                <a href="" onclick="showhumanresource()" class="dropdown-toggle" data-toggle="dropdown">员工基础数据<!-- <i class="fa fa-angle-down"></i> --></a>
+                               <!--  <ul class="nav_dropdown">
+                                    <li>员工基础数据管理</li>
+                                    <li>员工培训数据管理</li>
+                                </ul> -->
+                            </li>
+                            <li>
+                                <a href="#" onclick="showhumanresourceteach()">员工培训数据<!-- <i class="fa fa-angle-down"></i> --></a>
+                               <!--  <ul class="nav_dropdown">
+                                    <li>门店信息管理</li>
+                                    <li>门店经理管理</li>
+                                    <li>门店考勤录入</li>
+                                    <li>门店考勤审批</li>
+                                </ul> -->
+                            </li>
+                             <li><a href="#" onclick="showstorelist()">门店信息管理<!-- <i class="fa fa-angle-down"></i> --></a>
+                               <!--  <ul class="nav_dropdown">
+                                    <li>城市权限分配</li>
+                                </ul> -->
+                            </li>
+                            <li><a href="#" onclick="showstorekeeperlist()">门店经理管理<!-- <i class="fa fa-angle-down"></i> --></a>
+                                <!-- <ul class="nav_dropdown">
+                                    <li>编号规则维护</li>
+                                    <li>城市总监管理</li>
+                                </ul> -->
+                            </li>
+                            <li><a href="#" onclick="showworkrecordtotal()">门店考勤审批<!-- <i class="fa fa-angle-down"></i> --></a>
+                               <!--  <ul class="nav_dropdown">
+                                    <li>绩效下载</li>
+                                </ul> -->
+                            </li> 
+                            <li><a href="#" onclick="showscorerecordtotal()">任务审批<!-- <i class="fa fa-angle-down"></i> --></a>
+                                <!-- <ul class="nav_dropdown">
+                                    <li>绩效下载</li>
+                                </ul> -->
+                            </li>
+                            <li><a href="#" onclick="showcityhumanlist()">城市员工管理<!-- <i class="fa fa-angle-down"></i> --></a>
+                                <!-- <ul class="nav_dropdown">
+                                    <li>绩效下载</li>
+                                </ul> -->
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+				
+				
+				<div class="navbar-custom-menu">
+			        <ul class="nav navbar-nav">
+			
+			          <li class="dropdown user user-menu">
+			            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+			              <img src="dist/img/376884043677306248.png" class="user-image" alt="User Image">
+			              <span class="hidden-xs"><label id="username">加载中..</label> &nbsp;&nbsp; <!-- <label id="sys_exit" onmouseover="this.style.cursor='pointer'">退出</label> --></span>
+			            </a>
+			            <ul class="dropdown-menu">
+			             <!--  <li class="user-body1"><a href="../crm/loginplatform.html">国安社区门店管理系统首页</a> </li> -->
+			              <li class="user-body1"><a href="javascript:doLogout()">退出登录</a> </li>
+			            </ul> 
+			          </li>
+			        </ul>
+			      </div>
+				
+            </div>
+        </nav>
+    </header>
+
+
+    <!-- =============================================== -->
+
+    <!-- Content Wrapper. Contains page content -->
+    <div class="content-wrapper">
+        <div class="container">
+           <!--  <h3><strong>请选择您要查询的绩效</strong></h3> -->
+           <iframe id="showIframePage" src="../data_access/human_store_list.html" width="100%"   frameborder="no" border="0" marginwidth="0" marginheight="0" scrolling="yes" allowtransparency="yes"></iframe>
+        </div>
+    </div>
+    <!-- /.content-wrapper -->
+
+    <footer class="main-footer">
+        <div class="text-right hidden-xs">
+            <b>Version</b> 2.0
+        </div>
+
+    </footer>
+
+    <!-- /.control-sidebar -->
+    <!-- Add the sidebar's background. This div must be placed
+         immediately after the control sidebar -->
+
+</div>
+<!-- ./wrapper -->
+
+<!-- jQuery 2.2.0 -->
+<script src="plugins/jQuery/jQuery-2.2.0.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="bootstrap/js/bootstrap.min.js"></script>
+<!-- Morris.js charts -->
+<script src="bootstrap/js/raphael-min.js"></script>
+<script src="plugins/morris/morris.min.js"></script>
+<!-- FastClick -->
+<script src="plugins/fastclick/fastclick.js"></script>
+<!-- AdminLTE App -->
+<script src="dist/js/app.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="dist/js/demo.js"></script>
+
+<script type="text/javascript" src="../scripts/bidLibjsjquery2.0.js"></script>
+<script type="text/javascript" src="plugins/iCheck/icheck.min.js"></script>
+
+<!-- page script -->
+<script>
+    $(function () {
+    	initcurruser();
+        $(".logo-lg > ul > li").hover(function(){
+            $(".logo-lg > ul > li").removeClass("nav_mark");
+            $(this).addClass("nav_mark");
+            $(".logo-lg li:first").removeClass("nav_mark");
+            $(this).children(".nav_dropdown").toggle("100");
+        });
+        
+        $("#sys_exit").click(function(){
+        	doLogout();
+        });
+        
+        var ifm= document.getElementById("showIframePage"); 
+        ifm.height=document.documentElement.clientHeight-70-51;
+
+    });
+    
+    function showhumanresource(){
+    	$("#showIframePage").attr("src","../data_access/human_store_list.html");
+    }
+    function showhumanresourceteach(){
+    	$("#showIframePage").attr("src","../data_access/human_teach_list.html");
+    }
+    function showstorelist(){
+    	$("#showIframePage").attr("src","../data_access/store_list.html");
+    }
+    function showstorekeeperlist(){
+    	$("#showIframePage").attr("src","../data_access/store_keeper_list.html");
+    }
+    function showworkrecordtotal(){
+    	$("#showIframePage").attr("src","work_record_total.html");
+    }
+    function showscorerecordtotal(){
+    	$("#showIframePage").attr("src","score_record_total.html");
+    }
+    function showcityhumanlist(){
+    	$("#showIframePage").attr("src","human_city_list.html");
+    }
+    
+    var currentUser;
+	function initcurruser(){
+		//取得当前登录人的门店
+		doManager("UserManager", "getCurrentUserDTO",null,
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						var curr_user = JSON.parse(data.data);
+  						currentUser = curr_user;
+  						//alert(curr_user.employeeId+""+curr_user.store_name+""+curr_user.name);
+  						$('#username').html(curr_user.name);
+  						$("#employee_no").html(curr_user.employeeId);
+  						
+  					}
+  		},false);
+	}
+	
+	 function doLogout() {
+			layer.confirm('确定退出？', {
+				  	title:'提示',
+				  	shadeClose:true,
+				  	closeBtn:0,
+				  	skin: 'layer-ext-otherskin',
+				  	offset:['100px','550px'],
+				  	move:false,
+					btn: ['确定','取消'], //按钮
+				}, function(){
+					urlStr = "../logout.do";
+					window.location.href = urlStr;
+				}, function(){
+				  
+				});
+		}
+	
+</script>
+
+</body>
+</html>

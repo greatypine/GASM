@@ -1,0 +1,243 @@
+/*-------------------------------------
+zTree Style
+
+version:	2.0
+author:		Hunter.z
+email:		hunter.z@263.net
+website:	http://code.google.com/p/jquerytree/
+
+-------------------------------------*/
+
+.treeview {
+	margin:0;	
+	color:#333;
+	background:#E4E6F5;
+	font-size:13px;
+	line-height:18;
+	font-family: Verdana, Arial, Helvetica, AppleGothic, sans-serif;
+
+	
+	}
+
+
+.treeview li{
+	padding:0; margin:0; 
+	list-style:none;
+	line-height:18px; 
+	text-align:left; 
+	white-space:nowrap;
+	
+	}
+.treeview li:before{
+	padding:0; margin:0; 
+	list-style:none;
+	line-height:18px; 
+	text-align:left; 
+	white-space:nowrap;
+	content:url(../../images/tree/file.gif);
+	}
+
+.treeview li ul{ margin:0;
+			 padding:0 0 0 18px;
+			 background-color:#E4E6F5;
+			 border: 0 none;
+			 background:none;
+			
+			 }
+.treeview li ul.line{ background:url(./img/line_conn.gif) 0 0 repeat-y;}
+
+.treeview li a {
+	padding:0; margin:0 10px 0 0; 
+	cursor:pointer; 
+	color:#333; 
+	text-decoration:none;
+	
+	}
+.treeview li a:hover {text-decoration:underline;}
+.treeview li a.curSelectedNode {
+	background-color:#BBC0E6; 
+	color:#03F;
+	border:1px #0F0F28 solid; 
+	opacity:0.8; filter:alpha(opacity=80);
+	
+	}
+.treeview li a.curSelectedNode_Edit {
+	line-height: 18px;
+	background-color:#FFE6B0; 
+	color:black;
+	border:1px #FFB951 solid; 
+	opacity:0.8; filter:alpha(opacity=80);
+	
+	}
+.treeview li a.tmpTargetNode {
+	background-color:#316AC5; 
+	color:white;
+	border:1px #316AC5 solid; 
+	opacity:0.8; filter:alpha(opacity=80);
+	
+	}
+.treeview li a input.rename {height:13px; width:80px; padding:0; margin:0; font-size:12px;}	
+
+.treeview li button {
+	
+	padding:0; margin:0; 
+	vertical-align:middle;
+	border:0 none; 
+	background-color: transparent; 
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	cursor: pointer;
+	
+
+	}
+	/*.treeview li button:before{
+	
+	padding:0; margin:0; 
+	vertical-align:middle;
+	border:0 none; 
+	background-color: transparent; 
+	background-repeat: no-repeat;
+	background-position: 0 0;
+	cursor: pointer;
+	content:url(../../images/tree/file.gif);
+
+	}
+.treeview li button.ico {
+	padding:0; margin:0 2px 0 0;
+	}*/
+	
+
+/*.treeview li button.edit {background:url("./img/edit.png") no-repeat scroll 0 0 transparent;}	
+.treeview li button.remove {background:url("./img/remove.png") no-repeat scroll 0 0 transparent;}	
+
+.treeview li button.chk {
+	width:13px; height:13px; 
+	padding:0; margin:0 3px 0 0; 
+	vertical-align:middle;
+	border:0 none;
+	cursor: auto;
+	
+	}*/
+
+/*.treeview li button.chk.checkbox_false_full { background:url("./img/checkbox.png") no-repeat scroll 0 0 transparent;}	
+.treeview li button.chk.checkbox_false_full_focus { background:url("./img/checkbox.png") no-repeat scroll 0 -12px transparent;}	
+.treeview li button.chk.checkBoxDisabled { background:url("./img/checkbox.png") no-repeat scroll 0 -72px transparent;}	
+.treeview li button.chk.checkbox_false_part { background:url("./img/checkbox.png") no-repeat scroll 0 -72px transparent;}	
+.treeview li button.chk.checkbox_false_part_focus { background:url("./img/checkbox.png") no-repeat scroll 0 -84px transparent;}	
+.treeview li button.chk.checkbox_true_full { background:url("./img/checkbox.png") no-repeat scroll 0 -24px transparent;}	
+.treeview li button.chk.checkbox_true_full_focus { background:url("./img/checkbox.png") no-repeat scroll 0 -36px transparent;}	
+.treeview li button.chk.checkbox_true_part { background:url("./img/checkbox.png") no-repeat scroll 0 -48px transparent;}	
+.treeview li button.chk.checkbox_true_part_focus { background:url("./img/checkbox.png") no-repeat scroll 0 -60px transparent;}	
+
+.treeview li button.chk.radio_false_full { background:url("./img/radio.png") no-repeat scroll 0 0 transparent;}	
+.treeview li button.chk.radio_false_full_focus { background:url("./img/radio.png") no-repeat scroll 0 -12px transparent;}	
+.treeview li button.chk.radio_false_part { background:url("./img/radio.png") no-repeat scroll 0 -72px transparent;}	
+.treeview li button.chk.radio_false_part_focus { background:url("./img/radio.png") no-repeat scroll 0 -84px transparent;}	
+.treeview li button.chk.radio_true_full { background:url("./img/radio.png") no-repeat scroll 0 -24px transparent;}	
+.treeview li button.chk.radio_true_full_focus { background:url("./img/radio.png") no-repeat scroll 0 -36px transparent;}	
+.treeview li button.chk.radio_true_part { background:url("./img/radio.png") no-repeat scroll 0 -48px transparent;}	
+.treeview li button.chk.radio_true_part_focus { background:url("./img/radio.png") no-repeat scroll 0 -60px transparent;}	
+
+.treeview li button.switch_root_open{ background:url(./img/minus_root.gif);}
+.treeview li button.switch_root_close{ background:url(./img/plus_root.gif);}
+.treeview li button.switch_roots_open{ background:url(./img/minus_top.gif);}
+.treeview li button.switch_roots_close{ background:url(./img/plus_top.gif);}
+.treeview li button.switch_center_open{ background:url(./img/minus_center.gif);}
+.treeview li button.switch_center_close{ background:url(./img/plus_center.gif);}
+.treeview li button.switch_bottom_open{ background:url(./img/minus_bottom.gif);}
+.treeview li button.switch_bottom_close{ background:url(./img/plus_bottom.gif);}
+.treeview li button.switch_noLine_open{ background:url(./img/minus_noLine.gif);}
+.treeview li button.switch_noLine_close{ background:url(./img/plus_noLine.gif);}
+
+.treeview li button.switch_root_docu{ background:none;}
+.treeview li button.switch_roots_docu{ background:url(./img/line_top.gif);}
+.treeview li button.switch_center_docu{ background:url(./img/line_center.gif);}
+.treeview li button.switch_bottom_docu{ background:url(./img/line_bottom.gif);}
+.treeview li button.switch_noLine_docu{ background:none;}
+
+.treeview li button.ico_loading{ background:url(./img/loading.gif) no-repeat scroll 1px 1px transparent;}*/
+.filetree{ border:1px solid #999999; width:200px; background:#E4E6F5;}
+.filetree li { padding: 3px 0 2px 16px; }
+.filetree span.folder, .filetree span.file { padding: 1px 0 1px 18px; display: block; }
+.filetree span.folder { background:#E4E6F5 url(../../images/tree/folder.gif) 0 0 no-repeat; }
+.filetree li.expandable span.folder { background: url(../../images/tree/folder-closed.gif) 0 0 no-repeat; }
+.filetree span.file { background: url(../../images/tree/file.gif) 0 0 no-repeat; cursor:pointer; }
+.filetree span.red {  background:#BBC0E6 url(../../images/tree/file.gif) 0 0 no-repeat;cursor:pointer; }
+
+
+
+
+/*---------�޸�ȥ���ļ���-----------*/
+
+.treeview li button.ico_open{ background:none;}
+.treeview li button.ico_open{ background: none;}
+.treeview li button.ico_docu{
+	background:none;
+	height: 14px;
+	width: 15px;
+}
+.treeview INPUT.checkbox {
+	padding:0; margin:0 2px 0 0; 
+	width:18px; height:18px; 
+	vertical-align:middle; 
+	
+	
+	}
+
+.tmpTargetTree {
+	background-color:#FFE6B0; 
+	border:0px #FFB951 solid; 
+	opacity:0.8; filter:alpha(opacity=80);
+	
+	}
+
+button.tmpzTreeMove_arrow {
+	width:16px; height:16px; 
+	padding:0; margin:2px 0 0 1px; 
+	border:0 none; 
+	position:absolute; 
+	background:url(./img/moveArrow.png) no-repeat scroll 0 0 transparent;
+	}
+	
+.zTreeDragUL {
+	margin:0; padding:0; 
+	position:absolute; 
+	background-color:#cfcfcf; 
+	border:1px #00B83F dotted; 
+	opacity:0.8; filter:alpha(opacity=80);
+	
+	}
+
+.zTreeMask {
+	 z-index:10000; 
+	 background-color:#cfcfcf; 
+	 opacity:0.0; filter:alpha(opacity=0); 
+	 position:absolute;
+	 
+}
+
+div.zTreeDemoBackground {
+	height:470px;
+	padding:45px 0 0 60px;
+	text-align:left;
+	width:280px;
+	background: url(img/zTreeDemo_background.png) no-repeat;
+}
+
+ul#treeDemo {
+	width:163px;
+	height:600px;
+	background-position:0 0;
+	width:198px;
+	height:500px;
+	overflow-y:auto;
+	overflow-x:auto;
+	
+}
+ul#treeDemo2 {
+	width:210px;
+	height:330px;
+	overflow-y:scroll;
+	overflow-x:auto;
+}
+

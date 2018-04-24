@@ -1,0 +1,451 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>快递信息</title>
+<link
+	href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css"
+	rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	padding-top: 5px;
+}
+
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 80%;
+	height: 46px;
+	line-height: 46px;
+	border: 1px solid #dad9d7;
+	margin-top: 5px;
+}
+
+.other {
+	width: 76%;
+}
+
+.but {
+	margin-top: 10px;
+	text-align: center;
+}
+</style>
+
+<script type="text/javascript">
+	function checkExpressNo(express_no) {
+		var obj = new Object();
+		obj.express_no = express_no;
+		obj.id = $("#id").val();
+		var flag = true;
+		doManager("ExpressManager", "queryExpressByExpressNo", obj, function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				if (data.data != 0) {
+					alert("单号已存在！");
+					$('#express_no').val("");
+					flag = false;
+				}
+			}
+		}, false);
+		return flag;
+	}
+
+	//初始化国安侠下拉菜单 
+	function initSelectNamesBySid(id) {
+		doManager("UserManager", "findNamesBySid", "" + id,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						var emList = jsonData.userList;
+						$("#employee_name").append("<option></option>");
+						for (i = 0; i < emList.length; i++) {
+							$("#employee_name").append(
+									"<option value=\""+emList[i].employeeId+"\">"
+											+ emList[i].name
+											+ "</option>");
+						}
+					}
+				}, false);
+	}
+	
+	
+	
+	function initExpressCompany() {
+		doManager("ExpressCompanyManager", "queryAllExpressName", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						var emList = jsonData.expressCompany;
+						//$("#express_company").append("<option></option>");
+						for (i = 0; i < emList.length; i++) {
+							$("#express_company").append("<option>" + emList[i].express_name + "</option>");
+						}
+					}
+				}, false);
+	}
+	
+
+	function dataCheck() {
+		var express_no = $('#express_no').val();
+		if (express_no == "" || express_no == null) {
+			alert("请输入快递单号!");
+			return;
+		}
+		/*
+		var obj = document.getElementsByName("isPhoneNo");
+		for (i = 0; i < obj.length; i++) {
+			if (obj[i].value != "") {
+				if (!/^((0\d{2,3}-\d{7,8})|(1[35784]\d{9}))$/
+						.test(obj[i].value)) {
+					alert("请输入正确的电话!");
+					return;
+				}
+			}
+		}
+		*/
+		//收件人电话
+		var rcv_tel = $("#rcv_tel").val();
+		//收件人姓名
+		var rcv_name=$("#rcv_name").val();
+		//收件人地址 
+		var rcv_address=$("#rcv_address").val();
+		
+		
+		var express_type=$("#express_type").val();
+		if(express_type==0){
+			if(rcv_tel==null||rcv_tel==""){
+				alert("请输入收件人的电话!");
+				return;
+			}
+		}
+		
+		if(rcv_name==null||rcv_name==""){
+			alert("请输入收件人的姓名!");
+			return;
+		}
+		if(rcv_address==null||rcv_address==""){
+			alert("请输入收件人的地址!");
+			return;
+		}
+
+		var employee_name = $('#employee_name').val();
+		if (employee_name == "" || employee_name == null) {
+			alert("请选择国安侠!");
+			return;
+		}
+		
+		var express_date = $("#express_date").val();
+		var d=new Date(Date.parse(express_date.replace(/-/g,"/")));
+		var curDate=new Date();
+		if(d>curDate){
+			alert("请选择小于今天的日期！ ");
+			return ;
+		}
+		
+
+		return true;
+	}
+
+	$(function() {
+		//初始化select
+		doManager("UserManager", "getCurrentUserDTO", null, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				initSelectNamesBySid(jsonData.store_id);
+				initExpressCompany();
+				$("#store_id").val(jsonData.store_id);
+			}
+		}, false);
+
+		$('[isautotab]').each(function(index) {
+			$(this).keydown(function(event) {
+				if (event.keyCode == 13) {
+					if (index == 0) {
+						if (checkExpressNo($("#express_no").val())) {
+							$('[isautotab]:eq(' + (index + 1) + ')').focus();
+						}
+					} else {
+						$('[isautotab]:eq(' + (index + 1) + ')').focus();
+					}
+				}
+			});
+		});
+
+		$('#employee_name').change(function() {
+			var employee_no = $(this).children('option:selected').val();
+			$("#employee_no").val(employee_no);
+		});
+		
+		
+		//显示系统时间 
+		var d = new Date();
+		var now_date = d.getFullYear() + "-" + (d.getMonth() + 1) + "-"
+				+ d.getDate();
+		$("#express_date").val(now_date);
+		
+
+		
+		$('#express_type').change(function(){
+			var express_type_val = $(this).val();
+			if(express_type_val==1){
+				$("#is_normal").html("");
+			}else{
+				$("#is_normal").html("*");
+			}
+		});
+		
+	});
+
+	function doSave() {
+		if (!dataCheck()) {
+			return;
+		}
+
+		if (!checkExpressNo($("#express_no").val())) {
+			return;
+		}
+
+		var arr = [ "store_id", "expressURL", "express_no", "express_company",
+				"send_name", "send_tel", "send_address", "rcv_name", "rcv_tel",
+				"rcv_address", "obj_name", "employee_name", "employee_no",
+				"express_date", "remark" ];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		o["express_company"] = $("#express_company  option:selected").text();
+		o["employee_name"] = $("#employee_name  option:selected").text();
+		o["express_type"] = $("#express_type  option:selected").val();
+		doManager("ExpressManager", "saveExpress", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				alert("保存成功！ ");
+				window.location.href = 'express_list.html';
+			} else {
+				$$.showMessage("系统信息", "修改失败!");
+			}
+		});
+	}
+
+	function doNext() {
+		window.location.href = 'express_list_add.html';
+	}
+	function goBack() {
+		window.location.href = 'express_list.html';
+	}
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">门店数据采集管理 :快递信息填报</div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true"
+		displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<p>快递单号<font style="color: red;">*</font></p>
+					<p>
+						<input type="text" id="express_no" isautotab="true" />
+					</p>
+				</td>
+				<td>
+					<p>快递公司</p>
+					<p>
+						<!--
+						<input id="express_company" type="text" isautotab="true"/>
+						 -->
+						<select name="express_company" id="express_company"
+							isautotab="true">
+							<!-- <option>顺丰快递</option>
+							<option>圆通速递</option>
+							<option>韵达快递</option>
+							<option>申通速递</option>
+							<option>中通快递</option>
+							<option>EMS</option>
+							<option>天天快递</option>
+							<option>百世快递</option>
+							<option>如风达快递</option>
+							<option>城际快递</option>
+							<option>国通快递</option>
+							<option>其它</option> -->
+						</select>
+					</p>
+				</td>
+				<td>
+					<p>发件人姓名</p>
+					<p>
+						<input type="text" id="send_name" isautotab="true" />
+					</p>
+				</td>
+
+			</tr>
+			<tr>
+				<td>
+					<p>发件人电话</p>
+					<p>
+						<input id="send_tel" type="text" name="isPhoneNo" isautotab="true"
+							onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11">
+					</p>
+				</td>
+				<td>
+					<p>发件人地址</p>
+					<p>
+						<input type="text" id="send_address" isautotab="true" />
+					</p>
+				</td>
+
+				<td>
+					<p>收件人姓名<font style="color: red;">*</font></p>
+					<p>
+						<input type="text" id="rcv_name" isautotab="true" />
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>收件人电话<font style="color: red;" id="is_normal">*</font></p>
+					<p>
+						<input id="rcv_tel" type="text" name="isPhoneNo" isautotab="true"
+							onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11">
+					</p>
+				</td>
+				<td>
+					<p>收件人地址<font style="color: red;">*</font></p>
+					<p>
+						<input type="text" id="rcv_address" isautotab="true" />
+					</p>
+				</td>
+
+				<td>
+					<p>国安侠姓名<font style="color: red;">*</font></p>
+					<p>
+						<!-- 
+						<input type="text" id="employee_name" isautotab="true"/>
+						 -->
+						<select name="employee_name" id="employee_name" isautotab="true">
+
+						</select>
+
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<!-- 
+				<td>
+					<p>国安侠编号</p>
+					<p>
+						<input id="employee_no" type="text" isautotab="true"
+							maxlength="11">
+					</p></td> -->
+				<td>
+					<p>托寄物名称</p>
+					<p>
+						<input type="text" id="obj_name" isautotab="true" />
+					</p>
+				</td>
+				<td>
+					<p>快递日期</p>
+					<p>
+						<input id="express_date" revalidate="true" type="text"
+							likeOption="false" name="express_date" validate="formatDate:true"
+							class="pmsDateField form-control" yearRange="-100:+10"
+							style="width: 80%; display: inline;" readonly />
+					</p>
+				</td>
+				<td>
+					<p>备注</p>
+					<p>
+						<input type="text" class="other" id="remark" /> <input
+							type="hidden" id="expressURL" name="numberInput" /> <input
+							type="hidden" id="store_id" name="numberInput" /> <input
+							type="hidden" id="id" name="numberInput" /> <input
+							id="employee_no" type="hidden" maxlength="11">
+					</p>
+				</td>
+			</tr>
+			<tr>
+					<td>
+						<p>业务类型：</p>
+						<p>
+							<!-- 
+						<input type="text" id="employee_name" isautotab="true"/>
+						 -->
+							<select name="express_type" id="express_type" isautotab="true">
+								<option value="0">普通快件</option>
+								<option value="1">信用卡快件</option>
+							</select>
+
+						</p>
+					</td>
+				</tr>
+		</table>
+	</form>
+	<div class="but">
+		<input name="" type="submit" value="保存" onclick="doSave();" /> <input name=""
+			type="button" value="取消" onclick="javascript:goBack();" />
+	</div>
+</body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+    <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../scripts/cityselect.js"></script>
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript">
+var logincode = decode64(getUrlParamByKey("logincode"));
+var screenlogin = getUrlParamByKey("su");//大屏用户 
+	$(function() {
+		 var reObj = new PMSRequestObject("userManager", "isScreenUser", [ screenlogin ]);
+        var callback = function callback(data, textStatus, XMLHttpRequest) {
+        	window.parent.location=getRootPath() + "/crm/index_headquarters.html";
+		};
+        var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
+			alert("登录信息错误，请确认输入或联系管理员!");
+			return false;
+		}
+        var url = "../login.do";
+        $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback); 
+        
+	})
+	
+	
+</script>
+</head>
+<body>
+
+</body>
+</html>

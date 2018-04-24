@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>鼠标拖动图片</title>
+<meta name="keywords" content="">
+<meta name="description" content="">
+<link
+	href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css"
+	rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" />
+<style type="text/css">
+@charset "utf-8";
+
+/* 效果CSS开始 */
+html,body {
+	height: 100%;
+	overflow: hidden;
+}
+
+#oImg {
+	position: absolute;
+	left: 180px;
+	top: 140px;
+	z-index: 1;
+	cursor: move;
+}
+/* 效果CSS结束 */
+</style>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/jquery.rotate.min.js"></script>
+<script type="text/javascript">
+var animateNo=0;
+function adddRotateImg(){
+	animateNo=animateNo+90;
+	$("#oImg").rotate({ animateTo:animateNo });
+}
+
+function delRotateImg(){
+	animateNo=animateNo-90;
+	$("#oImg").rotate({ angle:0,animateTo:animateNo,easing: $.easing.easeInOutExpo });
+}
+
+
+	var imgNo = getUrlParamByKey("imgNo");
+	//图片居中
+	$(function() {
+		$("img").attr("src",imgNo);
+		$("#oImg").css("left", ($(document).width() - 900) / 2);
+	})
+	/*绑定事件*/
+	function addEvent(obj, sType, fn) {
+		if (obj.addEventListener) {
+			obj.addEventListener(sType, fn, false);
+		} else {
+			obj.attachEvent('on' + sType, fn);
+		}
+	};
+	function removeEvent(obj, sType, fn) {
+		if (obj.removeEventListener) {
+			obj.removeEventListener(sType, fn, false);
+		} else {
+			obj.detachEvent('on' + sType, fn);
+		}
+	};
+	function prEvent(ev) {
+		var oEvent = ev || window.event;
+		if (oEvent.preventDefault) {
+			oEvent.preventDefault();
+		}
+		return oEvent;
+	}
+	/*添加滑轮事件*/
+	function addWheelEvent(obj, callback) {
+		if (window.navigator.userAgent.toLowerCase().indexOf('firefox') != -1) {
+			addEvent(obj, 'DOMMouseScroll', wheel);
+		} else {
+			addEvent(obj, 'mousewheel', wheel);
+		}
+		function wheel(ev) {
+			var oEvent = prEvent(ev), delta = oEvent.detail ? oEvent.detail > 0
+					: oEvent.wheelDelta < 0;
+			callback && callback.call(oEvent, delta);
+			return false;
+		}
+	};
+	/*页面载入后*/
+	window.onload = function() {
+		var oImg = document.getElementById('oImg');
+		/*拖拽功能*/
+		(function() {
+			addEvent(
+					oImg,
+					'mousedown',
+					function(ev) {
+						var oEvent = prEvent(ev), oParent = oImg.parentNode, disX = oEvent.clientX
+								- oImg.offsetLeft, disY = oEvent.clientY
+								- oImg.offsetTop, startMove = function(ev) {
+							if (oParent.setCapture) {
+								oParent.setCapture();
+							}
+							var oEvent = ev || window.event, l = oEvent.clientX
+									- disX, t = oEvent.clientY - disY;
+							oImg.style.left = l + 'px';
+							oImg.style.top = t + 'px';
+							oParent.onselectstart = function() {
+								return false;
+							}
+						}, endMove = function(ev) {
+							if (oParent.releaseCapture) {
+								oParent.releaseCapture();
+							}
+							oParent.onselectstart = null;
+							removeEvent(oParent, 'mousemove', startMove);
+							removeEvent(oParent, 'mouseup', endMove);
+						};
+						addEvent(oParent, 'mousemove', startMove);
+						addEvent(oParent, 'mouseup', endMove);
+						return false;
+					});
+		})();
+		/*以鼠标位置为中心的滑轮放大功能*/
+		(function() {
+			addWheelEvent(
+					oImg,
+					function(delta) {
+						var ratioL = (this.clientX - oImg.offsetLeft)
+								/ oImg.offsetWidth, ratioT = (this.clientY - oImg.offsetTop)
+								/ oImg.offsetHeight, ratioDelta = !delta ? 1 + 0.1
+								: 1 - 0.1, w = parseInt(oImg.offsetWidth
+								* ratioDelta), h = parseInt(oImg.offsetHeight
+								* ratioDelta), l = Math.round(this.clientX
+								- (w * ratioL)), t = Math.round(this.clientY
+								- (h * ratioT));
+						with (oImg.style) {
+							width = w + 'px';
+							height = h + 'px';
+							left = l + 'px';
+							top = t + 'px';
+						}
+					});
+		})();
+	};
+</script>
+</head>
+<body class="keBody">
+<button class="btn btn-primary" onclick="adddRotateImg();">旋转</button>
+	<div class="kePublic">
+		<!--效果html开始-->
+		<img id="oImg" src="" style="left: 220px; width: 100%; height: 560px; top: 89px;">
+		<!--效果html结束-->
+	</div>
+</body>
+</html>

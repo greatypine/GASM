@@ -1,0 +1,224 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script src="./city.js" type="text/javascript"></script>
+<script src="./citySelect.js" type="text/javascript"></script>
+<script>
+            importJs("../bizbase/js/common-validation-bizbase.js");
+</script>
+<title>无标题文档</title>
+<script type="text/javascript">
+	var id = getUrlParamByKey("id");
+	$(function() {
+		$validator = new PMSValidator($("#projectForm")[0], {
+			bNormalDisplay : false,
+			iDisplayLength : 5
+		});
+		doManager("HealthRoomManager", "queryById", id + '', function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				$("#storeNo").val(jsonData.storeNo);
+				$("#storeName").val(jsonData.storeName);
+				//设置选中的选项  同时更改data-code属性
+				$('#province option:[data-name=' + jsonData.province + ']')
+						.attr('selected', 'selected');
+
+				var provinceObj = $('#province option:[data-name='
+						+ jsonData.province + ']');
+				$('#province').attr('data-code', provinceObj.val());
+				selectVa2._cityFunc();//调用切换城市的方法
+
+				$('#city option:[data-name=' + jsonData.city + ']').attr(
+						'selected', 'selected');
+				var cityObj = $('#city option:[data-name=' + jsonData.city
+						+ ']');
+				$('#city').attr('data-code', cityObj.val());
+				selectVa2._areaFunc();//调用切换地区的方法
+
+				$('#area option:[data-name=' + jsonData.area + ']').attr(
+						'selected', 'selected');
+				var areaObj = $('#area option:[data-name=' + jsonData.area
+						+ ']');
+				$('#areaObj').attr('data-code', areaObj.val());
+				selectVa2._streetFunc();//调用切换街道的方法
+
+				//if(jsonData.street)
+				$('#street option:[data-name=' + jsonData.street + ']').attr(
+						'selected', 'selected');
+				var streetObj = $('#street option:[data-name='
+						+ jsonData.street + ']');
+				$('#street').attr('data-code', streetObj.val());
+
+				$("#storeAddress").val(jsonData.storeAddress);
+				$("#telephone").val(jsonData.telephone);
+			}
+		}, false);
+	})
+
+	//校验数据的方法
+	function dataCheck() {
+		//基础校验-------------------------------
+		$validator.clean();
+		var cvalidator = $validator.clientValidate();
+		if (!cvalidator) {
+			$$.showMessage("系统信息", "数据校验不通过，请检查各项输入是否正确。");
+			return false;
+		}
+		return true;
+	}
+	
+	//省市区街道的验证,区不一定存在，不用验证，后台处理即可
+	function validateSelect(){
+		var province = $("#province option:selected").val();
+		var city = $("#city option:selected").val();
+		var area = $("#area option:selected").val();
+		if("-1"==province || "-1"==city || "-1"==area){
+			return false;
+		}
+		return true;
+	}
+	
+	function doSave() {
+		//数据校验
+		if (!dataCheck()) {
+			return;
+		}
+		if (!validateSelect()) {
+			$$.showMessage("验证失败", "请检查地址信息是否选择正确!");
+			return;
+		}
+		var streetName = $("#street option:selected").attr('data-name');
+		if (streetName == '请选择') {
+			streetName = '';
+		}
+		var obj = {
+			id : id,
+			storeNo : $("#storeNo").val(),
+			storeName : $("#storeName").val(),
+			province : $("#province option:selected").attr('data-name'),
+			city : $("#city option:selected").attr('data-name'),
+			area : $("#area option:selected").attr('data-name'),
+			street : streetName,
+			storeAddress : $("#storeAddress").val(),
+			telephone : $("#telephone").val(),
+		}
+		//ajax请求    更新健康屋信息
+		doManager("HealthRoomManager", "update", obj, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				window.location.href = 'HealthRoomManager.html';
+			} else {
+				$$.showMessage("系统信息", "添加失败!");
+			}
+		});
+	}
+</script>
+</head>
+<body>
+	<div id="pageheardiv" class="title clear">
+		<div class="arrowleft" style="cursor: hand;" onclick="toggleNavi();">
+		</div>
+		<div class="ico2"></div>
+		<div class="ico1"></div>
+		<a href="#">门店管理</a> <a href="#">健康屋门店管理</a>
+	</div>
+	<div class="containerheader">健康屋信息编辑</div>
+	<div class="containerbody">
+		<form class="pmsForm" id="projectForm" name="projectForm">
+			<div id="nav_cont">
+				<h1>
+					<div class="displayblock" id="_un_container_0_0_1">
+						<table cellpadding="0" cellspacing="0" class="layout" width="90%">
+							<tr>
+								<td width="15%"></td>
+								<td width="30%"></td>
+								<td width="15%"></td>
+								<td width="40%"></td>
+							</tr>
+							<tr>
+								<td class="basetext" style="width: 8%; text-align: right">
+									门店编号<span class="red">*</span>:
+								</td>
+								<td align="left"><input name="storeNo" type="text"
+									id="storeNo" class="inputtext" style="width: 145px"
+									validate="required:true, maxlength:400" /></td>
+								<td class="basetext" style="width: 8%; text-align: right">
+									门店名称<span class="red">*</span>:
+								</td>
+								<td align="left"><input name="storeName" type="text"
+									id="storeName" class="inputtext" style="width: 145px"
+									validate="required:true, maxlength:400" /></td>
+							</tr>
+							<tr>
+								<td class="basetext" style="width: 8%; text-align: right">
+									省<span class="red">*</span>:
+								</td>
+								<td align="left"><select id="province" name="province"
+									validate="required:true" style="width: 145px">
+								</select></td>
+								<td class="basetext" style="width: 8%; text-align: right">
+									市<span class="red">*</span>:
+								</td>
+								<td align="left"><select id="city" name="city"
+									validate="required:true" style="width: 145px">
+								</select></td>
+							</tr>
+							<tr>
+								<td class="basetext" style="width: 8%; text-align: right">
+									区<span class="red">*</span>:
+								</td>
+								<td align="left"><select id="area" name="area"
+									validate="required:true" style="width: 145px">
+								</select></td>
+								<td class="basetext" style="width: 8%; text-align: right">
+									街道<span class="red">*</span>:
+								</td>
+								<td align="left"><select class="street" id="street"
+									name="street" validate="required:true" style="width: 145px">
+								</select></td>
+							</tr>
+							<tr>
+								<td class="basetext" style="width: 8%; text-align: right">
+									门店地址<span class="red">*</span>:
+								</td>
+								<td align="left"><input name="storeAddress" type="text"
+									id="storeAddress" class="inputtext" style="width: 145px"
+									validate="required:true, maxlength:400" /></td>
+								<td class="basetext" style="width: 8%; text-align: right">
+									联系电话<span class="red">*</span>:
+								</td>
+								<td align="left"><input name="telephone" type="text"
+									id="telephone" class="inputtext" style="width: 145px"
+									validate="required:true, isPhone:true" />
+								</td>
+							</tr>
+							<td class="basetext" style="width: 8%; text-align: right">
+							<tr>
+								<td colspan="2" align="right">
+									<button class="buttonu" onclick="doSave();">保存</button>
+								</td>
+								<td colspan="2" align="left">&nbsp;</td>
+							</tr>
+						</table>
+					</div>
+				</h1>
+			</div>
+		</form>
+	</div>
+	<script type="text/javascript">
+		/**渲染下拉框中的省市区*/
+		var selectVa2 = new CitySelect({
+			data : data,
+			provId : '#province',
+			cityId : '#city',
+			areaId : '#area',
+			streetId : '#street',
+			isSelect : false
+		});
+	</script>
+</body>
+</html>

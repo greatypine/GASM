@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<definitions>
+	<!--
+	<definition businessId="111" script="/excel/reportscript.txt" reportName="XX1" sheetName="SX1" batchUpload="false" executeByLine="true" reportCode="001"/>
+	-->
+	<definition businessId="131313" script="/excel/staffscript.txt" reportName="国家科技项目" sheetName="Sheet1" batchUpload="true" executeByLine="true" reportCode="0001"/>
+	<definition businessId="141414" script="/excel/budgetProjectscript.txt" reportName="财务科目" sheetName="Sheet1" batchUpload="true" executeByLine="true" reportCode="0001"/>
+	<definition businessId="151515" script="/excel/budgetscript.txt" reportName="财务预算" sheetName="Sheet1" batchUpload="true" executeByLine="true" reportCode="0001"/>
+	<definition businessId="666666" script="/excel/expensescript.txt" reportName="经费拨款" sheetName="Sheet1" batchUpload="true" executeByLine="true" reportCode="0001"/>
+</definitions>

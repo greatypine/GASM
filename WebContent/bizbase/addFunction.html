@@ -1,0 +1,190 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+		<script src="js/lib.js" type="text/javascript"></script>
+		<script src="js/refDialog.js" type="text/javascript"></script>
+		<script src="js/orgModify.js" type="text/javascript"></script>
+		<style type="text/css">
+			html,body {
+			    overflow: auto;
+			    height: 100%;
+			}
+
+		</style>
+		<script type="text/javascript">
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+			var request = getRequestParams();
+			//获取上级组织机构编号
+			var parent_id = request['parentId'];
+			function checkUnitCode(){
+				if (validateExists("com.cnpc.pms.bizbase.rbac.orgview.entity.PurStruOrg", "code", $("#UnitCode").val())) {
+					return true;
+				}
+				return false;
+			}
+			function addOrg() {
+				if(getRadioVal("radioF") == ''){
+					$$.showMessage("${system.info}","功能类型不能为空!");
+					return false;	
+				}
+				var $validator = new PMSValidator($("#orgAdd")[0], 
+				{
+					bNormalDisplay: false,
+					iDisplayLength: 999
+				});
+				var flag = $validator.clientValidate();
+				if (!flag) {
+					return false;
+				}
+				if (validateExists("com.cnpc.pms.bizbase.rbac.resourcemanage.entity.Function", "activityCode", $("#activityCode").val())){
+					$$.showMessage("${system.info}", "功能编码已存在!");
+					return;
+				}else{
+					var orgUnit = {
+                    	activityCode:$("#activityCode").val(),
+                    	activityName: $("#activityName").val(),
+                    	parentCode:$("#parentCode").val(),
+                    	url:$("#url").val(),
+						module:$("#module").val(),
+						orderNo:$("#orderNo").val(),
+						type:getRadioVal("radioF"),
+						remark:$("#remark").val()
+                	};
+					transportInformation(orgUnit);
+				}
+			}
+			$(document).ready(function(){
+				var request = getRequestParams();
+				var parentId = request['parentId'];
+				$("#parentCode").val(parentId);
+			});
+			
+			function transportInformation(orgUnit){
+				doManager("functionManager", "add", orgUnit, function(data, textStatus, XMLHttpRequest){
+					if (data.result == true) {
+						var returnObj = $.fromJSON(data.data);
+							$$.showMessage("${system.info}", "添加功能成功!");
+							window.setTimeout(function(){
+								window.parent.leftFrame.location.reload();
+							}, "1000");
+					}else{
+						$$.showMessage("${system.info}", "服务器保存失败!");
+					}
+				}, true,{
+                    showWaiting: true
+                });
+			}
+		</script>
+		<style type="text/css">
+			table {
+				border: 0px solid #000;
+			}
+			td {
+				border: 0px solid #000;
+				padding-top: 5px;
+			}
+		</style>
+	</head>
+	<body>
+		<div style="padding: 5px 10px 0 10px">
+			<div class="panel panel-default">
+				<div class="panel-heading" align="left" id="onlyforedit">
+					<strong>新建功能:</strong>
+				</div>
+				<div class="panel-body">
+					<form id="orgAdd" class="pmsForm" validate="true" clientvalidate="true" >
+						<table class="layout" cellpadding="0" cellspacing="0" border="0" bordercolor="red">
+							 <tr>
+                                <td align="left" colspan="4">
+									<input type="hidden" id="parentCode" name="parentCode" class="inputtext_dis" readonly/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td align="left">
+									功能名称:
+                                    <font color="red">
+                                        *
+                                    </font>
+                                </td>
+								 <td align="left">
+									<input type="text" id="activityName" name="activityName" class="form-control" style="width: 60%"/>
+                                </td>
+                                <td align="left">
+                                	功能编码:
+									<font color="red">
+                                        *
+                                    </font>
+                                </td>
+                                <td>
+                                    <input type="text" id="activityCode" name="activityCode" class="form-control" style="width: 60%"/>
+                                </td>
+                            </tr>
+                            <tr>
+								<td align="left">
+                                	功能类型:
+                                </td>
+                                <td width="42%">
+                                    <input class="pmsRadio" name="radioF" data="[['1','菜单'],['2','按钮']]" />
+                                </td>
+								
+								<td align="left">
+									跳转路径:
+                                </td>
+								 <td align="left">
+									<input type="text" id="url" name="url" class="form-control" style="width: 60%"/>
+                                </td>
+                            </tr>
+							 <tr>
+								<td align="left">
+                                	业务模块:
+                                </td>
+                                <td width="42%">
+                                	<input type="text" id="module" name="module" class="form-control" style="width: 60%"/>
+                                </td>
+								<td align="left">
+                                	排序:
+                                </td>
+                                <td width="42%">
+                                	<input type="text" id="orderNo" name="orderNo" class="form-control" style="width: 60%"/>
+                                </td>
+                            </tr>
+							<tr>
+								<td align="left">
+                                	备注:
+                                </td>
+                                <td width="42%">
+                                	<input type="text" id="remark" name="remark" class="form-control" style="width: 60%"/>
+                                </td>
+                            </tr>
+						</table>
+					</form>
+				</div>
+				<div class="panel-footer" align="right">
+					<button class="btn btn-primary" id="Save" onclick="addOrg()">
+						提交
+					</button>&nbsp;
+					<button class="btn btn-primary" id="Return" onclick="window.history.go(-1)">
+						返回
+					</button>
+				</div>
+			</div>
+        </div>
+	</body>
+</html>

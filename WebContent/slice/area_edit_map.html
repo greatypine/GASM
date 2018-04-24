@@ -1,0 +1,955 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title></title>
+    <script type="text/javascript" src="../startbootstrap/js/jquery.1.10.2.min.js"></script>
+    <script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+    <script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    <link rel="stylesheet" href="../hr/bootstrap/css/bootstrap.min.css">
+  <!-- Font Awesome -->
+    <link rel="stylesheet" href="../hr/bootstrap/css/font-awesome.min.css">
+    <link href="../hr/bootstrap/css/ionicons.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../hr/dist/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
+    <script src="https://webapi.amap.com/maps?v=1.4.2&key=f52a1bb11408e8a46dc884b2aaa44edc&plugin=AMap.PolyEditor,AMap.CircleEditor"></script>
+    <style type="text/css">
+        *{margin: 0; padding: 0;}
+	ul,li{list-style: none;}
+	 body {
+		margin: 0;
+		height: 100%;
+		width: 100%;
+		position: absolute;
+		font-size: 12px;
+	}
+
+	#mapContainer {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+	}
+
+	input[type="text"] {
+		height: 25px;
+		outline: none;
+		border: 0;
+		border: 1px solid #CCCCCC;
+		padding: 0 4px;
+	}
+
+	
+	.button-group {
+		position: absolute;
+		/* top: 20px; */
+		right: 20px;
+		font-size: 12px;
+		padding: 10px;
+	}
+
+	.content-header{padding-top: 0;}
+    .form-group{line-height: 34px;}
+   	.form-group label{font-size: 12px; margin: 0; display: block; height: 30px;}
+
+	.menu{position: absolute; top: 50px;  left: 20px; width: 190px;border-radius:4px}
+    .menu2{position: absolute; bottom: 28px;  right: 6px;min-width:80px; background-color: #fff;border-radius:4px}
+    .menu_list2{margin: 0 0 0 0; width:80px; background-color: #fff; overflow-y: auto; overflow-x: hidden;  box-shadow: 1px 2px 1px rgba(0,0,0,.15);-webkit-transition: all .3s ease-in-out;-o-transition: all .3s ease-in-out;transition: all .3s ease-in-out}
+    
+    .menu_list2 li{
+/* 	line-height: 22px;  */
+	font-size: 6px; 
+	padding-right:0;
+	overflow:hidden;
+	clear:both;
+/* 	padding-bottom: 10px; */
+	}
+	
+	.menu_list2 span{
+		font-size:12px;
+	}
+	.menu_list2 li:nth-last-child(1){border: none;}
+	/*.menu_list li span{color: #0a67f2; font-weight: bold; font-size: 16px; padding-right: 5px;}*/
+	.menu_list2 li p:nth-child(1){color: #333;}
+	p{margin: 0;}
+	.menu_list2 li a{color: #999; display: inline-block; width: 100%; text-decoration: none; padding-top: 5px;}
+
+	.no-padding{padding: 0;}
+	.menu_list2 .col-sm-3{ height: 10px; margin: 5px 0 0 0; background-color: #c1ebf5cf;}
+	.menu_list2 .col-sm-9 b{padding-left: 10px;}
+	
+	
+	.menu_list2::-webkit-scrollbar{width: 8px; background-color: #fff;}
+    .menu_list2::-webkit-scrollbar-thumb{background-color: #adadad; border-radius: 5px;}
+    .menu_list2::-webkit-scrollbar-track{background-color: #fff;}
+    
+	.sidebar-form{position: fixed; width: 160px; height: 40px; line-height: 40px; background-color: #fff; box-shadow: 1px 2px 1px rgba(0,0,0,.15); border: 0!important;}
+	
+   .btn {
+	 padding: 0 12px;
+	 font-size: 20px;
+	 color: #808499;
+	}	
+	.result_hide{padding: 2px 0 2px 0; width:160px; background-color: #fff; color: #3385ff; text-align: center; font-size: 12px; -webkit-transition: all .3s ease-in-out;-o-transition: all .3s ease-in-out;transition: all .3s ease-in-out}
+	.btn-style{height: 28px;line-height: 28px;color: #FFF;border: 0;outline: none;padding-left: 5px;padding-right: 5px;border-radius: 3px;margin-bottom: 4px;cursor: pointer;}
+	.btn-blue{background-color: #0D9BF2;}
+	.btn-gray{background-color: #bcbcbc;}
+	.amap-maptype-list{display: none!important;}
+
+	.no-padding{padding: 0;}
+	.menu_list{margin: 45px 0 0 0; width: 160px; background-color: #fff; overflow-y: auto; overflow-x: hidden; box-shadow: 1px 2px 1px rgba(0,0,0,.15);-webkit-transition: all .3s ease-in-out;-o-transition: all .3s ease-in-out;transition: all .3s ease-in-out}
+	.menu_list li{
+/* 	line-height: 22px;  */
+	font-size: 6px; 
+	padding-right:0;
+/* 	padding-bottom: 10px; */
+	}
+	.menu_list li:nth-last-child(1){border: none;}
+	/*.menu_list li span{color: #0a67f2; font-weight: bold; font-size: 16px; padding-right: 5px;}*/
+	.menu_list li p:nth-child(1){padding-bottom: 2px; color: #333;}
+	p{margin: 0;}
+	.menu_list li a{color: #999; display: inline-block; width: 100%; text-decoration: none; padding-top: 5px;}
+
+	.no-padding{padding: 0;}
+	.menu_list .col-sm-3{ height: 10px; margin: 5px 0 0 0; background-color: #c1ebf5cf;}
+	.menu_list .col-sm-9 b{padding-left: 10px;}
+	
+	
+	.menu_list::-webkit-scrollbar{width: 8px; background-color: #fff;}
+    .menu_list::-webkit-scrollbar-thumb{background-color: #adadad; border-radius: 5px;}
+    .menu_list::-webkit-scrollbar-track{background-color: #fff;}
+	.col-lg-8{width: 66%; float: left;}
+	.col-lg-4{width: 34%; float: left;}
+	
+	 .marker-route {
+          position: absolute;
+          padding: 5px 10px;
+          color: #e90000;
+          background:#4598e0;
+          cursor: pointer;
+          white-space:nowrap;
+          position: relative;
+          color: #fff;
+          border-radius: 3px;
+          font-size:14px;
+        }
+     .marker-route:after {
+       	content:'';
+        position: absolute;
+       	width: 0;
+	    height: 0;
+	    border-left: 5px solid transparent;
+	    border-right: 5px solid transparent;
+	    border-top: 6px solid #4598e0;
+      	bottom: -6px;
+       	left:50%;
+       	margin-left:-5px;
+      }
+      
+	
+	/*全屏按钮*/
+    .pull-right-fullscreen {
+    	position:absolute;
+    	z-index:10;
+    	right:20px;
+    }
+    /*全屏样式*/
+    #mask{width:100%; height:100%; position:fixed; top:0; left:0; display: none; z-index:9999999; background-color: rgba(0,0,0,0.7);}
+    #mask-body{ position: absolute; top: 50px; left: 50px; height: 600px; opacity: 1; z-index: 99; }
+    #mask-header{ position: absolute; top: 50px; left: 0px; height: 50px; opacity: 1; z-index: 999; }
+    #mask-header>button{ padding: 3px 5px;  position: absolute; left: 15px; top: -45px; cursor: pointer; }
+    #tip{bottom:3px;right:5px; top:auto; font-size:12px;padding-left:4px;padding-right:4px;line-height:20px}
+  	span[id^='tinyvillage_span_']:hover{
+  		color:#3385ff;
+  		}
+  	/*弹窗蓝色title样式*/	
+  	div.amap-info-content{
+  		padding:0 0 0 0;
+  	}
+  	div.amap-info-outer{
+  		padding:0px;
+  	}
+  	a.amap-info-close{
+  		top:10px
+  	}
+  	/*弹窗X样式*/
+  	A:link{
+  		font-size: 14px;
+	    color: #eee;
+	    text-decoration: none;
+  	}
+  	
+  	A:visited{
+  		font-size: 14px;
+	    color: #eee;
+	    text-decoration: none;
+  	}
+  	
+  	.layui-layer-btn a{
+  	   font-size:12px;
+  	}
+    </style>
+</head>
+<body class="skin-blue">
+<div class="wrapper" style="background-color: #f1f1f1;">
+<!-- Content Wrapper. Contains page content -->
+      <!-- Main content -->
+      <section >
+        
+        <div  style="position:relative" id="mapHeight">
+          <div id="mapContainer" style="background-color:rgba(0,0,0,0.5)"></div>
+          <div>
+		    <div id="tip" style="color:#f00;"><strong>温馨提示：更多操作单击右键!</strong><br><span id="info"></span></div>
+		  </div>
+          <div class="menu">
+		    <div class="sidebar-form">
+		        <div class="input-group">
+		            <input id="search" type="text" name="q"   class="form-control " placeholder="搜索">
+		            <span class="input-group-btn">
+		                <button onClick="cleanSearch()" class="btn btn-flat" style='padding:0 12px'><i class="fa fa-remove" style="color: #bbc0c2; font-weight: normal;"></i></button>
+		            </span>
+		        </div>
+		    </div>
+		    <div class="menu_list" id="test">
+			   <ul id="tinyvillage_ul" style="max-height:240px;display:none;">   
+			   </ul>
+			</div>
+			<div class="result_hide" style="display:block;position:absolute;top:45px">展开搜索结果</div>
+		  </div>
+          <div class="menu2" id="TULI" style="z-index:120">
+			  <div class="menu_list2 clearfix" id="test" style="max-height:220px;">
+			  	<ul id="tiny_village_color" class="no-padding">
+			  	   <li class="col-lg-12" >
+	    			   <div class="col-sm-3 no-padding" style="width:10%;background:#bce1f3"></div>
+	   				   <div class="col-sm-9 no-padding" >
+	   					   <p style="padding-left:10px;white-space:nowrap;"><span style="white-space:nowrap;display:inline-block">可划片</span></p>
+	   				   </div>
+	   			    </li>
+	   			    <li class="col-lg-12" >
+	    			   <div class="col-sm-3 no-padding" style="width:10%;background:#ec612c"></div>
+	   				   <div class="col-sm-9 no-padding" >
+	   					   <p style="padding-left:10px;white-space:nowrap;"><span style="white-space:nowrap;display:inline-block">操作中</span></p>
+	   				   </div>
+	   			    </li>
+	   			    <li class="col-lg-12" >
+	    			   <div class="col-sm-3 no-padding" style="width:10%;background:#55f12f"></div>
+	   				   <div class="col-sm-9 no-padding" >
+	   					   <p style="padding-left:10px;white-space:nowrap;"><span style="white-space:nowrap;display:inline-block">已管辖</span></p>
+	   				   </div>
+	   			    </li>
+			  		<li class="col-lg-12" >
+	    			   <div class="col-sm-3 no-padding" style="width:10%;background:#505050"></div>
+	   				   <div class="col-sm-9 no-padding" >
+	   					   <p style="padding-left:10px;white-space:nowrap;"><span style="white-space:nowrap;display:inline-block">已占用</span></p>
+	   				   </div>
+	   			   </li>
+	   			   
+			  	</ul>
+			 </div>
+		 	<div></div>
+		 </div>
+        </div>
+	  </section>
+  <!-- /.content-wrapper -->
+</div>
+
+<!-- jQuery 2.2.0 -->
+<script src="../hr/plugins/jQuery/jQuery-2.2.0.min.js"></script>
+<!-- Bootstrap 3.3.6 -->
+<script src="../hr/bootstrap/js/bootstrap.min.js"></script>
+<!-- Morris.js charts -->
+<script src="../hr/bootstrap/js/raphael-min.js"></script>
+<!-- FastClick -->
+<script src="../hr/plugins/fastclick/fastclick.js"></script>
+<!-- AdminLTE App -->
+<script src="../hr/dist/js/app.min.js"></script>
+<!-- AdminLTE for demo purposes -->
+<script src="../hr/dist/js/demo.js"></script>
+<script type="text/javascript" src="../scripts/bidLibjsjquery3.0.js"></script>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/custom_color.js"></script>
+<script type="text/javascript">
+    var windowHeight = 0;
+    var windowWidth = 0;
+    autodivheight();
+    function autodivheight(){ //函数：获取尺寸
+        //获取浏览器窗口高度
+        var winHeight=0;
+        if (window.innerHeight){
+            winHeight = window.innerHeight;
+            windowHeight = window.innerHeight;
+            windowWidth = window.innerWidth;
+        }else if ((document.body) && (document.body.clientHeight)){
+            winHeight = document.body.clientHeight;
+        	windowHeight = document.body.clientHeight;
+        	windowWidth = document.body.clientWidth;
+        //通过深入Document内部对body进行检测，获取浏览器窗口高度
+        }else if (document.documentElement && document.documentElement.clientHeight){
+            winHeight = document.documentElement.clientHeight;
+        
+        	windowHeight = document.documentElement.clientHeight;
+    		windowWidth = document.documentElement.clientWidth;
+	        //DIV高度为浏览器窗口的高度
+	        //document.getElementById("test").style.height= winHeight +"px";
+	        //DIV高度为浏览器窗口高度的一半
+	        document.getElementById("tinyvillage_ul").style.maxHeight= winHeight - 200 +"px";
+    	}
+    }
+    window.onresize=autodivheight; //浏览器窗口发生变化时同时变化DIV高度
+</script>
+<script type="text/javascript">
+    automapheight();
+    function automapheight(){ //函数：获取尺寸
+        //获取浏览器窗口高度
+        var winHeight=0;
+        if (window.innerHeight)
+            winHeight = window.innerHeight;
+        else if ((document.body) && (document.body.clientHeight))
+            winHeight = document.body.clientHeight;
+        //通过深入Document内部对body进行检测，获取浏览器窗口高度
+        if (document.documentElement && document.documentElement.clientHeight)
+            winHeight = document.documentElement.clientHeight;
+        //DIV高度为浏览器窗口的高度
+        //document.getElementById("test").style.height= winHeight +"px";
+        //DIV高度为浏览器窗口高度的一半
+        document.getElementById("mapHeight").style.height= winHeight+"px";
+    }
+    window.onresize=autodivheight; //浏览器窗口发生变化时同时变化DIV高度
+</script>
+<script type="text/javascript">
+    
+    //保存时存放area的数组
+    var storeId = getUrlParamByKey("sid");//门店ID
+    var area_no = getUrlParamByKey("ao");//片区编号
+    
+    //该数组用于该小区操作坐标
+    var polygonArray = [];
+    var polygonArrayCopy = [];
+    //服务区域
+    var polygonArea = [];
+    //存放所有小区的数组
+    var tinyAreaArray = [];//小区区域数组
+    var lastIdx;
+    var storeno="";
+    var isDrawing = false;
+
+    const POLYGON_STATE_DRAW = 0;
+    const POLYGON_STATE_DRAW_EDIT = 1;
+    const POLYGON_STATE_UPDATE_EDIT = 2;
+    const POLYGON_STATE_RECORDED = 3;
+    
+
+    //初始化地图对象，加载地图
+    var map = new AMap.Map("mapContainer", {
+        resizeEnable : true,
+        zoom : 15
+    });
+
+
+//     map.plugin(["AMap.ToolBar"],function(){
+//         //加载工具条
+//         var toolBaropt = {
+//             offset :new AMap.Pixel(20,55),//相对于地图容器左上角的偏移量，正数代表向右下偏移。默认为AMap.Pixel(10,10)
+//             /*
+//              *控件停靠位置
+//              *LT:左上角;
+//              *RT:右上角;
+//              *LB:左下角;
+//              *RB:右下角;
+//              *默认位置：LT
+//              */
+//             position : 'RT',
+//             ruler : true,//标尺键盘是否可见，默认为true
+//             noIpLocate : false,//定位失败后，是否开启IP定位，默认为false
+//             locate : true,//是否显示定位按钮，默认为false
+//             liteStyle : false,//是否使用精简模式，默认为false
+//             direction : true,//方向键盘是否可见，默认为true
+//             autoPosition : false,//是否自动定位，即地图初始化加载完成后，是否自动定位的用户所在地，在支持HTML5的浏览器中有效，默认为false
+
+//             /**
+//              *是否使用高德定位sdk用来辅助优化定位效果，默认：false.
+//              *仅供在使用了高德定位sdk的APP中，嵌入webview页面时使用
+//              *注：如果要使用辅助定位的功能，除了需要将useNative属性设置为true以外，
+//              *还需要调用高德定位idk中，AMapLocationClient类的startAssistantLocation()方法开启辅助H5定位功能；
+//              *不用时，可以调用stopAssistantLocation()方法停止辅助H5定位功能。具体用法可参考定位SDK的参考手册
+//              */
+//             useNative : false
+//         }
+//         var tool = new AMap.ToolBar(toolBaropt);
+//         map.addControl(tool);
+//     });
+	
+    autodivheight();
+    function autodivheight(){ //函数：获取尺寸
+        //获取浏览器窗口高度
+        var winHeight=0;
+        if (window.innerHeight){
+            winHeight = window.innerHeight;
+            windowHeight = window.innerHeight;
+            windowWidth = window.innerWidth;
+        }else if ((document.body) && (document.body.clientHeight)){
+            winHeight = document.body.clientHeight;
+        	windowHeight = document.body.clientHeight;
+        	windowWidth = document.body.clientWidth;
+        //通过深入Document内部对body进行检测，获取浏览器窗口高度
+        }else if (document.documentElement && document.documentElement.clientHeight){
+            winHeight = document.documentElement.clientHeight;
+        
+        	windowHeight = document.documentElement.clientHeight;
+    		windowWidth = document.documentElement.clientWidth;
+	        //DIV高度为浏览器窗口的高度
+	        //document.getElementById("test").style.height= winHeight +"px";
+	        //DIV高度为浏览器窗口高度的一半
+	        document.getElementById("tinyvillage_ul").style.maxHeight= winHeight - 200 +"px";
+    	}
+    }
+    window.onresize=autodivheight; //浏览器窗口发生变化时同时变化DIV高度
+    
+    
+    
+    //获取门店中心点
+    function getStorePosition(){
+   	  doManager("areaManager", "getStoreServiceAreaAndPosition", [storeId], function(
+   				data, textStatus, XMLHttpRequest) {
+   			if (data.result) {
+   				var resultJson = JSON.parse(data.data);
+   				if(resultJson.code == 200){
+   					var position = resultJson.position;
+   					
+   					//初始化地图对象，加载地图
+   					map.setCenter(position);
+   					
+   				}else{
+   					layer.msg("暂时无法定位门店");
+   				}
+   			}
+   		},false);
+   }
+    
+    
+
+    var arrayObj = new Array();//小区色块数组
+	var areaColor = {};//小区色块
+	var colorOther = "#0e0e0e";//灰色（超出20个片区的范围的）
+	var colorArrar = new Array("#007979","#00FFFF","#796400","#FFD306","#009100","#5151A2","#8F4586","#F75000","#FF0000","#FF9797","#FF0080","#600000","#820041","#4B0091","#A8FF24","#63B8FF","#5E5E5E","#bf88113d","#0000FF","#7CCD7C");
+    $(function(){
+    	getStorePosition();
+    	initData();
+        $("#search").keyup(function(th){
+            var searchStr = $("#search").val();
+            $("span[id^='tinyvillage_span_']").each(function(i,t){
+                var id =  $(t).attr("id");
+                var tinyname = $(t).text();
+                var idArr = id.split("_");
+
+                if(tinyname.indexOf(searchStr)<0){
+                    $("#"+idArr[2]).hide();
+                }else{
+                    $("#"+idArr[2]).show();
+                }
+            })
+        });
+
+        $(".result_hide").hover(function(){
+            setNavListVisible(true);
+        });
+      
+       
+        
+        map.on("click",function(e){
+        	if(typeof(positionMarker)!="undefined"){
+        		map.remove(positionMarker);
+        	}
+        	
+            setNavListVisible(false);
+        });
+        
+        $("#search").keyup();
+       
+        
+        
+        $("#search").keyup(function(th){
+            var searchStr = $("#search").val();
+            $("span[id^='tinyvillage_']").each(function(i,t){
+                var id =  $(t).attr("id");
+                var tinyname = $(t).text();
+                var idArr = id.split("_");
+
+                if(tinyname.indexOf(searchStr)<0){
+                    $("#"+idArr[1]).hide();
+                }else{
+                    $("#"+idArr[1]).show();
+                }
+            })
+        });
+       
+//         $("span[id^='tinyvillage_span_']").hover(function(t){
+//         	$(this).css("color","#3385ff");
+//         });
+        
+        
+    });
+    
+     var setNavListVisible = function (bOnOff) {
+            if (bOnOff) {
+                // 打开
+                $('.menu_list').css('display','block');
+                $('#tinyvillage_ul').css('display','block');
+                $('.result_hide').css('display','none');
+            } else {
+                // 关闭
+                $('.menu_list').css('display','none');
+                $('#tinyvillage_ul').css('display','none');
+                $('.result_hide').css('display','block');
+            }
+        };
+    
+    //查询片区所辖小区
+    var currentStore;
+    function initData(){
+    	 doManager("areaManager", "getTinyVillageCoord",[storeId], function(data, textStatus,XMLHttpRequest) {
+		        if(data.result){
+		            
+		        	var resultJson= JSON.parse(data.data);
+		        	if(resultJson!=null&&resultJson.code==200){
+		        		
+		        		coordinate = resultJson.coordinate;//小区坐标
+		        		storeService = resultJson.serviceArea;//服务范围
+		        		var areas = resultJson.areas;//片区
+		        		var store = resultJson.store;//门店信息
+		        		currentStore = store;
+		        		initArea(storeService,coordinate);
+		        		layer.closeAll();
+		        	}else{
+		        		layer.msg(resultJson.message);
+		        		map.clearMap();
+		        	}
+		            
+		        }else{
+		        	layer.msg("数据加载异常！");
+		        }},false);
+    	
+
+    }
+
+    
+    
+    
+	//服务区域
+	var  serviceRange;
+	var areaTinyVillageArray;
+	var areaTinyVillageMarkerArray;
+	var tinyVillageSelected = new Array();//被选中的作为划片的所有小区
+	var $strokeColor_unFree = "#505050";//其他划片小区
+    var $fillColor_unFree = "#505050";
+    var $strokeColor_free = "#bce1f3";//未划片小区
+    var $fillColor_free = "#bce1f3";
+    var $strokeColor_cur = "#55f12f";//当前片区管辖小区
+    var $fillColor_cur = "#55f12f"; //当前片区管辖小区
+    var $fillColor_sel = "#ec612c";//临时选中小区
+    var infoWindow1;
+	function initArea(storeService,coordinate) {
+		areaTinyVillageArray = new Array();
+		areaTinyVillageMarkerArray = new Array();
+	    map.clearMap();
+	    //服务区域多边形
+	    serviceRange = new AMap.Polygon({
+	        path: storeService,//设置多边形边界路径
+	        strokeColor: "#c90fea", //线颜色
+	        strokeOpacity: 0.9, //线透明度
+	        strokeWeight: 2,    //线宽
+	        fillColor: "#c90fea", //填充色
+	        fillOpacity: 0//填充透明度
+	    });
+	    serviceRange.setMap(map);
+	    serviceRange.on("click", function () {
+            setNavListVisible(false);
+            if(typeof(positionMarker)!="undefined"){
+            	 map.remove(positionMarker);
+            }
+           
+        });
+	    var areaTinyVillage;//小区坐标范围
+	    var tinyVillageMarker;
+	    var tinyVillagePolygon;
+		//var tinyVillageText;
+	    
+	    
+	    for(var i=0;i<coordinate.length;i++){
+	    	    var areaTag_temp=1;
+    			var areaHtml =  '<li id="'+coordinate[i].code+'" onclick="goToPosition(\''+coordinate[i].code+'\')" >'+
+	 					   				'<a href="#">'+
+	         				   		    '<p><span style="font-size:12px">'+(i+1)+'</span> . <span style="font-size:12px" id="tinyvillage_span_'+coordinate[i].code+'">'+coordinate[i].name+'</span></p>'+
+	 					   				'</a>'+
+	 			   				'</li>';
+	 			   				
+	 			 $("#tinyvillage_ul").append(areaHtml);
+	    	
+	    	
+	    	
+	    	
+	    	if(coordinate[i].areaNo!=null&&coordinate[i].areaNo!=""){//小区已经绑定片区
+		    		if(area_no!=null&&area_no!=""&&coordinate[i].areaNo==area_no){//编辑片区
+		    			
+		    			//绘制小区
+			        	areaTinyVillage = new AMap.Polygon({
+			                    path:coordinate[i].coordinate_range.coordinates[0],//设置多边形边界路径
+			                    strokeColor:$strokeColor_cur, //线颜色
+			                    map:map,
+			                    strokeOpacity: 1.0, //线透明度
+			                    strokeWeight: 2,    //线宽
+			                    fillColor:$fillColor_cur, //填充色
+			                    fillOpacity: 0.6,//填充透明度
+			                    extData:{"storeno":coordinate[i].storeNo,"tinyVillageId":coordinate[i].tinyVillage_id,"tinyVillageName":coordinate[i].name,"villageId":coordinate[i].village_id,"townId":coordinate[i].town_id,"areaNo":coordinate[i].areaNo,"areaName":coordinate[i].areaName,"code":coordinate[i].code,"areaTag":1} 
+			            });
+			        	
+			        	areaTag_temp=1;
+			    	}else if(area_no!=null&&area_no!=""&&coordinate[i].areaNo!=area_no){//小区片区不是当前片区
+			    		
+			    		//绘制小区
+			        	areaTinyVillage = new AMap.Polygon({
+			                    path:coordinate[i].coordinate_range.coordinates[0],//设置多边形边界路径
+			                    strokeColor:$strokeColor_unFree, //线颜色
+			                    map:map,
+			                    strokeOpacity: 1.0, //线透明度
+			                    strokeWeight: 2,    //线宽
+			                    fillColor:$fillColor_unFree, //填充色
+			                    fillOpacity: 0.9,//填充透明度
+			                    extData:{"storeno":coordinate[i].storeNo,"tinyVillageId":coordinate[i].tinyVillage_id,"tinyVillageName":coordinate[i].name,"villageId":coordinate[i].village_id,"townId":coordinate[i].town_id,"areaNo":coordinate[i].areaNo,"areaName":coordinate[i].areaName,"code":coordinate[i].code,"areaTag":2} 
+			            });
+			        	
+			        	areaTag_temp=2;
+			    	}else if(area_no==null||area_no==""){
+			    		areaTinyVillage = new AMap.Polygon({
+		                    path:coordinate[i].coordinate_range.coordinates[0],//设置多边形边界路径
+		                    strokeColor:$strokeColor_unFree, //线颜色
+		                    map:map,
+		                    strokeOpacity: 3.0, //线透明度
+		                    strokeWeight: 2,    //线宽
+		                    fillColor:$fillColor_unFree, //填充色
+		                    fillOpacity: 0.9,//填充透明度
+		                    extData:{"storeno":coordinate[i].storeNo,"tinyVillageId":coordinate[i].tinyVillage_id,"tinyVillageName":coordinate[i].name,"villageId":coordinate[i].village_id,"townId":coordinate[i].town_id,"areaNo":coordinate[i].areaNo,"areaName":coordinate[i].areaName,"code":coordinate[i].code,"areaTag":2} 
+		                });
+			    		
+			    		areaTag_temp=2;
+			    	}
+	            	
+	            
+
+	    	}else{//小区未绑定片区
+	    		
+	    		areaTinyVillage = new AMap.Polygon({
+                    path:coordinate[i].coordinate_range.coordinates[0],//设置多边形边界路径
+                    strokeColor:$strokeColor_free, //线颜色
+                    map:map,
+                    strokeOpacity: 1.0, //线透明度
+                    strokeWeight: 2,    //线宽
+                    strokeOpacity: 0.6,
+                    fillColor:$fillColor_free, //填充色
+                    fillOpacity: 0.4,//填充透明度
+                    extData:{"storeno":coordinate[i].storeNo,"tinyVillageId":coordinate[i].tinyVillage_id,"tinyVillageName":coordinate[i].name,"villageId":coordinate[i].village_id,"townId":coordinate[i].town_id,"areaNo":coordinate[i].areaNo,"areaName":coordinate[i].areaName,"code":coordinate[i].code,"areaTag":3} 
+            	});
+	    		
+	    		areaTag_temp=3;
+	    	}
+	    	areaTinyVillageArray.push(areaTinyVillage);
+// 	        tinyVillageMarker = new AMap.Marker({ //对小区添加自定义点标记
+//       		    visible:false,
+//       		    map:map,
+//    		        position: areaTinyVillage.getBounds().getCenter(), //基点位置
+//    		        // draggable: true,  //是否可拖动
+//    		        content: '<div class="marker-route marker-marker-bus-from">'+coordinate[i].name+'</div>',   //自定义点标记覆盖物内容
+//    		        extData:{"code":coordinate[i].code} 
+//       	   }); 
+	        
+// 	        areaTinyVillage.setExtData({"tinyVillageId":coordinate[i].tinyVillage_id,"villageId":coordinate[i].village_id,"townId":coordinate[i].town_id,"areaNo":coordinate[i].areaNo,"areaName":coordinate[i].areaName,"code":coordinate[i].code,"areaTag":areaTag_temp,"marker":tinyVillageMarker});
+
+	        areaTinyVillage.on("mouseover",function(e){
+	        	var areaName = e.target.getExtData().areaName;
+	        	var name = e.target.getExtData().tinyVillageName;
+	        	
+	        	var tinyvillageinfo = "<span name='tinyvillage_x' style='float:left;padding:4px;color:#f50d0d;position:relative;left:10%'><strong>"+(name==null?"无":name)+"</strong></span>";
+	            var areainfo = "<span name='area_x' style='float:left;padding:4px;color:#f50d0d;position:relative;left:28%'><strong>"+((areaName==null||areaName=="")?"无":areaName)+"</strong></span>";
+	        	var tinyvillage_name = window.parent.document.getElementById("tinyvillage_name");
+	        	var area_name = window.parent.document.getElementById("area_name");
+	        	var tinyvillage = window.parent.document.getElementsByName("tinyvillage_x");
+	        	var area = window.parent.document.getElementsByName("area_x");
+	        	$(tinyvillage).each(function(i,t){
+	        		$(t).remove();
+	        	})
+	        	$(area).each(function(i,t){
+	        		$(t).remove();
+	        	})
+	        	$(tinyvillage_name).after(tinyvillageinfo);
+	        	$(area_name).after(areainfo);
+				
+	        	
+// 	        	if(typeof(infoWindow1)!="undefined"&&infoWindow1.getIsOpen()){
+// 	        		infoWindow1.close();
+// 	        	}
+// 	        	var info="";
+// 				info = info+"<div style=\"padding:0 0 10px 0;\"><div style=\"background-color:#00c0ef;padding:5px 18px 5px 10px;color:#fff\"><span>小区信息</span></div>";
+// 				info = info+"<div style=\"padding:10px 18px 0px 14px;line-height:24px;\">";
+// 		        info = info+"<b>小区名称："+(name==null?"无":name)+"</b></br>";
+// 		        info = info+"<b>片区名称："+((areaName==null||areaName=="")?"无":areaName)+"</b></br>";
+// 		        infoWindow1 = new AMap.InfoWindow({ 
+// 		             content: info  //使用默认信息窗体框样式，显示信息内容
+// 		         });
+// 		         infoWindow1.open(map, e.target.getBounds().getCenter());
+		         
+	        });
+	        
+	        areaTinyVillage.on("mouseout",function(e){
+// 	        	if(infoWindow1.Hh){
+// 	    			infoWindow1.close();
+// 	    		}
+
+	        	var tinyvillageInfo = window.parent.document.getElementsByName("tinyvillage_x");
+	        	var area = window.parent.document.getElementsByName("area_x");
+	        	$(tinyvillageInfo).each(function(i,t){
+	        		$(t).remove();
+	        	});
+	        	
+	        	$(area).each(function(i,t){
+	        		$(t).remove();
+	        	});
+	        });
+	        
+
+	       areaTinyVillageMarkerArray.push(tinyVillageMarker);
+	       areaTinyVillage.on("click",function(e){
+	    	   if(typeof(positionMarker)!="undefined"){
+	    		   map.remove(positionMarker);
+	    	   }
+	    	    
+	        	var areaTag= e.target.getExtData().areaTag;
+	        	var code =  e.target.getExtData().code;
+	        	var tinyVillageId = e.target.getExtData().tinyVillageId;
+				var villageId = e.target.getExtData().villageId;
+				var townId = e.target.getExtData().townId;
+				var storeNo = e.target.getExtData().storeno;
+// 				if(typeof(infoWindow1)!="undefined"&&infoWindow1.getIsOpen()){
+// 					infoWindow1.close();
+// 				}
+				if(parseInt(areaTag)==1){//当前片区管辖小区
+					
+					
+					layer.msg("该小区已绑定到当前片区,单击右键解绑",{"time":2000});
+				}else if(parseInt(areaTag)==2){//已划片小区且不是当前片区
+// 					if(infoWindow1.getIsOpen()){
+// 						infoWindow1.close();
+// 					}
+					layer.msg("该小区已绑定到其他片区",{"time":2000});
+				}else if(parseInt(areaTag)==3){//未划片小区
+					if(currentStore.storeno==storeNo){
+						e.target.setOptions({
+							strokeColor:$fillColor_sel,
+							fillColor:$fillColor_sel, //填充色
+		                    fillOpacity: 0.6,//填充透明度
+						});
+						var areaNo =  e.target.getExtData().areaNo;
+						var areaName =  e.target.getExtData().areaName;
+						var name =  e.target.getExtData().tinyVillageName;
+						e.target.setExtData({"storeno":storeNo,"tinyVillageId":tinyVillageId,"tinyVillageName":name,"villageId":villageId,"townId":townId,"areaNo":areaNo,"areaName":areaName,"code":code,"areaTag":4});
+					}else{
+						layer.msg("该小区还未被当前门店录入坐标范围",{"time":2000});
+					}
+					
+				}else if(parseInt(areaTag)==4){
+					e.target.setOptions({
+						strokeColor:$fillColor_free,
+						fillColor:$fillColor_free, //填充色
+	                    fillOpacity: 0.45,//填充透明度
+					});
+					var areaNo =  e.target.getExtData().areaNo;
+					var areaName =  e.target.getExtData().areaName;
+					var name =  e.target.getExtData().tinyVillageName;
+					e.target.setExtData({"storeno":storeNo,"tinyVillageId":tinyVillageId,"tinyVillageName":name,"villageId":villageId,"townId":townId,"areaNo":areaNo,"areaName":areaName,"code":code,"areaTag":3});
+				}
+       	     });
+	    	
+	    	
+	    	
+	    	
+	    	areaTinyVillage.on("rightclick",function(e){
+	    		if(typeof(positionMarker)!="undefined"){
+	    			map.remove(positionMarker);
+	    		}
+// 	    		if(typeof(infoWindow1)!="undefined"&&infoWindow1.getIsOpen()){
+// 	    			infoWindow1.close();
+// 	    		}
+	    		
+	    		var areaTag =  e.target.getExtData().areaTag;
+	    		if(areaTag==1){
+	    			setContextMenu(e);
+	    		}else if(areaTag==2){
+	    			layer.msg("'已占用'小区暂不提供右键更多操作",{"time":2000});
+	    		}else if(areaTag==3){
+	    			layer.msg("'可划片'小区暂不提供右键更多操作",{"time":2000});
+	    		}else if(areaTag==4){
+	    			layer.msg("'操作中'小区暂不提供右键更多操作",{"time":2000});
+	    		}
+	    		
+	    	});
+	    	
+	    	
+	    }
+	    
+	  
+	}
+
+
+var setContextMenu = function (e) {
+      
+       var contextMenu = new AMap.ContextMenu();
+       contextMenu.addItem("解绑", function() {
+                   
+	    	    var areaTag= e.target.getExtData().areaTag;
+	       		var code =  e.target.getExtData().code;
+	       		var tinyVillageId = e.target.getExtData().tinyVillageId;
+				var villageId = e.target.getExtData().villageId;
+				var townId = e.target.getExtData().townId;
+				var areaNo =  e.target.getExtData().areaNo;
+				var areaName =  e.target.getExtData().areaName;
+				var name =  e.target.getExtData().tinyVillageName;
+				var storeNo = e.target.getExtData().storeno;
+				e.target.setOptions({
+					strokeColor:$strokeColor_free,
+					fillColor:$fillColor_free,
+					fillOpacity: 0.45,//填充透明度
+	                extData:{"storeno":storeNo,"tinyVillageId":tinyVillageId,"tinyVillageName":name,"villageId":villageId,"townId":townId,"areaNo":areaNo,"areaName":areaName,"code":code,"areaTag":3} 
+				});
+    	   
+        },
+        0);
+          
+      
+       contextMenu.open(map, e.lnglat);
+       
+   };	
+	
+	
+var positionMarker;
+function goToPosition(c){
+	if(typeof(positionMarker)!="undefined"){
+		map.remove(positionMarker);
+	}
+	
+	var tinyvillage = window.parent.document.getElementsByName("tinyvillage_x");
+	var area = window.parent.document.getElementsByName("area_x");
+	$(tinyvillage).each(function(i,t){
+		$(t).remove();
+	})
+	$(area).each(function(i,t){
+		$(t).remove();
+	})
+// 	if(typeof(infoWindow1)!="undefined"&&infoWindow1.getIsOpen()){
+// 		infoWindow1.close();
+// 	}
+	for(var i=0;i<areaTinyVillageArray.length;i++){
+		var code = areaTinyVillageArray[i].getExtData().code;
+		if(c==code){
+			var center = areaTinyVillageArray[i].getBounds().getCenter();
+			map.setCenter(center);
+			
+			positionMarker = new AMap.Marker({ //添加自定义点标记
+		        map: map,
+		        visible:true,
+		        position: center, //基点位置
+ 		        icon:"img/mark_b.png"
+			    //offset: new AMap.Pixel(-10, -10) //相对于基点的偏移位置
+		    });
+			break;
+		}
+		
+	}
+}	
+	
+
+//确定选定的小区
+function submitTinyVillage(){
+	var index = layer.load(0, {shade: false});
+	var tinyVillageArray = new Array();
+	
+	for(var i=0;i<areaTinyVillageArray.length;i++){
+		var areaTinyVillage = areaTinyVillageArray[i];
+		var areaTag = areaTinyVillage.getExtData().areaTag;
+		var tinyVillageId = areaTinyVillage.getExtData().tinyVillageId;
+		var villageId = areaTinyVillage.getExtData().villageId;
+		var townId = areaTinyVillage.getExtData().townId;
+		if(areaTag==1||areaTag==4){
+			var tinyVillage = {"tinyVillageId":tinyVillageId,"villageId":villageId,"townId":townId};
+			tinyVillageArray.push(tinyVillage);
+		}
+	}
+	layer.close(index);
+	return tinyVillageArray
+}
+
+
+function cleanSearch(){
+    $("#search").val("");
+    $("#search").keyup();
+}
+
+
+function drawTinyVillage(tinyVillageArray){
+	if(tinyVillageArray!=null&&tinyVillageArray.length>0){
+		for(var i=0;i<areaTinyVillageArray.length;i++){
+			var tinyVillageId = areaTinyVillageArray[i].getExtData().tinyVillageId;
+			var areaTag=  areaTinyVillageArray[i].getExtData().areaTag;
+			if(areaTag==3){
+				
+				if(tinyVillageArray.indexOf(tinyVillageId)!=-1){
+					areaTinyVillageArray[i].setOptions({
+						strokeColor:$fillColor_sel,
+						fillColor:$fillColor_sel, //填充色
+		                fillOpacity: 0.45,//填充透明度
+					});
+					
+					var code = areaTinyVillageArray[i].getExtData().code;
+					var areaNo =  areaTinyVillageArray[i].getExtData().areaNo;
+					var areaName =  areaTinyVillageArray[i].getExtData().areaName;
+					var tinyVillageId = areaTinyVillageArray[i].getExtData().tinyVillageId;
+					var villageId = areaTinyVillageArray[i].getExtData().villageId;
+					var townId = areaTinyVillageArray[i].getExtData().townId;
+					var tinyVillageMarker = areaTinyVillageArray[i].getExtData().marker;
+					var name =  areaTinyVillageArray[i].getExtData().tinyVillageName;
+					var storeNo = areaTinyVillageArray[i].getExtData().storeno;
+					areaTinyVillageArray[i].setExtData({"storeno":storeNo,"tinyVillageId":tinyVillageId,"tinyVillageName":name,"villageId":villageId,"townId":townId,"areaNo":areaNo,"areaName":areaName,"code":code,"areaTag":4,"marker":tinyVillageMarker});
+				}
+				
+			}else if(areaTag==1){
+				if(tinyVillageArray.indexOf(tinyVillageId)==-1){
+					areaTinyVillageArray[i].setOptions({
+						strokeColor:$strokeColor_free,
+						fillColor:$fillColor_free, //填充色
+		                fillOpacity: 0.45,//填充透明度
+		                strokeOpacity: 1.0, //线透明度
+	                    strokeWeight: 2,    //线宽
+	                    strokeOpacity: 0.6
+	                   
+					});
+					
+					var code = areaTinyVillageArray[i].getExtData().code;
+					var areaNo =  areaTinyVillageArray[i].getExtData().areaNo;
+					var areaName =  areaTinyVillageArray[i].getExtData().areaName;
+					var tinyVillageId = areaTinyVillageArray[i].getExtData().tinyVillageId;
+					var villageId = areaTinyVillageArray[i].getExtData().villageId;
+					var townId = areaTinyVillageArray[i].getExtData().townId;
+					var tinyVillageMarker = areaTinyVillageArray[i].getExtData().marker;
+					var name =  areaTinyVillageArray[i].getExtData().tinyVillageName;
+					var storeNo = areaTinyVillageArray[i].getExtData().storeno;
+					areaTinyVillageArray[i].setExtData({"storeno":storeNo,"tinyVillageId":tinyVillageId,"tinyVillageName":name,"villageId":villageId,"townId":townId,"areaNo":areaNo,"areaName":areaName,"code":code,"areaTag":3,"marker":tinyVillageMarker});
+				}
+				
+			}
+			
+		}
+	}
+
+}
+</script>
+</body>
+</html>

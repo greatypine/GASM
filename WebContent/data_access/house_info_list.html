@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>房屋户型信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+</head>
+<script>
+    var win;
+    $(function () {
+        //页面加载成功后需要获取数据
+        searchList();
+    });
+
+    function downloadTemplate(){
+        var path = getRootPath();
+        window.open(path + "/downloadExcel.action?fileName=house_info_template&skip=true");
+    }
+
+    function downloadProofreading(){
+        var store_id = $("#store_id").val().trim();
+        var store_name = $('#store_name').val().trim();
+        if(store_id == null || store_id == ''){
+            $$.showMessage("系统提示","请选择门店！");
+            return;
+        }
+        var path = getRootPath();
+        window.open(path + "/downloadExcel.action?fileName=house_info_proofread&store_id="+store_id);
+    }
+    //操作列
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('houseStyleQuery', 'conditionsDiv');
+    }
+
+    //跳转到添加招聘计划的页面
+    function addService() {
+        window.location.href = "serviceInfo.html";
+    }
+
+    function saveOrUpdate() {
+        window.location.href = "house_info_edit.html";
+    }
+
+    //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str === "" || str == "undefined" || typeof(str) == "undefined";
+    }
+
+    //自定义一个上传Excel的方法
+    function uploadExcel() {
+        var content = $('input[name="file"]').val();
+        //文件不能为空
+        if (isnull(content)) {
+            $$.showMessage("${system.info}", "请选择文件!");
+            return false;
+        }
+        //后缀必须为xls,不支持2007
+        var suffix = content.match(/^(.*)(\.)(.{1,8})$/)[3];
+        if ("xls" != suffix && 'rar' != suffix && 'zip' != suffix && 'xlsx' != suffix) {
+            $$.showMessage("${system.info}", "请上传xls,rar或zip文件");
+            return false;
+        }
+        var path = getRootPath();
+        $("#uploadFrom").attr("action", path + "/excelUpload.action?model=house_info_template");
+        $("#uploadFrom").submit();
+    }
+
+    function importSuccess() {
+        $$.showMessage("系统信息", "导入成功");
+        searchList();
+    }
+
+    function doClean() {
+        document.service_qa.reset();
+        $("#store\\.id").val("");
+    }
+
+    /**
+     * 选择城市,创建一个城市列表并显示
+     * @param {Object} callback
+     *
+     */
+    function showStoreWin(callback){
+        win = new checkWin(callback);
+        win.show();
+    }
+
+    function setStoreSelect(json){
+        $("#store_id").val(json.id);
+        $("#store_name").val(json.name);
+    }
+
+    /**
+     *
+     * @param {Object} callback 	回调函数
+     * 健康屋门店callback
+     * 返回值json
+     */
+    var checkWin = function(callback){
+        this.win = $("<div style='overflow-y: hidden'></div>");
+        var _this = this;
+        var initWin = function(){
+            _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="select_view/select_store.html" scrolling="no"></iframe>');
+            _this.win.dialog({
+                bgiframe: true,
+                title:"选择门店",
+                autoOpen:false,
+                width:_this.width,
+                height:_this.height,
+                buttons : {
+                    "确定": function(){
+                        window.frames["selectWin"].doSubmit();
+                        _this.win.remove();
+                    },
+                    "取消":function(){
+                        _this.hide();
+                        _this.win.remove();
+                    }
+                },
+                modal:true
+            });
+        };
+        this.width = 900;
+        this.height = 730;
+        this.callBack = function(json){
+            if (callback && typeof(callback) == 'function') {
+                callback(json);
+            }
+        };
+
+        this.show = function(){
+            _this.win.dialog("open");
+        };
+
+        this.hide = function(){
+            if(_this.onSubmitHandler){
+                _this.onSubmitHandler();
+            }
+            _this.win.dialog("close");
+        };
+        initWin();
+    }
+</script>
+<body style="height: 100%">
+<div class="panel panel-default" style="margin: 10px">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            数据导入:房屋户型信息采集
+        </h4>
+    </div>
+</div>
+<div class="rightcont clear">
+    <div class="panel panel-primary">
+        <div class="panel-heading">房屋校对信息下载</div>
+        <div class="panel-body">
+            <div class="form-group">
+                <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                        <input type="hidden" id="store_id" name="store_id"/>
+                        <input type="text" id="store_name" name="store_name" class="form-control" placeholder="选择门店" readonly/>
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" name="upload" onclick="showStoreWin(setStoreSelect)">
+                                <img src="../scripts/images/search.png" alt="查询" style="height: 18px"/>
+                            </button>
+                        </span>
+                </div>
+                <button name="download" class="btn btn-outline btn-default" onclick="downloadProofreading();">下载校对Excel</button>
+            </div>
+        </div>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">房屋户型信息采集查询</div>
+        <div class="panel-body">
+            <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom"
+                  target="hframe">
+                <div class="form-group">
+                    <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                        <input type="file" isuploadtable="true" name="file" class="form-control">
+                        <span class="input-group-btn">
+                            <button type="button" class="btn btn-default" onclick="uploadExcel();" name="upload">
+                                <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 18px"/>
+                            </button>
+                        </span>
+                    </div>
+                    <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                    <button name="download" class="btn btn-outline btn-default" onclick="downloadTemplate();" style="display: none">下载模板</button>
+                </div>
+            </form>
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">小区名称:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:50%" class="form-control"/>
+                            </td>
+                            <td width="5%">小区地址:</td>
+                            <td>
+                                <input id="address" name="address" type="text" style="width:50%" class="form-control"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="saveOrUpdate()">新增或编辑</button>
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+        </div>
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="houseStyleQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+</div>
+</body>
+</html>

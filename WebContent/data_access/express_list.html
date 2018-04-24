@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+<title>客户信息列表</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<link
+	href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css"
+	rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css">
+</head>
+<script>
+	var win;
+	var date7;
+	var dayNum;
+	var month_one;
+	var month_last;
+    var employee_no = getUrlParamByKey('employee_no');
+    var month_date = getUrlParamByKey('month_date');
+	$(function() {
+		if(month_date!=null){
+			var mon_arr=month_date.split("-");
+			var month_val=parseInt(mon_arr[1]);
+			if(month_val==1||month_val==3||month_val==5||month_val==7||month_val==8||month_val==10||month_val==12){
+				dayNum=31;
+			}else if(month_val==4||month_val==6||month_val==9||month_val==11){
+				dayNum=30;
+			}else if(month_val=2){
+				dayNum=28;
+			}
+			month_one=month_date+"-01";
+			month_last=month_date+"-"+dayNum;
+			$("#s1").val(month_one);
+			$("#s2").val(month_last);
+		}
+		
+        if(employee_no != null && employee_no != ''){
+            $('#employee_no').val(employee_no)
+        }
+		//doClean();
+		var myDate = new Date(); //获取今天日期 
+		myDate.setDate(myDate.getDate() - 7); 
+		var before7=myDate.getFullYear()+"-"+(myDate.getMonth()+1)+"-"+myDate.getDate();
+		date7 = new Date((before7).replace(new RegExp("-","gm"),"/")).getTime();
+		//页面加载成功后需要获取数据
+		searchList();
+	});
+
+	//操作列
+
+	//记载页面时请求数据列表默认的方法
+	function searchList() {
+		$$.executeSearch('expressQuery', 'conditionsDiv');
+	}
+
+	//验证是不是空
+	function isnull(str) {
+		return str == null || str == "null" || str === "" || str == "undefined"
+				|| typeof (str) == "undefined";
+	}
+
+	function downloadTemplate() {
+		var path = getRootPath();
+		window.open(path
+				+ "/downloadExcel.action?fileName=express_template&skip=true");
+	}
+
+	//自定义一个上传Excel的方法
+	function uploadExcel() {
+		var content = $('input[name="file"]').val();
+		//文件不能为空
+		if (isnull(content)) {
+			$$.showMessage("${system.info}", "请选择文件!");
+			return false;
+		}
+		//后缀必须为xls,不支持2007
+		var suffix = content.match(/^(.*)(\.)(.{1,8})$/)[3];
+		if ("xls" != suffix && 'rar' != suffix && 'zip' != suffix
+				&& "xlsx" != suffix) {
+			$$.showMessage("${system.info}", "请上传xls,xlsx,rar或zip文件");
+			return false;
+		}
+		var path = getRootPath();
+		var $form_upload = $("#uploadFrom");
+		$form_upload.attr("action", path
+				+ "/excelUpload.action?model=express_template");
+		$form_upload.submit();
+	}
+
+	function importSuccess() {
+		$$.showMessage("系统信息", "导入成功");
+		searchList();
+	}
+
+	function doClean() {
+		document.service_qa.reset();
+		$("#store\\.id").val("");
+	}
+	//新增
+	function toDoAdd(){
+		window.location.href = "express_list_to_add.html";
+	}
+	//返回
+	function toBack(){
+		//window.location.href = "../data_access/store_data_manager.html?index1=1&&month_date="+month_date;
+		window.history.go(-1);
+	}
+	
+	//指拍照 信息完善 
+	function doAdd(){
+		window.location.href = "express_list_add.html";
+	}
+	
+	//列表中 列的处理
+    var COLUMNS = {
+            "rcv_tel": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value!=""&&value.length>6){
+                	ret=value.substring(0,3)+"****"+value.substring(value.length-4,value.length);
+                }
+                return ret;
+            },
+            "send_tel": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value!=""&&value.length>6){
+                	ret=value.substring(0,3)+"****"+value.substring(value.length-4,value.length);
+                }
+                return ret;
+            },
+            "do_edit": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var id = map.id;
+                var ret = "";
+                var express_date=map.express_date;
+                if(express_date > date7){
+                	ret = "<a href=\"express_list_edit.html?id="+id+"\" class=\"blue\">修改</a>";
+                }else{
+                	ret = "";
+                }
+                return ret;
+            }
+        }
+	
+	var editObj = {
+			html : '<a href="#" class="blue">修改</a>',
+			resourceId: "express_List_edit",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "express_list_edit.html?id="+id;
+			}
+		}
+	
+	var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "express_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("ExpressManager", "deleteExpress", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'express_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		}
+	$pmspage.opArr = [ /*editObj , publishObj  , deleteObj */];
+</script>
+<body style="height: 100%">
+	<div class="panel panel-default" style="margin: 10px">
+		<div class="panel-heading">
+			<h4 class="panel-title">数据导入:快递信息采集</h4>
+		</div>
+	</div>
+	<div class="rightcont clear">
+		<div class="panel panel-primary">
+			<div class="panel-heading">快递信息采集查询</div>
+			<div class="panel-body">
+			 	<!-- <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+					<form action="uploaderAction.action" method="post"
+						enctype="multipart/form-data" id="uploadFrom" target="hframe">
+						<div class="form-group">
+							<div class="form-group input-group"
+								style="width: 300px; float: left; margin-right: 20px">
+								<input type="file" isuploadtable="true" name="file"
+									class="form-control"> <span class="input-group-btn">
+									<button type="button" class="btn btn-default"
+										onclick="uploadExcel();" name="upload">
+										<img src="../scripts/images/upload_to_cloud.png" alt="导入"
+											style="height: 20px" />
+									</button> </span>
+							</div>
+							<iframe name="hframe" id="hframe" style="display: none"></iframe>
+							<button name="download" class="btn btn-outline btn-default"
+								onclick="downloadTemplate();">下载模板</button>
+						</div>
+					</form>
+				</div> -->  
+				<div id="conditionsDiv" style="margin-top: 0px">
+					<form id="service_qa" name="service_qa" class="pmsForm"
+						validate="true" clientvalidate="true" displaynumber="7">
+						<table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+							<!-- 
+							<tr>
+								<td style="width: 50%">寄件人姓名: <input id="send_name"
+									name="send_name" type="text" style="width: 50%"
+									class="form-control" /></td>
+								<td style="width: 50%">收件人姓名: <input id="rcv_name"
+									name="rcv_name" type="text" style="width: 50%"
+									class="form-control" /></td>
+							</tr> -->
+							<tr>
+								<td width="5%">快递单号:</td>
+								<td style="padding-top: 0px">
+                                    <input id="employee_no" name="employee_no" type="hidden">
+                                    <input id="express_no" name="express_no" type="text" style="width: 60%" class="form-control" />
+                                </td>
+								<td width="5%">快递时间:</td>
+								<td style="padding-top: 0px"><input id="s1"
+									revalidate="true" type="text" name="express_date"
+									validate="formatDate:true" class="pmsDateField form-control"
+									readonly yearRange="-100:+0"
+									style="width: 25%; margin-right: 5px; display: inherit;"
+									likeOption="false" />至 <input id="s2" revalidate="true"
+									type="text" name="express_date" validate="formatDate:true"
+									class="pmsDateField form-control" readonly yearRange="-100:+0"
+									style="width: 25%; margin-left: 5px; margin-right: 5px; display: inherit;"
+									likeOption="false" /></td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+			<div class="panel-footer" style="text-align: right">
+				<button class="btn btn-primary" onclick="doAdd();">批量拍照信息完善</button>
+				<button class="btn btn-primary" onclick="searchList()">查询</button>
+				<button class="btn btn-primary" onclick="doClean();">重置</button>
+				<button class="btn btn-primary" onclick="toDoAdd();">新增</button>
+				<button class="btn btn-primary" onclick="toBack();">返回</button>
+			</div>
+		</div>
+		<div id="centerQueryGridContainer" class="panel panel-primary"
+			queryid="expressQuery" operators="$pmspage.opArr" titleAlign="center"
+			fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+			showsearch="false" showpaging="true" showdisplay="false"
+			showprint="false" autoload="false" showcheckbox="false"
+			showRidaoButton="true" usecache="true" showsearch="false"
+			showtitle="true"></div>
+
+	</div>
+</body>
+</html>

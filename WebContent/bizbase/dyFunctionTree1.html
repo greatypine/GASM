@@ -1,0 +1,244 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="">
+    <title>权限树形</title>
+
+    <link rel="stylesheet" href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../startbootstrap/dist/css/AdminLTE111.min.css">
+    <link rel="stylesheet" href="../startbootstrap/dist/css/skins/_all-skins.min.css">
+    <link rel="stylesheet" href="../startbootstrap/plugins/iCheck/flat/blue.css">
+    <link rel="stylesheet" href="../startbootstrap/bower_components/morrisjs/morris.css">
+    <link rel="stylesheet" href="../startbootstrap/dist/css/dn_css.css">
+
+    <script type="text/javascript" src="../scripts/lib/jquery/jquery-1.5.js"></script>
+    <script type="text/javascript" src="../scripts/common/common-tool.js"></script>
+    <script type="text/javascript" src="../scripts/common/common-core.js"></script>
+    <script type="text/javascript" src="./js/bidCommon.js"></script>
+    <script type="text/javascript" src="../bizbase/script/tree/maintree.js"></script>
+    <script type="text/javascript" src="../scripts/default-ready.js"></script>
+    <script type="text/javascript" src="../scripts/common/common-form.js"></script>
+    <script type="text/javascript" src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+    <script type="text/javascript" src="../startbootstrap/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
+
+
+    <style type="text/css">
+        /*#treeDemo li {*/
+        /*cursor: pointer;*/
+        /*text-align: left;*/
+        /*line-height: 20px;*/
+        /*}*/
+        /**/
+        html {
+            scrollbar-shadow-color: #FFFFFF;
+            scrollbar-highlight-color: #FFFFFF;
+            scrollbar-arrow-color: #656363;
+            scrollbar-face-color: #d1d6f0;
+            scrollbar-track-color: #FFFFFF;
+            scrollbar-3dlight-color: #59ADBB;
+            scrollbar-darkshadow-color: #59ADBB;
+            /*width:280px;*/
+        }
+        #navigation *{
+            font-family: Microsoft Yahei,Arial, Helvetica, sans-serif, "微软雅黑";
+            overflow: hidden;
+        }
+        .skin-blue .treeview-menu>li>.treeview-menu{
+            background: #f7f7f7;
+        }
+
+        .main-sidebar{
+            /* position:absolute; */
+            /* top:0; */
+            /* left:0; */
+            /* padding-top:50px; */
+            min-height:100%;
+            /*width:280px;*/
+            /*z-index:810;*/
+            -webkit-transition:-webkit-transform .3s ease-in-out,width .3s ease-in-out;
+            -moz-transition:-moz-transform .3s ease-in-out,width .3s ease-in-out;
+            -o-transition:-o-transform .3s ease-in-out,width .3s ease-in-out;
+            transition:transform .3s ease-in-out,width .3s ease-in-out;
+        }
+
+        .skin-blue .main-sidebar {
+            background-color: #eef4ff;
+            /* padding-top: 80px; */
+            color: #777 !important;
+            /*width:280px;*/
+        }
+        .left-side,.main-sidebar{
+            /* position:absolute; */
+            /* top:0; */
+            /* left:0; */
+            /* padding-top:50px; */
+            min-height:100%;
+            width:280px;
+            /*z-index:810;*/
+            /*-webkit-transition:-webkit-transform .3s ease-in-out,width .3s ease-in-out;*/
+            -moz-transition:-moz-transform .3s ease-in-out,width .3s ease-in-out;
+            -o-transition:-o-transform .3s ease-in-out,width .3s ease-in-out;
+            /*transition:transform .3s ease-in-out,width .3s ease-in-out;*/
+        }
+        html,body{
+            height: 100%;
+        }
+        /*.sidebar-menu>li>a:visited{background-color:#3c7bfc; color:#fff;}*/
+    </style>
+</head>
+<script>
+
+    /**
+     * 根据地址栏传入的moduleId，自动跳转到对应的模块
+     */
+    function goModule(){
+        var moduleId = getUrlParamByKey("moduleId", parent.window.location);
+        if (moduleId != null) {
+            $("#" + moduleId)[0].style.backgroundColor = "#e6e6e6";
+            clickflag = true;
+            generateFunctionTree(moduleId);
+        }
+    }
+
+    $(function(){
+
+        var data = new PMSRequestObject("functionManager", "getNavigations", [getI2UrlType()]);
+//            $$.ajax("/RIPEDPMS/dispatcher.action", "requestString=" + data.toJsonString(), function(datas, textStatus, XMLHttpRequest){
+        $$.ajax("/GASM/dispatcher.action", "requestString=" + data.toJsonString(), function(datas, textStatus, XMLHttpRequest){
+
+            if (datas.result) {
+                var navigations = $.fromJSON(datas.data);
+                for (var i = 0; i < navigations.length; i++) {
+                    $('#navigation').append(navigations[i]);
+                }
+                $("#navigation").find("a").click(function () {
+                    $("#navigation").find("a").removeClass('mark');
+                    $(this).addClass("mark");
+                });
+                if($("#navigation").find("a").length == 1){
+                    $("#navigation").find("a").click();
+                }
+                goModule();
+            }
+            //$("#navigation span").html($('<img src="../scripts/images/11.png">'));
+            /* $("#navigation").children().each(function(){
+             $("#" + this.id).bind('click', function(){
+             changeStyle(this.id, this.urlAttr);
+             });
+             }); */
+        });
+    });
+
+    function agendaSkip(){
+        var hostName = top.window.location.hostname.toLowerCase();
+        if (hostName.indexOf(".com") > 0 || hostName.indexOf(".cnpc") > 0) {
+            doManager("workFlowManager", "getOrderI2Host", getI2UrlType(), function(data){
+                if (data.result) {
+                    var hostName = $.fromJSON(data.data);
+                    doManager("userManager", "getCurrentUserDTO", "", function(data){
+                        if (data.result) {
+                            var nowDTO = $.fromJSON(data.data);
+                            if (nowDTO.doctype == '0') {
+                                $(window.parent.frames[3])[0].location = hostName + "/omxclient/start.x2ps?SERVICE_NAME=COMMON_UI&START_WORKFLOW=MyAlertChart";
+                            }
+                        }
+                    })
+
+                }
+                else {
+                    wf.alert("获取i2域名出错");
+                }
+            });
+        }
+
+    }
+    function generateFunctionTree(module){
+        if (module != null) {
+            var zTree1;
+            var setting;
+            var myData;
+            var zNodes = [];
+            var myData = $.toJSON({
+                managerName: "functionManager",
+                methodName: "getAllFuncNodes",
+                parameters: [module, getI2UrlType()]
+            });
+            setting = {
+                checkable: false,
+                async: true,
+                showLine: false,
+                showIcon: false,
+                asyncParam: ["name", "id"], //获取节点数据时，必须的数据名称，例如：id、name
+                asyncParamOther: ["requestString", myData],//其它参数 ( key, value 键值对格式)
+                callback: {
+                    asyncSuccess: zTreeOnAsyncSuccess
+                 }
+            }
+            var url = $$.PMSDispatchActionUrl;
+            setting.asyncUrl = url;
+
+            zTree1 = $("#"+module+"treeDemo").zTree(setting, zNodes);
+        }
+    }
+
+    function zTreeOnAsyncSuccess(event, treeId, msg){
+        $('.sidebar-menu .treeview ul').find('a').click(function () {
+            $('.sidebar-menu .treeview ul').find('a').css('background-color','transparent');
+            $(this).css('background-color','#dfdbdb');
+        });
+        // $("#"+treeId+"treeDemo_1_a").children().each(function(){
+        /* $("#"+treeId+"treeDemo_1_a").unbind('click');
+         $("#"+treeId+"treeDemo_1_a").bind('click', function(){
+         if (this.urlAttr == undefined||this.urlAttr == null||this.urlAttr ==''||this.urlAttr =='null') {
+         window.parent.appFrame.location = "../workflow/toDoList.html";
+         }
+         // changeStyle(this.id, this.urlAttr);
+         });  */
+        // });
+    }
+
+    function changeStyle(module, url){
+
+        agendaSkip();
+        if (url != null && url != 'null' && url != '') {
+            top.window.location = url;
+        }
+        else {
+            clickflag = true;
+            generateFunctionTree(module);
+            //$("li").css("background", "#ffffff");
+            //$("#" + module).css("background", "#e6e6e6");
+        }
+    }
+
+    function toggle(targetid, imgId){
+        var target = $("#" + targetid+"treeDemo");
+//            var url = $("#" + targetid).attr("urlAttr");
+//            if (url != "" && url != null && url != "null") {
+//            	top.appFrame.location = url;
+//            	return;
+//            }
+        if (target.is(":visible")) {
+            target.hide();
+        }
+        else {
+            generateFunctionTree(targetid);
+            target.show();
+        }
+    }
+</SCRIPT>
+<body class="hold-transition skin-blue sidebar-mini" style="overflow: auto; ">
+<div style="height:100%; border:0px solid #a6a6a6; overflow: auto;background-color: #e5eff8">
+    <div id="main" class="main-sidebar" style="padding-top: 0;">
+        <div class="sidebar">
+            <ul class="sidebar-menu" id="navigation">
+
+            </ul>
+        </div>
+    </div>
+</div>
+</body>
+</html>

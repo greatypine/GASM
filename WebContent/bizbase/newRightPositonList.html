@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>岗位管理</title>
+        <link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+        <script type="text/javascript" src="../scripts/lib-main.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/pms.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/pmsCommon.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/qualcommon.js">
+        </script>
+		<script type="text/javascript" src="./js/positionDialog.js">
+        </script>
+        <script type="text/javascript">
+        	
+			var orgId=getUrlParamByKey("orgId");
+			$(function(){
+				if(!isEmptyValue(orgId)){
+					$("#orgId").val(orgId);
+				}else{
+					$("#orgId").val(0);
+				}
+                onSearch();
+            });
+        	function onSearch(){
+				$$.executeSearch('positionQueryid', 'conditionsDiv');
+			}
+			function isEmptyValue(s){
+                return s == null || typeof(s) == 'string' && (s == '' || s == 'null') || s == '&nbsp;' || typeof(s) == 'number' && isNaN(s);
+            }
+			var delObj = {
+                html: '<a href="#" class="blue">删除</a>',
+                func: function(queryid, data, nTr, allColumns, allColumnsDataMap){
+                    $$.showPromptDialog("系统提示", "确认删除？", false, 320, function(){
+						var obj=new Array();
+						obj.push(allColumnsDataMap["purStruOrg.id"]+"");
+						obj.push(allColumnsDataMap["cnpcPosition.id"]+"");
+	                    doManager("positionManager", "deletePosition", obj, function(data, textStatus, XMLHttpRequest){
+	                        if (data.result == true) {
+								$$.showMessage("${system.info}", "数据删除成功!");
+								window.setTimeout(function(){
+									onSearch();
+								}, "1000");    
+	                        } else {
+	                            $$.showMessage("${system.info}", "删除失败。");
+	                        }
+	                    });
+                    });
+                }
+            }
+			function addPosition(){
+				checkPosition(1,addPositinCallBack);
+			}
+			function addPositinCallBack(json){
+				var jsonObj= $.fromJSON(json);
+				var positionIds=jsonObj.ids;
+				var obj=new Array();
+						obj.push(orgId+"");
+						obj.push(positionIds);
+				doManager("positionManager", "addPositionsByOrgAndCnpc", obj, function(data, textStatus, XMLHttpRequest){
+	                        if (data.result == true) {
+								$$.showMessage("系统提示", "岗位添加成功!");
+								window.setTimeout(function(){
+									onSearch();
+								}, "1000");    
+	                        } else {
+	                            $$.showMessage("${system.info}", "添加岗位失败。");
+	                        }
+	                    });
+			}
+			$pmspage.opArr = [delObj];
+        </script>
+    </head>
+    <body>
+        <div class="rightcont clear">
+			<form id="form00" name="form00" class="pmsForm">
+                <div id="conditionsDiv" class="containerbody">
+                    <table cellpadding="0" cellspacing="0" style="min-width:100%;width:auto">
+                        <tr>
+                            <td>
+                            	<input id="orgId" type="hidden" name="purStruOrg.id"/>
+                            </td>
+                        </tr>
+						<tr class="Colorbar3">
+                            <td colspan="4">
+                                <input type="button" class="buttonu" resourceId="forecast_project_add" value="添加岗位" onclick="addPosition();"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </form>
+            <div id="gridContainer" showcheckbox="false" showRidaoButton="true" searchDiv="conditionsDiv" usecache="true" queryid="positionQueryid" showsearch="false" showdisplay="false" showtitle="true" autoload="false" showprint="false" showpaging="true" operators="$pmspage.opArr">
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,161 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="author" content="Zhong Youyuan">
+        <title>数据权限管理</title>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		<link type="text/css" rel="stylesheet" href="../scripts/css/datetime.css" />
+        <script type="text/javascript" src="js/lib.js">
+        </script>
+        <script>
+            var viewObj = {
+                html: '<a href="#" class="blue">查看</a>',
+                func: function(queryid, data, nTr, allColumns,allColumnsDataMap){
+                    var priId = allColumnsDataMap.id;
+                    var src = "privilege_view.html?priId=" + priId;
+                    window.location = src;
+                }
+            }
+            var editObj = {
+                html: '<a href="#" class="blue">编辑</a>',
+                func: function(queryid, data, nTr, allColumns,allColumnsDataMap){
+                    var priId = allColumnsDataMap.id;
+                    var src = "privilege_edit.html?priId=" + priId;
+                    window.location = src;
+                }
+            }
+            var delObj = {
+                html: '<a href="#" class="blue">删除</a>',
+                func: function(queryid, data, nTr, allColumns,allColumnsDataMap){
+                    var div = $("<div></div>");
+                    div.html("确定删除？");
+                    var doDelete = function(data){
+                        var url = $$.PMSDispatchActionUrl;
+                        var data = new PMSRequestObject("baseManager", "removeObj", [queryid, allColumnsDataMap.id]);
+                        $$.ajax(url, "requestString=" + data.toJsonString(), function(data, textStatus, XMLHttpRequest){
+                            div.dialog("close");
+                            if (data.result) {
+                                $(nTr).remove();
+                            }
+                        });
+                    }
+                    div.dialog({
+                        bgiframe: true,
+                        title: "提示",
+                        width: 320,
+                        buttons: {
+                            "确定": function(){
+                                doDelete(data);
+                            },
+                            "取消": function(){
+                                $(this).dialog("close");
+                            }
+                        },
+                        modal: true
+                    });
+                }
+            }
+            
+            var opArr = [viewObj, editObj];
+            
+            function doAddPri(){
+                var src = "privilege_add.html";
+                window.location.href = src;
+            }
+			
+			var onSearch = function(){
+			    $$.executeSearch('privilegeQuery', 'privilegeDiv'); //queryid, the params div id.			
+			}
+        </script>
+    </head>
+    <body>
+        <div class="rightcont clear">
+            <div class="title clear">
+                <div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();">
+                </div>
+                <div class="ico2">
+                </div>
+                <div class="ico1">
+                </div>
+                <a href="#">用户与权限 :</a>&nbsp;
+				<a href="#">数据权限管理</a>
+            </div> 
+			<div class="containerheader">
+         		<a href="#" onclick="toggleBiz('containerbody','pic');"><img  src="../scripts/images/22.png" align="absmiddle" id="pic" /></a> 数据权限管理
+     	 	</div> 
+			<div  id="containerbody">
+            <table class="bigteble">	
+			 <tr>
+			 	<td style="padding:5px;"  style="line-height:20px; font-weight:bold">
+                    <input align="left" role="button" class="buttonu" onClick="doAddPri()" value="新建权限" type="button" />
+				</td>
+			</tr>
+		    <tr>
+		     <td style="padding:5px;" bgcolor="#FFFFFF">
+			 <div style="padding:0px 0px 4px 0px">
+				<table class="Querytable">
+					<tr class="Colorbar1">		
+						 <td width="20" class="Querytext">
+						 	<div>
+						 	   <a href="#" onClick="toggleBiz('privilegeDiv','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+							   <strong>搜索条件</strong>
+						 	</div>
+                         </td>
+					</tr>
+				</table>					
+			<div id="privilegeDiv">
+				<form id="Form1" class="pmsForm" displaynumber="7">
+					<table class="bigteble">
+						<tr>
+							<td class="Querytext">
+								权限名称：
+							</td>
+							<td class="Queryform">
+								<input type="text" name="code"/>
+							</td>
+							<td class="Querytext">
+								显示名称：
+							</td>
+							<td class="Queryform">
+								<input type="text" name="showName"/>
+							</td>
+						</tr>
+						<tr>
+							<td class="Querytext">
+								业务类别：
+							</td>
+							<td class="Queryform">
+								<select  showblank="true" class="pmsSelect" id="businessId" name="businessId" src="businessType" style="width:158px;"></select>
+							</td>
+							<td colspan="2">
+								
+							</td>
+						</tr>
+                         <tr class="Colorbar3">
+							<td colspan="4">
+								<div style="padding:0px 5px 0px 0px;">
+									<input align="right" role="button" class="buttonu" onClick="onSearch()" resourceId="privilegeQuery" value="查询" type="button" />
+								</div>
+							</td>
+                         </tr>
+					 </table>
+				</form>
+			</div><!--searchCondition div-->
+			</div>
+			<div id="gridContainer" queryid="privilegeQuery" 
+				queryformat="simple" showdisplay="false" 
+				showprint="false" operators=opArr 
+				showsearch="false" showtitle="true" 
+				showpaging="true" showcheckbox="false"
+				searchDiv="privilegeDiv">
+			</div>
+			 </td> 
+		</tr>	
+	</table>
+  </div>
+  </div><!--rightcont clear div--> 
+   </body>
+</html>

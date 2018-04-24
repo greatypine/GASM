@@ -1,0 +1,716 @@
+<!doctype html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>数据汇总</title>
+        <script type="text/javascript" src="../startbootstrap/js/jquery.min.js"></script>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../startbootstrap/js/echarts.min.js"></script>
+        <style>
+            *{margin:0; padding:0; font-family:"微软雅黑", Arial, Helvetica, sans-serif;}
+            a{ text-decoration:none;}
+            .nav_top{padding:0 10px ; clear:both; overflow:hidden;box-shadow: 0px 1px 5px rgba(0,0,0,0.3); margin:10px 0;}
+            .share_style{float:left; width:25%;}
+			.share_m10,.share_m10_1{height:78px; border:1px solid #ddd; vertical-align:middle; position:relative; margin:20px 10px;}
+            .share_m10:hover{border-color:#d01414;}
+            .share_l{width:40%; height:100%; position:absolute; top:0; left:0;}
+			.share_l span{background-size:35%!important;}
+            .nav_user{ background-color:#4db1da;}
+            .nav_user span{ background:url(../images/icons1.png) no-repeat center center; width:100%; height:100%; display:block;}
+            .nav_express{background-color:#fcd12c;}
+            .nav_express span{ background:url(../images/icons2.png) no-repeat center center; width:100%; height:100%; display:block;}
+            .nav_order{background-color:#ff6d60;}
+            .nav_order span{ background:url(../images/icons3.png) no-repeat center center; width:100%; height:100%; display:block;}
+            .nav_more{background-color:#6ccac9;}
+            .nav_more span{ background:url(../images/icons4.png) no-repeat center center; width:100%; height:100%; display:block;}
+			.nav_record{background-color:#6ccac9;}
+            .nav_record span{ background:url(../images/icons5.png) no-repeat center center; width:100%; height:100%; display:block;}
+			.nav_exp1{background-color:#e7657d;}
+            .nav_exp1 span{ background:url(../images/icons6.png) no-repeat center center; width:100%; height:100%; display:block;}
+			.nav_exp2{background-color:#a0c01f;}
+            .nav_exp2 span{ background:url(../images/icons7.png) no-repeat center center; width:100%; height:100%; display:block;}
+            .share_r{font-size:14px; color:#888; text-align:center; margin-left:40%; margin-top:10px;}
+            .share_r .f30{font-size:24px; color:#333; padding:5px 0 10px 0;}
+            .change_mark{border-color:#d01414;}
+            .change_mark .f30{ color:#d01414;}
+            .change_mark .share_r{ color:#d01414;}
+            body{background-color: white;}
+            .display{
+    		width:100%
+    	}
+    		.content{width:99%; overflow:hidden; margin:0 0.5%;}
+			.con_l{ width:45%;float: left;}
+			.con_r{ float: right;width:55%;}
+			.con_r_month{text-align:right; margin: 15px 30px 0px 0px;}
+			.con_r_month select{border:1px solid #ccc; width:80px; height:28px; outline:none; border-radius:3px;}
+        </style>
+        <script type="text/javascript">
+        var ind1 = getUrlParamByKey("index1");
+        var index_click;
+        var month_date;
+        var mon_data=getUrlParamByKey("month_date");
+        var current_user = null;
+        var currentdate;
+            //定义图标数据
+            //获取当前日期前六个月
+	function getDateList() {
+	var list = [];
+	var currDate = new Date();
+	var currYear = currDate.getFullYear();
+	var currMonth = currDate.getMonth()+1;
+
+	var preYear = currYear-1;
+
+	var index=0;
+
+	if( currMonth-6 < 1 ) {
+		for(var i=currMonth-6; i<=0; i++) {
+			var _month = 12+i;
+			list[index++]=preYear+"-"+(_month>=10?_month:"0"+_month);
+		}
+		for( i=1; i<=currMonth; i++ ) {
+			list[index++]=currYear+"-"+(i>=10?i:"0"+i);
+		}
+	} else {
+		for( i=currMonth-6; i<=currMonth; i++ ) {
+			list[index++]=currYear+"-"+(i>=10?i:"0"+i);
+		}
+	}
+	for(var i=0;i<list.length;i++){
+		$("#date_vale").append("<option value='"+list[i]+"'>"+list[i]+"</option>");
+	}
+	getNowFormatDate();
+	return list;
+}
+            var ccc;
+            $(function(){
+                doManager('UserManager','getCurrentUserDTO',null,function(data){
+                    if(data.result){
+                        current_user = JSON.parse(data.data);
+                        $('#store_id').val(current_user.store_id);
+                        $("#grade").val("second");
+                        queryData("second");//18字段总数
+                        queryData("first");//6字段总数
+                        queryCustomerData();//圆形报表
+                        searchList();//列表
+                        loadPage(parseInt(ind1));
+                    }else{
+                        $$.showMessage('提示',data.message);
+                    }
+                });
+                
+            });
+            
+            function getNowFormatDate() {
+                var date = new Date();
+                var seperator1 = "-";
+                var seperator2 = ":";
+                var month = date.getMonth() + 1;
+                var strDate = date.getDate();
+                if (month >= 1 && month <= 9) {
+                    month = "0" + month;
+                }
+                if (strDate >= 0 && strDate <= 9) {
+                    strDate = "0" + strDate;
+                }
+                currentdate = date.getFullYear() + seperator1 + month;
+                month_date=currentdate;
+                $("#date_vale option").each(function(){
+                	var val=$(this).val();
+                	if(mon_data!=null&&mon_data!=undefined){
+                		if(val==mon_data){
+                    		$(this).attr('selected', 'selected');
+                    		$("#date_valler").val($("#date_vale").val());
+                			$("#update_user").val($("#date_vale").val());
+                			month_date=$("#date_vale").val();
+                			$('.nav_top div').removeClass('change_mark');
+                			 doManager('UserManager','getCurrentUserDTO',null,function(data){
+                                 if(data.result){
+                                     current_user = JSON.parse(data.data);
+                                     queryData("first");
+                                     queryData("second");
+                                     if(index_click==1){
+                                    	$('#customer_val_6').parent().addClass('change_mark');
+                             			queryCustomerData();
+                             			page_value="customer_list_address";
+                             		}else if(index_click==0){
+                             			$('#customer_val_18').parent().addClass('change_mark');
+                             			queryCustomerData();
+                             			page_value="customer_list_address";
+                             		}else if(index_click==2){
+                             			$('#express_val').parent().addClass('change_mark');
+                             			queryExpressData();
+                             			page_value="express_list";
+                             		}else if(index_click==3){
+                             			$('#relation_val').parent().addClass('change_mark');
+                             			queryRelationData();
+                             			page_value="relation_list";
+                             		}
+                                     searchList();
+                                 }else{
+                                     $$.showMessage('提示',data.message);
+                                 }
+                             });
+                    	}
+                	}else{
+                		if(val==currentdate){
+                    		$(this).attr('selected', 'selected');
+                    	}
+                	}
+                	
+                })
+            }
+            
+            function loadPage(bbb){
+            	
+            	$('.nav_top div').removeClass('change_mark');
+        		if(bbb==0){
+        			$('#customer_val_18').parent().addClass('change_mark');
+        			queryCustomerData();
+        			$("#centerQueryGridContainer").hide();
+        			$("#leftQueryGridContainer").show();
+        			$("#rightQueryGridContainer").hide();
+                    $("#orderQueryGridContainer").hide();
+        			page_value="customer_list_address";
+        		}else if(bbb==1){
+        			$('#express_val').parent().addClass('change_mark');
+        			queryExpressData();
+        			$("#centerQueryGridContainer").hide();
+        			$("#leftQueryGridContainer").hide();
+        			$("#rightQueryGridContainer").show();
+                    $("#orderQueryGridContainer").hide();
+        			page_value="express_list";
+        		}else if(bbb==2){
+                    $('#relation_val').parent().addClass('change_mark');
+                    queryRelationData();
+                    $("#centerQueryGridContainer").show();
+                    $("#leftQueryGridContainer").hide();
+                    $("#rightQueryGridContainer").hide();
+                    $("#orderQueryGridContainer").hide();
+                    page_value="relation_list";
+                }else if(bbb==3){
+                    $('#order_val').parent().addClass('change_mark');
+                    //queryOrderData();
+                    $("#centerQueryGridContainer").hide();
+                    $("#leftQueryGridContainer").hide();
+                    $("#rightQueryGridContainer").hide();
+                    //$("#orderQueryGridContainer").show();
+                    page_value=null;
+                }
+        	}
+            //列表
+             function searchList() {
+                $$.executeSearch('relationsQuery', 'conditionsDiv');
+                $$.executeSearch('coutomerDataQuery', 'conditionsDiv');
+                $$.executeSearch('expressDataQuery', 'conditionsDiv');
+                //$$.executeSearch('orderDataQuery', 'conditionsDiv');
+            } 
+            function queryData(grade){//查询各项数据总数
+                var manager_name = "interManager";
+                var method_name = null;
+                var gradeVal = grade;//基础字段完成等级标识
+                //var params = null;
+                //1:门店数据卡 0：国安侠数据卡
+                if(current_user.usergroup.cardtype == 0){
+                    method_name = "getExpressAndCustomerCountNew";
+                   // params = current_user.employeeId;
+                    $('#employee_no').val(current_user.employeeId);
+                }else if(current_user.usergroup.cardtype == 1 || current_user.usergroup.cardtype == 2){
+                    method_name = "getExpressAndCustomerStoreCountNew";
+                   // params = [current_user.store_id];
+                    $('#store_id').val(current_user.store_id);
+                }
+                if(method_name == null){
+                    return;
+                }
+                var arr = [ "update_user", "employee_no","store_id" ];
+				var o = {};
+                for ( var i in arr) {
+					var v = arr[i];
+					var va = $("#" + v).val();
+					o[v] = va;
+				}
+                o.express_no=gradeVal;
+                doManager(manager_name,method_name,o,function(data){
+                    if(data.result){
+                        var result = JSON.parse(data.data);
+                        if(gradeVal=="first"){
+                        	$('#p_Customer6').html(result.Customer);
+                        }
+                        
+ 						if(gradeVal=="second"){
+ 							$('#p_Customer18').html(result.Customer);
+                        }
+                        $('#p_Express').html(result.Express);
+                        $('#p_Relation').html(result.Relation);
+                        $('#p_selfExpress').html(result.SelfRelation);
+                        $('#p_xxExpress').html(result.XXExpress);
+                        $('#p_Order').html(result.Order);
+                    }else{
+                        $$.showMessage('提示',data.message);
+                    }
+                });
+            }
+            
+            function queryExpressData(){
+                var manager_name = "interManager";
+                var method_name = null;
+                if(current_user.usergroup.cardtype == 0){
+                    method_name = "queryExpressListDataByEmployee";
+                    params = current_user.employeeId;
+                    $('#employee_no').val(current_user.employeeId);
+                }else if(current_user.usergroup.cardtype == 1 || current_user.usergroup.cardtype == 2){
+                    method_name = "queryExpressListDataByStore";
+                    params = [current_user.store_id];
+                    $('#store_id').val(current_user.store_id);
+                }
+                if(method_name == null){
+                    return;
+                }
+                var arr = [ "update_user", "employee_no","store_id" ];
+				var o = {};
+                for ( var i in arr) {
+					var v = arr[i];
+					var va = $("#" + v).val();
+					o[v] = va;
+				}
+                doManager(manager_name,method_name,o,function(data){
+                    if(data.result){
+                        var result = JSON.parse(data.data);
+                        ccc=result;
+                        init();
+                    }else{
+                        $$.showMessage('提示',data.message);
+                    }
+                },false);
+            }
+
+        function queryOrderData(){
+            var manager_name = "interManager";
+            var method_name = null;
+            if(current_user.usergroup.cardtype == 1 || current_user.usergroup.cardtype == 2){
+                method_name = "queryOrderListDataByStore";
+                params = [current_user.store_id];
+                $('#store_id').val(current_user.store_id);
+            }
+            if(method_name == null){
+                return;
+            }
+            var arr = [ "update_user", "employee_no","store_id" ];
+            var o = {};
+            for ( var i in arr) {
+                var v = arr[i];
+                var va = $("#" + v).val();
+                o[v] = va;
+            }
+            doManager(manager_name,method_name,o,function(data){
+                if(data.result){
+                    var result = JSON.parse(data.data);
+                    ccc=result;
+                    init();
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            },false);
+        }
+            
+            
+			
+            var COLUMNS = {
+                "customer_edit": function(aData, iColumn, sColumnName, map){
+                    var value = map['employeeId'];
+                   
+                    var grade = $("#grade").val(); 
+                    return "<a href='../data_access/customer_list_address.html?employee_no="+value+"&&grade="+grade+"'>查看</a>";
+                },
+                "express_edit": function(aData, iColumn, sColumnName, map){
+                    var value = map['employeeId'];
+                    return "<a href='../data_access/express_list.html?employee_no="+value+"&&month_date="+month_date+"'>查看</a>";
+                },
+                "relation_edit": function(aData, iColumn, sColumnName, map){
+                    var value = map['employeeId'];
+                    return "<a href='../data_access/relation_list.html?employee_no="+value+"&&month_date="+month_date+"'>查看</a>";
+                }
+            }
+        </script>
+    </head>
+
+    <body>
+    	<div class="con_r_month">月份：
+            <select id="date_vale">
+                <!-- <option value="2016-05">2016-01</option>
+                		<option value="2016-06">2016-02</option>
+                		<option value="2016-07">2016-03</option>
+                		<option value="2016-08">2016-04</option>
+                		<option value="2016-05">2016-05</option>
+                		<option value="2016-06">2016-06</option>
+                		<option value="2016-07">2016-07</option>
+                		<option value="2016-08">2016-08</option>
+                		<option value="2016-09">2016-09</option>
+                		<option value="2016-10">2016-10</option>
+                		<option value="2016-11">2016-11</option>
+                		<option value="2016-12">2016-12</option>
+                		<option value="2017-01">2017-01</option>
+                		<option value="2017-02">2017-02</option>
+                		<option value="2017-03">2017-03</option>
+                		<option value="2017-04">2017-04</option>
+                		<option value="2017-05">2017-05</option> -->
+            </select>
+        </div>
+        <div class="rightcont clear">
+        	<div class="nav_top">
+                <div class="share_style change_mark">
+                	<div class="share_m10"><a id="customer_val_18" href="#">
+                    <div class="share_l nav_user"><span></span>
+                        </div>
+                    <div class="share_r" style="margin-top: 13px">
+                        <p id="p_Customer18" class="f30" style="padding: 0 0 5px 0;"></p>
+                        <p>用户画像</p>
+                        <div style="font-size:12px;color: #999;margin-top:-3px" id="customerComShow">（18基础字段完成量）</div>
+                    </div></a></div>
+                </div>
+                <div class="share_style change_mark">
+                	<div class="share_m10"><a id="customer_val_6" href="#">
+                    <div class="share_l nav_user"><span></span>
+                        </div>
+                    <div class="share_r" style="margin-top: 13px">
+                        <p id="p_Customer6" class="f30" style="padding: 0 0 5px 0;"></p>
+                        <p>用户画像</p>
+                        <div style="font-size:12px;color: #999;margin-top:-3px" id="customerComShow">（6基础字段完成量）</div>
+                    </div></a></div>
+                </div>
+                <div class="share_style">
+                	<div class="share_m10"><a id="express_val" href="#">
+                    <div class="share_l nav_express"><span></span></div>
+                    <div class="share_r">
+                        <p id="p_Express" class="f30"></p>
+                        <p>快递代送</p>
+                    </div></a></div>
+                </div>
+                <div class="share_style">
+                	<div class="share_m10"><a id="relation_val" href="#">
+                    <div class="share_l nav_record"><span></span></div>
+                    <div class="share_r">
+                        <p id="p_Relation" class="f30"></p>
+                        <p>拜访记录</p>
+                    </div></a></div>
+                </div>
+                <div class="share_style" style="display:none">
+                	<div class="share_m10"><a id="order_val" href="#">
+                    <div class="share_l nav_order"><span></span></div>
+                    <div class="share_r">
+                        <p id="p_Order" class="f30"></p>
+                        <p>订单</p>
+                    </div></a></div>
+                </div>
+                <div class="share_style">
+                	<div class="share_m10_1">
+                    <div class="share_l nav_exp1"><span></span></div>
+                    <div class="share_r">
+                        <p id="p_selfExpress" class="f30"></p>
+                        <p>菜鸟驿站</p>
+                    </div></div>
+                </div>
+                <div class="share_style">
+                	<div class="share_m10_1">
+                    <div class="share_l nav_exp2"><span></span></div>
+                    <div class="share_r">
+                        <p id="p_xxExpress" class="f30"></p>
+                        <p>许鲜</p>
+                    </div></div>
+                </div>
+                
+            </div>
+        </div>    
+        
+        <div id="conditionsDiv" style="display: none;">
+                <input type="text" id="store_id" name="store_id" likeOption="false" />
+                <input type="text" id="employee_no" name="employee_no"  likeOption="false" />
+                <input type="text" id="date_valler" name="date_valler" likeOption="false" />
+                <input type="text" id="update_user" name="update_user" likeOption="false" />
+                <input type="text" id="grade"  name="grade" likeOption="false"/>
+        </div>
+        
+        <div class="content">
+        	<div class="con_l">
+        		<div id="centerQueryGridContainer" class="panel panel-primary" queryid="relationsQuery" operators="$pmspage.opArr"
+                 titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+                 showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+                 showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true" style="display:none"></div>
+                 <div id="leftQueryGridContainer" class="panel panel-primary" queryid="coutomerDataQuery" operators="$pmspage.opArr"
+                 titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+                 showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+                 showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true" ></div>
+                 <div id="rightQueryGridContainer" class="panel panel-primary" queryid="expressDataQuery" operators="$pmspage.opArr"
+                 titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+                 showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+                 showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true" style="display:none"></div>
+
+                <div id="orderQueryGridContainer" class="panel panel-primary" queryid="orderDataQuery" operators="$pmspage.opArr"
+                     titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+                     showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+                     showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true" style="display:none"></div>
+        	</div>
+        	
+        	<div class="con_r">
+				<div id="main" style="width:100%;height:500px;"></div>
+    		</div>
+        </div>   
+   <script type="text/javascript">
+   var page_value="customer_list_address";
+  
+	$(function(){
+		
+		getDateList();
+		$(".nav_top div a").each(function(index,item){
+			$(item).click(function(){
+				$('.nav_top div').removeClass('change_mark');
+				$(item).parent().addClass('change_mark');
+				
+				if(index==0){
+					
+					$("#centerQueryGridContainer").hide();
+					$("#leftQueryGridContainer").show();
+					$("#rightQueryGridContainer").hide();
+                    //$("#orderQueryGridContainer").hide();
+					index_click=0;
+					$("#grade").val("second");
+					queryCustomerData();
+// 					queryData("first");
+// 					queryData("second");
+					searchList();
+					$("#coutomerDataQuery_id").find("th")[1].children[0].innerHTML="18基础字段完成量";
+					page_value="customer_list_address";
+				}else if(index==1){
+					$("#centerQueryGridContainer").hide();
+					$("#leftQueryGridContainer").show();
+					$("#rightQueryGridContainer").hide();
+                    //$("#orderQueryGridContainer").hide();
+					index_click=1;
+					$("#grade").val("first");
+					queryCustomerData();
+// 					queryData("first");
+// 					queryData("second");
+					searchList();
+					$("#coutomerDataQuery_id").find("th")[1].childNodes[0].innerHTML="6基础字段完成量";
+					page_value="customer_list_address";
+				}else if(index==2){
+					queryExpressData();
+					$("#centerQueryGridContainer").hide();
+					$("#leftQueryGridContainer").hide();
+					$("#rightQueryGridContainer").show();
+                    $("#orderQueryGridContainer").hide();
+					page_value="express_list";
+					index_click=2;
+				}else if(index==3){
+					queryRelationData();
+					$("#centerQueryGridContainer").show();
+					$("#leftQueryGridContainer").hide();
+					$("#rightQueryGridContainer").hide();
+                    $("#orderQueryGridContainer").hide();
+					index_click=3;
+					page_value="relation_list";
+				}else if(index==4){
+                    queryOrderData();
+                    $("#centerQueryGridContainer").hide();
+                    $("#leftQueryGridContainer").hide();
+                    $("#rightQueryGridContainer").hide();
+                    //$("#orderQueryGridContainer").show();
+                    index_click=4;
+                    page_value=null;
+                }
+			})
+		});
+	})
+	$(function(){
+		$("#date_vale").change(function () {
+			$("#p_xxExpress").text();
+			$("#p_selfExpress").text();
+			$("#p_Order").text();
+			$("#p_Relation").text();
+			$("#p_Express").text();
+			$("#p_Customer").text();
+			$("#date_valler").val($("#date_vale").val());
+			$("#update_user").val($("#date_vale").val());
+			month_date=$("#date_vale").val();
+			$('.nav_top div').removeClass('change_mark');
+			
+			 doManager('UserManager','getCurrentUserDTO',null,function(data){
+                 if(data.result){
+                     current_user = JSON.parse(data.data);
+                     queryData("first");
+                     queryData("second");
+                     if(index_click==undefined){
+                    	 index_click=ind1;
+                     }
+                     if(index_click==0){
+                    	 $('#customer_val_18').parent().addClass('change_mark');
+             			queryCustomerData();
+             			page_value="customer_list_address";
+             		}else if(index_click==1){
+             			 $('#customer_val_6').parent().addClass('change_mark');
+              			queryCustomerData();
+              			page_value="customer_list_address";
+             		}else if(index_click==2){
+             			$('#express_val').parent().addClass('change_mark');
+             			queryExpressData();
+             			page_value="express_list";
+             		}else if(index_click==3){
+             			$('#relation_val').parent().addClass('change_mark');
+             			queryRelationData();
+             			page_value="relation_list";
+             		}else if(index_click==4){
+                         $('#order_val').parent().addClass('change_mark');
+                         //queryOrderData();
+                         page_value=null;
+                     }
+                     searchList();
+                     //loadPage(parseInt(ind1));
+                 }else{
+                     $$.showMessage('提示',data.message);
+                 }
+             });
+			});
+	})
+	
+	
+	
+	//圆形报表
+	function queryCustomerData(){
+                var manager_name = "interManager";
+                var method_name = null;
+                var gradeVal = $("#grade").val();//基础字段完成等级标识
+                if(current_user.usergroup.cardtype == 0){//国安侠数据卡
+                    method_name = "queryCustomerListDataByEmployee";
+                    params = current_user.employeeId;
+                    $('#employee_no').val(current_user.employeeId);
+                }else if(current_user.usergroup.cardtype == 1 || current_user.usergroup.cardtype == 2){//门店数据卡
+                    method_name = "queryCustomerListDataByStore";
+                    params = [current_user.store_id];
+                    $('#store_id').val(current_user.store_id);
+                }
+                if(method_name == null){
+                    return;
+                }
+                var arr = [ "update_user", "employee_no","store_id" ];
+				var o = {};
+                for ( var i in arr) {
+					var v = arr[i];
+					var va = $("#" + v).val();
+					o[v] = va;
+				}
+                o.express_no = gradeVal;
+                doManager(manager_name,method_name,o,function(data){
+                    if(data.result){
+                        var result = JSON.parse(data.data);
+                        ccc=result;
+                        init();
+                    }else{
+                        $$.showMessage('提示',data.message);
+                    }
+                },false);
+            }
+            
+            function queryRelationData(){
+                var manager_name = "interManager";
+                var method_name = null;
+                if(current_user.usergroup.cardtype == 0){
+                    method_name = "queryRelationListDataByEmployee";
+                    params = current_user.employeeId;
+                    $('#employee_no').val(current_user.employeeId);
+                }else if(current_user.usergroup.cardtype == 1 || current_user.usergroup.cardtype == 2){
+                    method_name = "queryRelationListDataByStore";
+                    params = [current_user.store_id];
+                    $('#store_id').val(current_user.store_id);
+                }
+                if(method_name == null){
+                    return;
+                }
+                var arr = [ "update_user", "employee_no","store_id" ];
+				var o = {};
+                for ( var i in arr) {
+					var v = arr[i];
+					var va = $("#" + v).val();
+					o[v] = va;
+				}
+                doManager(manager_name,method_name,o,function(data){
+                    if(data.result){
+                        var result = JSON.parse(data.data);
+                        ccc=result;
+                        init();
+                    }else{
+                        $$.showMessage('提示',data.message);
+                    }
+                },false);
+            }
+            
+	function init(){
+		// 基于准备好的dom，初始化echarts实例
+    	var myChart = echarts.init(document.getElementById('main'));
+    	
+    	// 指定图表的配置项和数据
+    	var option = {
+    		/*title : {
+    			text: '某站点用户访问来源',
+    			subtext: '纯属虚构',
+    			x:'center'
+    		},*/
+    		tooltip : {
+    			//trigger: 'item',
+    			formatter: "{b} : {c} ({d}%)"
+    		},
+    		/*legend: {
+    			orient: 'vertical',
+    			left: 'left',
+    			data: ['直接访问','邮件营销','联盟广告','视频广告','搜索引擎','条件搜索']
+    		},*/
+    		series : [
+    			{
+    				name: '',
+    				type: 'pie',
+    				radius : '60%',
+    				center: ['50%', '45%'],
+    				data:ccc,
+    				itemStyle: {
+    					emphasis: {
+    						shadowBlur: 20,
+    						shadowOffsetX: 0,
+    						shadowColor: 'rgba(0, 0, 0, 0.3)'
+    					}
+    				}
+    			}
+    		]
+    	};
+		
+    	// 使用刚指定的配置项和数据显示图表。
+    	myChart.setOption(option);
+    	// 处理点击事件并且跳转到相应的百度搜索页面
+    	myChart.on('click', function (params) {
+    		var employee_no;
+    		//window.open('https://www.baidu.com/s?wd=' + encodeURIComponent(params.name));
+    		 for(var j = 0; j < ccc.length; j++){
+				if(ccc[j].name==params.name){
+					employee_no=ccc[j].id;
+					break;
+				}
+			}
+			if(page_value != null){
+                if(page_value=="express_list"){
+                    window.location.href="../data_access/"+page_value+".html?employee_no="+employee_no+"&&month_date="+month_date;
+                }else{
+                	var grade = $("#grade").val(); 
+                    window.location.href="../data_access/"+page_value+".html?employee_no="+employee_no+"&&grade="+grade;
+                }
+            }
+    		  
+    	});
+	}
+</script>
+            
+    </body>
+</html>

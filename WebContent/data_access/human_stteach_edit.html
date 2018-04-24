@@ -1,0 +1,535 @@
+	<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>岗前培训信息</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script> 
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+table{padding:5px 0;}
+.w33 td{width: 33%;}
+.w50{padding:10px 0 20px 0;}
+.w50 td{width:50%;}
+table td {
+	height:35px; line-height:35px; padding:5px 0;
+}
+
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 50%;
+	height: 30px;
+	line-height: 30px;
+	border: 1px solid #dad9d7;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;
+}
+
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.panel_width{width:49%; float:left; min-height:180px;}
+.panel_width:nth-child(2n){margin-left:2%;}
+.auto{max-height:100px; overflow-y:scroll;}
+</style>
+
+<script type="text/javascript">
+Date.prototype.format=function(fmt) {        
+    var o = {        
+    "M+" : this.getMonth()+1, //月份        
+    "d+" : this.getDate(), //日        
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
+    "H+" : this.getHours(), //小时        
+    "m+" : this.getMinutes(), //分        
+    "s+" : this.getSeconds(), //秒        
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度        
+    "S" : this.getMilliseconds() //毫秒        
+    };        
+    var week = {        
+    "0" : "\u65e5",        
+    "1" : "\u4e00",        
+    "2" : "\u4e8c",        
+    "3" : "\u4e09",        
+    "4" : "\u56db",        
+    "5" : "\u4e94",        
+    "6" : "\u516d"       
+    };        
+    if(/(y+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
+    }        
+    if(/(E+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
+    }        
+    for(var k in o){        
+        if(new RegExp("("+ k +")").test(fmt)){        
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
+        }        
+    }        
+    return fmt;        
+} 
+
+
+
+var array=new Array();
+var array1=new Array();
+//初始化所有门店 
+function initallstore() {
+	doManager("StoreManager", "findStoreAll", null,
+		function(data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				for(i=0;i<jsonData.length;i++){
+					array.push(jsonData[i].name);
+					array1.push(jsonData[i].name);
+				}
+			}
+		}, false);
+}
+
+
+	var id = getUrlParamByKey("id");
+
+	
+	function dataCheck() {
+		
+		var theorystartdate = $("#theorystartdate").val();
+		var theoryenddate = $("#theoryenddate").val();
+		if(theorystartdate>theoryenddate){
+			alert("理论见习培训日期选择错误！ ");	
+			return ;
+		}
+		
+		var realitystartdate = $("#realitystartdate").val();
+		var realityenddate = $("#realityenddate").val();
+		if(realitystartdate>realityenddate){
+			alert("实操见习培训日期选择错误！ ");	
+			return ;
+		}
+		
+		
+		var onlinescore = $("#onlinescore").val();
+		var offlinescore = $("#offlinescore").val();
+		var realityscore = $("#realityscore").val();
+		
+		if(/^(\+|-)?\d+($|\.\d+$)/.test(onlinescore)){
+			if(onlinescore<0||onlinescore>100){
+				alert("岗前线上培训 成绩格式不正确！ ");
+				return;
+			}
+		}else{
+				alert("岗前线上培训 成绩格式不正确！");
+				return;
+		}
+		
+		
+		if(/^(\+|-)?\d+($|\.\d+$)/.test(offlinescore)){
+			if(offlinescore<0||offlinescore>100){
+				alert("岗前线下培训 成绩格式不正确！ ");
+				return;
+			}
+		}else{
+				alert("岗前线下培训 成绩格式不正确！");
+				return;
+		}
+		
+		
+		if(/^(\+|-)?\d+($|\.\d+$)/.test(realityscore)){
+			if(realityscore<0||realityscore>100){
+				alert("实操见习培训 成绩格式不正确！ ");
+				return;
+			}
+		}else{
+				alert("实操见习培训 成绩格式不正确！");
+				return;
+		}
+		
+		
+		/*var store_id = $('#store_id').val();
+		if (store_id == "" || store_id == null) {
+			alert("请选择门店!");
+			return;
+		}
+		
+		var obj = document.getElementsByName("isPhoneNo");
+		for (i = 0; i < obj.length; i++) {
+			if (!/^((0\d{2,3}-\d{7,8})|(1[35784]\d{9}))$/.test(obj[i].value)) {
+				alert("请输入正确的电话!");
+				return;
+			}
+		}*/
+		return true;
+	}
+	
+	
+	function defaultva(key,va,msg){
+		if(va==null||va==""){
+			document.getElementById(key).value=msg;
+		}else{
+			document.getElementById(key).value = va;
+		}
+	}
+	
+
+	$(function() {
+		initallstore();
+		//initExpressCompany();	
+		doManager("HumanresourcesManager", "queryHumanresourceById", id , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				//alert(data.data);
+				for (var key in jsonData) {
+					var va = jsonData[key];
+					var ele = document.getElementById(key);
+					
+					if (ele != null && ele != undefined) {
+						if(key=="name"||key=="employee_no"||key=="zw"||key=="storename"||key=="phone"){
+							document.getElementById(key).innerHTML = va;	
+						}else{
+							if(key=="theorystartdate"||key=="theoryenddate"||key=="onlinestartdate"||key=="offlinestartdate"||key=="realitystartdate"||key=="realityenddate"){
+								if(va!=null&&va!=""){
+									//var d=	new Date();
+					                //d.setTime(va);
+					                //var s=d.format('yyyy-MM-dd');
+					                document.getElementById(key).value = va;
+								}
+							}else{
+								document.getElementById(key).value = va;
+							}
+						}
+						
+					}
+				}
+				var onlinescore = $("#onlinescore").val();
+				var offlinescore = $("#offlinescore").val();
+				var realityscore = $("#realityscore").val();
+				if(onlinescore==""){
+					$("#onlinescore").val("0");
+				}
+				if(offlinescore==""){
+					$("#offlinescore").val("0");
+				}
+				if(realityscore==""){
+					$("#realityscore").val("0");
+				}
+			}
+		});
+		
+		
+	});
+
+	function doSave() {
+		if(!dataCheck()){
+			return ;
+		}
+		
+		var arr = ["id","theorystartdate", "theoryenddate","theorystorename", "onlinestartdate", "onlinescore","onlinedate","offlinestartdate", "offlinescore", "offlinedate", "realitystartdate", "realityenddate", "realitystorename", "realityscore"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		//o["express_company"] = $("#express_company  option:selected").text();
+		doManager("HumanresourcesManager", "updateHumanresourcesTeach", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				alert("保存成功！ ");
+				window.location.href = 'human_teach_list.html';
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		});
+	}
+	function doBack(){
+		window.location.href = 'human_teach_list.html';
+	}
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">员工基本信息</div>
+		
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w33">
+			<tr>
+				<td>
+					<p>
+						姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:<label id="name"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						员工编号:<label id="employee_no"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						岗&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位:<label id="zw"></label>
+					</p>
+				</td>
+
+			</tr>
+			<tr>
+
+				<td>
+					<p>
+						门&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;店:<label id="storename"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						手&nbsp;机&nbsp;号:<label id="phone"></label>
+					</p>
+				</td>
+				<!-- <td>
+					<p>
+						二级部门:<input type="text" id="deptlevel2" isautotab="true" value="门店运营中心"/>
+					</p>
+				</td> -->
+			</tr>
+		</table>
+		
+		
+	</div>
+	
+	
+	<div style="clear:both;">
+	<div class="panel panel-primary panel_width">
+		<div class="panel-heading">理论见习培训</div>
+		<form class="pmsForm">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50" style="min-height:120px;">
+			<tr>
+				<td>
+					<p>
+						开始时间:<input id="theorystartdate" revalidate="true" type="text"
+								likeOption="false" name="theorystartdate"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style="width: 70%; display: inline; height:40px; width:50%;"
+								readonly />
+					</p>
+				</td>
+				<td>
+					<p>
+						结束时间:<input id="theoryenddate" revalidate="true" type="text"
+								likeOption="false" name="theoryenddate"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style="width: 70%; display: inline; height:40px; width:50%;"
+								readonly />
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>
+						<!-- <input type="text" id="theorystorename" value=""/> -->
+						<label style="float:left; margin-top:13px;">见习门店:</label><div class="wrap" style="width:48%; float:left; position:relative;">
+	                        <input type="text" id="theorystorename" class="auto-inp">
+		                        <div class="auto hidden" id="auto">
+		                        </div>
+                    	</div>
+					</p>
+				</td>
+			</tr>
+		</table>
+		</form>
+	</div>
+	
+	
+	<div class="panel panel-primary panel_width">
+		<div class="panel-heading">岗前线上培训</div>
+		<form class="pmsForm">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50">
+			<tr>
+				<td>
+					<p>
+						开始时间:<input id="onlinestartdate" revalidate="true" type="text"
+								likeOption="false" name="onlinestartdate"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style=" display: inline; height:40px; width:50%;"
+								readonly />
+					</p>
+				</td>
+				<td>
+					<p>
+						成&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;绩:<input type="text" value="" id="onlinescore" />
+					</p>
+				</td>
+				</tr>
+				<tr>
+				<td>
+					<p>
+						时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间:<input type="text" value="" id="onlinedate" />
+					</p>
+				</td>
+				<td>&nbsp;</td>
+			</tr>
+			
+		</table>
+		</form>
+	</div>
+	
+    
+    <div class="panel panel-primary panel_width">
+		<div class="panel-heading">岗前线下培训</div>
+		<form class="pmsForm">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50">
+			<tr>
+				<td>
+					<p>
+						开始时间:<input id="offlinestartdate" revalidate="true" type="text"
+								likeOption="false" name="offlinestartdate"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style=" display: inline; height:40px; width:50%;"
+								readonly />
+					</p>
+				</td>
+				<td>
+					<p>
+						成&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;绩:<input type="text" value="" id="offlinescore" />
+					</p>
+				</td>
+             </tr>
+             <tr>
+				<td>
+					<p>
+						时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间:<input type="text" value="" id="offlinedate" />
+					</p>
+				</td>
+				<td>&nbsp;</td>
+			</tr>
+		</table>
+		</form>
+	</div>
+	
+	
+	<div class="panel panel-primary panel_width">
+		<div class="panel-heading">实操见习培训</div>
+		<form class="pmsForm">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50">
+			<tr>
+				<td>
+					<p>
+						开始时间:<input id="realitystartdate" revalidate="true" type="text"
+								likeOption="false" name="realitystartdate"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style=" display: inline; height:40px; width:50%;"
+								readonly />
+					</p>
+				</td>
+				<td>
+					<p>
+						结束时间:<input id="realityenddate" revalidate="true" type="text"
+								likeOption="false" name="realityenddate"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style=" display: inline; height:40px; width:50%;"
+								readonly />
+					</p>
+				</td>
+
+			</tr>
+			<tr>
+
+				<td>
+					<p>
+						<label style="float:left; margin-top:13px;">见习门店:</label><!-- <input type="text" id="realitystorename" value=""/> -->
+						<div class="wrap" style="width:48%; float:left; position:relative;">
+	                        <div class="auto hidden" id="auto1"></div>
+	                        <input type="text" id="realitystorename" class="auto-inp">
+                    	</div>
+					</p>
+				</td>
+				<td>
+					<p>成&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;绩:<input type="text" id="realityscore" value=""/>
+					
+						<input type="hidden" id="id" value="" />
+						
+					</p>
+				</td>
+			</tr>
+		</table>
+		</form>
+	</div>
+	</div>
+	<div class="panel-footer" style="text-align: right; background:none; border:0;">
+            <button class="btn btn-primary" onclick="doSave();">保存</button>
+            <button class="btn btn-primary" onclick="doBack();">返回</button>
+    </div>
+</body>
+
+
+<script>
+	var autoComplete = new AutoComplete("theorystorename","auto",array);
+	document.getElementById("theorystorename").onkeyup = function(event){
+		autoComplete.start(event);
+	}
+	
+	var autoComplete1 = new AutoComplete("realitystorename","auto1",array1);
+	document.getElementById("realitystorename").onkeyup = function(event){
+		autoComplete1.start(event);
+	}
+	
+	
+</script>
+
+
+</html>

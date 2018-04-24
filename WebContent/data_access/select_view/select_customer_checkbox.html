@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>选择用户</title>
+    <script type="text/javascript" src="../../scripts/bidLib.js"></script>
+    <link href="../../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script>
+     	
+    	var arr =new Array();
+        $(function () {
+            //页面加载成功后需要获取数据
+            searchList();
+        });
+        
+        
+        function storecheck(store){
+        	if(store.checked){
+        		var obj =new Object();
+        		obj.storeid=store.value.split(",")[0];
+        		obj.storename=store.value.split(",")[1];
+        		arr.push(obj);
+        	}else{
+        		for(n in arr){
+        			if(arr[n].storeid==store.value.split(",")[0]){
+        				arr.splice(n,1);
+        			}
+        		}
+        	}
+        }
+        
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+        	var phone = $('#mobilephone').val();
+        	if(phone!=""&&phone.length!=11){
+        		 $$.showMessage('提示',"电话格式不正确 !");
+    			return;
+    		}
+        	
+            $$.executeSearch('customerQuery', 'conditionsDiv');
+        }
+
+        function doSubmit(){
+            var jsons=new Array();
+            var objs = $$.getSelectedObj("customerQuery");
+            if (objs.length != 0) {
+            	for(i=0;i<objs.length;i++){
+            		json = {id:objs[i][0],name:objs[i][1],mobilephone:objs[i][2],sex:objs[i][3],age:objs[i][4]};
+            		//var json = {id:arr[i].storeid,name:arr[i].storename};
+            		jsons.push(json);
+            	}
+            } 
+            parent.win.callBack(jsons);
+            parent.win.hide();
+        }
+      
+         var COLUMNS = {
+                "mobilephone": function(aData, iColumn, sColumnName, map){
+                    var mobilephone = map[sColumnName];
+                    var storename = map["name"];
+                    if(mobilephone!=null&&mobilephone!=""&&mobilephone.length>6){
+                    	mobilephone=mobilephone.substring(0,3)+"****"+mobilephone.substring(mobilephone.length-4,mobilephone.length);
+                    }
+                    return mobilephone;
+                }
+            } 
+    </script>
+    <style type="text/css">
+        html,body{
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="bodyDiv">
+        <div id="userGroupInfo" class="panel panel-primary">
+            <div class="panel-heading">
+                <a href="#" onclick="toggleBizBiz('conditionsDiv','pic');"><img src="../../scripts/images/22.png" align="absmiddle" id="pic"/></a>&nbsp;搜索条件
+            </div>
+            <div id="conditionsDiv" class="panel-body">
+                    <table class="bigteble">
+                        <tr>
+                            <td align="left" width="10%" class="basetext">
+                                用户名称:				
+                            </td>
+                            <td class="baseform" align="left" width="40%">
+                                <input type="text" name="name" id="name" class="form-control" style="width: 70%" onkeyup="value=this.value.replace(/\s+/g,'')"/>
+                            </td>
+                            
+                            <td align="left" width="10%" class="basetext">
+                                用户电话:				
+                            </td>
+                            <td class="baseform" align="left" width="40%">
+                                <input type="text" name="mobilephone" id="mobilephone" maxlength="11"  onkeyup="value=this.value.replace(/\D+/g,'')" class="form-control" style="width: 70%"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="panel-footer"  align="right">
+                    <input class="btn btn-primary" onClick="searchList()" value="查询" type="button"/>
+                </div>
+            </div>
+            <div id="gridContainer" searchDiv="conditionsDiv" queryid="customerQuery" class="panel panel-primary"
+                 operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+                 showprint="false" showsearch="false" showtitle="true" showpaging="true" showcheckbox="true"
+                 checkmode="single" autoload="false" showno="false">
+            </div>
+        </div>
+    </body>
+    
+   
+</html>

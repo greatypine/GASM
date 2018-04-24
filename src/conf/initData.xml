@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<inits>
+	<init resource="/init/task.txt" description="系统自动任务" />
+</inits>

@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xsi:schemaLocation="http://www.cnpc.com/2010/pmsconfig pmsconfig.xsd"
+             xmlns="http://www.cnpc.com/2010/pmsconfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <module id="communityArea">
+        <package id="communityArea">
+            <managerpackage interfacePackage="com.cnpc.pms.communityArea.manager"
+                            implementPackage="com.cnpc.pms.communityArea.manager.impl"/>
+            <daopackage interfacePackage="com.cnpc.pms.communityArea.dao"
+                        implementPackage="com.cnpc.pms.communityArea.dao.impl"/>
+        </package>
+    </module>
+</application>

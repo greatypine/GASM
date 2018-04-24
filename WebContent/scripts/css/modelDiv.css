@@ -1,0 +1,65 @@
+/* idx css*/
+.model_main {	
+	float: left;
+	position: relative; 
+	text-align:center; 
+	background-color: #F7F8FD;
+	font-family:verdana,arial,helvetica,sans-serif;
+	color:#505050; 
+	font-size:12px;
+	margin: 10px;
+	border:#999999 solid 1px; 
+}
+.head {
+	position:absolute;
+	border:0px; 
+	border-bottom: #999999 solid 1px;
+	left:0px; 
+	top:0px; 
+	width:100%; 
+	height:25px; 
+	background-color: #BEC5E7;
+}
+.content {
+	position: relative; 
+	margin: 0px;
+	margin-top: 26px;
+	padding: 0px;
+	border: none;
+	background-color:#F7F8FD;
+	text-align:left;
+}
+ul { list-style:none; text-align:left} 
+.content li {
+	list-style:none; 
+	text-align:left;
+	width:95%;		
+	line-height:25px; 
+	overflow:hidden;
+	text-overflow:ellipsis; 
+	border-bottom:1px #999999 dashed;
+	padding:0px;
+}
+a{ 
+	text-decoration:none;
+} 
+._title {
+	padding:2px;
+	border: none;
+	margin: 0px;
+	vertical-align:middle;
+	width:100%;
+	height:100%;
+}
+
+img{
+	border:none;
+	vertical-align:middle;
+}
+
+.contentPanel {
+	margin:3px 3px 0px 0px; 
+	overflow: hidden; 
+	height:99%; 
+	width:99%;
+}

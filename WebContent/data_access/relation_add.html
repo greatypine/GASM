@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit">
+    <title>拜访记录新增</title>
+
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    <script type="text/javascript" src="select_view/select_option.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <script type="text/javascript" src="./select_view/select_option.js"></script>
+    <script type="text/javascript" src="../scripts/auto.js"></script>
+
+
+</head>
+<style type="text/css">
+    .header_img{
+        width: 100%;
+        height: 100%;
+        float: right;
+        border-radius:50%
+    }
+    td{
+        padding-bottom: 15px;
+    }
+    .but {
+        float: right;
+        text-align: center;
+    }
+    ul,li{list-style: none;}
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+
+    /* new */
+    .daikan_list{border-bottom: 1px solid #dfdfdf; margin: 20px; position:relative;}
+    .bf_item_title{ font-size: 16px;}
+    .bf_item_title span{padding-left: 20px;}
+    .bf_des{margin:13px 0;}
+    .bf_des_con{clear: both; overflow: hidden;}
+    .bf_des_conl{float:left; width:30%; color: #999;line-height: 30px;}
+    .bf_des_conr{float:left; width:70%;}
+    
+    .bf_des_conl_tob{float:left; width:10%; color: #999;line-height: 30px;}
+    .bf_des_conr_tob{float:left; width:90%;margin-top:5px;}
+    
+    .bf_des_conr li{line-height: 30px; clear:both; overflow: hidden;}
+    .bf_des_conr li label{color:#666; width: 10%; float:left; display: inline-block;}
+    .bf_des_conr li span{width: 90%; float:left; display: inline-block;line-height:30px;}
+    .bfn_item_record{color: #b0b3b4;font-size: 12px;margin-bottom: 19px; position: absolute; top:0; right:0;}
+
+</style>
+<script type="text/javascript">
+    var user = null;
+    var childs = null;
+    var emList = null;
+    var dict_relation_content = $dict.getDictList('relation_content_resource');
+    var dict_relation_content_option = $dict.getDictList('relation_content_option_resource');
+    var havetob=true;
+    var nosave=false;
+    var nosearch = true;
+    var cust_id = null;
+    $(function(){
+        //setDict('work_overtime_resource', $("#work_overtime"));
+        //initView();
+        
+    	initcurrentuser();
+    });
+
+
+
+    function initSelectNamesBySid(store_id) {
+        doManager("UserManager", "findNamesBySid", "" + store_id,
+                function(data, textStatus, XMLHttpRequest) {
+                    if (data.result) {
+                        var jsonData = $.fromJSON(data.data);
+                        emList = jsonData.userList;
+                    }
+                }, false);
+    }
+
+    function initcurrentuser(){
+    	doManager('UserManager','getCurrentUserDTO',null,function(data){
+            if(data.result){
+                var userDto = JSON.parse(data.data)
+                user = userDto;
+                initSelectNamesBySid(user.store_id);
+            }else{
+                $$.showMessage('提示',data.message);
+            }
+        },false);
+    }
+    
+    
+    function addToBRelation(relation) {
+    	//如果还未来查询出用户 提示不能添加
+    	if(nosearch){
+    		$$.showMessage("提示","未查询用户数据!请先选择所拜访用户！  ");
+        	$('#btnSave').val("保存");
+            $('#btnSave').attr("disabled",false);
+            return;
+    	}
+    	
+    	//如果存在未保存的数据  
+    	if(nosave){
+    		$$.showMessage("提示","存在未保存的数据!请先保存! ");
+        	$('#btnSave').val("保存");
+            $('#btnSave').attr("disabled",false);
+            return;
+    	}
+    	
+    	if(!havetob){
+    		$$.showMessage("提示","此用户无对应的商业信息!请到街道、社区、小区、商业信息页面维护负责人信息！ ");
+    		return;
+    	} 
+    	
+    	var isedit = false;
+        if(typeof(relation) == 'undefined') {
+            isedit = true;
+            relation = {
+                id:'',
+                employee_no:user.employeeId,
+                employee_name:user.name,
+                relation_date:new Date().format('yyyy-MM-dd'),
+                childs:[]
+            }
+        }else{
+            relation.relation_date = new Date(relation.relation_date).format('yyyy-MM-dd');
+        }
+        
+        
+        if(typeof(relation.relation_reason)=='undefined'){
+        	relation.relation_reason="";
+        }
+        if(typeof(relation.relation_rcv)=='undefined'){
+        	relation.relation_rcv="";
+        }
+        
+        //对商业的层 
+        var $div_parent = $('#relation_div');
+        var $div_btn = $div_parent.find('#div_relation_btn');
+        $div_btn.before('<div style="width: 100%;margin-top: 20px;overflow: auto;" class="panel panel-primary"></div>');
+        var $div_content = $div_parent.find('.panel-primary:last');
+        var html = '<div class="panel-heading">拜访记录【对公】<input name="relation_id" type="hidden" value="'+relation.id+'"/><input type="hidden" name="customer_type" id="customer_type" value="1"/>'+
+        (isedit == true?'<span class="but"><input type="button" onclick="doSave();" value="保存" /><input type="button" name="del" value="删除" /></span>':'')+
+        '</div><div class="panel-body"><table cellpadding="0" cellspacing="0" style="min-width: 95%;margin: 10px 0; width: auto"> ' +
+        '<tr><td width="33%">&nbsp;&nbsp;拜访人:<select name="employee_no" type="text" class="form-control" style="width: 60%; margin-left:10px; display: inline;" ' +
+        (isedit == true?'':'disabled')+'></select></td>' +
+        '<td  width="33%">拜访方式:<select name="relation_type" type="text" class="form-control" style="width: 60%; margin-left:10px; display: inline;" ' +
+        (isedit == true?'':'disabled')+'></select></td>' +
+        '<td  width="33%">拜访时间:<input name="relation_date" type="text" validate="formatDate:true"  yearRange=\"-10:+10\" style="width: 60%; margin-left:10px;display: inline;" value="'+relation.relation_date+'" readonly ' +
+        (isedit == true?'class="form-control pmsDateField"':'class="form-control"')+' /></td></tr>' +
+        '<tr><td colspan="3"><span style="vertical-align: top;"><span style="color: red;vertical-align: top;">*</span>拜访事由:</span><textarea rows="2" name="relation_reason" style="width:90%;"  onkeyup="this.value = this.value.substring(0,250)">'+relation.relation_reason+'</textarea></td></tr>'+
+        '<tr><td colspan="3"><span style="vertical-align: top;"><span style="color: red;vertical-align: top;">*</span>反&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;馈:</span><textarea rows="2" name="relation_rcv"  style="width:90%;"  onkeyup="this.value = this.value.substring(0,250)">'+relation.relation_rcv+'</textarea></td></tr>'+
+        '</table></div></div>';
+        $div_content.append(html);
+        $form.initFormStyle();
+        
+        
+        //拜访国安侠 
+        var $select = $div_content.find('select[name="employee_no"]');
+        $select.append('<option value="">请选择</option>');
+
+		var hasdefault=false;
+		if(isedit){
+			for(var index in emList){
+				var element = emList[index];
+				if(element.employeeId==user.employeeId){
+					$select.append('<option value="'+element.employeeId+'" selected>'+element.name+'</option>');
+					hasdefault=true;
+				}else{
+					$select.append('<option value="'+element.employeeId+'">'+element.name+'</option>');
+				}
+			}
+			
+			if(!hasdefault){
+				$select.append('<option value="'+user.employeeId+'" selected>'+user.name+'</option>');
+			}else{
+				$select.val(relation.employee_no);
+			}
+		}else{
+			/* for(var index in emList){
+				var element = emList[index];
+				$select.append('<option value="'+element.employeeId+'">'+element.name+'</option>');
+			}
+			$select.val(relation.employee_no); */
+			//alert(relation.employee_no+""+relation.employee_name);
+			$select.append('<option value="'+relation.employee_no+'" selected>'+relation.employee_name+'</option>');
+		}
+
+		
+        
+
+
+        //拜访方式 
+        var $select_type = $div_content.find('select[name="relation_type"]');
+        $select_type.append('<option value="电话">电话</option>');
+        $select_type.append('<option value="微信">微信</option>');
+        $select_type.append('<option value="客户到店">客户到店</option>');
+        $select_type.append('<option value="面对面（上门）">面对面（上门）</option>');
+        $select_type.append('<option value="面对面（混片儿）">面对面（混片儿）</option>');
+        $select_type.append('<option value="其他">其他</option>');
+        $select_type.val(relation.relation_type);
+        
+        
+        //删除功能 
+        $div_content.find("input[name='del']").click(function(){
+            var flag = false;
+            $div_content.find('.form-control').each(function(){
+                var value = $(this).val();
+                if(!flag && value != null && value != ""){
+                    flag = true;
+                }
+            });
+            if(flag){
+                /* $$.showConfirm("提示","包含已输入的数据是否删除？",function () {
+                	nosave=false;
+                    $div_content.remove();
+                }); */
+            	nosave=false;
+                $div_content.remove();
+            }else{
+            	nosave=false;
+                $div_content.remove();
+            }
+            
+        });
+        nosave=true;
+    }
+    
+    
+    function addRelation(relation) {
+    	//如果还未来查询出用户 提示不能添加
+    	if(nosearch){
+    		$$.showMessage("提示","未查询用户数据!请先选择所拜访用户！  ");
+        	$('#btnSave').val("保存");
+            $('#btnSave').attr("disabled",false);
+            return;
+    	}
+    	
+    	//是否存在未保存的数据 
+    	if(nosave){
+    		$$.showMessage("提示","存在未保存的数据!请先保存! ");
+        	$('#btnSave').val("保存");
+            $('#btnSave').attr("disabled",false);
+            return;
+    	}
+    	
+        var isedit = false;
+        if(typeof(relation) == 'undefined') {
+            isedit = true;
+            relation = {
+                id:'',
+                employee_no:user.employeeId,
+                employee_name:user.name,
+                relation_date:new Date().format('yyyy-MM-dd'),
+                childs:[]
+            }
+        }else{
+            relation.relation_date = new Date(relation.relation_date).format('yyyy-MM-dd');
+        }
+        var $div_parent = $('#relation_div');
+        var $div_btn = $div_parent.find('#div_relation_btn');
+        $div_btn.before('<div style="width: 100%;margin-top: 20px;overflow: auto;" class="panel panel-primary"></div>');
+        var $div_content = $div_parent.find('.panel-primary:last');
+        var html = '<div class="panel-heading">拜访记录【对私】<input name="relation_id" type="hidden" value="'+relation.id+'"/>'+
+        (isedit == true?'<span class="but"><input type="button" onclick="doSave();" value="保存" /><input type="button" name="del" value="删除"></span>':'')+
+        '</div><div class="panel-body">'+
+        '<table cellpadding="0" cellspacing="0" style="min-width: 95%;margin: 10px 0; width: auto"> ' +
+        '<tr><td width="33%">拜访国安侠:<select name="employee_no" type="text" class="form-control" style="width: 60%; margin-left:10px;display: inline;" ' +
+        (isedit == true?'':'disabled')+'></select></td>' +
+        '<td width="33%">拜访方式:<select name="relation_type" type="text" class="form-control" style="width: 60%; margin-left:10px;display: inline;" ' +
+        (isedit == true?'':'disabled')+'></select></tsd>' +
+        '<td width="33%">拜访时间:<input name="relation_date" type="text" validate="formatDate:true"  yearRange=\"-10:+10\" style="width: 60%; margin-left:10px;display: inline;" value="'+relation.relation_date+'" readonly ' +
+        (isedit == true?'class="form-control pmsDateField"':'class="form-control"')+' /></td>' +
+        '</tr>' +
+        '</table>'+
+        '</div></div>';
+        $div_content.append(html);
+        $form.initFormStyle();
+        var $table = $div_content.find('table');
+        $(dict_relation_content).each(function(index,element){
+            $table.append('<tr><td colspan="2">'+element.dictText
+                    +(isedit == true?'<img src="../images/badge_plus_16px.png" class="img_plus">':'') +
+                    '<input type="hidden" name="dictCode" value="'+element.dictCode+'">'+
+                    '</td></tr>');
+            var $code = $table.find('input[name="dictCode"]:last');
+            var $img = $table.find('.img_plus:last');
+            $(relation.childs).each(function(i,content){
+                if(content.content_code != element.dictCode){
+                    return;
+                }
+                addRow($table,$code,isedit,element.dictCode,content);
+            });
+            if(isedit){
+                $img.click(function(){
+                    var dcode = $img.next('input').val();
+                    addRow($table,$img,isedit,dcode,null,null);
+                });
+            }
+        });
+
+        function addRow($table,$code,isedit,dictCode,content){
+            if(content == null){
+                content = {
+                    id : '',
+                    option_code : '',
+                    content : ''
+                };
+            }
+            var str_select_name = 'option'+dictCode;
+            var str_input_name = 'input'+dictCode;
+            var $tr = $code.parent().parent();
+            var html = '<tr><td>' +
+                    '<select name="'+str_select_name+'" class="form-control"' +
+                    (isedit == true?'':'disabled') +'></select>' +
+                    '<input type="hidden" name="content_id" value="'+content.id+'">' +
+                    '</td><td>' +
+                    '<input name="'+str_input_name+'" type="text" class="form-control" onkeyup="this.value = this.value.substring(0,100)" style="width: 90%;display:inherit ; margin-left:10px;" maxlength="120" value="'+ content.content + '"' +
+                    (isedit == true?'':'disabled') +'>' +
+                    (isedit == true?'<img src="../images/minus_16px.png" class="img_minus">':'') +
+                    '</td></tr>';
+            $tr.after(html);
+            var $current_tr = $tr.next('tr');
+            var $select_option = $current_tr.find('select[name="'+str_select_name+'"]:last');
+            dict_relation_content_option.sort(function(a,b){
+                return a.dictCode-b.dictCode
+            });
+            $(dict_relation_content_option).each(function(j,dict){
+                if(dict.serialNumber == dictCode){
+                    $select_option.append('<option value="'+dict.dictCode+'">'+dict.dictText+'</option>');
+                }
+            });
+            if(isedit){
+                var $img_minus = $current_tr.find('.img_minus:last');
+                $img_minus.click(function(){
+                    $current_tr.remove();
+                });
+            }
+
+            if(content.option_code != ''){
+                $select_option.val(content.option_code);
+            }
+        }
+
+        var $select = $div_content.find('select[name="employee_no"]');
+        $select.append('<option value="">请选择</option>');
+        
+        
+        var hasdefault=false;
+		if(isedit){
+			for(var index in emList){
+				var element = emList[index];
+				if(element.employeeId==user.employeeId){
+					$select.append('<option value="'+element.employeeId+'" selected>'+element.name+'</option>');
+					hasdefault=true;
+				}else{
+					$select.append('<option value="'+element.employeeId+'">'+element.name+'</option>');
+				}
+			}
+			
+			if(!hasdefault){
+				$select.append('<option value="'+user.employeeId+'" selected>'+user.name+'</option>');
+			}else{
+				$select.val(relation.employee_no);
+			}
+		}else{
+			/* for(var index in emList){
+				var element = emList[index];
+				$select.append('<option value="'+element.employeeId+'">'+element.name+'</option>');
+			}
+			$select.val(relation.employee_no); */
+			//alert(relation.employee_no+""+relation.employee_name);
+			$select.append('<option value="'+relation.employee_no+'" selected>'+relation.employee_name+'</option>');
+		}
+		
+        /* $(emList).each(function(index,element){
+            $select.append('<option value="'+element.employeeId+'">'+element.name+'</option>');
+        });
+        $select.val(relation.employee_no); */
+
+
+        var $select_type = $div_content.find('select[name="relation_type"]');
+        $select_type.append('<option value="电话">电话</option>');
+        $select_type.append('<option value="微信">微信</option>');
+        $select_type.append('<option value="客户到店">客户到店</option>');
+        $select_type.append('<option value="面对面（上门）">面对面（上门）</option>');
+        $select_type.append('<option value="面对面（混片儿）">面对面（混片儿）</option>');
+        $select_type.append('<option value="其他">其他</option>');
+        $select_type.val(relation.relation_type);
+
+        $div_content.find("input[name='del']").click(function(){
+            var flag = false;
+            $div_content.find('.form-control').each(function(){
+                var value = $(this).val();
+                if(!flag && value != null && value != ""){
+                    flag = true;
+                }
+            });
+            if(flag){
+                /* $$.showConfirm("提示","包含已输入的数据是否删除？",function () {
+                	nosave=false;
+                    $div_content.remove();
+                }); */
+            	nosave=false;
+                $div_content.remove();
+            }else{
+            	nosave=false;
+                $div_content.remove();
+            }
+        });
+        $form.initFormStyle();
+        
+        nosave=true;
+    }
+
+
+    function doBack(){
+        window.location.href="relation_address_list.html";
+    }
+
+    function doSave(){
+    	
+        $('#btnSave').val("保存中........");
+        $('#btnSave').attr("disabled",true);
+
+        var relationArray = new Array();
+        var relationElementArray =  $('#relation_div').find('.panel-primary');
+        for(var i = 0;i < relationElementArray.length;i++){
+            var str_employee_no = $(relationElementArray[i]).find('select[name="employee_no"] option:selected').val();
+            var str_employee_name = $(relationElementArray[i]).find('select[name="employee_no"] option:selected').text();
+            var str_relation_date = $(relationElementArray[i]).find('input[name="relation_date"]').val();
+            var str_relation_type = $(relationElementArray[i]).find('select[name="relation_type"] option:selected').val();
+            
+            var str_relation_reason=$(relationElementArray[i]).find('textarea[name="relation_reason"]').val();
+            var str_relation_rcv=$(relationElementArray[i]).find('textarea[name="relation_rcv"]').val();
+            var str_customer_type=$(relationElementArray[i]).find('input[name="customer_type"]').val();
+            
+            //alert(str_relation_reason+"-"+str_relation_rcv+"-"+str_customer_type);
+            
+            var str_id = $(relationElementArray[i]).find('input[name="relation_id"]').val();
+            var content_childs = [];
+            $(dict_relation_content).each(function(index,element){
+                $(relationElementArray[i]).find('select[name="option'+element.dictCode+'"]').each(function(){
+                    var $current_tr = $(this).parent().parent();
+                    var str_content_id = $current_tr.find('input[name="content_id"]').val();
+                    var str_content = $current_tr.find('input[name="input'+element.dictCode+'"]').val();
+                    var str_option_code = $(this).find('option:selected').val();
+                    if(checkValue(str_content)){
+                        var obj = {
+                            id:str_content_id,
+                            relation_id:str_id,
+                            content_code:element.dictCode,
+                            option_code:str_option_code,
+                            content:str_content
+                        }
+                        content_childs.push(obj);
+                    }
+                });
+            });
+
+            if(!checkValue(str_employee_no)) {
+            	$$.showMessage("提示","请选择拜访国安侠或拜访人! ");
+            	$('#btnSave').val("保存");
+                $('#btnSave').attr("disabled",false);
+                return;
+            }
+            
+            //校验日期
+            var dB = new Date(str_relation_date.substring(0,10));
+            var myDate = new Date();
+            var nowmonth=(myDate.getMonth()+1);
+            if(nowmonth<10){
+            	nowmonth="0"+nowmonth;
+            }
+            var inputmonth = (dB.getMonth()+1);
+            if(inputmonth<10){
+            	inputmonth="0"+inputmonth;
+            }
+            
+            var dBformat = dB.getFullYear()+"-"+inputmonth+"-"+dB.getDate();
+            var now = myDate.getFullYear()+"-"+nowmonth+"-"+myDate.getDate();
+            if(new Date(dBformat).valueOf()>new Date(now).valueOf()){
+            	 $$.showMessage("提示","请选择当前 或 以前的日期 ！");
+            	 $('#btnSave').val("保存");
+                 $('#btnSave').attr("disabled",false);
+                 return;
+            }
+            
+            if(nowmonth!=inputmonth){
+            	$$.showMessage("提示","请选择当前月 ！");
+            	return;
+            }
+            
+            if(str_customer_type=="1"){
+            	if(!checkValue(str_relation_reason)){
+                	$$.showMessage("提示","拜访记录中有未填写的拜访事由！");
+                    $('#btnSave').val("保存");
+                    $('#btnSave').attr("disabled",false);
+                    return;
+                }
+            	if(!checkValue(str_relation_rcv)){
+                	$$.showMessage("提示","拜访记录中有未填写的反馈！");
+                    $('#btnSave').val("保存");
+                    $('#btnSave').attr("disabled",false);
+                    return;
+                }
+            }else{
+            	 if(content_childs.length==0){
+                    	$$.showMessage("提示","请填写拜访记录内容！");
+                     $('#btnSave').val("保存");
+                     $('#btnSave').attr("disabled",false);
+                     return;
+                 }
+            }
+            	
+            if(!checkValue(str_relation_type)  && content_childs.length != 0) {
+                $$.showMessage("提示","拜访记录中有未选择拜访方式的选项。");
+                return;
+            }
+
+            var relation = {
+                id:str_id,
+                employee_no: str_employee_no,
+                employee_name: str_employee_name,
+                relation_date: str_relation_date,
+                relation_type:str_relation_type,
+                relation_reason:str_relation_reason,
+                relation_rcv:str_relation_rcv,
+                customer_type:str_customer_type,
+                create_user_id : user.id,
+                create_user : user.name,
+                childs:content_childs
+            };
+            
+            relationArray.push(relation);
+        }
+
+        if(relationArray.length==0){
+        	$$.showMessage("提示","未添加拜访数据 ！ ");
+            $('#btnSave').val("保存");
+            $('#btnSave').attr("disabled",false);
+            return;
+        }
+        
+        var customer = new Object();
+        customer.id=cust_id;
+        customer.relations = relationArray;
+        //alert(JSON.stringify(customer));
+        
+        doManager('CustomerManager', 'saveCustomerAndRelation', customer, function(data) {
+            if(data.result){
+            	window.location.href = "relation_edit.html?customer_id="+cust_id;
+            }else{
+                $$.showMessage('提示','保存失败！message:\n'+data.message);
+            }
+        });
+    }
+
+    function checkValue(value){
+        if(value == null || value.trim() == ''){
+            return false;
+        }
+        return true;
+    }
+    
+    
+    
+    var win;
+
+    /**
+     * 选择城市,创建一个客户 列表并显示
+     * @param {Object} callback
+     *
+     */
+    function showCustWin(callback){
+        win = new checkWin(callback);
+        win.show();
+        $('html, body').animate({scrollTop:0});
+    }
+	
+   /* //删除当前行 
+   function deletetr(nowTr){ 
+      $(nowTr).closest('tr').remove();
+   } */
+	function setcustSelect(jsons){
+	   	var customer_id = "";
+	   	var name = "";
+	   	var mobilephone = "";
+	   	var sex = "";
+	   	var age = "";
+		$.each(jsons,function(n,obj) {
+			customer_id = obj.id;
+			name = obj.name;
+			mobilephone = obj.mobilephone;
+			sex = obj.sex;
+			age = obj.age;
+		});
+		if(customer_id==null||customer_id==''){
+			$("#name").val("");
+			$("#mobilephone").val("");
+			$("#age").val("");
+			$('input[name="sex"]').removeAttr("checked");
+			//$('input[name="sex"][value="' + sex + '"]').attr('checked', 'checked');
+			nosearch=true;
+			$('.daikan_list').remove();
+			return;
+		}
+		
+		//根据customer.id去商业信息中查询,看是否存在，如果存在 则正常 ，如果不存在 ，则提示 添加商业信息 关联 。
+        doManager('PersonDutyManager','findPersonDutyBycustomerId',[customer_id],function (data, textStatus, XMLHttpRequest){
+            if(data.result){
+                var custList = JSON.parse(data.data);
+                if(custList.length==0){
+                	havetob=false;
+                }else{
+                	havetob=true;
+                }
+            }
+        },false);
+        
+		
+		$("#name").val(name);
+		$("#mobilephone").val(mobilephone);
+		$("#age").val(age);
+		$('input[name="sex"][value="' + sex + '"]').attr('checked', 'checked');
+		
+		inithavetob(customer_id);
+		
+		//进行查询
+		 doManager('RelationManager','findRelationsBycustomerId',[customer_id],function (data, textStatus, XMLHttpRequest){
+	            if(data.result){
+	                var arr = JSON.parse(data.data);
+	                nosearch=false;
+	                cust_id = customer_id;
+	                $('.daikan_list').remove();
+	                
+	                arr.sort(function(obj1,obj2){
+	            		return obj2.relation_date-obj1.relation_date;
+	            	});
+	                
+	                $(arr).each(function(i, relation) {
+	                	if(relation.relation_type==null||relation.relation_type.trim()==''){
+	                		relation.relation_type='无';
+	                	}
+	                	if(relation.status == 0){
+	                		if(relation.customer_type=="1"){
+		                		addToBRelationReadOnly(relation);
+		                	}else{
+		                		addRelationReadOnly(relation);
+		                	}
+	                	}
+	                	
+	                });
+	                
+	                //alert(arr.length);
+	            }else{
+	                $$.showMessage("提示",data.message);
+	            }
+	     });
+   }
+   
+   
+   
+   function addToBRelationReadOnly(relation){
+   	var to_b_html='<div class="daikan_list">'+
+			            '<div class="bf_item_title"><strong>拜访人： '+relation.employee_name+'</strong><span>拜访方式 ： '+relation.relation_type+'</span></div>'+
+			            '<div class="bf_des">'+
+			            '    <div class="bf_des_con">'+
+			            '        <div class="bf_des_conl_tob">拜访事由:</div>'+
+			            '        <div class="bf_des_conr_tob">'+
+			            '            <ul>'+
+			            '                <li>'+relation.relation_reason+'</li>'+
+			            '            </ul>'+
+			            '        </div>'+
+			            '    </div>'+
+			            '    <div class="bf_des_con">'+
+			            '        <div class="bf_des_conl_tob">反馈:</div>'+
+			            '        <div class="bf_des_conr_tob">'+
+			            '            <ul>'+
+			            '                <li>'+relation.relation_rcv+'</li>'+
+			            '            </ul>'+
+			            '        </div>'+
+			            '    </div>'+
+			            '</div>'+
+			            '<div class="bfn_item_record">拜访时间：'+new Date(relation.relation_date).format('yyyy-MM-dd')+'</div>'+
+			          '</div>';
+			          
+   	   var $div_parent = $('#relation_div');
+       var $div_btn = $div_parent.find('#div_relation_btn');				
+       $div_btn.before(to_b_html);
+   }
+   
+   
+   
+   function addRelationReadOnly(relation){
+   	var $div1=$("<ul></ul>");
+   	var $div2=$("<ul></ul>");
+   	var $div3=$("<ul></ul>");
+   	 $(dict_relation_content).each(function(index,element){
+      		 $(relation.childs).each(function(i,content){
+      			 if(content.content_code != element.dictCode){
+                       return;
+                }
+      			if(content.content_code==1){
+      				$(dict_relation_content_option).each(function(j,dict){
+      		            if(dict.dictCode == content.option_code&&dict.serialNumber==content.content_code){
+      		            	$div1.append('<li><label>'+dict.dictText+'</label><span>'+content.content+'</span></li>');
+      		            }
+      		        });
+      			}else if(content.content_code==2){
+      				$(dict_relation_content_option).each(function(j,dict){
+      		            if(dict.dictCode == content.option_code&&dict.serialNumber==content.content_code){
+      		            	$div2.append('<li><label>'+dict.dictText+'</label><span>'+content.content+'</span></li>');
+      		            }
+      		        });
+      			}else{
+      				$(dict_relation_content_option).each(function(j,dict){
+      		            if(dict.dictCode == content.option_code&&dict.serialNumber==content.content_code){
+      		            	$div3.append('<li><label>'+dict.dictText+'</label><span>'+content.content+'</span></li>');
+      		            }
+      		        });
+      			}
+      		 });
+          });
+   	 
+   	var to_c_html = '<div class="daikan_list">'+
+                    '<div class="bf_item_title"><strong>拜访国安侠：'+relation.employee_name+'</strong><span>拜访方式 ： '+relation.relation_type+'</span></div>'+
+                    '<div class="bf_des">'+
+                    '<div class="bf_des_con">'+
+                    '	<div class="bf_des_conl">产品及服务需求及意见反馈</div>'+
+                   	'	<div class="bf_des_conr">'+
+                   	'	</div>'+
+               		'</div>'+
+               		'<div class="bf_des_con">'+
+                	'	<div class="bf_des_conl">门店活动邀约及意见反馈</div>'+		
+                 	'  	<div class="bf_des_conr">'+
+                   	'	</div>'+
+             		'</div>'+
+              		'<div class="bf_des_con">'+
+               		'	<div class="bf_des_conl">与居委会/物业/其它商家谈合作或活动共建</div>'+
+                	'   <div class="bf_des_conr">'+
+                   	'	</div>'+
+               		'</div>'+
+           			'</div>'+
+           			'<div class="bfn_item_record">拜访时间：'+new Date(relation.relation_date).format('yyyy-MM-dd')+'</div>'+
+       				'</div>';
+       
+       				var $tochtml=$(to_c_html);
+       				
+       				var $cor1 = $tochtml.find('.bf_des_conr').eq(0);
+       		        $cor1.append($div1);
+       		        var $cor2 = $tochtml.find('.bf_des_conr').eq(1);
+       		        $cor2.append($div2);
+       		        var $cor3 = $tochtml.find('.bf_des_conr').eq(2);
+       		        $cor3.append($div3); 
+       				
+	       		    $tochtml.find('.bf_des_conr').each(function(){
+							var htmlstr = $(this).html();
+							if(htmlstr.length==10){
+								$(this).parent().remove();
+							}
+	 		        });
+       		     
+   	   var $div_parent = $('#relation_div');
+       var $div_btn = $div_parent.find('#div_relation_btn');				
+       $div_btn.before($tochtml);
+       
+   }
+   
+   
+   //检测该用户是否存在 商业信息 
+   function inithavetob(customer_id){
+	   doManager('PersonDutyManager','findPersonDutyBycustomerId',[customer_id],function (data, textStatus, XMLHttpRequest){
+           if(data.result){
+               var custList = JSON.parse(data.data);
+               if(custList.length==0){
+               	havetob=false;
+               }
+           }
+       });
+   }
+   
+   
+   
+   
+	
+    
+	
+	 /**
+   *
+   * @param {Object} callback 	回调函数
+   * 健康屋门店callback
+   * 返回值json
+   */
+  var checkWin = function(callback){
+      this.win = $("<div style='overflow-y: hidden'></div>");
+      var _this = this;
+      var initWin = function(){
+          _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/select_view/select_customer_checkbox.html?ids=1" scrolling="yes"></iframe>');
+          _this.win.dialog({
+              bgiframe: true,
+              title:"选择用户",
+              autoOpen:false,
+              width:_this.width,
+              height:_this.height,
+              buttons : {
+                  "确定": function(){
+                      window.frames["selectWin"].doSubmit();
+                      _this.win.remove();
+                  },
+                  "取消":function(){
+                      _this.hide();
+                      _this.win.remove();
+                  }
+              },
+              modal:true
+          });
+      };
+      this.width = 900;
+      this.height = 730;
+      this.callBack = function(json){
+          if (callback && typeof(callback) == 'function') {
+              callback(json);
+          }
+      };
+
+      this.show = function(){
+          _this.win.dialog("open");
+      };
+
+      this.hide = function(){
+          if(_this.onSubmitHandler){
+              _this.onSubmitHandler();
+          }
+          _this.win.dialog("close");
+      };
+      initWin();
+  }
+
+   
+</script>
+<body style="height: 100%; background-color: #fff;">
+    <div class="rightcont clear">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                基本信息
+                <span class="but">
+                   <!--  <input type="button" id="btnSave" onclick="doSave()" value="保存"/> -->
+                    <input type="button" onclick="doBack();" value="返回"/>
+                </span>
+            </div>
+            <div class="panel-body" style="height: 80%;">
+                <div id="div_customer" style="float:left;width: 100%;height: 100%">
+                    <table id="tiny_village_table" cellpadding="0" cellspacing="0" style="min-width: 100%;margin: 10px; width: auto">
+                        <tr>
+                            <td width="10%">姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名<span style="color: red">*</span></td>
+                            <td>
+                                <input id="id" name="id" type="hidden"/>
+                                <input id="employee_no" name="employee_no" type="hidden"/>
+                                <input id="create_user_id" name="create_user_id" type="hidden"/>
+                                <input id="create_user" name="create_user" type="hidden"/>
+                                <input id="name" name="name" disabled="disabled" type="text" class="form-control" style="width: 32%;display:inline;"/>
+                                <button class="btn btn-primary" type="button" onclick="showCustWin(setcustSelect);" style="display:inline;margin-top:-4px;">选择用户</button>
+                            </td>
+                            <td>电&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;话<span style="color: red">*</span></td>
+                            <td>
+                                <input id="mobilephone" name="mobilephone" disabled="disabled" type="text" class="form-control" onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="11" style="width: 50%"/>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>年&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;龄</td>
+                            <td>
+                                <div class="input-group" style="width: 50%">
+                                    <input id="age" name="age" type="text" disabled="disabled" class="form-control" onkeyup="this.value=this.value.replace(/\D/g,'')" maxlength="3"/>
+                                    <span class="input-group-addon">岁</span>
+                                </div>
+                            </td>
+                            <td>性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别</td>
+                            <td>
+                                <input disabled="disabled"  name="sex" type="radio" value="男"/>男&nbsp;
+                                <input disabled="disabled" name="sex" type="radio" value="女"/>女&nbsp;
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+
+            </div>
+            
+            
+            <div id="relation_div">
+                <form id="pmsForm" name="pmsForm" class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+                    <div id="div_relation_btn">
+                        
+                    </div>
+
+                    <div class="increase">
+                        <button class="btn btn-primary" type="button" onclick="addRelation()">添加对私拜访记录</button>
+                        <button class="btn btn-primary" type="button" onclick="addToBRelation()">添加对公拜访记录</button>
+                        <!-- <button class="btn btn-primary" type="button" onclick="doSave()">保存 </button> -->
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>
+

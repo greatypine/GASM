@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+  
+<project name="GASM" default="warFile" basedir=".">  
+
+    <property name="tomcat.lib" value="/usr/local/tomcat7/lib" /> 
+    <property name="warFileName" value="${warFileName}"/>  
+    <property name="build" value="${basedir}/build" />
+      
+    <path id="classpath">  
+        <fileset dir="${basedir}/WebContent/WEB-INF/lib">  
+            <include name="**/*.jar"/>  
+        </fileset>  
+       <fileset dir="${tomcat.lib}">
+           <include name="**/*.jar" />
+       </fileset>
+    </path>  
+    <target name="detect.product">
+        <condition property="product">
+            <and>
+                <isset property="deploy"/>
+                <equals arg1="${deploy}" arg2="product"/>
+            </and>
+        </condition>
+    </target>
+    <target name="detect.develop">
+        <condition property="develop">
+            <and>
+                <isset property="deploy"/>
+                <equals arg1="${deploy}" arg2="develop"/>
+            </and>
+        </condition>
+    </target>
+    <target name="product.datasource" if="product" depends="detect.product">
+        <echo>is product</echo>
+        <copy file="${basedir}/src/conf/dataSource-product.xml" tofile="${build}/WEB-INF/classes/conf/dataSource.xml"/>
+        <copy file="${basedir}/src/conf/application-product.properties" tofile="${build}/WEB-INF/classes/conf/application.properties"/>
+    </target>
+    <target name="develop.datasource" if="develop" depends="detect.develop">
+        <echo>is develop</echo>
+        <copy file="${basedir}/src/conf/dataSource.xml" tofile="${build}/WEB-INF/classes/conf/dataSource.xml"/>
+        <copy file="${basedir}/src/conf/application.properties" tofile="${build}/WEB-INF/classes/conf/application.properties"/>
+    </target>
+    <target name="init">
+        <delete dir="${build}/" />  
+        <mkdir dir="${build}/" />  
+        <mkdir dir="${build}/WEB-INF"/>
+        <mkdir dir="${build}/WEB-INF/classes"/>
+        <mkdir dir="${build}/WEB-INF/lib"/>
+    </target>
+    <target name="copyFiles" depends="init">
+        <copy todir="${build}/WEB-INF/classes">    
+            <fileset dir="${basedir}/src">    
+                <include name="**/**.*" />    
+                <exclude name="**/dataSource*.xml"/>
+                <exclude name="**/application*.properties"/>
+                <exclude name="**/*.java"/>
+            </fileset>    
+        </copy> 
+        <copy todir="${build}">    
+            <fileset dir="${basedir}/WebContent">    
+                <include name="**/**.*" />    
+                <exclude name="**/*.jar"/>
+                <exclude name="**/web.xml"/>
+            </fileset>    
+        </copy> 
+        <antcall target="product.datasource"/>
+        <antcall target="develop.datasource"/>
+    </target>
+    <target name="compile" depends="copyFiles">
+        <javac srcdir="${basedir}/src" destdir="${build}/WEB-INF/classes" encoding="utf-8" includeantruntime="false">  
+            <classpath refid="classpath">  
+            </classpath>  
+        </javac>  
+    </target>
+    <target name="warFile" depends="compile">  
+        <!-- 删除原有war包。 -->  
+        <delete dir="${basedir}/${warFileName}" />  
+        <!-- 建立新war包。 -->  
+        <war destfile="${basedir}/${warFileName}" webxml="${basedir}/WebContent/WEB-INF/web.xml">  
+            <!-- 将非jar和非class文件拷贝到war包的对应路径下。 -->  
+            <fileset dir="${build}">  
+                <include name="**/**.*" />  
+                <exclude name="**/*.jar"/>  
+                <exclude name="**/application-product.properties"/>  
+                <exclude name="**/dataSource-product.xml"/>  
+                <!--<exclude name="**/*.class"/>  -->
+            </fileset>  
+            <!-- 将jar和class文件拷贝到war包的对应路径下。 -->  
+            <lib dir="${basedir}/WebContent/WEB-INF/lib" />  
+            <!--<classes dir="${build}/WEB-INF/classes" />  -->
+        </war>  
+    </target>
+</project>

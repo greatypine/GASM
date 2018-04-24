@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>拜访记录信息列表</title>
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <style type="text/css">
+            .display{
+                width:100%
+            }
+            .but {
+                float: right;
+                text-align: center;
+            }
+            /*.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}*/
+			
+			.but input{color:#337ab7;}
+        </style>
+    </head>
+
+    <script type="text/javascript">
+        var win;
+        var month_one;
+		var month_last;
+		var dayNum; 
+        var str_employee_no = getUrlParamByKey('employee_no');
+        var month_date = getUrlParamByKey('month_date');
+        $(function () {
+        	
+        	
+            $('#employee_no').val(str_employee_no);
+            doClean();
+            //页面加载成功后需要获取数
+            $('input[name="pic"]').click(function(){
+                $('#is_pic').val($('input[name="pic"]:checked').val());
+            });
+            doManager('UserManager','getCurrentUserDTO',null,function(data){
+                if(data.result){
+                    var userDto = JSON.parse(data.data)
+                    $('#store_id').val(userDto.store_id);
+                    
+                    if(userDto.usergroup.code == "GAX"){//国安侠没有删除权限
+                    	$pmspage.opArr = [editObj];
+                    }else if(userDto.usergroup.code == "DZ"){//店长有删除权限
+                    	$pmspage.opArr = [editObj];
+                    }
+                    
+                    searchList();
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+            
+            
+            
+        });
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+        	var phone = $('#mobilephone').val();
+        	if(phone!=""&&phone.length!=11){
+        		 $$.showMessage('提示',"电话格式不正确 !");
+    			return;
+    		}
+            var obj = {
+            	//employee_no:$('employee_no').val(),
+                name:$('#name').val(),
+                mobilephone:$('#mobilephone').val(),
+                is_pic:$('#is_pic').val(),
+                tv_name:$('#tv_name').val(),
+                building_name:$('#building_name').val(),
+                unit_no:$('#unit_no').val(),
+                house_no:$('#house_no').val(),
+                //start_time:$("#s1").val(),
+                //end_time:$("#s2").val(),
+                store_id:$('#store_id').val()
+            };
+            var flag = false;
+            for(var key in obj){
+                if(obj[key] != null && obj[key] != ''){
+                    flag = true;
+                    break;
+                }
+            } 
+            //console.log(obj.employee_no);
+            $$.executeSearch('customerRelationList', 'conditionsDiv');
+        }
+
+        function checkValue(value){
+            if(value != null && value != ''){
+                return true;
+            }
+            return false;
+        }
+
+        function doClean() {
+            document.service_qa.reset();
+            searchList();
+        }
+        var editObj = {
+            html : '<a href="#">编辑 </a>',
+            resourceId : "relation_List_update",
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.customer_id;
+                window.location.href = "relation_edit.html?customer_id="+id;
+            }
+        }
+      
+       
+
+        function doAdd() {
+            window.location.href = "relation_add.html";
+        }
+
+        var COLUMNS = {
+    		 "mobilephone": function(aData, iColumn, sColumnName, map){
+                 var value = map[sColumnName];
+                 var ret = "";
+                 if(value!=null&&value!=""&&value.length>6){
+                     ret=value.substring(0,3)+"****"+value.substring(value.length-4,value.length);
+                 }
+                 return ret;
+             },
+            "lastdate": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                var date = new Date(parseInt(value)).format('yyyy-MM-dd');
+                return date;
+            }
+        }
+    </script>
+    <body style="height: 100%">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+            拜访记录查询
+            <span class="but">
+                <!-- <input type="button"  onclick="toHouse();" value="切换用户画像（房屋视角）"/> -->
+            </span>
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                                <td width="5%" align="right">
+                                   用户姓名:
+                                </td>
+                                <td width="28%">
+                                    <input id="store_id" name="store_id" type="hidden"/>
+                                    <!-- <input id="employee_no" name="employee_no" type="hidden"/> -->
+                                    <!-- <input id="s1" name="s1" type="hidden"/>
+                                    <input id="s2" name="s2" type="hidden"/> -->
+                                    <input id="name" name="name" type="text" style="width:60%" class="form-control" likeOption="false" onkeyup="value=this.value.replace(/\s+/g,'')"/>
+                                </td>
+                                <td width="5%" align="right">
+                                    手机号:
+                                </td>
+                                <td width="28%">
+                                    <input id="mobilephone" name="mobilephone" type="text" style="width:60%" class="form-control" onkeyup="value=this.value.replace(/\D+/g,'')" likeOption="false" maxlength="11"/>
+                                </td>
+                            
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <input type="button" class="btn btn-primary" onclick="searchList();" value="查询"/>
+                <input type="button" class="btn btn-primary" onclick="doClean();" value="重置"/>
+                <input type="button" class="btn btn-primary" onclick="doAdd();" value="新增拜访记录"/>
+            </div>
+        </div>
+        <div id="centerQueryGridContainer" class="panel panel-primary" queryid="customerRelationList" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+    </body>
+    </html>

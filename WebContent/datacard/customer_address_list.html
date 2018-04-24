@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>房屋信息列表</title>
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <style type="text/css">
+            .display{
+                width:100%
+            }
+            td{
+                padding-bottom: 20px;
+            }
+            .but {
+                float: right;
+                text-align: center;
+            }
+            /*.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}*/
+			
+			.but input{color:#337ab7;}
+        </style>
+    </head>
+
+    <script type="text/javascript">
+        var win;
+        var month_one;
+		var month_last;
+		var dayNum; 
+        var str_employee_no = getUrlParamByKey('employee_no');
+        var month_date = getUrlParamByKey('month_date');
+        $(function () {
+        	if(month_date!=null){
+    			var mon_arr=month_date.split("-");
+    			var month_val=parseInt(mon_arr[1]);
+    			if(month_val==1||month_val==3||month_val==5||month_val==7||month_val==8||month_val==10||month_val==12){
+    				dayNum=31;
+    			}else if(month_val==4||month_val==6||month_val==9||month_val==11){
+    				dayNum=30;
+    			}else if(month_val=2){
+    				dayNum=28;
+    			}
+    			month_one=month_date+"-01";
+    			month_last=month_date+"-"+dayNum;
+    			$("#s1").val(month_one);
+    			$("#s2").val(month_last);
+    		} 
+            $('#employee_no').val(str_employee_no);
+            //doClean();
+            //页面加载成功后需要获取数
+            $('input[name="pic"]').click(function(){
+                $('#is_pic').val($('input[name="pic"]:checked').val());
+            });
+            doManager('UserManager','getCurrentUserDTO',null,function(data){
+                if(data.result){
+                    var userDto = JSON.parse(data.data)
+                    $('#store_id').val(userDto.store_id);
+                    $$.executeSearch('viewCustomerAddress', 'conditionsDiv');
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        });
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            var obj = {
+            	employee_no:$('employee_no').val(),
+                name:$('#name').val(),
+                mobilephone:$('#mobilephone').val(),
+                is_pic:$('#is_pic').val(),
+                tv_name:$('#tv_name').val(),
+                building_name:$('#building_name').val(),
+                unit_no:$('#unit_no').val(),
+                house_no:$('#house_no').val(),
+                start_time:$("#s1").val(),
+                end_time:$("#s2").val(),
+                store_id:$('#store_id').val()
+            };
+         /*    var flag = false;
+            for(var key in obj){
+                if(obj[key] != null && obj[key] != ''){
+                    flag = true;
+                    break;
+                }
+            } */
+            /* if(!flag){
+                $$.showMessage('提示','必须输入一项查询内容才能查询');
+                return;
+            }
+
+            if(checkValue(obj.tv_name) && (obj.building_name == '' || obj.building_name == null)){
+                $$.showMessage('提示','家庭住址至少输入到楼房才能查询');
+                return;
+            }
+            if((checkValue(obj.building_name) || checkValue(obj.unit_no) || checkValue(obj.house_no)) && (obj.tv_name == '' || obj.tv_name == null)){
+                $$.showMessage('提示','家庭住址请先输入小区名');
+                return;
+            } */
+            console.log(obj.employee_no);
+            $$.executeSearch('viewCustomerAddress', 'conditionsDiv');
+        }
+
+        function checkValue(value){
+            if(value != null && value != ''){
+                return true;
+            }
+            return false;
+        }
+
+        function doClean() {
+            document.service_qa.reset();
+        }
+        var editObj = {
+            html : '<a href="#">编辑 </a>',
+            resourceId : "humanstore_List_update",
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.id;
+                window.location.href = "house_edit.html?customer_id="+id+"&house_id="+allColumnsDataMap.house_id;
+            }
+        }
+        $pmspage.opArr = [editObj];
+
+        function doAdd() {
+            window.location.href = "house_edit.html";
+        }
+
+        function toHouse(){
+            window.location.href = "house_address_list.html";
+        }
+        var COLUMNS = {
+            "address": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                if(value.length > 10){
+                    value = value.substring(0,10) + "...";
+                }
+                return value;
+            }
+        }
+    </script>
+    <body style="height: 100%">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+            用户画像查询（客户视角）
+            <span class="but">
+                <input type="button"  onclick="toHouse();" value="切换用户画像（房屋视角）"/>
+            </span>
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                                <td width="5%" align="right">
+                                    姓名:
+                                </td>
+                                <td width="28%">
+                                    <!-- <input id="store_id" name="store_id" type="hidden"/>
+                                    <input id="employee_no" name="employee_no" type="hidden"/> -->
+                                    <!-- <input id="s1" name="s1" type="hidden"/>
+                                    <input id="s2" name="s2" type="hidden"/> -->
+                                    <input id="name" name="name" type="text" style="width:60%" class="form-control" likeOption="false"/>
+                                </td>
+                                <td width="5%" align="right">
+                                    手机号:
+                                </td>
+                                <td width="28%">
+                                    <input id="mobilephone" name="mobilephone" type="text" style="width:60%" class="form-control" likeOption="false"/>
+                                </td>
+                                <td align="right" width="5%">
+                                    户型图:
+                                </td>
+                                <td>
+                                    <input name="pic" type="radio" value="有" bidTableFlag="true"/>有&nbsp;
+                                    <input name="pic" type="radio" value="无" bidTableFlag="true"/>无&nbsp;
+                                    <input id="is_pic" name="is_pic" type="hidden" />
+                                </td>
+                            </tr>
+<tr>
+                                <td width="8%" align="right">员工编码：</td>
+                                <td width="26%">
+                                    <input type="text" id="employee_no" name="employee_no" class="form-control" maxlength="20" />
+                                    <input type="hidden" id="store_id" name="store_id" likeOption="false" />
+                                </td>
+                                <td width="8%" align="right">拜访时间：</td>
+                                <td width="58%">
+                                    <input id="s1" revalidate="true"
+                                           type="text" likeOption="false" name="start_time"
+                                           validate="formatDate:true" class="pmsDateField form-control"
+                                           yearRange="-100:+10" style="width: 27%; display: inline;"
+                                           readonly /> 至
+                                    <input id="s2" revalidate="true"
+                                           likeOption="false" type="text" name="end_time"
+                                            validate="formatDate:true" class="pmsDateField form-control"
+                                            yearRange="-100:+10" style="width: 27%; display: inline;"
+                                            readonly />
+                                </td>
+                            </tr>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            <!-- <tr>
+                                <td align="right">
+                                    家庭住址:
+                                </td>
+                                <td colspan="3">
+                                    <input id="tv_name" name="tv_name" type="text" class="form-control" bidTableFlag="true" style="display: inherit;width: 20%"/>&nbsp;&nbsp;<span id="span_tv">小区</span>
+                                    <input id="building_name" name="building_name" type="text" class="form-control" bidTableFlag="true" style="display: inherit;width: 10%"/>&nbsp;&nbsp;<span id="span_building">号楼</span>
+                                    <input id="unit_no" name="unit_no" type="text" class="form-control building" bidTableFlag="true" style="display: inherit;width: 10%"/>&nbsp;&nbsp;<span class="building">单元</span>
+                                    <input id="house_no" name="house_no" type="text" bidTableFlag="true" class="form-control building" style="display: inherit;width: 10%"/>&nbsp;&nbsp;<span class="building">房间号</span>
+                                </td>
+                            </tr> -->
+						<input type="hidden" name="create_time" id="create_time"/>
+						<input type="hidden" name="update_time" id="update_time"/>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <input type="button" class="btn btn-primary" onclick="searchList();" value="查询"/>
+                <input type="button" class="btn btn-primary" onclick="doClean();" value="重置"/>
+                <input type="button" class="btn btn-primary" onclick="doAdd();" value="新增用户画像"/>
+            </div>
+        </div>
+        <div id="centerQueryGridContainer" class="panel panel-primary" queryid="viewCustomerAddress" operators="$pmspage.opArr"
+             titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+             showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+             showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+    </body>
+    </html>

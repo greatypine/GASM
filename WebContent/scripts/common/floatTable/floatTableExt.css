@@ -1,0 +1,26 @@
+@CHARSET "UTF-8";
+
+#dFloatTable{
+	display: inline-block;
+	float: left;
+	padding: 4px;
+}
+
+table#tbFloat{
+	width: 100%;
+	border-collapse:collapse;
+}
+table#tbFloat td{
+	border:solid 1px rgb(192, 184, 173);
+	height:25px;
+	padding: 8px;
+}
+table#tbFloat tr td:first-child{
+	font-size:larger;
+	font-weight: bold;
+	text-align: left;
+}
+table#tbFloat tr td:last-child{
+	font-size:16px;
+	text-align: left;
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>组织机构</title>
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common.css" />
+		<script type="text/javascript" src="js/lib.js"></script>
+		<SCRIPT LANGUAGE="JavaScript">
+			var zTree1;
+			var setting;
+			var myData;
+			var zNodes = [];
+			myData = $.toJSON(
+				{
+					managerName: "purStruOrgManager",
+					methodName: "getChild",
+					parameters: ['false']
+				});
+			setting = 
+				{
+					checkable: false,
+					async: true,
+					asyncParam: ["name", "id"], //获取节点数据时，必须的数据名称，例如：id、name
+					asyncParamOther: ["requestString", myData], //其它参数 ( key, value 键值对格式)
+					callback: 
+						{
+							click: zTreeOnClick,
+							beforeExpand: beforeExpand
+						},
+					checkType: 
+						{
+							"Y": "",
+							"N": ""
+						}
+				}
+			function zTreeOnClick(event, treeId, treeNode) {
+					var data = new PMSRequestObject("purStruOrgManager", "getPurOrgDTOById", [treeNode.id]);
+					$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+						window.parent.appFrame.location = "orgModify.html?id=" + treeNode.id;
+					});
+			}
+			
+			function beforeExpand(treeId, treeNode) {
+				if (treeNode.nodes == null || treeNode.nodes.length == 0) {
+					if (treeNode.flag != true) {
+						var data = new PMSRequestObject("purStruOrgManager", "getAuthChildsByParentId", [treeNode.id]);
+						$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								newNodes = eval("(" + data.data + ")");
+								addNode(newNodes, treeNode);
+							}
+						});
+					}
+					treeNode.flag = true;
+				}
+				else {
+					return true;
+				}
+				return false;
+			}
+			
+			function addNode(nodes, parNode) {
+				for (i = 0; i < nodes.length; i++) {
+					var newNode = nodes[i];
+					zTree1.addNodes(parNode, newNode);
+				}
+			}
+			
+			$(document).ready(function() {
+				var url = $$.PMSDispatchActionUrl;
+				refreshTree(url);
+			});
+			function refreshTree(asyncUrl) {
+				setting.asyncUrl = asyncUrl;
+				zTree1 = $("#treeDemos").zTree(setting, zNodes);
+			}
+		</SCRIPT>
+		<style>
+			body {
+			    background: #E4E6F5;
+			}
+		</style>
+	</head>
+	<body>
+		<ul id="treeDemos" class="tree" style="border:none;width:auto;">
+		</ul>
+	</body>
+</html>

@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>选择楼房</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript">
+    var id= getUrlParamByKey("id");
+    var bb= getUrlParamByKey("bb");
+    var atherbuildings= getUrlParamByKey("cc");
+    var buildings= getUrlParamByKey("dd");
+    var arr =new Array();
+    $(function(){
+    	if(atherbuildings!="efs"){
+    		$("#atherbuildings").val(atherbuildings);
+    	}
+    	$("#tinyvillageid").val(id);
+    	if(buildings!=null&&buildings.length>0){
+    		doManager("BuildingManager", "getBuildingDataByids",buildings , function(data,
+					textStatus, XMLHttpRequest) {
+				if (data.result) {
+					if(data.data!="null"){
+						var jsonData = $.fromJSON(data.data);
+						for ( var key in jsonData) {
+							var obj =new Object();
+				    		obj.storeid=jsonData[key].id;
+				    		obj.storename=jsonData[key].name;
+				    		obj.bb=bb;
+				    		arr.push(obj);
+						}
+					}
+				} else {
+					$$.showMessage("系统信息", "信息加载异常");
+					return false;
+				}
+			},false);
+    		
+    	}
+    	searchList();
+    })
+    function searchList() {
+    	$$.executeSearch('selectquarybuilding', 'conditionsDiv');
+    }
+    var COLUMNS = {
+            "id": function(aData, iColumn, sColumnName, map){
+            	var id = map[sColumnName];	
+            	var name = map["name"];
+            	var ccc=id+"---"+name;
+            	if(arr!=""&&arr.length>0){
+                	for(n in arr){
+                		if(id==arr[n].storeid){
+                			//如果有checked放入店名 
+                			//arr[n].storename=storename;
+                			return '<input type="checkbox" checked="true" name="chkbox" onclick="checkboxClick(this)" value="'+ccc+'"/>';
+                		}
+                	}
+                }
+            	 return '<input type="checkbox" name="chkbox" onclick="checkboxClick(this);" value="'+ccc+'"/>';
+            }}
+    function checkboxClick(_this){
+    	if(_this.checked){
+    		var obj =new Object();
+    		obj.storeid=_this.value.split("---")[0];
+    		obj.storename=_this.value.split("---")[1];
+    		obj.bb=bb;
+    		arr.push(obj);
+    	}else{
+    		for(n in arr){
+    			if(arr[n].storeid==_this.value.split("---")[0]){
+    				arr.splice(n,1);
+    			}
+    		}
+    	}
+    }
+    
+    function doSubmit(){
+        var jsons=new Array();
+        if (arr.length != 0) {
+        	for(i=0;i<arr.length;i++){
+        		var json = {id:arr[i].storeid,name:arr[i].storename,bb:bb};
+        		jsons.push(json);
+        	}
+            
+        }else{
+            $$.showMessage('系统消息','请选择楼房');
+        }
+        parent.win.callBack(jsons);
+        parent.win.hide();
+    }
+  //替换,,
+    function replacenull(stringss){
+    	var ses="";
+    	if(stringss.length>0){
+    		var ars=stringss.split(",");
+    		for(var i=0;i<ars.length;i++){
+    			if(ars[i]!=''){
+    				ses+=ars[i]+","
+    			}
+    		}
+    		if(ses.length>0){
+    			ses=ses.substring(0, ses.length-1);
+    		}
+    	}
+    	return ses;
+    }
+    function  yanzhen(){
+    	var mm="";
+    	if(arr.length>0){
+    		for(i=0;i<arr.length;i++){
+    			mm+=arr[i].storeid+',';
+    		}
+    		replacenull(mm);
+    	}
+		if(mm.length>0){
+			return 0;
+		}else{
+			return 1;
+		}
+	}
+  
+  
+    </script>      
+</head>
+<body>
+	    <div id="bodyDiv">
+        <div id="userGroupInfo" class="panel panel-primary">
+            <div class="panel-heading">
+                <a href="#" onclick="toggleBizBiz('conditionsDiv','pic');"><img src="../scripts/images/22.png" align="absmiddle" id="pic"/></a>&nbsp;搜索条件
+            </div>
+            <div id="conditionsDiv" class="panel-body">
+                    <table class="bigteble">
+                        <tr>
+                            <td align="left" width="40%" class="basetext">
+                            	<input name="tinyvillageid" id="tinyvillageid" type="hidden">
+                            	<input name="atherbuildings" id="atherbuildings" type="hidden">
+                                楼房名称:				<input  name="name" id="name" class="form-control" style="width: 70%"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="panel-footer"  align="right">
+                    <input class="btn btn-primary" onClick="searchList()" value="查询" type="button"/>
+                </div>
+            </div>
+            <div id="selectquarybuilding" searchDiv="conditionsDiv" queryid="selectquarybuilding" queryformat="simple" class="panel panel-primary"
+                 operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+                 showprint="false" showsearch="false" showtitle="true" showpaging="true" showcheckbox="false"
+                 checkmode="multi" autoload="false" showno="false">
+            </div>
+        </div>
+</body>
+</html>

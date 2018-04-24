@@ -1,0 +1,12 @@
+.tab_active{
+	display:block;
+}
+.tab_unActive{
+	display:none;
+}
+.tab_containerbody{padding:0px;}
+.tab_containerbody{padding:0px;}
+.mainNavg ul li.select{ float:left;  background:url(../../../images/tab_left4.gif) no-repeat; padding-left:10px; height:24px; line-height:24px; cursor:pointer;}
+.mainNavg ul li.select a{ background:url(../../../images/tab_right4.gif) no-repeat right; float:left; height:24px; padding-right:15px; }
+.mainNavg ul li{ background:url(../../../images/tab_left_on4.gif) no-repeat; }
+.mainNavg ul li a{ background:url(../../../images/tab_right_on4.gif) no-repeat right;}

@@ -1,0 +1,90 @@
+
+
+.tree li button.chk.checkbox_false_full {
+	background: url("img/checkbox.png") no-repeat scroll 0 0 transparent;
+}
+
+.tree li button.chk.checkbox_false_full_focus {
+	background: url("img/checkbox.png") no-repeat scroll 0 -12px
+		transparent;
+}
+
+.tree li button.chk.checkBoxDisabled {
+	background: url("img/checkbox.png") no-repeat scroll 0 -72px
+		transparent;
+}
+
+.tree li button.chk.checkBoxDisabled_false {
+	background: url("img/checkbox.png") no-repeat scroll 0 -72px
+		transparent;
+}
+
+.tree li button.chk.checkBoxDisabled_true {
+	background: url("img/checkbox.png") no-repeat scroll 0 -48px
+		transparent;
+}
+
+.tree li button.chk.checkbox_false_part {
+	background: url("img/checkbox.png") no-repeat scroll 0 -72px
+		transparent;
+}
+
+.tree li button.chk.checkbox_false_part_focus {
+	background: url("img/checkbox.png") no-repeat scroll 0 -84px
+		transparent;
+}
+
+.tree li button.chk.checkbox_true_full {
+	background: url("img/checkbox.png") no-repeat scroll 0 -24px
+		transparent;
+}
+
+.tree li button.chk.checkbox_true_full_focus {
+	background: url("img/checkbox.png") no-repeat scroll 0 -36px
+		transparent;
+}
+
+.tree li button.chk.checkbox_true_part {
+	background: url("img/checkbox.png") no-repeat scroll 0 -48px
+		transparent;
+}
+
+.tree li button.chk.checkbox_true_part_focus {
+	background: url("img/checkbox.png") no-repeat scroll 0 -60px
+		transparent;
+}
+
+
+
+.tree li button.ico_docu_0001 {
+	background: url("img/executable.gif");
+	height: 16px;
+	width: 16px;
+}
+.tree li button.ico_docu_0002 {
+	background: url("img/unExecute.gif");
+	height: 16px;
+	width: 16px;
+}
+.tree li button.ico_docu_0003 {
+	background: url("img/execute.png");
+	height: 16px;
+	width: 16px;
+}
+
+
+#productManager_4_span {
+	color: #00F;
+}
+
+#productManager_2_span {
+	color: #00F;
+}
+
+#productManager_5_span {
+	color: #00F;
+}
+
+#productManager_6_span {
+	color: #00F;
+}

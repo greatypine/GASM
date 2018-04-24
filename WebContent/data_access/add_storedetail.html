@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>门店详情</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+          <style type="text/css">
+	td {
+		width=50%;
+	}
+	p{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	}
+	table input,table select{border:1px solid #ccc; border-radius:3px; line-height: 30px; height: 30px; width:200px;}
+	.panel-heading .but{float:right; text-align: center;}
+	.but input {
+		background-color: transparent;
+		border: 1px solid #fff;
+		border-radius: 3px;
+		padding: 0 13px;
+		margin-right: 30px;}
+	.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+    #open_shop_time{
+		background-color: #FFF;
+	}
+	#sign_date{
+		background-color: #FFF;
+	}
+	#rent_free_start_data{
+		background-color: #FFF;
+	}
+	#rent_free_end_data{
+		background-color: #FFF;
+	}
+	#submit_date{
+		background-color: #FFF;
+	}
+	#audit_date{
+		background-color: #FFF;
+	}
+	#enter_date{
+		background-color: #FFF;
+	}
+	#place_date{
+		background-color: #FFF;
+	}
+	#prop_date{
+		background-color: #FFF;
+	}
+	#accept_date{
+		background-color: #FFF;
+	}
+	#business_license_date{
+		background-color: #FFF;
+	}
+	#food_circulation_date{
+		background-color: #FFF;
+	}
+	#gather_end_date{
+		background-color: #FFF;
+	}
+	#gather_start_date{
+		background-color: #FFF;
+	}
+	#line_date{
+		background-color: #FFF;
+	}
+</style>
+<script type="text/javascript">
+var id = getUrlParamByKey("id");
+	var obj;
+	var lst_select_tiny;
+	var lst_select_esta;
+	$(function(){
+		$("#id").val(id);
+		initview();
+		$('#name').keyup(function(event){
+			 $('#town-search').children().remove();
+			var name=$("#name").val();
+			 $('#town-search').children().remove();
+			 var c={"name":name};
+			doManager('StoreManager','findStoreDataByName',c,function(data){
+	            if(data.result){
+	               lst_select_tiny = JSON.parse(data.data);
+	                $(lst_select_tiny).each(function(index,element){
+	                    $('#town-search').append('<option value="'+element.name+'">');
+	                });
+	            }else{
+	                $$.showMessage("提示",data.message);
+	            }
+	        });
+		})
+		$('#name').change(function(){
+	        $(lst_select_tiny).each(function(index,element){
+	            if(element.name == $('#name').val()){
+	                $('#store_id').val(element.store_id);
+	                if($('#store_id').val()!=null&&$('#store_id').val()!=''){
+	                	findstoredetailBystoreId($('#store_id').val());
+	                }else{
+	                	alert("门店不存在,请先去添加门店");
+	                }
+	            }
+	        });
+	    });
+		 $('#house_pic').change(function(){
+			 var fname=$("#name").val()+"-营业执照";
+			 var url = getRootPath()+ "/fileUpload.action?img_type=1&file_name=house_type_image";
+	            var elementsId = ['house_pic'];
+             $.ajaxFileUpload({
+                 url: url,
+                 type: 'post',
+                 secureuri: false, //一般设置为false
+                 data:{
+                     fname:fname
+                 },
+                 fileElementId: elementsId, // 上传文件的id、name属性名
+                 dataType: 'JSON', //返回值类型，一般设置为json、application/json
+                 success: function(data, status){
+                     var res = JSON.parse(data)
+                     if(res.result){
+                         var pmsFile = JSON.parse(res.data);
+                         $('#business_pic').text(pmsFile.name);
+                     }else{
+                         $$.showMessage('提示',res.message);
+                     }
+                 },
+                 error: function(data, status, e){
+                     $$.showMessage("提示",e);
+                 }
+             });
+         });
+		 
+		 
+		 $('#food_img_pic').change(function(){
+			 var fname=$("#name").val()+"-食品流通证";
+			 var url = getRootPath()+ "/fileUpload.action?img_type=1&file_name=house_type_image";
+	            var elementsId = ['food_img_pic'];
+             $.ajaxFileUpload({
+                 url: url,
+                 type: 'post',
+                 secureuri: false, //一般设置为false
+                 data:{
+                     fname:fname
+                 },
+                 fileElementId: elementsId, // 上传文件的id、name属性名
+                 dataType: 'JSON', //返回值类型，一般设置为json、application/json
+                 success: function(data, status){
+                     var res = JSON.parse(data)
+                     if(res.result){
+                         var pmsFile = JSON.parse(res.data);
+                         $('#food_pic').text(pmsFile.name);
+                     }else{
+                         $$.showMessage('提示',res.message);
+                     }
+                 },
+                 error: function(data, status, e){
+                     $$.showMessage("提示",e);
+                 }
+             });
+         });
+		 
+		doManager('storeManager','getStoreEstateList',null,function(data){
+	        if(data.result){
+	        	lst_select_esta = JSON.parse(data.data);
+	            $(lst_select_esta).each(function(index,element){
+	                $('#vill-search').append('<option value="'+element.estate+'">');
+	            });
+	        }else{
+	            $$.showMessage("提示",data.message);
+	        }
+	    });
+	})
+	//根据id查看是否是添加还是修改、
+	function initview(){
+	if(id == null || id == ''){
+		$("#vill_des").text("门店详情添加");
+		$("#id1").hide();
+		$("#name").show();
+		return;
+	}
+	$("#id").val(id);
+	$("#name").attr("readOnly","true");
+	$("#vill_des").text("门店详情修改");
+	$("#id1").show();
+	$("#name").hide();
+	doManager("storeDetailManager", "findStoreDetailById",id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+					if(key=="rent_free_start_data"||key=="rent_free_end_data"||key=="sign_date"||key=="submit_date"||key=="audit_date"||key=="enter_date"||key=="place_date"||key=="prop_date"||key=="accept_date"||key=="business_license_date"||key=="food_circulation_date"||key=="gather_start_date"||key=="gather_end_date"||key=="line_date"){
+						$("#"+key).val(ddtrans(va));
+					}else if(key=="open_shop_time"){
+						$("#"+key).val(dateTrans(va));
+					}else if(key=="business_pic"||key=="food_pic"){
+						$("#"+key).text(va);
+					};
+					if(key=="name"){
+						$("#"+key).val(va);
+						$("#id1").text(va);
+					}
+				}
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+	})
+}
+
+	//根据门店id查找门店详情
+	function findstoredetailBystoreId(storeid){
+		doManager('storeDetailManager','findStoreDetailBystore_id',storeid,function(data){
+	        if(data.result){
+	        	if(data.data!="null"){
+					var jsonData = $.fromJSON(data.data);
+					for ( var key in jsonData) {
+						var va = jsonData[key];
+						$("#"+key).val(va);
+						if(key=="rent_free_start_data"||key=="rent_free_end_data"||key=="sign_date"||key=="submit_date"||key=="audit_date"||key=="enter_date"||key=="place_date"||key=="prop_date"||key=="accept_date"||key=="business_license_date"||key=="food_circulation_date"||key=="gather_start_date"||key=="gather_end_date"||key=="line_date"){
+							$("#"+key).val(ddtrans(va));
+						}else if(key=="open_shop_time"){
+							$("#"+key).val(dateTrans(va));
+						}
+					}
+				}
+	        }else{
+	            $$.showMessage("提示",data.message);
+	        }
+	    });
+	}
+
+	function dateTrans(value){
+		if(value!=null&&value!=""){
+     	   value = new Date(value).format('yyyy-MM-dd hh:mm:ss');
+        }
+        return value;
+	}
+	function ddtrans(value){
+		if(value!=null&&value!=""){
+	     	   value = new Date(value).format('yyyy-MM-dd');
+	        }
+	        return value;
+	}
+	
+	//数据验证
+	function datacheck(){
+		var store_id=$('#store_id').val();
+		var rent_free_start_data=$('#rent_free_start_data').val();
+		var rent_free_end_data=$('#rent_free_end_data').val();
+		if(store_id==null||store_id==''){
+			alert("门店不存在,请去门店管理页面添加门店");
+			return;
+		}
+		if(rent_free_start_data!=null&&rent_free_start_data!=''){
+			if(rent_free_end_data==null||rent_free_end_data==''){
+				alert("请填写正确的免租期");
+				return;
+			}else{
+				var startTime = new Date(Date.parse(rent_free_start_data));
+				var endTime = new Date(Date.parse(rent_free_end_data));
+				if(startTime>endTime){
+					alert("请填写正确的免租期");
+					return;
+				}
+			}
+		}
+		doSave();
+	}
+	function doSave(){
+	var arr = [ "store_id","open_shop_time","superMicro","estate","ownership","store_area","unit_price","agency_fee","rent_free_start_data","rent_free_end_data","payment_method","sign_date","submit_date","audit_date","enter_date","place_date","prop_date","accept_date","business_license_date","food_circulation_date","gather_start_date","gather_end_date","line_date","id","business_pic","food_pic"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		var ttt=$('#open_shop_time').val();
+		if(ttt!=null&&ttt!=''){
+			var datt=ttt.split(' ');
+			o['open_shop_time']=datt[0]+"T"+datt[1]+".000+0000";
+		}
+		o['business_pic']=$("#business_pic").text();
+		o['food_pic']=$("#food_pic").text();
+		doManager("StoreDetailManager", "seeOrUpdateStoreDetail", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				if(id == null || id == ''){
+					alert("添加成功！");
+				}else{
+					alert("修改成功！");
+				}
+				window.location.href = 'StoreDetailList.html';
+			} else {
+				$$.showMessage("系统信息", "添加失败!");
+			}
+		});
+	}
+	
+	
+	function showUserGroup() {
+		var store_name = $('#name').val();
+		if(!checkValue(store_name)){
+			 $$.showMessage('提示','请输入门店名称');
+		}else{
+			$("#villageInfo").dialog({
+	            bgiframe: true,
+	            title: '营业执照',
+	            width: 300,
+	            //height: 500,
+	            modal: true,
+	            buttons: {
+	                "${form.ui.ok}": function () {
+	                	$("#villageInfo").dialog('close');
+	                },
+	                "${query.ui.cancel}": function () {
+	                    $("#villageInfo").dialog('close');
+	                   // submitForm(path, "aaaa");
+	                }
+	            }
+	        });
+		}
+        
+    }
+	function showFoodGroup() {
+		var store_name = $('#name').val();
+		if(!checkValue(store_name)){
+			 $$.showMessage('提示','请输入门店名称');
+		}else{
+			$("#villageInfoData").dialog({
+	            bgiframe: true,
+	            title: '食品流通证',
+	            width: 300,
+	            //height: 500,
+	            modal: true,
+	            buttons: {
+	                "${form.ui.ok}": function () {
+	                	$("#villageInfoData").dialog('close');
+	                },
+	                "${query.ui.cancel}": function () {
+	                    $("#villageInfoData").dialog('close');
+	                   // submitForm(path, "aaaa");
+	                }
+	            }
+	        });
+		}
+        
+    }
+	
+	 function checkValue(value){
+	        if(value == null || value == ''){
+	            return false;
+	        }
+	        return true;
+	    }
+</script>
+</head>
+<body>
+		<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading"><span id="vill_des"></span>
+		<span class="but">
+			<input name="" type="submit" onclick="datacheck();" value="保存">
+			<input name="" type="button" onclick="javascript:history.go(-1);" value="返回">
+		</span>
+	</div>
+    <div class="panel-body" id="temp1">
+	<form action="" method="post" class="pmsForm">
+	<input type="hidden" id="store_id" name="store_id"/>
+	<input type="hidden" id="id" name="id"/>
+	    <p style="color: #337ab7;font-size: 18px;font-weight: bolder;">门店信息</p>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p class="read">门店名称：<span style="color: red">*</span></p>
+				<p class="read"> 
+					  <input type="text" name="name" id="name" style="display: none;" list="town-search"/>
+					<datalist id="town-search"></datalist>
+					 <label for="name" id="id1"></label>
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">开店时间：</p>
+				<p class="read">
+                       <input id="open_shop_time" type="text" likeOption="false" placeholder="请选择" name="open_shop_time" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+					</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">目前状态：</p>
+				<p class="read">
+					<input name="estate" id="estate"  onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" list="vill-search"/>
+					<datalist id="vill-search"></datalist>
+				</p>
+			</td>
+		</tr>
+	</table>
+	<p style="color: #337ab7;font-size: 18px;font-weight: bolder;">门店租赁信息</p>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p class="read">房屋产权属性：</p>
+				<p class="read"> 
+					<select  id="ownership">
+						<option value="">请选择</option>
+						<option value="直签">直签</option>
+						<option value="二房东">二房东</option>
+						<option value="三房东">三房东</option>
+						<option value="大房东">大房东</option>
+						<option value="委托代理人">委托代理人</option>
+						<option value="已解押">已解押</option>
+						<option value="军房">军房</option>
+					</select>
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">门店建筑面积：</p>
+				<p class="read">
+						<input type="text" onkeyup="value=value.replace(/[^\d.]/g,'')" name="store_area" id="store_area" />	
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">租赁单价：</p>
+				<p class="read">
+					<input name="unit_price" id="unit_price"  onkeyup="value=value.replace(/[^\d.]/g,'')" />
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="33.33%">
+				<p class="read">付款方式：</p>
+				<p class="read"> 
+					<select  id="payment_method">
+						<option value="">请选择</option>
+						<option value="半年付">半年付</option>
+						<option value="年付">年付</option>
+						<option value="季付">季付</option>
+						<option value="月付">月付</option>
+					</select>
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">中介费：</p>
+				<p class="read">
+						<input type="text" onkeyup="value=value.replace(/[^\d.]/g,'')" name="agency_fee" id="agency_fee" />	
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">门店租赁合同签约时间：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="sign_date" name="sign_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+					</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="33.33%" colspan="2">
+				<p class="read">免租期：</p>
+				<p class="read"> 
+					<input type="text" likeOption="false" placeholder="请选择" id="rent_free_start_data" name="rent_free_start_data" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />到<input type="text" likeOption="false" placeholder="请选择" id="rent_free_end_data" name="rent_free_end_data" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+			</td>
+		</tr>
+	</table>
+	<p style="color: #337ab7;font-size: 18px;font-weight: bolder;">门店装修信息</p>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p class="read">是否有微超：</p>
+				<p class="read"> 
+					<select  id="superMicro">
+						<option value="">请选择</option>
+						<option value="是">是</option>
+						<option value="否">否</option>
+					</select>
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">功能布局图提交日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="submit_date" name="submit_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">功能布局图审核通过日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="audit_date" name="audit_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="33.33%">
+				<p class="read">装修进场日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="enter_date" name="enter_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">设备下单日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="place_date" name="place_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">道具下单日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="prop_date" name="prop_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td width="33.33%">
+				<p class="read">装修验收合格日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="accept_date" name="accept_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+			</td>
+			<td width="33.33%">
+			</td>
+		</tr>
+	</table>
+	<p style="color: #337ab7;font-size: 18px;font-weight: bolder;">证照信息</p>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p class="read">营业执照发放日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="business_license_date" name="business_license_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">上传营业执照：</p>
+				<p class="read">
+                       <img src="../images/plus.png" style="width: 32px;height: 32px;opacity: 0.3" onclick="showUserGroup();">
+                    <label id="business_pic" name="business_pic"></label>		
+				</p>
+			</td>
+			<td width="33.33%">
+			</td>
+		</tr>
+		<tr>
+			
+			<td width="33.33%">
+				<p class="read">食品流通证发放日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="food_circulation_date" name="food_circulation_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+			<p class="read">上传食品流通证：</p>
+				<p class="read">
+                      <img src="../images/plus.png" style="width: 32px;height: 32px;opacity: 0.3" onclick="showFoodGroup();">
+                    <label id="food_pic" name="food_pic"></label>		
+				</p>
+			</td>
+			<td width="33.33%">
+			</td>
+		</tr>
+	</table>
+	<p style="color: #337ab7;font-size: 18px;font-weight: bolder;">开店信息</p>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p class="read">信息采集开始日：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="gather_start_date" name="gather_start_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">信息采集完成并提交日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="gather_end_date" name="gather_end_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+			<td width="33.33%">
+				<p class="read">线上中台开通日期：</p>
+				<p class="read">
+                       <input type="text" likeOption="false" placeholder="请选择" id="line_date" name="line_date" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+				</p>
+			</td>
+		</tr>
+	</table>
+	</form>
+	
+	<div id="villageInfo" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<div class="panel panel-primary">
+            <div class="panel-heading">上传营业执照</div>
+            <div class="panel-body">
+                <input type="file" id="house_pic" name="house_pic" class="form-control">
+            </div>
+        </div>
+ 	</div>
+ 	 <div id="villageInfoData" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<div class="panel panel-primary">
+            <div class="panel-heading">上传食品流通证</div>
+            <div class="panel-body">
+                <input type="file" id="food_img_pic" name="food_img_pic" class="form-control">
+            </div>
+        </div>
+ 	</div> 
+	
+	
+	
+	<div style="height: 30px;"></div>
+	</div>
+
+</div>
+
+
+</body>
+ <script type="text/javascript">
+ $(function () {
+	 jeDate({
+         dateCell:"#gather_start_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#gather_end_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#line_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#open_shop_time",//isinitVal:true,
+         format:"YYYY-MM-DD hh:mm:ss",
+         isTime:true,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#sign_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#rent_free_start_data",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#rent_free_end_data",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#submit_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#audit_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#enter_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#place_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#prop_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#accept_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#business_license_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 jeDate({
+         dateCell:"#food_circulation_date",//isinitVal:true,
+         format:"YYYY-MM-DD",
+         isTime:false,
+         isinitVal:false,
+         zIndex:2000,
+         
+     });
+	 
+	 
+ })
+ </script>
+</html>

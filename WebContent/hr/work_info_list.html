@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>任务列表</title>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+        <script type="text/javascript" src="../scripts/auto.js"></script>
+            
+
+
+    </head>
+    <style type="text/css">
+        td{
+            padding-top: 10px;
+        }
+        .auto{max-height:100px; overflow-y:scroll;}
+    </style>
+    <script>
+    Date.prototype.format=function(fmt) {        
+        var o = {        
+        "M+" : this.getMonth()+1, //月份        
+        "d+" : this.getDate(), //日        
+        "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
+        "H+" : this.getHours(), //小时        
+        "m+" : this.getMinutes(), //分        
+        "s+" : this.getSeconds(), //秒        
+        "q+" : Math.floor((this.getMonth()+3)/3), //季度        
+        "S" : this.getMilliseconds() //毫秒        
+        };        
+        var week = {        
+        "0" : "\u65e5",        
+        "1" : "\u4e00",        
+        "2" : "\u4e8c",        
+        "3" : "\u4e09",        
+        "4" : "\u56db",        
+        "5" : "\u4e94",        
+        "6" : "\u516d"       
+        };        
+        if(/(y+)/.test(fmt)){        
+            fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
+        }        
+        if(/(E+)/.test(fmt)){        
+            fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
+        }        
+        for(var k in o){        
+            if(new RegExp("("+ k +")").test(fmt)){        
+                fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
+            }        
+        }        
+        return fmt;        
+    } 
+    
+    
+    	var array=new Array();
+        var maxMonth = null;
+		var curStoreStatus = null;
+		var curStore = null;
+		var currentUser;
+        $(function () {
+        	
+        	initcurruser();
+        	
+        	if(!checkStoreChange()){
+    			return;
+    		};
+        	
+        	
+        	
+        	initallstore();
+        	
+        	//取得当前门店 状态 
+        	doManager("storeManager", "queryCurrentStoreInfo",null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var curStoreObj = JSON.parse(data.data);
+						curStore = curStoreObj;
+						curStoreStatus = curStoreObj.estate;
+					}
+			},false);
+        	
+        	
+            //setMaxWorkMonth();
+            if(maxMonth == null){
+                maxMonth = new Date().format('yyyy-MM');
+            }
+            /* jeDate({
+                dateCell:"#add_work_month",//isinitVal:true,
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:true,
+                zIndex:2000,
+                choosefun:function(val) {
+                    findWorkTime(val);
+                }
+            });
+ 
+
+            jeDate({
+                dateCell:"#work_month",
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:true,
+                zIndex:2000
+            });
+
+            jeDate({
+                dateCell:"#s1",//isinitVal:true,
+                format:"YYYY-MM-DD",
+                isTime:false
+            });
+
+            jeDate({
+                dateCell:"#s2",//isinitVal:true,
+                format:"YYYY-MM-DD",
+                isTime:false
+            });*/
+            //setNextWorkMonth();
+
+            searchList();
+            
+            
+            
+            $("#cstmz_actv").remove();
+        });
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            $$.executeSearch('workInfoQuery', 'conditionsDiv');
+        }
+
+        function doClean() {
+            document.service_qa.reset();
+        }
+
+        var viewObj = {
+            html : '<a name="a_confirm" href="#">详情</a>',
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.id;
+                var work_type = allColumnsDataMap.work_type;
+                var store_id = allColumnsDataMap.store_id;
+                if(work_type=="绩效打分录入"){
+                	window.location.href = "score_record.html?work_id="+id;
+                }
+                if(work_type=="异常订单申诉"){
+                	window.location.href = "exceptionorder.html?work_id="+id;
+                }
+                if(work_type=="门店选址审核"){
+                	window.location.href="add_store_reference.html?store_id="+store_id+"&work_id="+id;
+                	//window.location.href = "exceptionorder.html?work_id="+id;
+                }
+                if(work_type=="门店筹备审核"){
+                	window.location.href="add_storedocumentinfo_reference.html?store_id="+store_id+"&work_id="+id;
+                }
+                //window.location.href = "work_record_view.html?id="+id+"&store_id="+allColumnsDataMap.store_id+"&workMonth="+allColumnsDataMap.work_month;
+            }
+        };
+        $pmspage.opArr = [viewObj];
+        
+
+        function checkValue(value){
+            if(value != null && value != ''){
+                return true;
+            }
+            return false;
+        }
+
+        //初始化所有门店
+        function initallstore() {
+        	doManager("StoreManager", "findStoreAll", null,
+        			function(data, textStatus, XMLHttpRequest) {
+        				if (data.result) {
+        					var jsonData = $.fromJSON(data.data);
+        					for(i=0;i<jsonData.length;i++){
+        						array.push(jsonData[i].name);
+        					}
+        				}
+        			}, false);
+        }
+
+        
+
+       function addWorkInfo(){
+    	   //$$.showMessage('提示',"功能开发中... ");
+    	   showSelectWorktype();
+       }
+        
+       
+       
+       function showSelectWorktype(){
+           var div = $("#showSelectWorktype");
+           div.dialog({
+               bgiframe : true,
+               title : "选择要发起类型",
+               width : 380,
+               buttons : {
+                   "确定" : function() {
+                	   toSendWorkInfo($(this));
+                   },
+                   "取消" : function() {
+                       $(this).dialog("close");
+                   }
+               },
+               modal : false
+           });
+       }
+        
+       
+       function toSendWorkInfo(){
+    	   //判断门店是否发生变动 。
+    	   //var top_store=window.top.frames['i2ui_shell_top'].document.getElementById("userName").innerHTML;
+    	   var top_store=window.parent.document.getElementById("userName").innerHTML; 
+    	   
+    	   var storeischange=false;
+    	 	//取得当前门店 状态 
+	       	doManager("storeManager", "queryCurrentStoreInfo",null,
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var curStoreObj = JSON.parse(data.data);
+							curStore = curStoreObj;
+						}
+			},false);
+    	   if(top_store!=null&&top_store.length>0){
+    		  var str_arr = top_store.split('<option');
+    		  for(i=0;i<str_arr.length;i++){
+    			  var va = str_arr[i];
+    			  if(va.indexOf('selected=')>-1&&va.indexOf(curStore.name)<0){
+    				  storeischange = true;
+    			  }
+    		  }
+    	   }
+    	   if(storeischange){
+    		   $$.showConfirm("提示","门店发生异动！ 将刷新页面！ ",function () {
+    			   parent.location.reload();
+				});
+    		   return;
+    	   }
+    	 
+       		var workTypeSelect = $('#workTypeSelect option:selected').val();
+       		if(workTypeSelect.indexOf('绩效打分')>-1){
+       			//插入一条数据到 任务发起列表中。以修改数据的时候 用。
+       			//判断当前登录人门店是否是营业中  
+       			if(curStoreStatus=="运营中"||curStoreStatus=="试运营"){
+       				window.location.href='score_record.html';
+       			}else{
+       				$$.showMessage('提示','当前门店暂未开业,暂不填写绩效分！ ');
+       			}
+       		}else if(workTypeSelect.indexOf('考勤')>-1){
+       			$$.showMessage('提示','功能开发中...');
+       			//window.location.href='work_record.html';
+       		}else{
+       			$$.showMessage('提示','功能开发中...');
+       		}
+       }
+       
+       
+       
+     //列表中 列的处理
+       var COLUMNS = {
+               "commit_date": function(aData, iColumn, sColumnName, map){
+                   var value = map[sColumnName];
+                   if(value!=null&&value!=""){
+                	   value = new Date(value).format('yyyy-MM-dd');
+                   }
+                   return value;
+               },
+               "str_commit_status": function(aData, iColumn, sColumnName, map){
+                   var value = map[sColumnName];
+                   var work_id = map['id'];
+                   value="<a href='javascript:showFlowDetail("+work_id+")'>"+value+"</a>";
+                   return value;
+               }
+               
+           }
+     function showFlowDetail(workid){
+   	     doManager('flowDetailManager','queryAllFlowDetailByWorkId',[workid],function(data){
+              if(data.result){
+              	var work_detail_list = JSON.parse(data.data);
+              	var div_tbl = $("#showFlowDetail_tbl");
+              	div_tbl.empty();
+              	var topHtml="<tr>"+
+                       		"	<td align=\"center\" colspan=\"3\"><strong><font size=\"3px;\">审批过程</font></strong> &nbsp;&nbsp;</td>"+
+                       		"</tr>";
+                div_tbl.append(topHtml);
+              	$(work_detail_list).each(function(i,obj){
+              		var app_ret = obj.approv_ret;
+              		if(app_ret=='审批中'){
+              			app_ret="<font color='green'>审核通过<font>";
+              		}else{
+              			if(app_ret=='审核通过'){
+              				app_ret="<font color='green'>审核通过<font>";
+              			}
+              			if(app_ret=='驳回'){
+              				app_ret="<font color='red'>驳回<font>";
+              			}
+              		}
+              		var flowHtml="<tr>"+
+                   	"<td align=\"right\">"+obj.create_user+":&nbsp;&nbsp;</td>"+
+                   	"<td align=\"center\">"+obj.update_user+"</td>"+
+                   	"<td align=\"left\">"+app_ret+"</td>"+
+                	"</tr>";
+              		div_tbl.append(flowHtml);
+              	});
+              	
+              	var div = $("#showFlowDetail");
+              	div.dialog({
+                    bgiframe : true,
+                    title : "审批过程",
+                    width : 380,
+                    buttons : {
+                        "确定" : function() {
+                        	$(this).dialog("close");
+                        }
+                    },
+                    modal : false
+                });
+              	
+              	
+              }
+         },false);
+    	   
+    	 //alert('功能开发中。。'+workid);
+     }
+     
+     
+       function checkStoreChange(){
+    	   var top_store=window.parent.document.getElementById("userName").innerHTML; 
+    	   //var top_store=window.top.frames['i2ui_shell_top'].document.getElementById("userName").innerHTML;
+    	   var storeischange=false;
+    	 	//取得当前门店 状态 
+   	       	doManager("storeManager", "queryCurrentStoreInfo",null,
+   					function(data, textStatus, XMLHttpRequest) {
+   						if (data.result) {
+   							var curStoreObj = JSON.parse(data.data);
+   							curStore = curStoreObj;
+   						}
+   			},false);
+    	   if(top_store!=null&&top_store.length>0){
+    		  var str_arr = top_store.split('<option');
+    		  for(i=0;i<str_arr.length;i++){
+    			  var va = str_arr[i];
+    			  if(va.indexOf('selected=')>-1&&va.indexOf(curStore.name)<0){
+    				  storeischange = true;
+    			  }
+    		  }
+    	   }
+    	   if(storeischange){
+    		   $$.showConfirm("提示","门店发生异动！ 将刷新页面！ ",function () {
+    			   parent.location.reload();
+   				});
+    		   return;
+    	   }
+    	   return true;
+   	}
+      
+       
+       
+       
+       
+       function initcurruser(){
+   		//取得当前登录人的门店
+   		doManager("UserManager", "getCurrentUserDTO",null,
+     				function(data, textStatus, XMLHttpRequest) {
+     					if (data.result) {
+     						var curr_user = JSON.parse(data.data);
+     						currentUser = curr_user;
+     						var code = curr_user.usergroup.code;
+     						if(code=="MDXZTXJSZ"||code=="MDCBTXJSZ"||code=="QYJL"||code=="CSMDGLZ"){
+     							//门店选址填写角色组 
+     							$("#addNewWork").hide();
+     						}
+     						
+     					}
+     	},false);
+   	}
+    </script>
+    <body style="height: 100%;">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+          任务列表记录
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                                <!-- <td width="8%" align="right">门店名称：</td>
+                                <td width="26%">
+                                    <div class="input-group" style="width:100%;">
+				                        <input type="text" id="store_name" name="store_name" class="auto-inp form-control" likeOption="false">
+				                        <div class="auto hidden" id="auto">
+				                            <div class="auto_out">1</div>
+				                            <div class="auto_out">2</div>
+				                        </div>
+				                    </div>
+                                </td> -->
+                                <td width="8%" align="right">任务名称：</td>
+                                <td width="58%">
+                                    <input id="work_type" type="text" likeOption="false" name="work_type" class="auto-inp form-control"  style="width: 45%; display: inline;" />
+                                </td>
+                            </tr>
+                            <!-- <tr>
+                                <td align="right" >考勤月份：</td>
+                                <td >
+                                    <input type="text" id="work_month" name="work_month" class="wicon form-control" maxlength="20" likeOption="false"  />
+                                </td>
+                                <td align="right" ></td>
+                                <td >
+
+                                </td>
+                            </tr> -->
+                        </table>
+                    </form>
+                </div>
+            </div>
+           <!--  <div class="panel-footer" style="text-align: right">
+                <button class="btn btn-primary" onclick="searchList()">查询</button>
+                <button class="btn btn-primary" onclick="doClean()">重置</button>
+                <button class="btn btn-primary" id="addNewWork" onclick="addWorkInfo()">新增任务</button>
+            </div> -->
+            
+            
+            <div class="clearfix" style="padding: 10px 0 15px 0;">
+	         
+	         
+	          <div class="col-sm-1 pull-right">
+	            <button class="btn btn-block btn-danger"  id="addNewWork"  onclick="addWorkInfo();">新增任务</button>
+	          </div>
+	           <div class="col-sm-1 pull-right">
+	            <button class="btn btn-block btn-success" onclick="doClean();">重置</button>
+	          </div>
+	           <div class="col-sm-1 pull-right">
+	            <button class="btn btn-block btn-warning" onclick="searchList()">查询</button>
+	          </div>
+	        </div>
+            
+            
+            
+            
+        </div>
+        <div id="centerQueryGridContainer" class="panel panel-primary" queryid="workInfoQuery" operators="$pmspage.opArr"
+             titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+             showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+             showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+        <div id="showSelectWorktype" class="panel panel-primary" style="display: none;">
+            <!--<div class="panel-heading">-->
+            <!--发起考勤或修改总工时-->
+            <!--</div>-->
+            <div class="panel-body">
+                <table  cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                	
+                    <tr>
+                        <td align="right" width="20%" >发起类型<label style="color:red;">*</label>：</td>
+                        <td width="80%" >
+                        	<select id="workTypeSelect" style="width: 100%;display:inline-block;padding:0;" class="form-control">
+                           		<option>绩效打分录入</option>
+                           		<!-- 
+                           		<option>考勤录入</option>
+                           		<option>请假申请</option> 
+                           		-->
+                           	</select>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" id="work_month_id" name="work_month_id" /><!-- 无用 -->
+            </div>
+        </div>
+
+
+
+		<div id="showFlowDetail" class="panel panel-primary" style="display: none;">
+            <!--<div class="panel-heading">-->
+                <!--发起考勤或修改总工时-->
+            <!--</div>-->
+            <div class="panel-body">
+                <table id="showFlowDetail_tbl" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                   <!--  <tr>
+                       	<td align="right">张震:&nbsp;&nbsp;</td>
+                       	<td align="center">2017-07-24 12:23:22</td>
+                       	<td align="left">发起</td>
+                    </tr>
+                    <tr>
+                       	<td align="right">霍嫒婷:&nbsp;&nbsp;</td>
+                       	<td align="center">2017-07-24 12:23:22</td>
+                       	<td align="left">已通过</td>
+                    </tr>
+                    <tr>
+                       	<td align="right">吴丽娜:&nbsp;&nbsp;</td>
+                       	<td align="center">2017-07-24 12:23:22</td>
+                       	<td align="left">已通过</td>
+                    </tr> -->
+                   
+                </table>
+            </div>
+        </div>
+       
+    </body>
+    
+    
+    <script>
+		var autoComplete = new AutoComplete("store_name","auto",array);
+		document.getElementById("store_name").onkeyup = function(event){
+			autoComplete.start(event);
+		}
+	</script>
+
+
+    </html>

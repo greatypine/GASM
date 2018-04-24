@@ -1,0 +1,231 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<meta http-equiv="Cache-Control" content="no-cache"/>
+	<meta http-equiv="Pragma" content="no-cache"/>
+	<meta http-equiv="Expires" content="0"/>
+	<title>自定义表格</title>
+	<link rel="stylesheet" type="text/css" href="../css/style_sheet_core.css"/>
+	<link rel="stylesheet" type="text/css" href="../css/datatables.css"/>
+	<script language="javascript" src="../lib/jquery/jquery-1.5.js"></script>
+	<script language="javascript" src="../lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+	<script language="javascript" src="./common-core.js"></script>
+	<script language="javascript" src="./common-tool.js"></script>
+	<script>
+		var pageTitle = "自定义列表";
+		
+		function getUrlParamByKey(key) {
+			var str = window.location.search;
+			if (str.indexOf(key) != -1) {
+				var pos_start = str.indexOf(key) + key.length + 1;
+				var pos_end = str.indexOf("&", pos_start);
+				if (pos_end == -1) {
+					return str.substring(pos_start);
+				} else {
+					return str.substring(pos_start, pos_end)
+				}
+			} else {
+				return null;
+			}
+		};
+
+		$(function() {
+			$("#s1 option:first,#s2 option:first").attr("selected", true);
+
+			$("#s1").dblclick(function() {
+				$("option:selected", this).clone().appendTo("#s2");
+				$("option:selected", this).remove();
+				$("#s1 option:first,#s2 option:first").attr("selected", true);
+			});
+
+			$("#s2").dblclick(function() {
+				$("option:selected", this).clone().appendTo("#s1");
+				$("option:selected", this).remove();
+				$("#s1 option:first,#s2 option:first").attr("selected", true);
+			});
+
+			$("#add").click(function() {
+				$("#s1 option:selected").clone().appendTo("#s2");
+				$("#s1 option:selected").remove();
+				$("#s1 option:first,#s2 option:first").attr("selected", true);
+			});
+
+			$("#remove").click(function() {
+				$("#s2 option:selected").clone().appendTo("#s1");
+				$("#s2 option:selected").remove();
+				$("#s1 option:first,#s2 option:first").attr("selected", true);
+			});
+
+			$("#addall").click(function() {
+				$("#s1 option").clone().appendTo("#s2");
+				$("#s1 option").remove();
+				$("#s1 option:first,#s2 option:first").attr("selected", true);
+			});
+
+			$("#removeall").click(function() {
+				$("#s2 option").clone().appendTo("#s1");
+				$("#s2 option").remove();
+				$("#s1 option:first,#s2 option:first").attr("selected", true);
+			});
+
+			$("#s2up").click(function() {
+				var so = $("#s2 option:selected");
+				if (so.get(0).index != 0) {
+					so.each(function() {
+						$(this).prev().before($(this));
+					});
+				}
+			});
+
+			$("#s2down").click(function() {
+				var alloptions = $("#s2 option");
+				var so = $("#s2 option:selected");
+				if (so.get(so.length - 1).index != alloptions.length - 1) {
+					for (i = so.length - 1; i >= 0; i--) {
+						var item = $(so.get(i));
+						item.insertAfter(item.next());
+					}
+				}
+			});
+		});
+
+		$(document).ready(function() {
+			$$.initialize();
+			var objString = decodeURIComponent(getUrlParamByKey("obj"));
+			var obj = $.fromJSON(objString);
+			var selectedColumns = obj['selectedColumns'];
+			var unselectedColumns = obj['unselectedColumns'];
+			var pathName = obj['pathName'];
+			var queryId = obj['queryId'];
+			var operatorShow = obj['operatorShow'];
+			var sel1 = $('#s1');
+			var sel2 = $('#s2');
+			if (selectedColumns !== null) {
+				for ( var j = 0; j < selectedColumns.length; j++) {
+					var opt = $("<option></option>");
+					opt.attr("value", selectedColumns[j].key);
+					opt.append(selectedColumns[j].header);
+					sel2.append(opt);
+				}
+			}
+			if (unselectedColumns !== null) {
+				for ( var j = 0; j < unselectedColumns.length; j++) {
+					var opt = $("<option></option>");
+					opt.attr("value", unselectedColumns[j].key);
+					opt.append(unselectedColumns[j].header);
+					sel1.append(opt);
+				}
+			}
+			if (operatorShow !== null) {
+				var seleString = ".config-confirm-container input[value='" + operatorShow + "']";
+				$(seleString).attr("checked", true);
+			}
+
+			//2013-08-06 haochengjie
+			var queryConfigId = obj['queryConfigId'];
+			$("#queryConfigId").val(queryConfigId);
+
+			//	$("option", sel2).each(function(i){
+			//		var value = $(this).attr("value");
+			//		var opts = $("option", sel1).filter(function(index){
+			//			 if($(this).attr("value") == value){
+			//			 	$(this).remove();
+			//			 };
+			//		});
+			//	});
+
+		});
+
+		function deleteConfig() {
+			var queryConfigId = $("#queryConfigId").val();
+			var url = $$.PMSDispatchActionUrl;
+			if (queryConfigId == null || queryConfigId == '') {
+				$$.showMessage(pageTitle, "您还没有配置不能恢复默认值！");
+			} else {
+				var data = new PMSRequestObject("queryConfigManager", "removeById", [ queryConfigId ]);
+				var callback = function(data, textStatus, XMLHttpRequest) {
+					$$.showMessage(pageTitle, "恢复默认值成功！");
+					$("#s1 option").clone().appendTo("#s2");
+					$("#s1 option").remove();
+					$("#s1 option:first,#s2 option:first").attr("selected", true);
+				};
+				var failureCallback = function(data, textStatus, XMLHttpRequest) {
+					$$.showMessage(pageTitle, "恢复默认值失败！");
+				};
+				$$.ajax(url, "requestString=" + data.toJsonString(), callback, failureCallback);
+			}
+		};
+
+		function confirm() {
+			var objString = decodeURIComponent(getUrlParamByKey("config_obj"));
+			var obj = $.fromJSON(objString);
+			var para = new Object();
+			var values;
+			$("#s2 option").each(function(i) {
+				i == 0 ? values = $(this).attr("value") : values = values + "," + $(this).attr("value");
+			})
+			var operatorShow = $(".config-confirm-container input:checked").val();
+
+			para["operatorShow"] = operatorShow;
+			para["values"] = values;
+			para['pathName'] = obj['pathName'];
+			para["queryId"] = obj["queryId"];
+			var url = $$.PMSDispatchActionUrl;
+			var data = new PMSRequestObject($$.customQueryManager, $$.queryCongifMethod, [ $.toJSON(para) ], null);
+			var callback = function(data, textStatus, XMLHttpRequest) {
+				$$.showMessage(pageTitle, "保存成功");
+			};
+			var failureCallback = function(data, textStatus, XMLHttpRequest) {
+				$$.showMessage(pageTitle, "保存失败");
+			};
+			$$.ajax(url, "requestString=" + data.toJsonString(), callback, failureCallback);
+			//	var nowDiv = $("#configTable",parent.document);
+			//	nowDiv.dialog("close");
+			//	$$.reconfig(obj["queryId"]);
+		};
+		-->
+	</script>
+</head>
+<body style="text-align:center;">
+	<div id="config-container" >
+	<div id="config-dialog">
+		<div class="config-page-list">
+			<div class="config-page-field-title">
+				不显示字段
+			</div>
+			<select name="s1" size="14" multiple="multiple" id="s1" style="width:240px;vertical-align:bottom"></select>
+		</div>
+		<div class="config-page-selector">
+			<input class="buttonu config-page-select-all" type="button" name="addall" id="addall" value=">>" /><br />
+			<input class="buttonu config-page-select" type="button" name="add" id="add" value=">" /><br />
+			<input class="buttonu config-page-unselect" type="button" name="remove" id="remove" value="<" /><br />
+			<input class="buttonu config-page-unselect-all" type="button" name="removeall" id="removeall" value="<<" />
+		</div>
+		<div class="config-page-list">
+			<div class="config-page-field-title">
+				显示字段
+			</div>
+			<select name="s2" size="14" multiple="multiple" id="s2" style=" width:240px;"></select>		
+		</div>
+		<div class="config-page-sort">
+			<input class="buttonu config-page-up" type="button" name="s2up" id="s2up" value="向上" /><br />
+		    <input class="buttonu config-page-down" type="button" name="s2down" id="s2down" value="向下" />
+		</div>
+	</div>
+	<div class="clear"></div>
+	<div class="config-confirm-container" style="width:570px">
+		<div >
+			操作列显示方式:
+			<input type="radio" name="operatorshow" value="horizontal"/>横排显示
+			<input type="radio" name="operatorshow" value="vertical"/>纵列显示
+		</div>
+		<div>
+			<input type="hidden" name="queryConfigId" id="queryConfigId"/>
+			<input class="buttonu" type="button"   value="确定" onclick="confirm()"/> &nbsp;&nbsp;&nbsp;&nbsp;
+			<input class="buttonu" type="button"   value="恢复默认值" onclick="deleteConfig()"/>
+		</div>
+	</div>
+	</div>
+</body>
+</html>

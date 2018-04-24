@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>地址信息采集</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+    <script type="text/javascript" src="../scripts/auto.js"></script>
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+    	.display{
+    		width:100%
+    	}
+    </style>
+    <script type="text/javascript">
+    var win;
+	$(function () {
+		jeDate({
+            dateCell:"#create_time",//isinitVal:true,
+            format:"YYYY-MM-DD",
+            isTime:false,
+            isinitVal:false,
+            zIndex:2000,
+            choosefun:function(val) {
+                //findWorkTime(val);
+            }
+        });
+	    //页面加载成功后需要获取数据
+	    searchList();
+	    $(".operateHeader").width("5%");
+	});
+	//记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('attachmentDataQuery', 'conditionsDiv');
+        $(".operateHeader").width("5%");
+    }
+    function doClean() {
+        document.service_qa.reset();
+        searchList();
+    }
+  //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str === "" || str == "undefined" || typeof(str) == "undefined";
+    }
+    function uploadExcel() {
+    	var content = $('#upfile')[0].files;
+    	var fileList= new Array();
+        if(content.length<=0){
+        	$$.showMessage("${system.info}", "请选择文件!");
+            return false;
+        }
+        for( var i=0; i<content.length; i++ ) {
+            var _name = content[i].name;
+            //文件不能为空
+            if (isnull(_name)) {
+                $$.showMessage("${system.info}", "请选择文件!");
+                return false;
+            }
+            //后缀必须为xls,不支持2007
+            var suffix = _name.match(/^(.*)(\.)(.{1,8})$/)[3];
+            if ("xls" != suffix && "xlsx" != suffix) {
+                $$.showMessage("${system.info}", "请上传xls文件或者xlsx文件!");
+                return false;
+            }
+            fileList.push(_name);
+        }
+    	var path = getRootPath();
+    	submitForm(path,"aaaa");
+    }
+    function submitForm(path, _type) {
+    	$("#uploadFrom").attr("action", path + "/excelGatherUpload.action?model=t_commtity&&metho="+_type);
+        $("#uploadFrom").submit();
+    	$("#upfile").val("");
+    }
+    
+    //写字楼信息
+    function uploadBuildExcel() {
+        var content = $('#uploadBuildInfo')[0].files;
+        if(content.length<=0){
+        	$$.showMessage("${system.info}", "请选择文件!");
+            return false;
+        }
+        version(content);
+        var path = getRootPath();
+        submitBuildForm(path,"aaaa");
+    }
+  //验证文件格式
+    function version(content){
+    	 var fileList= new Array();
+	        for( var i=0; i<content.length; i++ ) {
+	            var _name = content[i].name;
+	            //文件不能为空
+	            if (isnull(_name)) {
+	                $$.showMessage("${system.info}", "请选择文件!");
+	                return false;
+	            }
+	            //后缀必须为xls,不支持2007
+	            var suffix = _name.match(/^(.*)(\.)(.{1,8})$/)[3];
+	            if ("xls" != suffix && "xlsx" != suffix) {
+	                $$.showMessage("${system.info}", "请上传xls文件或者xlsx文件!");
+	                return false;
+	            }
+	            fileList.push(_name);
+	        }
+    }
+    function submitBuildForm(path, _type) {
+    	$("#uploadBuildFrom").attr("action", path + "/excelGatherUpload.action?model=t_buildInfo");
+        $("#uploadBuildFrom").submit();
+    	$("#uploadBuildInfo").val("");
+    }
+    
+    //商业信息
+    function uploadExcelFile() {
+        var content = $('#upLoadBusinessFile')[0].files;
+        if(content.length<=0){
+        	$$.showMessage("${system.info}", "请选择文件!");
+            return false;
+        }
+        version(content);
+        var path = getRootPath();
+        submitbusinessForm(path,"aaaa");
+    }
+    
+    function submitbusinessForm(path, _type) {
+    	$("#uploadbinessFrom").attr("action", path + "/excelGatherUpload.action?model=t_businessInfo");
+        $("#uploadbinessFrom").submit();
+    	$("#upLoadBusinessFile").val("");
+    }
+    function importSuccess(){
+    	$("#upfile").val("");
+        document.file1.reset();
+       // window.location.reload();
+         $("#uploadBuildInfo").val("");
+        document.filebuild.reset();
+        $("#upLoadBusinessFile").val("");
+        document.fileBusiness.reset();
+    $$.showMessage("系统信息", "导入成功");
+}
+    var bid="";
+  //弹出已存在的社区名称及gb_code
+    function showUserGroup(message) {
+	  $("#error").text(message);
+        $("#errorInfo").dialog({
+            bgiframe: true,
+            title: '上传信息',
+            width: 300,
+            //height: 500,
+            modal: true,
+            buttons: {
+                "${form.ui.ok}": function () {
+                	$("#errorInfo").dialog('close');
+                },
+                "${query.ui.cancel}": function () {
+                    $("#errorInfo").dialog('close');
+                }
+            }
+        });
+    }
+    
+    var COLUMNS = {
+            "operation": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var id = map["id"];
+                var messages = map["message"];
+                var ret = '<a href="#" onclick="showUserGroup(&quot;'+messages+'&quot;)">查看</a>';
+                return ret;
+            },"store_name": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                if(value==null||value=='--'){
+                	value='';
+                }
+                return value;
+            }
+        }
+    </script>
+</head>
+<body style="height: 100%">
+    <div class="panel panel-default" style="margin: 10px">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                数据导入:地址信息采集
+            </h4>
+        </div>
+    </div>
+    <div class="rightcont">
+    <div class="panel panel-primary">
+        <div class="panel-heading">地址信息数据采集</div>
+        <div class="panel-body">
+            <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+               
+                <form name="file1" action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom"
+                      target="hframe">
+                    <div class="form-group">
+                        <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                            <input id="upfile" type="file" isuploadtable="true" name="file" class="form-control" multiple="">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="uploadExcel();" name="upload">
+                                    <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="..."/>
+                                </button>
+                            </span>
+                        </div>
+                        <input type="text" value="备注" id="remark" name="remark" onFocus="if(value==defaultValue){value='';this.style.color='#111'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="width: 200px;height: 34px;color:#999999"> 
+                        <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                    </div>
+                </form>
+            </div>
+            
+        </div>
+    </div>
+	</div>
+	 <div class="rightcont">
+    <div class="panel panel-primary">
+        <div class="panel-heading">写字楼信息采集</div>
+        <div class="panel-body">
+            <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+               
+                <form name="filebuild" action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadBuildFrom"
+                      target="hframe">
+                    <div class="form-group">
+                        <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                            <input id="uploadBuildInfo" type="file" isuploadtable="true" name="filebuild" class="form-control" multiple="">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="uploadBuildExcel();" name="upload">
+                                    <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="..."/>
+                                </button>
+                            </span>
+                        </div>
+                    	<input type="text" value="备注" id="remark" name="remark" onFocus="if(value==defaultValue){value='';this.style.color='#111'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="width: 200px;height: 34px;color:#999999"> 
+                        <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+	</div>
+    <div class="rightcont">
+    <div class="panel panel-primary">
+        <div class="panel-heading">商业信息采集</div>
+        <div class="panel-body">
+            <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+               
+                <form name="fileBusiness" action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadbinessFrom"
+                      target="hframe">
+                    <div class="form-group">
+                        <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                            <input id="upLoadBusinessFile" type="file" isuploadtable="true" name="businessfile" class="form-control" multiple="">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="uploadExcelFile();" name="upload">
+                                    <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="..."/>
+                                </button>
+                            </span>
+                        </div>
+                       <input type="text" value="备注" id="remark" name="remark" onFocus="if(value==defaultValue){value='';this.style.color='#111'}" onBlur="if(!value){value=defaultValue;this.style.color='#999'}" style="width: 200px;height: 34px;color:#999999"> 
+                        <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+	</div>
+	<div class="panel panel-primary">
+        <div class="panel-heading">文件信息查询</div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="10">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="4%">文件名称:</td>
+                            <td>
+                                <input id="file_name" name="file_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="4%">街道名称:</td>
+                            <td>
+                                <input id="townName" name="townName" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="3%">日            期:</td>
+                            <td>
+                                <input id="create_time" name="create_time" type="text" style="width:60%" likeOption="false" class="wicon form-control" maxlength="20"/>
+                            </td>
+                            <td width="4%">文件类型:</td>
+                            <td>
+                                <select id="file_type_name" name="file_type_name" type="text" style="width:80%" class="form-control">
+	                                <option value=""></option>
+	                                <option >商业信息文件</option>
+	                                <option>写字楼文件</option>
+	                                <option>地址文件</option>
+                                </select>
+                            </td>
+                            <td width="4%">上传状态:</td>
+                            <td>
+                                <select id="uploadType" name="uploadType" type="text" style="width:80%" class="form-control">
+	                                <option value=""></option>
+	                                <option value="上传成功">上传成功</option>
+	                                <option value="上传失败">上传失败</option>
+	                                <option value="上传中">上传中</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+        </div>
+    </div>
+	<div id="centerQueryGridContainer" class="panel panel-primary" queryid="attachmentDataQuery" operators="$pmspage.opArr"
+        titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+	<div id="errorInfo" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+	 	<span id="error"></span>	
+	 </div>
+</body>
+</html>

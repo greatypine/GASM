@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <link rel="stylesheet" href="script/tree/jquery.treeview.css" />
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+        <script src="js/lib.js" type="text/javascript"></script>
+        <script>
+            var zTree1;
+            var setting;
+            var zNodes = [];
+            var request = getRequestParams();
+            var id = request['id'];
+            var myData = $.toJSON({
+                managerName: "functionManager",
+                methodName: "getChildren",
+                parameters: [id]
+            });
+            
+            setting = {
+                checkable: true,
+                async: true,
+                asyncParam: ["name", "id"], //获取节点数据时，必须的数据名称，例如：id、name
+                asyncParamOther: ["requestString", myData], //其它参数 ( key, value 键值对格式)
+               	checkType:{
+					Y:"p",
+					N:"s"
+				},
+			    callback: {
+					beforeExpand:beforeExpand,
+                    click: zTreeOnClick
+                }
+            }
+            function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+          
+			function addNode(nodes, parNode) {
+				for (i = 0; i < nodes.length; i++) {
+					var newNode = nodes[i];
+					zTree1.addNodes(parNode, newNode);
+				}
+			}
+			function zTreeOnClick(event, treeId, treeNode) {
+				if (treeNode.nodes == null || treeNode.nodes.length == 0) {
+				var data = new PMSRequestObject("functionManager", "getChildrenByParentId", [id,treeNode.id]);
+					$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							newNodes = eval("(" + data.data + ")");
+							addNode(newNodes, treeNode);
+						}
+					});
+				}
+			}
+			function beforeExpand(treeId, treeNode) {
+				if (treeNode.nodes == null || treeNode.nodes.length == 0) {
+					if(treeNode.flag!=true)
+					{
+						var data = new PMSRequestObject("functionManager", "getChildrenByParentId", [id,treeNode.id]);
+						$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							newNodes = eval("(" + data.data + ")");
+							addNode(newNodes, treeNode);
+						}
+						});
+						treeNode.flag=true;
+					}
+				
+				} else {
+					return true;
+				}
+				return false;
+			}
+            $(document).ready(function(){
+                var url = $$.PMSDispatchActionUrl;
+                refreshTree(url);
+            });
+            function refreshTree(asyncUrl){
+                setting.asyncUrl = asyncUrl;
+                zTree1 = $("#treeDemos").zTree(setting, zNodes);
+            }
+        </SCRIPT>
+        <script>
+            function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+            
+            var request = getRequestParams();
+            var id = request['id'];
+            $(function(){
+                if (null != id || "" == id) {
+                    var url = $$.PMSDispatchActionUrl;
+                    var data = new PMSRequestObject("roleManager", "getRoleDTOById", [id]);
+                    $$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(datas, textStatus, XMLHttpRequest){
+                        var str = datas.data;
+                        var role = $.fromJSON(str);
+                        $("#name").text(role.name);
+                    });
+                    $("#id").val(id);
+                }
+            })
+            
+            function returnPage(){
+               window.location.href=" role_management.html";
+            }
+            
+            function doAuth(){
+				
+				var checkedNodes = [];
+				$(zTree1.getCheckedNodes(true)).each(function(i,element){
+					checkedNodes.push({
+						id:	element.id,
+						path:element.path
+					});
+				});
+				
+				var unCheckedNodes = [];
+				$(zTree1.getCheckedNodes(false)).each(function(i,element){
+					unCheckedNodes.push({
+						id:	element.id,
+						path:element.path
+					});
+				});
+				
+                doManager("roleFuncManager", "deleteBeforeAdd", [$.toJSON(checkedNodes),$.toJSON(unCheckedNodes),id], function(data, textStatus, XMLHttpRequest){
+					window.location = "roleFuncView.html?id=" + id;
+                },true,{showWaiting:true});
+            }
+        </script>
+    </head>
+    <body>
+        <div class="rightcont clear">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						用户与权限 :角色管理</a><span>></span>角色授权
+					</h4>
+				</div>
+			</div>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<a href="#" onclick="toggleBiz('containerbody','pic');"><img  src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>&nbsp;角色授权
+				</div>
+				<div class="panel-body" id="containerbody"  style="padding:0px;border:none" >
+					<table class="bigteble" width="100%">
+						<tr>
+							<td>
+								<div style="padding-top:10px;padding-left:10px;">
+									<span class="red">*</span>
+									角色名称:		<span id="name" name="name"></span>
+								</div>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<div style="padding:10px;">
+									<ul id="treeDemos" class="tree" style="background:#f7f8fd;"></ul>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+				<div class="panel-footer">
+					<input align="right" role="button" class="btn btn-primary" onClick="doAuth()" value="提交" type="button"/>
+					<input align="right" role="button" class="btn btn-primary" onClick="returnPage()" value="返回" type="button"/>
+				</div>
+			</div>
+
+
+           </div>
+      </body>
+</html>
+<script>
+
+	function getCheckedNode(){
+		var checkedNodes = [];
+		$(zTree1.getCheckedNodes(true)).each(function(i,element){
+			checkedNodes.push({
+				id:	element.id,
+				path:element.path
+			});
+		});
+		alert(checkedNodes.length);
+	}
+	
+	function getUnCheckedNode(){
+		alert(zTree1.getCheckedNodes(false).length);
+	}
+</script>

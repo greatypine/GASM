@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmsquery>
+
+	<query id="aboutMessageTemplateQuery" header="消息模板信息" baseclass="com.cnpc.pms.messageModel.entity.MessageTemplate"  method="messageTemplateManager.queryMessageTemplate">
+        <column key="id" header="主键" type="java.lang.Long" operator="in" align="center" allowSort="true" display="false"/>
+        <column key="code" header="模板编号" type="java.lang.String" operator="eq" align="center" allowSearch="true" allowSort="true" display="false" />
+        <column key="name" header="名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="25%"/>
+        <column key="model" header="消息类型" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="25%"/>
+    </query>
+    
+    <query id="approverQuery" header="审批人" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.User" dtoclass="com.cnpc.pms.bizbase.rbac.usermanage.dto.UserDTO" >
+        <column key="id" allowSearch="true" operator="in" header="用户编号" type="java.lang.Long" display="false"/>
+        <column key="disabledFlag" header="停用标志" type="java.lang.Integer" align="center" operator="eq" allowSearch="true" display="false"/>
+        <column key="name" header="用户名称" type="java.lang.String" align="center" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="zw" header="职务" type="java.lang.String" align="center" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="employeeId" header="用户编号" type="java.lang.String" allowSort="true" allowSearch="true" display="false" operator="like" width="14%"/>
+        <column key="usergroup.id" header="角色组" display="false" allowSearch="true" operator="like"/>
+        <column key="usergroup.code" header="角色组" align="center" allowSearch="true" display="false"/>
+        <column key="usergroup.name" header="角色组" align="center" allowSort="true" display="false" width="14%" />
+        <column key="createUserID" header="创建人" allowSort="true" allowSearch="true" operator="like" width="14%" display="false"/>
+        <column key="createDate" header="创建时间" type="java.util.Date" allowSort="true" allowSearch="true" operator="between" display="false" format="yyyy-MM-dd" width="14%"/>
+    </query>
+    <query id="approveMessageInfoQuery" header="消息信息" method="messageNewManager.queryApproveMessage"  order="create_time desc">
+        <column key="id" header=""  type="java.lang.Long" align="center" display="false" allowSearch="true" allowSort="false" width="2%"/>
+        <column key="title" header="标题" type="java.lang.String"  align="center" display="true" allowSearch="true" allowSort="true" width="10%"/>
+        <column key="messageCode" header="消息编码" type="java.lang.String"  display="false" align="center" operator="eq" allowSearch="true"  allowSort="true" />
+       <!--  <column key="templateCode" header="模板编码" type="java.lang.String"  display="false" align="center" operator="eq" allowSearch="true"  allowSort="true" width="2%"/>
+        <column key="templateName" header="模板" type="java.lang.String"  display="true" align="center" operator="eq" allowSearch="true"  allowSort="true" width="10%"/> -->
+        <column key="content" header="消息内容" type="java.lang.String"  display="true" align="center" operator="eq" allowSearch="true"  allowSort="true" width="20%"/>
+    </query>
+
+    <query id="queryReceiveCity" header="城市"  order="id desc" method="messageNewManager.getReceiveCity">
+        <column key="id" header="" display="false" type="java.lang.Long" allowSearch="true" allowSort="true" align="center" width="10%"/>
+        <column key="cityname" header="城市名称"  operator="like" align="center" allowSort="true" type="String" width="30%"/>
+        <column key="citycode" header="城市编码"  align="center" allowSort="true" type="String" width="30%"/>
+        <column key="employee_no" header="员工编号" display="false" operator="eq" align="center" allowSort="true" type="String" width="30%"/>
+    </query>
+
+    <query id="queryReceiveStore" header="门店"  order="id desc" method="messageNewManager.getReceiveStore">
+        <column key="store_id" type="java.lang.Long"  header="" display="false" allowSearch="true" allowSort="true" align="center" width="10%"/>
+        <column key="name" type="java.lang.String" header="门店名称" operator="like" display="true" width="30%" allowSearch="true" allowSort="true" align="center"/>
+        <column key="city_id" type="java.lang.String" header="所属城市Id" operator="eq"  display="false" align="center" allowSort="true" width="30%"/>
+        <column key="city_name" type="java.lang.String" header="所属城市" operator="eq"  display="true" align="center" allowSort="true" width="30%"/>
+        <column key="employeeId" type="java.lang.Long" header="用户ID" operator="eq"  display="false" align="center" allowSort="true" width="30%"/>
+    </query>
+    <query id="queryReceiveZW" header="职务"  order="id desc" method="messageNewManager.getReceiveZW">
+        <column key="zw" type="java.lang.String" header="职务" operator="like" display="true" width="30%" allowSearch="true" allowSort="true" align="center"/>
+    </query>
+    
+    <query id="queryReceiveEmployee" header="员工"  order="id desc" method="messageNewManager.getReceiveEmployee">
+        <column key="id" header="" display="false" type="java.lang.Long" allowSearch="true" allowSort="true" align="center" width="10%"/>
+        <column key="employeeId" header="员工号" display="true" align="center" allowSort="true" type="String" width="20%"/>
+        <column key="name" header="姓名" display="true" align="center" allowSort="true" type="String" width="20%"/>
+        <column key="city" header="城市" display="false" align="center" allowSort="true" type="String"/>
+        <column key="employeeId" header="ID" display="false" align="center" allowSort="true" type="java.lang.Long" />
+        <column key="store" header="门店" display="false" align="center" allowSort="true" type="String" />
+        
+    </query>
+</pmsquery>

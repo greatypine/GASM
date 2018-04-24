@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link
+	href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css"
+	rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+ <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+<link
+	href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+</head>
+<style type="text/css">
+	td {
+		width=50%;
+	}
+	
+	p{margin-left: 200px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	}
+	table{margin-left: 40px;
+		margin-top: 10px;
+	}
+	.read{
+		margin-left:200px;
+	}
+	#cityName{
+		background-color: #FFF;
+	}
+	#open_shop_time{
+		background-color: #FFF;
+	}
+	.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+    textarea{ resize:none;}
+</style>
+<script type="text/javascript">
+	var win;
+	var obj;
+	var id = getUrlParamByKey("id");
+	$(function(){
+		$("id").val(id);
+		initview();
+	})
+	function initview(){
+	if(id == null || id == ''){
+		$("#vill_des").text("用户意见添加");
+		return;
+	}
+	$("#tijiao").hide();
+	$("#id").val(id);
+	$("#vill_des").text("用户意见详情");
+	doManager("userAdviceManager", "findUserAdviceById",id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+				}
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+		})
+	}
+	
+	//验证值
+	function doCheck(){
+		var name=$("#name").val().replace(/\s+/g,"");
+		var reg_num=$("#reg_num").val();
+		var mobilephone=$("#mobilephone").val();
+		var request=$("#request").val().replace(/\s+/g,"");
+		if(name == "" || name == null){
+			alert("请输入姓名!");
+			return;
+		}
+		if(reg_num == "" || reg_num == null){
+			alert("请输入年龄!");
+			return;
+		}
+		if(mobilephone == "" || mobilephone == null){
+			alert("请输入电话!");
+			return;
+		}
+		if(mobilephone.length!=11){
+			alert("请输入正确的电话格式!");
+			return;
+		}
+		if(request == "" || request == null){
+			alert("请输入咨询的问题!");
+			return;
+		}
+		doSave();
+	}
+	
+	function doSave(){
+		var arr = [ "sex","name","request","mobilephone", "address", "reg_num","advice_content"];
+			var o = {};
+			for ( var i in arr) {
+				var v = arr[i];
+				var va = $("#" + v).val();
+				o[v] = va;
+			}
+			doManager("UserAdviceManager", "doSaveUserAdvice", o, function(data,
+					textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					if(id == null || id == ''){
+						alert("添加成功！");
+					}
+					window.location.href = 'userOpinionList.html';
+				} else {
+					$$.showMessage("系统信息", "添加失败!");
+				}
+			}); 
+		
+	}
+	
+	
+	
+	
+
+
+</script>
+<body>
+	<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">
+        <a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+        <span id="vill_des"><span></span><br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span id="info"></span>
+    </div>
+    <div class="panel-body" id="temp1">
+	<form action="" method="post" class="pmsForm">
+	<table>
+		<tr>
+			<td>
+				<p>姓名：<span style="color: red">*</span></p>
+				<p> <input type="text" id="name" name="name" class="form-control"/>
+				</p>
+			</td>
+			<td>
+				<p>性别：</p>
+				<p>
+					<select class="form-control" id="sex" name="sex">
+						<option value="0">男</option>
+						<option value="1">女</option>
+					</select>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p >年龄：<span style="color: red">*</span></p>
+				<p >
+					<input type="text" class="form-control" name="reg_num" id="reg_num" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="3"/>
+				</p>
+			</td>
+			<td>
+				<p >电话：<span style="color: red">*</span></p>
+				<p >
+					<input type="text" class="form-control" name="mobilephone" id="mobilephone" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11"/>
+				</p>
+			</td>
+			
+		</tr>
+		<tr>
+		<td>
+				<p >地址：</p>
+				<p ><textarea class="form-control" name="address" id="address"></textarea></p>
+			</td>
+			<td>
+				<p>咨询的问题：<span style="color: red">*</span></p>
+				<p><textarea class="form-control" name="requset" id="request"></textarea></p>
+			</td>
+			
+		</tr>
+		<tr>
+			<td>
+				<p>合理化建议：</p>
+				<p><textarea class="form-control" name="advice_content" id="advice_content"></textarea></p>
+			</td>
+		</tr>
+	</table>
+	</form>
+		</div>
+<div class="panel-footer" align="right">
+        <button class="btn btn-primary" id="tijiao" onclick="doCheck();">
+            提交
+        </button>
+        &nbsp &nbsp
+        <button class="btn btn-primary" onclick="javascript:history.go(-1);">
+            返回
+        </button>
+    </div>
+</div>
+</body>
+
+</html>

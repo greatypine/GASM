@@ -1,0 +1,975 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>门店详情</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+    <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../scripts/cityselect.js"></script>
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+          <style type="text/css">
+	td {
+		width="33.33%";
+		padding:0 50px;
+	}
+	p{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	}
+	table input,table select{border:1px solid #ccc; border-radius:3px; line-height: 30px; height: 30px; width:200px;}
+	.panel-heading .but{float:right; text-align: center;}
+	.but input {
+		background-color: transparent;
+		border: 1px solid #fff;
+		border-radius: 3px;
+		padding: 0 13px;
+		margin-right: 30px;}
+	.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+    #open_shop_time,#rent_free_start,#rent_free_end,#tenancyTerm_start,#tenancyTerm_end{
+		background-color: #FFF;
+	}
+	
+	td p:nth-child(1){height:34px;
+ 		line-height:34px;
+	}
+</style>
+<script type="text/javascript">
+var win;
+var obj;
+var id = getUrlParamByKey("store_id");
+var work_id = getUrlParamByKey("work_id");
+var cur_user;
+var storeTypeValue;
+$(function(){
+	initCurrUserDto();
+	
+	$("#store_id").val(id);
+	$("#contract_file").change(function(){
+		$("#contract").show();
+		var content = $('#contract_file')[0].files;
+		$("#contract").text(content[0].name.substring(0,25));
+	})
+	initview();
+});
+
+
+ function initCurrUserDto(){
+    	//取得当前登录人的门店
+		doManager("UserManager", "getCurrentUserDTO",null,
+    				function(data, textStatus, XMLHttpRequest) {
+    					if (data.result) {
+    						var current_uesr = JSON.parse(data.data);
+    						cur_user = current_uesr;
+    					}
+    	},false);
+    }
+    
+function initview(){
+	$("#showattention").mouseover(function(event){
+		$("#attention").show();
+  	});
+  	$("#showattention").mouseout(function(event){
+  		$("#attention").hide();
+  	});
+  	
+  	$("#comtractfile").mouseover(function(event){
+		$("#fileshow").show();
+  	});
+  	$("#comtractfile").mouseout(function(event){
+  		$("#fileshow").hide();
+  	});
+	if(id == null || id == ''){
+		citySelect();
+		$("#bianhao").hide();
+		$("#vill_des").text("门店信息添加");
+		return;
+	}
+	$("#store_id").val(id);
+	$("#vill_des").text("门店信息修改");
+	$("#cityName").unbind();
+	doManager("storeDynamicManager", "getStoreDynamicById",id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+					if(key=="storetype"){
+						storeTypeValue=va;
+						if(va=='V'){
+							$(".bixuan").hide();
+							$("#storetype").attr("disabled","true");
+						}
+					}else if(key=="contract"){
+						if(va!=null&&va!=''){
+							$("#contract").show();
+							$("#contract").html('<a href="javascript:void(0);" onclick="downloadFile(contract_file);">'+va.substring(0,25)+'</a>');
+						}
+					}else if(key=="tenancyTerm"){
+						if(va!=null&&va!=''){
+							var m=va.split("-");
+							$("#tenancyTerm_start").val(m[0]);
+							$("#tenancyTerm_end").val(m[1]);
+						}
+					}else if(key=="rent_free"){
+						if(va!=null&&va!=''){
+							var m=va.split("-");
+							$("#rent_free_start").val(m[0]);
+							$("#rent_free_end").val(m[1]);
+						}
+					}else if(key=="auditor_status"){
+						if(va==1){ 
+							//$("#zhuangtai").text("状态：审核中");
+							$("#bianhao").hide();
+							$("input").attr("disabled","true");
+							$("select").attr("disabled","true");
+							$("button").attr("disabled","true");
+							$("#fanhui").removeAttr("disabled");
+							$("#submit").hide();
+						}else if(va==2){
+							//$("#zhuangtai").text("状态：驳回");
+							/* 
+							if(JSZ=='CSMDGLZ'||JSZ=='QYJL'){
+								$("input").attr("disabled","true");
+								$("select").attr("disabled","true");
+								$("button").attr("disabled","true");
+								$("#fanhui").removeAttr("disabled");
+							} */
+							$("#bianhao").hide();
+						}else if(va==3){
+							/* if(JSZ=='CSMDGLZ'||JSZ=='QYJL'){
+								$("input").attr("disabled","true");
+								$("select").attr("disabled","true");
+								$("button").attr("disabled","true");
+								$("#fanhui").removeAttr("disabled");
+								$("#submit").removeAttr("disabled");
+								$("#mendianfuwu").removeAttr("disabled");
+							} */
+							//$("#zhuangtai").text("状态：已通过");
+						}
+					}
+					
+				}
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+	})
+}
+
+function downloadFile(pic_name){
+	console.log(pic_name.id);
+	window.open(path + "/downloadExcel.action"
+			  +"?fileName="+pic_name.id+"&store_id="+$("#store_id").val());
+}
+	
+	//加载城市选择控件
+	function citySelect(){
+		var test=new Vcity.CitySelector({input:'cityName',click_method:function(cityName){
+			if(cityName == '' && cityName == null){
+				return;
+			}
+				$('#skid').children().remove();
+				$('#town_name').attr("value","");
+				$('#town_id').attr("value","");
+		}});
+		
+	}
+	function dataCheck() {
+		var name=$("#name").val();
+		var town_name=$("#town_name").val();
+		var city_name=$("#cityName").val();
+		var mobilephone=$("#mobilephone").val();
+		var storetype=$("#storetype option:selected").val();
+		var content = $('#contract_file')[0].files;
+		console.log(content);
+		if(name == "" || name == null){
+			alert("请输入门店名称!");
+			return;
+		}
+		if(storetype == "" || storetype == null){
+			alert("请选门店类型!");
+			return;
+		}
+		if(town_name == "" || town_name == null){
+			alert("请选择街道!");
+			return;
+		}
+		  if(city_name == "" || city_name == null){
+			alert("请选择所在城市!");
+			return;
+		} 
+		  if(mobilephone != "" && mobilephone != null){
+			  if(mobilephone.length!=11){
+				  alert("请输入11位电话!");
+					return;
+			  }
+			}
+		  if(id==null||id=='undefined'){
+			  var brr = [ "cityName","name"];
+			  var e = {};
+				for ( var i in brr) {
+					var v = brr[i];
+					var va = $("#" + v).val();
+					e[v] = va;
+				}
+		doManager("StoreManager", "getStoreByCityAndName", e, function(data,
+							textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData!=null){
+								alert("门店已存在");
+								return;
+							}
+							verterCityNo();
+						} else {
+							$$.showMessage("系统信息", "添加失败!");
+							
+						}
+					},true); 
+		  }else{
+			  var brr = [ "cityName","name"];
+			  var e = {};
+				for ( var i in brr) {
+					var v = brr[i];
+					var va = $("#" + v).val();
+					e[v] = va;
+				}
+				  doManager("StoreManager", "getStoreByCityAndName", e, function(data,
+							textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData!=null&&jsonData.store_id!=id){
+								alert("门店已存在");
+								return;
+							}
+							verterCityNo();
+						} else {
+							$$.showMessage("系统信息", "添加失败!");
+							
+						}
+					},true); 
+		  }
+		 
+		  
+		
+	}
+	//验证城市编码
+	function verterCityNo(){
+		var citname=$("#cityName").val();
+		//验证城市编码
+		  doManager("DistCityCodeManager", "queryDistCityCodeByName", citname, function(data,
+					textStatus, XMLHttpRequest) {
+				if (data.result) {
+					if(data.data!='null'){
+						var jsonData = $.fromJSON(data.data);
+						if(jsonData.cityno==null||''==jsonData.cityno){
+							alert("请联系管理员添加城市编码");
+							return;
+						}
+						updateStoreType();
+					}else{
+						alert("请联系管理员添加城市编码");
+						return;
+					}
+					
+				} else {
+					$$.showMessage("系统信息", "信息加载失败!");
+					return;
+				}
+			},true); 
+	}
+	//判断门店类型是否发生改变
+	function updateStoreType(){
+		if(storeTypeValue==null||storeTypeValue=='undefined'||storeTypeValue==''){
+			doSave();
+		}else{
+				var efgda=$('#storetype  option:selected').val();
+				if(efgda!=storeTypeValue&&storeTypeValue!='W'){
+					$("#villageInfo").dialog({
+			            bgiframe: true,
+			            title: '系统信息',
+			            width: 300,
+			            //height: 500,
+			            modal: true,
+			            buttons: {
+			                "${form.ui.ok}": function () {
+			                	$("#villageInfo").dialog('close');
+			                	doSave();
+			                },
+			                "${query.ui.cancel}": function () {
+			                    $("#villageInfo").dialog('close');
+			                }
+			            }
+			        });
+				}else{
+					doSave();
+				}
+			
+		}
+		
+		
+	}
+	var path = getRootPath();
+	function doSave(){
+			var arr = [ "cityName","name",  "town_id",
+						"mobilephone", "address", "skid","store_id","open_shop_time","town_name","platformid","platformname","superMicro","estate","county_ids","nature","tenancyTerm","rental","payment_method","rent_area","usable_area","increase","rent_free","taxes","agency_fee","increase_fee" ];
+				var o = {};
+				for ( var i in arr) {
+					var v = arr[i];
+					var va = $("#" + v).val();
+					o[v] = va;
+				}
+				var tenancyTerm_start=$("#tenancyTerm_start").val();
+				if(tenancyTerm_start!=null&&tenancyTerm_start!=''){
+					o['tenancyTerm']=$("#tenancyTerm_start").val()+"-"+$("#tenancyTerm_end").val()
+				}else{
+					o['tenancyTerm']=null;
+				}
+				var rent_free_start=$("#rent_free_start").val();
+				if(rent_free_start!=null&&rent_free_start!=''){
+					o['rent_free']=$("#rent_free_start").val()+"-"+$("#rent_free_end").val()
+				}else{
+					o['rent_free']=null;
+				}
+				
+				o['store_id'] = id;
+				o['storetype']=$('#storetype  option:selected').val();
+				o['storetypename']=$('#storetype option:selected').text();
+				o['nature']=$('#nature option:selected').text();
+				o['payment_method']=$('#payment_method option:selected').text();
+				var ttt=$('#open_shop_time').val();
+				if(ttt!=null&&ttt!=''){
+					var datt=ttt.split(' ');
+					o['open_shop_time']=datt[0]+"T"+datt[1]+".000+0000";
+				}
+				/* var model="contract";
+				$("#uploadForm").attr("action", path + "/uploadStoreFileAction.action?model="+model+"&store_id=1212");
+			    $("#uploadForm").submit(); */
+				 doManager("StoreManager", "updateStore", o, function(data,
+						textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if(id == null || id == ''){
+							var model="contract";
+							$("#uploadForm").attr("action", path + "/uploadStoreFileAction.action?model="+model+"&store_id="+jsonData.store_id);
+						    $("#uploadForm").submit();
+							alert("添加成功！");
+						}else{
+							var model="contract";
+							$("#uploadForm").attr("action", path + "/uploadStoreFileAction.action?model="+model+"&store_id="+jsonData.store_id);
+						    $("#uploadForm").submit();
+							alert("修改成功！");
+						}
+						//window.location.href = 'store_list.html';
+					} else {
+						$$.showMessage("系统信息", "添加失败!");
+					}
+				},false); 
+				window.location.href = 'store_list.html';
+	}
+
+	 $(function () {
+		 jeDate({
+             dateCell:"#open_shop_time",//isinitVal:true,
+             format:"YYYY-MM-DD hh:mm:ss",
+             isTime:true,
+             isinitVal:false,
+             zIndex:2000,
+         });
+		 jeDate({
+             dateCell:"#tenancyTerm_start",//isinitVal:true,
+             format:"YYYY/MM/DD",
+             isTime:false,
+             isinitVal:false,
+             zIndex:2000,
+         });
+		 jeDate({
+             dateCell:"#tenancyTerm_end",//isinitVal:true,
+             format:"YYYY/MM/DD",
+             isTime:false,
+             isinitVal:false,
+             zIndex:2000,
+         });
+		 jeDate({
+             dateCell:"#rent_free_start",//isinitVal:true,
+             format:"YYYY/MM/DD",
+             isTime:false,
+             isinitVal:false,
+             zIndex:2000,
+         });
+		 jeDate({
+             dateCell:"#rent_free_end",//isinitVal:true,
+             format:"YYYY/MM/DD",
+             isTime:false,
+             isinitVal:false,
+             zIndex:2000,
+         });
+     });
+	 /**
+      * 选择城市,创建一个城市列表并显示
+      * @param {Object} callback
+      *
+      */
+     function showStoreWin(callback){
+    	var county_ids = $("#county_ids").val();
+  		if (county_ids == "" || county_ids == null ||county_ids.trim()=="") {
+  			alert("请选择区域!");
+  			return;
+  		}
+         win = new checkWin(callback);
+         win.show();
+         
+         $('html, body').animate({scrollTop:0});
+     }
+      
+      /**
+      *
+      * @param {Object} callback 	回调函数
+      * 返回值json
+      */
+     var checkWin = function(callback){
+         this.win = $("<div style='overflow-y: hidden'></div>");
+         var par = $("#town_id").val();
+         var county_ids = $("#county_ids").val();
+         var _this = this;
+         var initWin = function(){
+             _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/select_town_checkbox.html?ids='+par+'&city='+county_ids+'" scrolling="yes"></iframe>');
+             _this.win.dialog({
+                 bgiframe: true,
+                 title:"选择街道",
+                 autoOpen:false,
+                 width:_this.width,
+                 height:_this.height,
+                 buttons : {
+                     "确定": function(){
+                  	   /* var selVal=window.frames["selectWin"].getcheckedstoreid();
+                  	   this.callBack=selVal;  */
+                         window.frames["selectWin"].doSubmit();
+                         _this.win.remove();
+                     },
+                     "取消":function(){
+                         _this.hide();
+                         _this.win.remove();
+                     }
+                 },
+                 modal:true
+             });
+         };
+         this.width = 900;
+         this.height = 730;
+         this.callBack = function(json){
+             if (callback && typeof(callback) == 'function') {
+                 callback(json);
+             }
+         };
+
+         this.show = function(){
+             _this.win.dialog("open");
+         };
+
+         this.hide = function(){
+             if(_this.onSubmitHandler){
+                 _this.onSubmitHandler();
+             }
+             _this.win.dialog("close");
+         };
+         initWin();
+     }
+      
+      function setStoreSelect(jsons){
+      	var selectStoreNames = "";
+      	var selectStoreIds = "";
+  		$.each(jsons,function(n,value) {
+  			selectStoreNames+=","+value.name;
+  			selectStoreIds+=","+value.id;
+  		});
+  		if(selectStoreNames.length>0){
+  			selectStoreNames=selectStoreNames.substring(1,selectStoreNames.length);
+  			selectStoreIds=selectStoreIds.substring(1,selectStoreIds.length);
+  		}
+  		$("#town_name").val(selectStoreNames);
+  		$("#town_id").val(selectStoreIds);
+      }
+      
+      
+      
+      
+    
+      
+      /**
+      *
+      * @param {Object} callback 	回调函数
+      * 返回值json
+      */
+     var checkWinCounty = function(callback){
+         this.win = $("<div style='overflow-y: hidden'></div>");
+         var par = $("#county_ids").val();
+         var city = $("#cityName").val();
+         var _this = this;
+         var initWin = function(){
+             _this.win.html('<iframe name="selectCountyWin" frameborder="0" width="100%" height="100%" src="../data_access/select_county_checkbox.html?ids='+par+'&city='+city+'" scrolling="yes"></iframe>');
+             _this.win.dialog({
+                 bgiframe: true,
+                 title:"选择区域",
+                 autoOpen:false,
+                 width:_this.width,
+                 height:_this.height,
+                 buttons : {
+                     "确定": function(){
+                  	   /* var selVal=window.frames["selectWin"].getcheckedstoreid();
+                  	   this.callBack=selVal;  */
+                         window.frames["selectCountyWin"].doSubmit();
+                         _this.win.remove();
+                     },
+                     "取消":function(){
+                         _this.hide();
+                         _this.win.remove();
+                     }
+                 },
+                 modal:true
+             });
+         };
+         this.width = 900;
+         this.height = 730;
+         this.callBack = function(json){
+             if (callback && typeof(callback) == 'function') {
+                 callback(json);
+             }
+         };
+
+         this.show = function(){
+             _this.win.dialog("open");
+         };
+
+         this.hide = function(){
+             if(_this.onSubmitHandler){
+                 _this.onSubmitHandler();
+             }
+             _this.win.dialog("close");
+         };
+         initWin();
+     }
+      
+      function setCountySelect(jsons){
+      	var selectCountyNames = "";
+      	var selectCountyIds = "";
+  		$.each(jsons,function(n,value) {
+  			selectCountyNames+=","+value.name;
+  			selectCountyIds+=","+value.id;
+  		});
+  		if(selectCountyNames.length>0){
+  			selectCountyNames=selectCountyNames.substring(1,selectCountyNames.length);
+  			selectCountyIds=selectCountyIds.substring(1,selectCountyIds.length);
+  		}
+  		$("#county_name").val(selectCountyNames);
+  		var county_idsvalue=$("#county_ids").val();
+  		if(county_idsvalue!=selectCountyIds){
+  			$("#town_id").val('');
+  			$("#town_name").val('');
+  		}
+  		$("#county_ids").val(selectCountyIds);
+  		
+      }
+      function showCountyWin(callback){
+      	var citySelect = $("#cityName").val();
+    		if (citySelect == "" || citySelect == null ||citySelect.trim()=="") {
+    			alert("请选择城市!");
+    			return;
+    		}
+    		checkCountyWin = new checkWinCounty(callback);
+           checkCountyWin.show();
+           
+           $('html, body').animate({scrollTop:0});
+       }
+      
+      
+      //比较两个时间大小d1比较小的时间,d2比较大的时间
+      function dateCompare(d1,d2){
+    	  var startTime = new Date(Date.parse(d1));
+    	  var endTime = new Date(Date.parse(d2));
+    	  if(startTime<endTime){
+    		  return true;
+    	  }
+    	  return false;
+      }
+      
+    //比较一个时间是否在某一时间段中
+    //d1当前时间段，d2比较小的世界,d3比较大的时间
+      function dateCompare(d1,d2,d3,d4){
+    	  var startTime = new Date(Date.parse(d1));
+    	  var crdTime = new Date(Date.parse(d2));
+    	  var crdsTime = new Date(Date.parse(d3));
+    	  var endTime = new Date(Date.parse(d4));
+    	  if(startTime<=crdTime<=crdsTime<=endTime){
+    		  return true;
+    	  }
+    	  return false;
+      }
+   
+    function goEditStore(){
+    	//alert("跳转编辑页面 传参数  store_id:"+id+"   work_id:"+work_id);
+    	window.location.href="../data_access/add_store.html?store_id="+id+"&work_id="+work_id+"&sp=1";
+    }
+    
+</script>
+
+</head>
+<body>
+		<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">
+        <a href=" " onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+        <span id="vill_des">门店信息</span><span id="zhuangtai" style="float: right;"></span>
+        <span class="but">
+			<input name="" type="button" id="fanhui" onclick="javascript:history.go(-1);" value="返回">
+			<input name="" type="button" id="bianji" onclick="javascript:goEditStore()" value="编辑" style="display: none;">
+		</span>
+    </div>
+    <div class="panel-body" id="temp1">
+	<form id="uploadForm" action="uploadStoreFileAction.action" enctype="multipart/form-data" method="post" class="pmsForm">
+	<input type="hidden" name="town_id" id="town_id"/>
+	<input type="hidden" name="county_ids" id="county_ids"/>
+	<input type="hidden" name="store_id" id="store_id"/>
+	<input type="hidden" id="skid" name="skid"/>
+	<p style="color: #337ab7;font-size: 18px;font-weight: bolder;">门店基础信息</p>
+	<table width="100%">
+		<tr>
+			<td>
+				<p >城市：<span style="color: red">*</span></p>
+				<p> <input type="text" id="cityName"  class="cityinput form-control" readonly='true' onpropertychange="OnPropChanged (event)" placeholder="请输入城市"/>
+					<!-- <select id="sele" class="form-control" ></select> -->
+				</p>
+			</td>
+			<td>
+				<p>门店名称：<span style="color: red">*</span></p>
+				<p><input type="text" class="form-control" name="name" onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" id="name"/></p>
+			</td>
+			<td>
+				<p class="read">区域：<span class="bixuan" style="color: red">*</span><button  class="btn btn-primary" onclick="showCountyWin(setCountySelect);">选择区域</button></p>
+				<p class="read">
+					<input type="text" class="form-control" name="county_name" readonly="readonly" id="county_name"/>
+				</p>
+			</td>
+			
+		</tr>
+		<tr>
+			<td>
+				<p class="read">门店位置所在街道：<span class="bixuan" style="color: red">*</span><button class="btn btn-primary"  onclick="showStorePlaceWin(setStorePlaceSelect);">选择街道</button></p>
+				<p class="read">
+					<input type="text" class="form-control" name="place_town_name" readonly="readonly" id="place_town_name"/>
+				</p>
+			</td>
+			<td>
+				<p>属性：<span style="color: red">*</span></p>
+				<p>
+					<select class="form-control" id="nature" name="nature">
+						<option></option>
+						<option value="自营店">自营店</option>
+						<option value="合作店">合作店</option>
+					</select>
+				</p>
+			</td>
+			<td>
+				<p class="read" style="position: relative;"><span id="showattention" style="color:#ffcc00;font-size:16px;font-weight:bold;padding-right: 5px;">!</span>
+				类型：
+				<span style="color: red">*</span>
+				<span id="attention" style="position: absolute;top: -20px;left: -80px;display:none;color: #8E8E8E;">当选择未知时将生成临时编码,修改后编码会发生改变。</span></p>
+				<p class="read">
+					<select class="form-control" id="storetype">
+						<option value="">请选择</option>
+						<option value="S">生活中心店</option>
+						<!-- <option value="Z">中心店</option> -->
+						<option value="Y">街道月店</option>
+						<!-- <option value="X">街道内经营星店</option>
+						<option value="W">未知</option> -->
+						<option value="E">校园月店</option>
+						<option value="C">前置仓</option>
+						<option value="M">药店</option>
+						<option value="B">独立微超店</option>
+						<option value="V">虚拟店</option>
+					</select>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">门店服务范围覆盖街道：<span class="bixuan" style="color: red">*</span><button id="mendianfuwu" class="btn btn-primary"  onclick="showStoreWin(setStoreSelect);">选择街道</button></p>
+				<p class="read">
+					<input type="text" class="form-control" name="town_name" readonly="readonly" id="town_name"/>
+				</p>
+			</td>
+			<td>
+				<p>门店位置坐标：<span class="bixuan" style="color: red">*</span><span><button class="btn btn-primary" onclick="showStoreMapWin(setStoreMapSelect)" style="margin-left: 10px;">选择门店位置坐标</button></span></p>
+				<p><input type="text" class="form-control" readonly="readonly" name="store_position" id="store_position"/></p>
+			</td>
+		</tr>
+		</table>
+		<p style="color: #337ab7;font-size: 18px;font-weight: bolder;">门店租赁信息</p>
+		<table width="100%">
+		<tr>
+			<td>
+				<p class="read" style="position: relative;"><span id="comtractfile" style="color:#ffcc00;font-size:16px;font-weight:bold;padding-right: 5px;">!</span>合同附件：<span class="bixuan" style="color: red;">*</span>
+					<span style="color: #8E8E8E;font-size: 0.1em;">若多个附件打包为ZIP格式上传</span>
+					<span id="fileshow" style="position: absolute;top: -130px;left: 10px;display:none;color:#8E8E8E;background-color: #FFF;">
+					合同上传资料：<br/>
+				1、房屋产权证明（应明确标出租赁商铺的<br/>建筑面积和使用面积，若无使用面积请参照下<br/>方第3条要求）、产权方（或授权出租方）<br/>资质/身份证明和收款信息（银行卡复印件或开户许可证）。<br/>以上文件均须产权方（或授权出租方）签字或盖章，并写上日期；<br/>
+				2、如甲方为二房东，需要上传业主确认的转租证明；<br/>
+				3、双方盖章生效的合同与合同相关附件。
+					</span></p>
+				<p class="read">
+					<input name="contract_file" class="form-control"  id="contract_file" type="file" isuploadtable="true"/>
+					<lable id="contract" style="display:none;"></lable>
+				</p>
+			</td>
+			<td style="width: 33.3%;">
+				<p class="read">租期：<span class="bixuan" style="color: red">*</span></p>
+				<p class="read" style="">
+					<input type="text" class="wicon form-control" id="tenancyTerm_start" name="tenancyTerm_start" style="max-width: 48%;display:inline-block;" placeholder="起租时间" readonly="readonly"/>
+					<span style="display:inline-block;">至</span>
+					<input type="text" class="wicon form-control" id="tenancyTerm_end" name="tenancyTerm_end" style="max-width: 48%;display:inline-block;" placeholder="到租时间" readonly="readonly"/>
+				</p>
+			</td>
+			<td>
+				<p class="read">租金 ：<span class="bixuan" style="color: red">*</span></p>
+				<p class="read">
+					<input class="form-control" type="text" onkeyup="clearNoNum(this)" name="rental" id="rental"/>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">付款方式：<span class="bixuan" style="color: red">*</span></p>
+				<p class="read">
+					<select class="form-control" id="payment_method" name="payment_method">
+						<option></option>
+						<option>月付</option>
+						<option>季付</option>
+						<option>半年付</option>
+						<option>年付</option>
+					</select>
+				</p>
+			</td>
+			<td>
+				<p class="read">计租面积(合同面积)：<span class="bixuan" style="color: red">*</span></p>
+				<p class="read"><input class="form-control" type="text" id="rent_area" onkeyup="clearNoNum(this)" name="rent_area"/></p>
+			</td>
+			<td>
+				<p class="read">使用面积：</p>
+				<p class="read"><input class="form-control" onkeyup="clearNoNum(this)" type="text" id="usable_area" name="usable_area"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">递增：</p>
+				<p class="read"><input class="form-control" type="text" id="increase" name="increase"/></p>
+			</td>
+			<td>
+				<p class="read">免租期：</p>
+				<p class="read">
+				<input type="text" class="wicon form-control" id="rent_free_start" name="rent_free_start" style="max-width: 48%;display:inline-block;" placeholder="免租起时时间" likeOption="false" readonly="readonly"/>
+				<span style="display:inline-block;">至</span>
+				<input type="text" class="wicon form-control" id="rent_free_end" name="rent_free_end" style="max-width: 48%;display:inline-block;" placeholder="免租结束时间" likeOption="false" readonly="readonly"/>
+				</p>
+			</td>
+			<td>
+				<p class="read">税金：</p>
+				<p class="read"><input class="form-control" onkeyup="clearNoNum(this)" type="text" id="taxes" name="taxes"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">中介费：</p>
+				<p class="read"><input class="form-control" onkeyup="clearNoNum(this)" type="text" id="agency_fee" name="agency_fee"/></p>
+			</td>
+			<td>
+				<p class="read">增容费：</p>
+				<p class="read"><input class="form-control" type="text" id="increase_fee" onkeyup="clearNoNum(this)" name="increase_fee"/></p>
+			</td>
+			<td>
+				<p class="read">地址：</p>
+				<p class="read"><input type="text" class="form-control" onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" name="address" id="address"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">门店电话：</p>
+				<p class="read"><input type="text" class="form-control" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11" name="mobilephone" id="mobilephone"/></p>
+			</td>
+			<td>
+				<p class="read">开店时间：</p>
+				<p class="read">
+                       <input id="open_shop_time" type="text" likeOption="false" placeholder="请选择" name="open_shop_time" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+					</p>
+			</td>
+			<td>
+				<p class="read">门店店长：</p>
+				<p class="read">
+					<input type="text" name="storemanager" id="storemanager" class="form-control" readonly="readonly"/>
+				</p>
+			</td>
+			
+		</tr>
+		<tr>
+		<td>
+				<p class="read">是否有微超：</p>
+				<p class="read">
+					<select class="form-control" id="superMicro">
+						<option value="">请选择</option>
+						<option value="是">是</option>
+						<option value="否">否</option>
+					</select>
+				</p>
+			</td>
+			<td>
+				<p class="read">平台门店名称：</p>
+				<p class="read">
+					<input type="hidden" name="platformid" id="platformid"/>
+					<input type="text" class="form-control" name="platformname" readonly="readonly" id="platformname"/>
+				</p>
+			</td>
+			<td>
+				<p class="read">目前状态：</p>
+				<p class="read">
+					<input name="estate" id="estate" class="form-control" onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" list="town-search"/>
+					<datalist id="town-search"></datalist>
+				</p>
+			</td>
+		</tr>
+		<tr>
+			<td id="bianhao">
+				<p class="read">门店编号：</p>
+				<p class="read"><input id="storeno" name="storeno" readonly="readonly" type="text" class="form-control" /></p>
+			</td>
+		</tr>
+	</table>
+	</form>
+	<div class="panel-footer" align="right">
+        <button id="btn_submit" class="btn btn-primary" onclick="dataCheck();">
+            提交
+        </button>
+        &nbsp &nbsp
+        <button class="btn btn-primary" onclick="javascript:history.go(-1);">
+            返回
+        </button>
+    </div>
+		</div>
+
+
+</div>
+		<div id="villageInfo" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+	 		<span style="font-size: 14px;">修改门店类型会造成编号类型和门店类型不匹配,是否继续?</span>
+ 		</div>
+
+
+
+
+
+
+<div id="process_flow">
+	<table id="process_flow_tbl" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                   
+    </table>
+</div> 
+
+
+
+
+
+</body>
+<script type="text/javascript">
+	var lst_select_tiny;
+		$(function(){
+			doManager('storeManager','getStoreEstateList',null,function(data){
+	            if(data.result){
+	               lst_select_tiny = JSON.parse(data.data);
+	                $(lst_select_tiny).each(function(index,element){
+	                    $('#town-search').append('<option value="'+element.estate+'">');
+	                });
+	            }else{
+	                $$.showMessage("提示",data.message);
+	            }
+	        });
+			
+			
+			try{
+				window.parent.setIframeHeight();
+			}catch(error){
+			}
+			//全部只读
+			$("input[type='text']").attr("disabled","true");
+			$("input[type='file']").attr("disabled","true");
+			$("input[name='estate']").attr("disabled","true");
+			$("select").attr("disabled","true");
+			$(".panel-footer").hide();
+			$(".btn-primary").hide();
+			showFlowDetail(work_id);
+			queryworkinfobyid(work_id);
+		});
+		
+		
+		
+		function showFlowDetail(work_record_id){
+			doManager('flowDetailManager','queryAllFlowDetailByWorkId',[work_record_id],function(data){
+	               if(data.result){
+		            	var process_flow = $("#process_flow_tbl");
+		              	var work_detail_list = JSON.parse(data.data);
+		            	$(work_detail_list).each(function(i,obj){
+		              		var app_ret = obj.approv_ret;
+		              		if(app_ret=='审批中'){
+		              			app_ret='审核通过';
+		              		}
+		              		var approv_content = obj.approv_content==null?"":obj.approv_content;
+		              		var flowHtml="<tr>"+
+		                   	"<td align=\"right\">"+obj.create_user+":&nbsp;&nbsp;</td>"+
+		                   	"<td align=\"center\">"+obj.update_user+"</td>"+
+		                   	"<td align=\"left\">"+app_ret+"</td>"+
+		                   	"<td align=\"left\" width=\"60%\">"+approv_content+"</td>"+
+		                	"</tr>";
+		              		process_flow.append(flowHtml);
+		              	});
+	               }
+			 },false);
+		}
+		
+		
+		
+		function queryworkinfobyid(work_info_id){
+			var id = work_info_id;
+			//根据work_id取当前workinfo信息  判断其状态 是否显示编辑按钮 
+			doManager('WorkInfoManager','queryWorkInfoById',[id],function(data){
+	               if(data.result){
+	            	   var work_info = JSON.parse(data.data);
+					   var status_str = work_info.commit_status;
+					   if(status_str==1){
+						   $("#zhuangtai").text("状态：审核中");
+						   //不可更改 
+					   }else if(status_str==2){
+						   $("#zhuangtai").text("状态：驳回");
+						   if(cur_user.usergroup.code=="MDCBTXJSZ"||cur_user.usergroup.code=="MDXZTXJSZ"){
+   							$("#bianji").show();
+   						}
+					   }else if(status_str==3){
+						   $("#zhuangtai").text("状态：审核通过");
+						   //不可更改
+					   }
+	               }
+	        },false);
+		}
+		
+		
+	</script>
+
+</html>

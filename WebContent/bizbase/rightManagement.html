@@ -1,0 +1,346 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>岗位管理</title>
+        <link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		
+		<script type="text/javascript" src="../scripts/lib-main.js"></script>
+		<script type="text/javascript" src="../scripts/common/pms.js"></script>
+		<script type="text/javascript" src="../scripts/common/pmsCommon.js"></script>
+		<script type="text/javascript" src="../scripts/common/qualcommon.js"></script>
+        <script type="text/javascript">
+            function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+            var request = getRequestParams();
+            var orgid = request['orgId'];
+			//用于记录原来组织机构所拥有的岗位id
+			var oldStr;
+			//用于标记分配了多少个岗位
+			var count = 0;
+			$(function(){
+				doManager("purStruOrgManager","getPurOrgDTOById",orgid,function(data,textStatus,XMLHttpRequest){
+					var org = $.fromJSON(data.data);
+					$("#baseInfo_name").text(org.name);
+					$("#baseInfo_code").text(org.code);
+				});
+				doManager("positionManager","getPositionsByOrgId",orgid,function(data,textStatus,XMLHttpRequest){
+					var position = $.fromJSON(data.data);
+					var ids ='';
+					count=position.length;
+					for(var i=0;i<position.length;i++){
+						ids += position[i].cnpcPosId+",";
+					}
+					ids = ids.substring(0,ids.length-1);
+					$("#id").val(ids);
+					//当页面加载完成之后记录下原有岗位的id
+					oldStr = ids;
+					$$.executeSearch('cnpcPositionQuery','conditionDiv');
+					BidTable.items.tableDiv.setValues(position);
+					$("#positionCount").text("共计:"+count+"条")
+				});
+			});
+			function doSearch(){
+				$$.executeSearch('cnpcPositionQuery','conditionDiv');
+			}
+			function addPosition(){
+				var objs = $$.getSelectedObjects("cnpcPositionQuery");
+				if (objs.length == 0) {
+					$$.showMessage('系统信息', '请先选择要分配的岗位');
+					return;
+				}
+				//循环获取选中的岗位加载到已分配的列表中,并刷新未分配的岗位列表
+				var addPosition = BidTable.items.tableDiv.getValues();
+				var oldLength = BidTable.items.tableDiv.getValues().length;
+				for(var i=0;i<objs.length;i++){
+					$("#id").val($("#id").val()+","+objs[i].id);
+					var obj={
+						cnpcPosId:objs[i].id,
+						cnpcPosName:objs[i].name,
+						cnpcPosCode:objs[i].code        
+					}
+					addPosition[oldLength+i]=obj;
+				}
+				count=count+objs.length;
+				BidTable.items.tableDiv.setValues(addPosition);
+				$$.executeSearch('cnpcPositionQuery','conditionDiv');
+				$("#positionCount").text("共计:"+count+"条")
+			}
+		//全选功能
+		  function selectAll(_divId){
+		  	$("#" + _divId + " input[type='checkbox']").each(function(i, _data) {
+				$(_data).attr("checked", true);
+			});
+		  }
+		//反选功能
+		function toggerSelectAll(_divId){
+			$("#" + _divId + " input[type='checkbox']").each(function(i, _data) {
+					$(_data).attr("checked", !$(_data).attr("checked"));
+			});
+		}
+		//取消岗位
+		function removeAssigned(){
+			var trs = bidTables[0].bidTable.find("tr");
+			//已经分配出去的岗位ID
+			var tempIds = $("#id").val();
+			//记录要删除的行
+			var deleteTr = new Array();
+			//记录要删除的岗位id,用于刷新未分配的岗位列表
+			var deleteIds = new Array();
+			var deleteStr = "";
+			$(trs).each(function(i, _tr) {
+				var tds = ($(_tr).find("td"));
+				if (tds.length != 0) {
+					if (tds.eq(0).find("input").eq(0).attr("checked")) {
+						//记录当前岗位的id
+						var temp = tds.eq(0).find("input").val();
+						//记录下要删除的行和岗位id
+						deleteTr.push(_tr);
+						deleteStr = deleteStr+temp+",";
+						deleteIds.push(temp);
+					}
+				}
+			});
+			if(deleteTr.length==0){
+				$$.showMessage('系统信息', '请先选择要取消的岗位!');
+				return false;
+			}
+			deleteStr = deleteStr.substring(0,deleteStr.length-1);
+			//检测是否可以取消已分配的岗位
+			doManager("userManager","postionIsUsed",[deleteStr,orgid],function(data,textStatus,XMLHttpRequest){
+				if(data.result){
+					var positionName = data.data;
+					if(positionName!='""'){
+						positionName = positionName.substring(0,positionName.length-2)+'"';
+						$$.showMessage('系统信息', '岗位:'+positionName+'已被使用,不能取消!');
+						return false;
+					}else{
+						//表示所选的都可以删除
+						for(var i=0; i<deleteTr.length;i++){
+							//删除行
+							$(deleteTr[i]).remove();
+							//去掉已分配岗位中的id
+							tempIds = $("#id").val().replace(deleteIds[i],',');	
+							$("#id").val(tempIds);
+						}
+						count = count-deleteTr.length;
+						$("#id").val(tempIds);
+						$$.executeSearch('cnpcPositionQuery','conditionDiv');
+						$("#positionCount").text("共计:"+count+"条")
+					}					
+				}
+			});
+		}
+		function doAssignPos(){
+				var div = $("<div></div>");
+				div.html("确定提交？");
+				div.dialog(
+					{
+						bgiframe: true,
+						title: "提示",
+						width: 320,
+						buttons: 
+							{
+								"确定": function() {
+									doSubmit();
+								},
+								"取消": function() {
+									$(this).dialog("close");
+								}
+							},
+							modal: true
+					});
+			}
+			function doSubmit(){
+				var values = BidTable.items.tableDiv.getValues();
+				var newStr = ""; 
+				for(var i=0; i<values.length;i++){
+					newStr = newStr+values[i].cnpcPosId+",";
+				}
+				newStr = newStr.substring(0,newStr.length-1);
+				if(newStr==''){
+					newStr=",";
+				}
+				if(oldStr==''){
+					oldStr=",";
+				}
+				doManager("positionManager","addPositions",[oldStr,newStr,orgid],function(data,textStatus,XMLHttpRequest){
+					if(data.result){
+						window.location="rightManagement.html?orgId="+orgid;
+					}
+				},true,{showWaiting:true});
+			}
+        </script>
+    </head>
+    <body>
+    	<div class="rightcont clear">
+			<table class="bigteble">
+				<tr>
+					<td>
+						<table class="Querytable">
+							<tr class="Colorbar1">
+								<td>
+									<strong>&nbsp;组织机构岗位分配</strong>
+								</td>
+							</tr>
+						</table>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding:5px;" bgcolor="#FFFFFF">
+						<table class="Querytable">
+							<tr class="Colorbar1">
+								<td width="20" align="center">
+									<a href="#" onclick="toggleBiz('conditionsDiv4','pic4');"><img src="../scripts/images/22.png" align="absmiddle" id="pic4" /></a>
+								</td>
+								<td>
+									<strong>组织机构基本信息</strong>
+								</td>
+							</tr>
+						</table>
+						<div id="conditionsDiv4">
+								<table class="bigteble">
+									<tr>
+										<td class="Querytext" >
+											组织机构名称:
+										</td>
+										<td id="baseInfo_name" class="Queryform">
+										</td>
+										<td class="Querytext">
+											组织机构编码:
+										</td>
+										<td  id="baseInfo_code" class="Queryform">
+										</td>
+									</tr>
+								</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding:5px;" bgcolor="#FFFFFF">
+						<table class="Querytable">
+							<tr class="Colorbar1">
+								<td width="20" align="center">
+									<a href="#" onclick="toggleBiz('conditionDiv','pic3');"><img src="../scripts/images/22.png" align="absmiddle" id="pic3" /></a>
+								</td>
+								<td>
+									<strong>搜索条件</strong>
+								</td>
+							</tr>
+						</table>
+						<div id="conditionDiv" class="searchCondition">
+							<form id="searchForm" class="pmsForm" validate="true" clienvalidate="true" displaynumber="7">
+								<table class="bigteble">
+									<tr>
+										<td class="Querytext">
+											岗位名称:
+										</td>
+										<td class="Queryform">
+											<!--这里id是未关联当前组织机构的岗位-->
+											<input type="hidden" class="inputtext" name="id" id="id" />
+											<input type="text" class="inputtext" name="name" id="name" style="width:175px;"/>
+										</td>
+										<td class="Querytext">
+											岗位编码:
+										</td>
+										<td class="Queryform">
+											<input type="text" class="inputtext" name="code" id="code" style="width:175px;">
+										</td>
+									</tr>
+									<tr class="Colorbar3">
+										<td colspan="4">
+											<input class="buttonu" type="button" value="查询" onclick="doSearch();"/>
+										</td>
+									</tr>
+								</table>
+							</form>
+						</div>
+						<!-- end searchCondition div -->
+					<div style="padding: 2px"></div>
+					<div id="positionGridContainer" queryid="cnpcPositionQuery" 
+						queryformat="simple" showsearch="false" 
+						autoload="false" searchDiv="conditionDiv" 
+						showdisplay="false" showtitle="true" 
+						showprint="false" showpaging="true" 
+						savecheck ="true" showcheckbox="true">
+                    </div>
+					</td>
+				</tr>
+				<tr class="Colorbar3">
+					<td>
+					<input align="right" type="button" class="buttonu" value="全选" onClick="selectAll('positionGridContainer')"/>
+					<input align="right" type="button" class="buttonu" value="反选" onClick="toggerSelectAll('positionGridContainer')"/>
+					<input align="right" type="button" class="buttonu" value="分配岗位" onClick="addPosition()"/>	
+					</td>
+				</tr>
+			</table>
+		<div style="padding: 5px">
+		</div>
+		<tr>
+			<td style="padding:5px;" bgcolor="#FFFFFF">
+				<table class="Querytable">
+					<tr class="Colorbar1">
+						<td width="20" align="center">
+							<a href="#" onclick="toggleBiz('tableDiv','pic2');"><img src="../scripts/images/22.png" align="absmiddle" id="pic2" /></a>
+						</td>
+						<td>
+							<strong>岗位分配</strong>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr style="overflow:auto;">
+			<td align="left" >
+				<table class="bigteble">
+					<tr>
+						<td>
+							<br>
+						<div style="margin-left:5px" width="100%" id="tableDiv" class="bidTable" defaults='{
+							 showAddButton:false,
+							 tableColumns:["选择","岗位名称","岗位编码"],
+							 tableColumnsType:["checkbox2","label","label"],
+							 fieldName:["cnpcPosId","cnpcPosName","cnpcPosCode"],
+							 tableColumnsWidth:["10%","45%","45%"],
+							 maxRows:10000
+							}'>
+						</div>
+						</td>
+					</tr>
+					<tr>
+						<div id="addtionTableId" style="margin-left:12px">
+						<tr class="Colorbar3">
+						<td  align="right">
+							<strong><span id="positionCount"></span></strong>&nbsp;&nbsp;&nbsp;
+							<input align="right" type="button" class="buttonu" value="全选" onClick="selectAll('tableDiv')"/>
+							<input align="right" type="button" class="buttonu" value="反选" onClick="toggerSelectAll('tableDiv')"/>
+							<input align="right" type="button" class="buttonu" value="取消岗位" onClick="removeAssigned()"/>
+						</td>
+						</tr>
+					</tr>
+				</table>
+			</td>
+			</div>
+		</tr>
+		<div style="padding: 2px">
+		</div>
+		<div class="containerheader" align="right" style="padding:2px 5px 2px 0px">
+			<input align="right" role="button" class="buttonu" onClick="doAssignPos()" value="提交" type="button" style="width:37px;height:20px;"/>
+			&nbsp;
+		</div>
+		</div>
+	</div>
+    </body>
+</html>

@@ -1,0 +1,196 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <title>用户登录记录</title>
+        <meta name="author" content="">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+       <!--  <script type="text/javascript" src="./js/userActivityTree.js"></script> -->
+       <!--  <script type="text/javascript" src="./js/bizbaseQuery.js"></script> -->
+        
+        
+        
+        <script type="text/javascript" charset="utf-8">
+            var userpath = "";
+            var array=new Array();//存放门店 
+            $(document).ready(function(){
+                doSearch();
+            });
+            
+            
+          
+            
+            var COLUMNS = {
+                    "usergroupname": function(aData, iColumn, sColumnName, map){
+                        var value = map[sColumnName];
+                        return value;
+                    }
+                    
+                }
+            
+            
+            $pmspage.opArr = [ /*editObj ,viewObj, aclObj */];
+            
+            function doClean(){
+                $("#name").val('');
+                $("#usergroupname").val('');
+                $("#mobilephone").val('');
+                $("#employeeId").val('');
+                $("#storename").val('');
+                $("#disabledFlag").attr('checked', true);
+                $("#disAbledflag").val("1");
+            }
+            
+            
+            function doAdd(){
+            	//window.location.href="sysuserquery_add.html";
+            }
+        </script>
+    </head>
+    <!-- Body -->
+    
+    <style type="text/css">
+	.auto{max-height:100px;width:80%; overflow-y:scroll;}
+	
+	</style>
+
+
+    <body>
+        <div class="rightcont clear">
+            <!-- <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        用户与权限:用户查询
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <a href="#" onclick="toggleDiv('conditionsDiv','pic2');"><img src="../scripts/images/22.png" align="absmiddle" id="pic2"/></a>&nbsp;&nbsp;搜索条件
+                </div>
+                <div class="panel-body" id="userSearchConditionsDiv">
+
+                    <form id="searchForm" class="pmsForm" validate="true" clienvalidate="true">
+                        <table style="min-width:100%;width:auto" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td class="basetext" width="33%">
+                                    用户名称:
+                                    <input type="text" id="name" name="name" class="form-control" style="width: 80%" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                                </td>
+                                <td class="basetext" width="33%">
+                                    角色组:
+                                    <input type="text" id="usergroupname" name="usergroupname" class="form-control" style="width: 80%" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                                </td>
+                          
+                                <td class="basetext" width="33%">
+                                    员工号:
+                                    <input type="text" id= "employeeId" name="employeeId" class="form-control" style="width: 80%"/>
+                                </td> 
+                                
+                            </tr>
+                            <tr>
+                            
+                                <td class="basetext">
+                                    员工电话:
+                                    <input type="text" id= "mobilephone" name="mobilephone" class="form-control" style="width: 80%" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                                </td>
+                                
+                                <td class="basetext" >
+                                门店：<div class="input-group" style="width:100%;">
+                                <input type="text" id="storename" name="storename" class="auto-inp form-control" style="width: 80%" likeOption="false">
+				                        <div class="auto hidden" id="auto">
+				                            <div class="auto_out">1</div>
+				                            <div class="auto_out">2</div>
+				                        </div>
+				                        
+				                       </div> 
+                                    <input type="radio" id="enableFlag" name="disabledFlag" style="display: none;"  value="0" onclick="setDisabledFlag();"/>
+                                    <input type="radio" id="disabledFlag" name="disabledFlag" style="display: none;" value="1" onclick="setDisabledFlag();" checked="checked"/>
+                                    <input type="hidden" name="disAbledflag" id="disAbledflag"  value="1" likeOption="false" /> 
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+
+                </div>
+                <div class="panel-footer" style="text-align: right">
+                	<input class="btn btn-primary" type="button" value="查询" onclick="doSearch();"/>
+                    <input class="btn btn-primary" type="button" value="重置" onclick="doClean();"/>
+                    <input class="btn btn-primary" type="button" value="新增" onclick="doAdd();"/>
+                </div>
+            </div> -->
+
+            <!--<div id="userContainer"  class="panel panel-primary" queryid="userQueryPage" queryformat="simple" showsearch="false" fnRender="showDiffUser" autoload="false" searchDiv="conditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" operators=$pmspage.opArr>-->
+            <!--</div>-->
+            <div id="userContainer2"  class="panel panel-primary" fnRender="renderColumns" queryid="userloginlogdtoQuery" queryformat="simple" showsearch="false" fnRender="showDiffUser2" autoload="false" searchDiv="userSearchConditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" operators=$pmspage.opArr></div>
+        
+        
+        
+        	<div id="userContainer4"  class="panel panel-primary" fnRender="renderColumns" queryid="appuserloginlogdtoQuery" queryformat="simple" showsearch="false" fnRender="showDiffUser2" autoload="false" searchDiv="userSearchConditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" operators=$pmspage.opArr></div>
+        
+        	
+        	
+        	
+        	<div class="panel panel-primary" style="display: none;">
+                <div class="panel-heading">
+                    <a href="#" onclick="toggleDiv('conditionsDiv','pic2');"><img src="../scripts/images/22.png" align="absmiddle" id="pic2"/></a>&nbsp;&nbsp;搜索条件
+                </div>
+                <div class="panel-body" id="downloadConditionsDiv">
+
+                    <form id="searchForm" class="pmsForm" validate="true" clienvalidate="true">
+                        <table style="min-width:100%;width:auto" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td class="basetext" width="33%">
+                                 APP版本: <input type="text" id="downloadVersion" name="downloadVersion" class="form-control" style="width: 80%" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                                </td>
+                          
+                            </tr>
+                        </table>
+                    </form>
+
+                </div>
+                <div class="panel-footer" style="text-align: right">
+                	<input class="btn btn-primary" type="button" value="查询" onclick="doAppDownloadSearch();"/>
+                    <input class="btn btn-primary" type="button" value="重置" onclick="doAppDownloadClean();"/>
+                </div>
+            </div>
+            
+        	<div id="userContainer3"  class="panel panel-primary" fnRender="renderColumns" queryid="appDownloadLogDtoQuery" queryformat="simple" showsearch="false" fnRender="showDiffUser2" autoload="false" searchDiv="downloadConditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" operators=$pmspage.opArr></div>
+        
+        </div>
+    </body>
+</html>
+<script language="javascript">
+    
+    function doSearch(){
+    	$$.executeSearch('userloginlogdtoQuery', 'userSearchConditionsDiv');
+    	
+    	$$.executeSearch('appuserloginlogdtoQuery', 'userSearchConditionsDiv');
+    	
+    	$$.executeSearch('appDownloadLogDtoQuery', 'downloadConditionsDiv');
+    	//$(".panel-footer").css("display","none");
+    	
+    	$(".dataTables_length").hide();
+    	$(".dataTables_info").hide();
+    	
+    	$(".display").css("width","100%");
+    }
+    
+    function setDisabledFlag(){
+        $("#disAbledflag").val($(":radio[name=disabledFlag][checked]").val());
+    }
+     
+    function doAppDownloadClean(){
+    	$("#downloadVersion").val("");
+    }
+    function doAppDownloadSearch(){
+    	$$.executeSearch('appDownloadLogDtoQuery', 'downloadConditionsDiv');
+    	$(".display").css("width","100%");
+    }
+    
+</script>

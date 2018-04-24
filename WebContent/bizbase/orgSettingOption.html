@@ -1,0 +1,103 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="" content="">
+        <title>地区公司参数设置</title>
+        <link type="text/css" rel="stylesheet" href="css/i2/style_sheet_core.css"/>
+        <link type="text/css" rel="stylesheet" href="../scripts/css/common.css" />
+        <script type="text/javascript" src="js/lib.js"></script>
+        <script type="text/javascript" src="js/refDialog.js"></script>
+        <script type="text/javascript" src="js/orgModify.js"></script>
+        <script>
+            function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+            
+            var request = getRequestParams();
+            var id = request['id'];
+            $(function(){
+                var url = $$.PMSDispatchActionUrl;
+                var data = new PMSRequestObject("purStruOrgManager", "getDirectoryById", [id]);
+                $$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(datas, textStatus, XMLHttpRequest){
+                    $("#info").html("组织所属信息(" + datas.data + ")");
+                });
+				               
+                if (id || "" == id) {
+                    var url = $$.PMSDispatchActionUrl;
+                    var data = new PMSRequestObject("purStruOrgManager", "getPurOrgDTOById", [id]);
+                    $$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(datas, textStatus, XMLHttpRequest){
+                        var org = $.fromJSON(datas.data);
+               			var preferences = org.preferences;
+						if (preferences.charAt(0) == 0) {
+                            $("input[name=preferences1]").eq(0).attr("checked", true);
+                        }else {
+                            $("input[name=preferences1]").eq(1).attr("checked", true);
+                        }
+                        
+                    });
+                }
+            });  
+			function save(){
+				var preferences=getRadioVal("preferences1");
+				var orgUnit = {
+					id:id,
+					preferences:preferences
+				}
+				doManager("purStruOrgManager", "modifyPreferences", orgUnit, function(data, textStatus, XMLHttpRequest){
+                      if (data.result) {
+	                        $$.showMessage("${system.info}", "修改成功!");
+	                    }else{
+							$$.showMessage("${system.info}", data.message);
+							return false;
+						}
+                    }, true, {
+                    showWaiting: true
+                });
+			}              
+        </script>
+    </head>
+    <body>
+       <div class="rightcont body_bg clear">
+            <div class="box">
+				<div class="containerheader" style="padding:2px 10px">
+					<span id="info"></span>
+				</div>
+			</div>
+                <div class="containerbody">
+                    <form id="orgModify" class="pmsForm" validate="true" clientvalidate="true">
+                        <table width="82%" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="red" class="layout">
+                            <tr>
+                                <td align="left" nowrap="true" colspan="2">
+             						<strong>参数设置:</strong>
+                                </td>
+                            </tr>
+							<tr>
+								<td align="left" nowrap="true">
+                                   	 采购订单中交货日期和库存地点是否必输:
+                                </td>
+                                <td align="left" nowrap="true">
+                                    <input class="pmsRadio" name="preferences1" data="[['0','是'],['1','否','checked']]" clicked="showOrHidden"/>
+                                </td>
+							</tr>
+                        </table>
+                    </form>
+				</div>
+				<div align="right" class="containerheader" style="padding:2px 10px">
+					<input align="right" role="button" class="buttonu" onClick="save();"value="保存" type="button" style="width:37px;height:20px;"/>
+				</div>
+                
+        </div>
+        
+    </body>
+</html>

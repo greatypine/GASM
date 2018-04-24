@@ -1,0 +1,586 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta name="author" content="Wu ShaoFu">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/dataTablesLib.js"></script>
+        <script type="text/javascript" src="../scripts/common/pms.js"></script>
+        <script type="text/javascript" src="../scripts/common/pmsCommon.js"></script>
+		<script type="text/javascript" src="js/activityTree.js"></script>
+		<script type="text/javascript" src="js/bizbaseTable.js"></script>
+		<style>
+			table.display  {
+				border: 1px solid #999999;
+				width:100%;
+				table-layout:auto;
+			}
+			table.bidTable {
+				border-collapse: collapse;
+			}
+			.paging_full_numbers {
+				width: 220px !important;
+				padding-top:3px;
+			}
+			table.bidTable td{
+			white-space:nowrap;
+			padding:1px;
+			word-break:break-all;
+		    }
+			.rightcont{
+				min-width:700px;
+			}
+		</style>
+		<script>
+			function clean(){
+				$("#activityName").val('');
+				$("#activityCode").val('');
+				$("#name").val('');
+				$("#code").val('');
+				$("#roleName").val('');
+				$("#roleCode").val('');
+			}
+			function openFunc(){
+				var callback = function(name,code){
+					$("#activityName").val(name);
+					$("#activityCode").val(code);
+				};
+				openActivityTree(callback);
+			}
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+		var request = getRequestParams();
+			var usergroupId = request['userGroupId'];
+			var priId = getUrlParamByKey('priId');
+			var orgId = request['orgId'];
+			
+			var type = request['type'];
+			$(function() {
+				if (null != usergroupId || "" == usergroupId) {
+				doManager("userGroupManager", "getUserGroupDTO", usergroupId, function(datas, textStatus, XMLHttpRequest) {
+					if (datas.result) {
+						var str = datas.data;
+						var userGroupObj = $.fromJSON(str);
+						$("#userGroupName").text(userGroupObj.name);
+						$("#userGroupCode").text(userGroupObj.code);
+					}
+				});
+				}
+			});
+		
+		</script>
+	</head>
+	<body>
+		<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+			<div class="panel-heading">
+				<strong>&nbsp;角色组角色分配</strong>
+			</div>
+			<div class="panel-body">
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<a href="#" onclick="toggleBiz('conditionsDiv4','pic4');"><img src="../scripts/images/22.png" align="absmiddle" id="pic4" /></a>
+						<strong>角色组信息</strong>
+					</div>
+					<div class="panel-body">
+						<div id="conditionsDiv4">
+							<table class="bigteble">
+								<tr>
+									<td class="Querytext">
+										名称:
+									</td>
+									<td id="userGroupName" class="Queryform">
+									</td>
+									<td class="Querytext">
+										编码:
+									</td>
+									<td  id="userGroupCode" class="Queryform">
+									</td>
+								</tr>
+							</table>
+						</div>
+					</div>
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<a href="#" onclick="toggleBiz('condition4Search','pic3');"><img src="../scripts/images/22.png" align="absmiddle" id="pic3" /></a>
+						<strong>搜索条件</strong>
+					</div>
+					<div class="panel-body">
+						<div id="conditionsDiv" class="searchCondition" style="display:none">
+							<form id="searchForm" class="pmsForm" validate="true" clienvalidate="true" displaynumber="7">
+								<table class="bigteble">
+									<tr>
+										<td class="Querytext">
+											角色编码:
+										</td>
+										<td class="Queryform">
+											<input type="text" class="form-control" name="code" id="code" style="width:70%;"/>
+											<input type="hidden" class="inputtext" name="id" id="id" />
+										</td>
+										<td class="Querytext">
+											角色名称:
+										</td>
+										<td class="Queryform">
+											<input type="text" class="form-control" name="name" id="name" style="width:70%;">
+											<!--	<input name="type" id="type" type="hidden"/>
+                                                <input name="roleAttribute" id="roleAttribute" type="hidden"/>-->
+										</td>
+									</tr>
+								</table>
+							</form>
+						</div>
+						<div id="condition4Search" class="searchCondition">
+							<form id="searchForm2" class="pmsForm" validate="true" clienvalidate="true" displaynumber="7">
+								<table class="bigteble">
+									<tr>
+										<td class="Querytext">
+											角色编码:
+										</td>
+										<td class="Queryform">
+											<input type="text" class="form-control" name="roleCode" id="roleCode" style="width:70%;"/>
+											<input type="hidden" class="inputtext" name="roleId" id="roleId" />
+											<!--	<input type="hidden" class="inputtext" name="roleType" id="roleType" />
+                                                <input type="hidden" class="inputtext" name="role_Attribute" id="role_Attribute" />-->
+										</td>
+										<td class="Querytext">
+											角色名称:
+										</td>
+										<td class="Queryform">
+											<input type="text" class="form-control" name="roleName" id="roleName" style="width:70%;">
+										</td>
+									</tr>
+									<tr>
+										<td class="Querytext">
+											功能名称:
+										</td>
+										<td class="Queryform">
+											<div class="input-group" style="width:70%;">
+												<input type="text" class="form-control" name="activityName" id="activityName" readonly>
+												<span class="input-group-btn">
+													<button class="btn btn-default" type="button" onClick="openFunc();"><img src="../scripts/images/search.png" alt="选择" style="height: 20px"/></button>
+												</span>
+											</div>
+											<input type="hidden" class="inputtext" name="activityCode" id="activityCode" style="width:175px;">
+										</td>
+									</tr>
+								</table>
+							</form>
+						</div>
+					</div>
+					<div class="panel-footer">
+						<input class="btn btn-primary" type="button" value="查询" onclick="doSearch();"/>&nbsp;&nbsp;
+						<input class="btn btn-primary" type="button" value="重置" onclick="clean();"/>&nbsp;&nbsp;
+					</div>
+				</div>
+
+				<div style="padding: 2px"></div>
+
+				<div style="width:100%;margin-bottom: 0" id="projectGridContainer" queryid="usergroupAuthQuery" searchDiv="conditionsDiv" class="panel panel-default"
+					 queryformat="simple" showsearch="false" showdisplay="false" showtitle="true" showNo="fale" showprint="false"
+					 showpaging="true" showcheckbox="true" autoload="false" operators=$pmspage.opArr>
+				</div>
+				<div class="panel-footer" align="right" style="margin-bottom: 20px">
+					<input align="right" type="button" class="btn btn-primary" value="全选" onClick="selectAll('projectGridContainer')"/>
+					<input align="right" type="button" class="btn btn-primary" value="反选" onClick="toggerSelectAll('projectGridContainer')"/>
+					<input align="right" type="button" class="btn btn-primary" value="分配角色" onClick="addInvitedBidder()"/>&nbsp;&nbsp;
+				</div>
+
+				<div class="panel panel-default">
+					<div class="panel-heading">
+						<a href="#" onClick="toggleBiz('tableDiv','plusMinus3')"><img id="plusMinus3" src="../scripts/images/22.png"/></a>
+						<strong>角色组角色</strong>
+					</div>
+					<div class="panel-body">
+						<div style="margin-left:5px" width="100%" id="tableDiv" class="bidTable" defaults='{
+							 showAddButton:false,
+							 tableColumns:["选择","角色编码","角色名称","角色说明","操作"],
+							 tableColumnsType:["checkbox2","label","label","label","label"],
+							 fieldName:["id","code","name","note",""],
+							 maxRows:10000
+					}'>
+						</div>
+					</div>
+					<div class="panel-footer" align="right">
+						<input type="text" style="display:none;" id="userGroupId"/>
+						<strong><span id="myspan" style="fontsize:12px"></span></strong>&nbsp;&nbsp;
+						<input align="right" type="button" class="btn btn-primary" value="全选" onClick="selectAll2('tableDiv')"/>
+						<input align="right" type="button" class="btn btn-primary" value="反选" onClick="toggerSelectAll2('tableDiv')"/>
+						<input align="right" type="button" class="btn btn-primary" value="取消角色" onClick="removeInvitedBidder()"/>&nbsp;&nbsp;
+					</div>
+				</div>
+				<div style="padding: 2px">
+				</div>
+			</div>
+			<div class="containerheader" align="right" style="margin:0 10px 10px 0">
+				<input align="right" role="button" class="btn btn-primary" onClick="doAuth()" value="提交" type="button" />
+				<input align="right" role="button" class="btn btn-primary" onClick="javascrip:history.go(-1)" value="返回"
+				type="button" />
+			</div>
+		</div>
+
+		
+		
+		<div class="rightcont clear" id="roleQuery" style="display:none;padding:2px 5px 2px 5px">
+			<!-- table class="bigteble">
+				<tr>
+					<td style="padding:5px;" bgcolor="#FFFFFF">
+						<table class="Querytable">
+							<tr class="Colorbar1">
+								<td width="20" align="center">
+									<a href="#" onclick="toggleBiz('conditionsDiv14','pic4');"><img src="../../pmsapp/scripts/images/22.png" align="absmiddle" id="pic4" /></a>
+								</td>
+								<td>
+									<strong>角色信息</strong>
+								</td>
+							</tr>
+						</table>
+						<div id="conditionsDiv14">
+								<table class="bigteble">
+									<tr>
+										<td class="Querytext" >
+											角色名称:
+										</td>
+										<td id="myrolename" class="Queryform">
+										</td>
+										<td class="Querytext">
+											角色编码:
+										</td>
+										<td  id="myrolecode" class="Queryform">
+										</td>
+									</tr>
+								</table>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td style="padding:5px;" bgcolor="#FFFFFF">
+						<table class="Querytable">
+							<tr class="Colorbar1">
+								<td width="20" align="center">
+									<a href="#" onclick="toggleBiz('gridContainer','pic3');"><img src="../../pmsapp/scripts/images/22.png" align="absmiddle" id="pic3" /></a>
+								</td>
+								<td>
+									<strong>权限信息</strong>
+								</td>
+							</tr>
+						</table>
+						<!-- end searchCondition div -->
+					<div style="display:none;" id="conditionDiv3">
+						<input name="funcRoleId" id="rolexId" type="hidden" operator="1" value="" />
+					</div>
+					<div queryid="functionRoleQuery" 
+							queryformat="simple" showsearch="false" autoload="true" searchDiv="conditionDiv3" 
+							showdisplay="false" showtitle="true" showprint="false" showNo="false" showpaging="true" 
+							showcheckbox="false">
+					</div>
+					<!-- /td>
+				</tr>
+				</table-->
+		</div>
+		
+	</body>
+	<script type="text/javascript">
+		/**
+		 *初始化页面加载程序
+		 */
+		var id = getUrlParamByKey("userGroupId");
+		var checked = $("#tableDiv :checkbox[checked]");
+		var selectedlength = 0;
+		function showActivity(role_id,divId){
+			//alert('*********************');			
+			//alert(role_id);
+			//alert(divId);
+			
+			$("#rolexId").val(role_id);
+			
+			//alert('*********************');	
+			//alert($("#rolexId").val());
+			$$.executeSearch('functionRoleQuery','conditionDiv3');
+			
+			$("#roleQuery").dialog(
+				{
+					bgiframe: true,
+					title: '角色权限',
+					width: 805,
+					modal: true,
+					buttons: {
+							"关闭": function() {
+								$("#roleQuery").dialog('close');
+							}
+					}
+				}
+			);	
+		}
+		
+		$(function() {
+			arr = [];
+			//是否管理员
+			var usertype;
+			var userAttr;
+			if (null != id || "" == id) {
+				//根据UserGroupId取到相关的用户角色Id集合，然后放入搜索区隐藏域中进行查询
+				var url = $$.PMSDispatchActionUrl;
+				var datas = new PMSRequestObject("userManager", "getRolesByUserGroupId", [id]);
+				var data = new PMSRequestObject("userManager","getCurrentUserDTO",null);
+				$$.ajax(url,"requestString="+encodeURIComponent(data.toJsonString()),function(data,textStatus, XMLHttpRequest){
+					var user = $.fromJSON(data.data);
+//					usertype = user.usertype;
+//					userAttr = user.userAttribute;
+				 //	$("#type").val(user.usertype+ "%");	
+					//$("#roleType").val(user.usertype+"%");
+//					if(user.usertype!='2'&&user.usertype!='21'&&userAttr!='pur'){
+//						$("#roleAttribute").val(user.userAttribute);
+//						$("#role_Attribute").val(user.userAttribute);
+//					}
+					
+					$$.ajax(url, "requestString=" + datas.toJsonString(), function(_data, textStatus, XMLHttpRequest) {
+						var str = _data.data;
+						var userIds = $.fromJSON(str);
+					 	$("#id").val(userIds.toString());
+						//把NOT In 的id值给与视图Query的隐藏域中
+						$("#roleId").val(userIds.toString());
+						//页面默认显示当前实体的列表,不加载视图Query
+						$$.executeSearch("usergroupAuthQuery", "conditionsDiv");
+					});
+					//根据UserGroupId取到相关的用户角色信息DTO，然后再set到table中
+					var obj = new PMSRequestObject("userManager", "getRoles", [id]);
+					$$.ajax(url, "requestString=" + encodeURIComponent(obj.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+						if(data.result){
+							var str = data.data;
+							var objs = $.fromJSON(str);
+							//将拿到的用户角色相关信息DTO设置到bidTable里面
+							bidTables[0].setValues(objs);
+							this.selectedlength = objs.length;
+							$("#myspan").html('总计：'+selectedlength+'条');
+							var trs1 = (bidTables[0].bidTable.find("tr"));
+							$(trs1).each(function(i, _tr) {
+								var tds = ($(_tr).find("td"));
+								if(tds.length!=0){
+									var _td = tds[tds.length-1];
+									_td.innerHTML="<a href='#' onclick='showActivity("+objs[i-1].id+",4)'>查看功能权限_2</a>";
+								}
+							})
+						}
+					});
+				},false);
+			}
+		});
+		
+		
+		/**
+		 * 角色信息
+		 */
+		function doSearch() {
+			//如果节点名称的查询条件为空则直接展现实体Query
+			if($("#activityName").val()==''){
+				//实体的查询条件从页面显示的视图Query取值
+				$("#name").val($("#roleName").val());
+				$("#code").val($("#roleCode").val());
+				//隐藏视图Query
+				$("#roleActivityContainer").hide();
+				//显示实体Query
+				$("#projectGridContainer").show();
+				$$.executeSearch("usergroupAuthQuery", "conditionsDiv");
+			}else{
+				$("#projectGridContainer").hide();
+				$("#roleActivityContainer").show();
+				//直接执行
+				$$.executeSearch("roleActivityQuery", "condition4Search");
+			}
+		}
+		
+		/**
+		 * 全选、反选、分配角色
+		 */
+		//全选中复选框
+		function selectAll(_divId) {
+			if ($("#activityName").val() != '') {
+				_divId = "roleActivityContainer";
+			}
+			$("#" + _divId + " input[type='checkbox']").each(function(i, _data) {
+				$(_data).attr("checked", true);
+			});
+		}
+		
+		//反选
+		function toggerSelectAll(_divId) {
+			if ($("#activityName").val() != '') {
+				_divId = "roleActivityContainer";
+			}
+			$("#" + _divId + " input[type='checkbox']").each(function(i, _data) {
+				$(_data).attr("checked", !$(_data).attr("checked"));
+			});
+		}
+		//因为可能出现两个Query都有的情况所以全选按钮和反选按钮无法重用
+		//全选中复选框
+		function selectAll2(_divId) {
+			$("#" + _divId).find("tr").each(function(i,o){
+				if(!$(o).attr("disabled")){
+					$(o).find("td input[type='checkbox']").attr("checked", true);
+				}
+			});
+//			$("#" + _divId + " input[type='checkbox']").each(function(i, _data) {
+//				$(_data).attr("checked", true);
+//			});
+		}
+		
+		//反选
+		function toggerSelectAll2(_divId) {
+			$("#" + _divId).find("tr").each(function(i,o){
+				if(!$(o).attr("disabled")){
+				   $(o).find("td input[type='checkbox']").attr("checked", !$(o).find("td input[type='checkbox']").attr("checked"));
+				}
+			});
+//			$("#" + _divId + " input[type='checkbox']").each(function(i, _data) {
+//				$(_data).attr("checked", !$(_data).attr("checked"));
+//			});
+		}
+		//选中分配角色
+		function addInvitedBidder() {
+			var _quetyId = "";
+			if ($("#activityName").val() != '') {
+				_quetyId = "roleActivityQuery";
+			}else{
+				_quetyId = "usergroupAuthQuery";
+			}
+			var objs = $$.getSelectedObj(_quetyId);
+			if (objs.length == 0) {
+				$$.showMessage('系统信息', '请先选择要分配的角色');
+				return;
+			}
+			//循环选中的角色，然后将信息放入bidTable中
+			this.selectedlength = this.selectedlength + objs.length;
+			$("#myspan").html('总计：'+selectedlength+'个');
+			for (var i = 0; i < objs.length; i++) {
+				var obj = {};
+				$(objs[i]).each(function(j) {
+					obj[bidTables[0].fieldName[j]] = objs[i][j];
+				})
+				var curentTR = bidTables[0].createRow(obj);
+				var tds = ($(curentTR).find("td"));
+				if(tds.length!=0){
+					var _td = tds[tds.length-1];
+					_td.innerHTML="<a href='#' onclick='showActivity("+objs[i][0]+",4)'>查看功能权限_3</a>";
+				}
+
+				
+				$("#id").val(getIds());
+				$("#roleId").val(getIds());
+			}
+			doSearch();
+			var cpage = $("table.pagingtable tr").find("td:eq(4)").find("input").val();
+			setTimeout("reloadTable(" + cpage + ")", 10);
+		}
+		
+		
+		/**
+		 * 取消角色
+		 */
+		
+		//取消角色分配
+		function removeInvitedBidder() {
+			var arr = [];
+			var sclength = 0;
+			var trs = (bidTables[0].bidTable.find("tr"));
+			$(trs).each(function(i, _tr) {
+				var tds = ($(_tr).find("td"));
+				if (tds.length != 0) {
+					if (tds.eq(0).find("input").eq(0).attr("checked")) {
+						$(_tr).remove();
+						sclength = sclength + 1;
+					}
+				}
+			})
+			this.selectedlength = this.selectedlength - sclength;
+			$("#myspan").html('总计：'+selectedlength+'条');
+			
+			$("#id").val(getIds());
+			$("#roleId").val(getIds());
+			doSearch();
+		}
+		
+		/**
+		 *
+		 */
+		function reloadTable(_val) {
+			$("table.pagingtable tr").find("td:eq(4)").find("input").val(_val);
+			$("table.pagingtable tr").find("td:last").find("input").trigger("click");
+		}
+		
+		/**
+		 *取出bidTable列表中的每一条数据，最后将数据的id值放入一个集合中，最后返回这个id集合
+		 */
+		function getIds() {
+			var arr = bidTables[0].getValues();
+			var result = [];
+			$(arr).each(function(i) {
+				result.push(arr[i].id);
+			})
+			return result.join(",");
+		}
+		
+		/**
+		 * 提交方法
+		 */
+		function doAuth() {
+			var div = $("<div></div>");
+			div.html("确定提交？");
+			div.dialog(
+				{
+					bgiframe: true,
+					title: "提示",
+					width: 320,
+					buttons: 
+						{
+							"确定": function() {
+								doSubmit();
+								$(this).dialog("close");
+							},
+							"取消": function() {
+								$(this).dialog("close");
+							}
+						},
+					modal: true
+				});
+		}
+		
+		function doSubmit() {
+			var assign = [];
+			var inputs = $("#tableDiv input").each(function(){
+				assign.push($(this).val());
+			});
+			//重新分配角色先删掉原有的角色再添加.
+			doManager("userGroupRoleManager", "addUserGroupRole", [$.toJSON(assign),id], function(data, textStatus, XMLHttpRequest) {
+				history.go(-1);
+			},true,{showWaiting:true});
+		}
+		
+		var viewObj  = {
+			html: '<a href="#" class="blue">查看功能权限_1</a>',
+			func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+				//得到ID-----
+				var roleId =data[0];
+				showActivity(roleId,1);
+				
+			}
+		}
+		
+		$pmspage.opArr = [viewObj];
+	</script>
+</html>

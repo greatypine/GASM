@@ -1,0 +1,225 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="X-UA-Compatible"content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css"/>
+        <script type="text/javascript" src="../scripts/bidLib.js">
+        </script>
+        <script type="text/javascript" src="../scripts/dataTablesLib.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/pms.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/pmsCommon.js">
+        </script>
+<style type="text/css">
+	table.display {
+	border: 1px solid #000;
+	margin: 0 auto;
+	width:100%;
+	clear: both;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+</style>
+<script>
+			$(function() {
+				var type = getUrlParamByKey("type");
+				var id= getUrlParamByKey("userGroupId");
+				var priId= getUrlParamByKey("priId");
+				$("#usergroup\\.id").val(id);//角色组列表所用控件值，\\表示转义
+				//$("#privilege\\.id").val(priId);//数据权限列表所用控件值，\\表示转义
+				$("#userGroupId").val(id); //功能权限列表所用控件值
+				//执行查询
+				$$.executeSearch('userQuery','conditionDiv1');
+				//$$.executeSearch('conditionQuery','conditionDiv2');
+				//$$.executeSearch('userGroupRoleQuery','conditionDiv3');
+				$$.executeSearch('functionQuery','conditionDiv3');
+				
+				
+				
+				if(type == "userGroupQuery"||type == "userGroupDetail"){//显示出导航条
+					$("#navigationDiv").removeAttr("style");
+				}
+				if(type == "userGroupDetail"){//显示出导航条
+					$("#showDetailDiv").removeAttr("style");
+				}
+				if (null != id && "" != id) {
+					var url = $$.PMSDispatchActionUrl;
+					var data = new PMSRequestObject("userGroupManager", "getUserGroupDTO", [id]);
+					$$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(datas, textStatus, XMLHttpRequest) {
+						var str = datas.data;
+						var userGroup = $.fromJSON(str);
+						$("#temp").val(datas.data);
+						$("#orgName").text(userGroup.orgEntity.name);
+						$("#orgCode").text(userGroup.orgEntity.code);
+						$("#userGroupName").text(userGroup.name);
+						$("#userGroupCode").text(userGroup.code);
+						
+						var orgData = new PMSRequestObject("purStruOrgManager", "getDirectoryById", [userGroup.orgEntity.id]);
+						$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(orgData.toJsonString()), function(datas, textStatus, XMLHttpRequest) {
+							$("#info").html("组织机构信息:("+datas.data+")");
+						});
+//						$("#description").text(userGroup.description);
+					});
+				}else{
+					$msg.alert('参数传入不正确，请联系系统管理员！');
+				}
+				
+			})
+		
+		var opArr=[];	
+			
+</script>
+</head>
+  <body>
+	<div class="rightcont body_bg clear">
+		<div class="box">
+			<div id="navigationDiv" style="display:none;">
+				<div class="title clear">
+	                 <div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();">
+                </div>
+	                <div class="ico2">
+	                </div>
+	                <div class="ico1">
+	                </div>
+	                <a href="#">用户与权限 :</a>&nbsp;
+	                <a href="#" onclick="javascript:history.go(-1)">内部角色组查询</a><span>></span>
+					<a href="#">角色组信息</a>
+				</div>
+			</div>
+			
+	    <div class="containerheader">
+	    	<a href="#" onClick="toggleBiz('temp5','plusMinus5')"><img id="plusMinus5" src="../scripts/images/22.png"/></a>
+			角色组信息&nbsp;&nbsp;&nbsp;&nbsp;
+			<span id="info"></span>
+	    </div>
+	    </div>
+		 	<div id="temp5" style="padding:5px;border:1px solid #999999;">
+		 <div class="containerheader">
+	    	<a href="#" onClick="toggleBiz('temp4','plusMinus4')"><img id="plusMinus4" src="../scripts/images/22.png"/></a>
+			角色组信息&nbsp;&nbsp;&nbsp;&nbsp;
+	    </div>
+		
+	    <div class="containerbody" id="temp4">
+	      <table style="margin:10px" class="layout" cellpadding="0" cellspacing="0" border="1" bordercolor="red">
+			<tr>
+				<td align="left" width="15%">公司名称:</td>
+				<td id="orgName" align="left" width="25%">   </td>
+				<td align="left" width="15%">公司代码:</td>
+				<td id="orgCode" align="left" width="25%"></td>
+			</tr>
+			<tr>
+				<td  align="left">角色组名称:</td>
+				<td id="userGroupName"> </td>
+				<td align="left">角色组编码:</td>
+				<td id="userGroupCode"> </td>
+			</tr>
+			
+	    </table>
+		
+		</div>
+			<div class="containerheader" align="right" style="padding:2px 5px 2px 0px;margin-bottom:4px;">
+				<input align="right" role="button" class="buttonu" onClick="javascrip:history.go(-1)"  value="返回" type="button" style="width:37px;height:20px;"/>
+			</div>
+		<div style="display:none;" id="showDetailDiv"  width="100%"><!-- showDetail div显示所有详情的div id为showDetailDiv -->	
+			<!-- 用户列表 -->	
+			<div class="containerheader">
+				<a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+				用户列表
+		    </div>
+			
+			<div class="containerbody" style="margin-bottom:4px;" >
+				<div style="display:none;" id="conditionDiv1">
+					<input name="usergroup.id" id="usergroup.id" type="hidden" operator="1"/>
+				</div><!--
+<<<<<<< .mine
+				<div class="rightcont body_bg clear" id="temp2" >
+					<div id="gridContainer" queryid="userQuery" searchDiv="conditionDiv"
+=======-->
+				<div id="temp1" >
+					<div id="gridContainer" queryid="userQuery" searchDiv="conditionDiv1"
+					showsearch="false"  showdisplay="false" showtitle="false" 
+					showprint="false" showpaging="true" showcheckbox="false" autoload="false">
+					</div>
+				</div>
+		    </div>
+			<!-- 功能权限列表 -->	
+			<div class="containerheader">
+				<a href="#" onClick="toggleBiz('temp','plusMinus3')"><img id="plusMinus3" src="../scripts/images/22.png"/></a>
+				功能权限列表 
+		    </div>
+			<div class="containerbody">
+				<div style="display:none;" id="conditionDiv3">
+					<input name="userGroupId" id="userGroupId" type="hidden" operator="1" />
+				</div>
+				<div id="temp">
+					<div id="gridContainer" queryid="functionQuery" 
+					managername="functionManager" methodname="getFuncDetailQuery"
+					searchDiv="conditionDiv3" 
+					showsearch="false" queryformat="simple" showdisplay="false" showtitle="false" 
+					showprint="false" showpaging="true" showcheckbox="false" autoload="false">
+						
+					</div>
+				</div>
+		    </div>
+			
+		</div>
+			<!-- 数据权限列表  class="rightcont body_bg clear"
+			<div class="containerheader">
+				<a href="#" onClick="toggleBiz('temp1','plusMinus2')"><img id="plusMinus2" src="../scripts/images/22.png"/></a>
+				数据权限列表
+		    </div>
+			<div class="containerbody">
+				<div style="display:none;" id="conditionDiv2">
+					<input name="privilege.id" id="privilege.id" type="hidden" operator="1" />
+				</div>
+				<div class="rightcont body_bg clear" id="temp1">
+					<div id="gridContainer" queryid="conditionQuery" searchDiv="conditionDiv2" 
+					showsearch="false" queryformat="simple" showdisplay="false" showtitle="false" 
+					showprint="false" showpaging="true" showcheckbox="false" autoload="false" operators=opArr>
+					</div>
+				</div>
+		    </div>
+			-->	
+
+			<!-- 功能权限列表 -->	
+			<!--<div class="containerheader">
+				<a href="#" onClick="toggleBiz('temp','plusMinus3')"><img id="plusMinus3" src="../scripts/images/22.png"/></a>
+				功能权限列表 
+		    </div>
+			<div class="containerbody">
+				<div style="display:none;" id="conditionDiv3">
+					<input name="userGroupId" id="userGroupId" type="hidden" operator="1" />
+				</div>
+				<div class="rightcont body_bg clear" id="temp">
+					<div id="gridContainer" queryid="functionQuery"
+					managername="functionManager" methodname="getFuncDetailQuery"
+					searchDiv="conditionDiv3" 
+					showsearch="false" queryformat="simple" showdisplay="false" showtitle="false" 
+					showprint="false" showpaging="true" showcheckbox="false" autoload="false" operators=opArr>
+					</div>
+				</div>
+		    </div>
+			-->
+		</div><!-- 
+		
+		<div class="containerbody">
+				<div style="display:none;" id="conditionDiv3">
+					<input name="userGroupId" id="userGroupId" type="hidden" operator="1" />
+				</div>
+				<div class="rightcont body_bg clear" id="temp">
+					<div id="gridContainer" queryid="roleFunctionView" 
+					
+					searchDiv="conditionDiv3" 
+					showsearch="false" queryformat="simple" showdisplay="false" showtitle="false" 
+					showprint="false" showpaging="true" showcheckbox="false" autoload="false" operators=opArr>
+						
+					</div>
+				</div>
+		    </div>
+		showDetail div显示所有详情的div id为showDetailDiv -->	
+		</div>
+	</body>
+</html>

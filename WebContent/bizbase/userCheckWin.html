@@ -1,0 +1,213 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <title>人员查询</title>
+        <meta name="author" content="Wang Shicheng">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/common/pms.js"></script>
+        <script type="text/javascript" src="../scripts/common/pmsCommon.js"></script>
+        <script src="../bizbase/js/orgDialog.js" type="text/javascript"></script>
+        <script type="text/javascript" charset="utf-8">
+            function selProjectOrgCallBack(resultStr){
+                var selResult = $.fromJSON(resultStr);
+                var orgId = selResult[0].id;
+                var orgName = selResult[0].name;
+                doManager("purStruOrgManager", "getPurOrgDTOById", orgId, function(data, textStatus, XMLHttpRequest){
+                    if (data.result == true) {
+                        if (data.data != "null") {
+                            var returnObj = $.fromJSON(data.data);
+                            $("#orgPath").val(returnObj.path+"%");
+                            $("#orgName").val(orgName);
+                        }
+                    }
+                    else {
+                        $$.showMessage("${system.info}", "取得单位属性出错!");
+                    }
+                });
+            }
+            
+            var checkType = getUrlParamByKey("checkType");
+            var orgCode = getUrlParamByKey("orgCode");
+            var positionCodes = getUrlParamByKey("positionCodes");
+			var selectOrgAble = getUrlParamByKey("selectOrgAble");
+			var orgName="";
+			var orgPath="";
+            $(document).ready(function(){
+                if (checkType == 0) {
+                    $("#userContainer").attr("checkmode", "single");
+                }
+				/**
+				 * 默认组织机构
+				 */
+                if (!isEmptyValue(orgCode)) {
+					doManager("purStruOrgManager", "getObjectByCode", orgCode, function(data, textStatus, XMLHttpRequest){
+                    if (data.result == true) {
+                        if (data.data != "null") {
+                            var returnObj = $.fromJSON(data.data);
+							orgPath=returnObj.path;
+                            $("#orgPath").val(orgPath+"%");
+							orgName=returnObj.name;
+                            $("#orgName").val(orgName);
+                        }
+                    }
+                    else {
+                        $$.showMessage("${system.info}", "取得单位属性出错!");
+                    }
+                },false);
+                }
+				/**
+				 * 默认岗位
+				 */
+				if (!isEmptyValue(positionCodes)) {
+                	$("#positionCode").val(positionCodes);
+                }
+				//组织机构是否可以选择
+				if (!isEmptyValue(selectOrgAble)) {
+					if(selectOrgAble=="false"){
+						$("#search").hide();
+					}
+                }
+                doSearch();
+            });
+            
+            function doClean(){
+				if (isEmptyValue(positionCodes)) {
+                	$("#positionCode").val("");
+                }
+				if (isEmptyValue(orgCode)) {
+                    $("#orgPath").val("");
+                    $("#orgName").val("");
+                }
+                $("#userName").val("");    
+            }
+			var COLUMNS = {
+                "orgName": function(aData, iColumn, sColumnName, map){
+                    var id = map.pk_org;
+					var value="";
+					doManager("purStruOrgManager", "getOrgFullNameByLevel", [id], function(data, textStatus, XMLHttpRequest){
+                    if (data.result == true) {
+                        if (data.data != "null") {
+                            var returnObj = $.fromJSON(data.data);
+							value=returnObj;
+                        }
+                    }
+                    else {
+                        $$.showMessage("${system.info}", "取得单位属性出错!");
+                    }
+                },false);
+                    return value;
+                }
+            }
+        </script>
+    </head>
+    <!-- Body -->
+    <body>
+        <div>
+            <table class="bigteble">
+                <tr>
+                    <td style="padding:5px;" bgcolor="#FFFFFF">
+                        <div id="containerbody">
+                            <table class="Querytable">
+                                <tr class="Colorbar1">
+                                    <td width="20" align="center">
+                                        <a href="#" onClick="toggleBiz('conditionsDiv','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+                                    </td>
+                                    <td>
+                                        <strong>搜索条件</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div id="userSearchConditionsDiv">
+                            	<form id="searchForm" name="searchForm" class="pmsForm" validate="true" clienvalidate="true">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td>
+                                            <table class="bigteble">
+                                                <tr>
+                                                	<td class="basetext" align="left" width="8%">
+                                                        组织机构:
+                                                    </td>
+                                                    <td class="baseform" width="20%">
+                                                    <input type="text" id="orgName" class="inputtext_dis" readonly/>
+													<input class="buttonu" type="button" id="search" onClick="orgDialog(selProjectOrgCallBack, 'radio', 'all','null','null', 'null')" value="选择" />
+													<input name="orgPath" id="orgPath" type="hidden"/>
+													<input type="hidden" id="disAbledflag" name="disAbledflag" class="inputtext" />
+													</td>
+                                                    <td align="left" width="8%" class="basetext">
+                                                        用户名称:
+                                                    </td>
+                                                    <td class="baseform" align="left" width="20%">
+                                                    	<input type="hidden" id="positionCode" name="positionCode" class="inputtext" />
+                                						<input type="text" id="userName" name="userName" class="inputtext" />
+													</td>
+                                                </tr>
+                                            </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table class="bigteble">
+                                                    <tr class="Colorbar3">
+                                                        <td>
+                                                            <input class="buttonu" type="button" value="查询" onclick="doSearch();"/>&nbsp;|<input class="buttonu" type="button" value="重置" onclick="doClean();"/>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                            <div id="userContainer" showNo="false" configbutton="false" titleAlign= "center" fnRender="renderColumns" queryid="userSearchCheckQuery" queryformat="simple" showsearch="false" autoload="false" searchDiv="userSearchConditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="true">
+                            </div>
+                            
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+<script language="javascript">
+    function doSearch(){
+            $$.executeSearch('userSearchCheckQuery', 'userSearchConditionsDiv');
+    }
+    
+    function doSubmit(){
+        var json;
+        var objs = $$.getSelectedObj("userSearchCheckQuery");
+        if (objs.length != 0) {
+            if (checkType == 0) {
+                json = '{"userId":"' + objs[0][0] + '","userName":"' + objs[0][2] + '","orgName":"' + objs[0][3] + '","positionName":"' + objs[0][4] + '","userCode":"' + objs[0][12] + '"}';
+            }
+            else {
+                var userIds = "";
+                var userNames = "";
+                var orgNames = "";
+                var positionNames = "";
+                var userCodes = "";
+                for (var i = 0; i < objs.length; i++) {
+                    if (i == objs.length - 1) {
+                        userIds += objs[i][0];
+                        userNames += objs[i][2];
+                        orgNames += objs[i][3];
+                        positionNames += objs[i][4];
+                        userCodes += objs[i][12];
+                    }
+                    else {
+                        userIds += objs[i][0] + ",";
+                        userNames += objs[i][2] + ",";
+                        orgNames += objs[i][3] + ",";
+                        positionNames += objs[i][4] + ",";
+                        userCodes += objs[i][12] + ",";
+                    }
+                }
+                json = '{"userId":"' + userIds + '","userName":"' + userNames + '","orgName":"' + orgNames + '","positionName":"' + positionNames + '","userCode":"' + userCodes + '"}';
+            }
+        }
+        parent.win.callBack(json);
+        parent.win.hide();
+    }
+</script>

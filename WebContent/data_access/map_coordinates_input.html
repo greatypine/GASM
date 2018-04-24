@@ -1,0 +1,899 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>地图坐标录入</title>
+    <link rel="shortcut icon" type="image/x-icon" href="../icon.png" />
+    <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
+    <link rel="stylesheet" href="../hr/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../hr/bootstrap/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../hr/bootstrap/css/ionicons.min.css">
+    <link rel="stylesheet" href="../data_access/dist/css/skins/_all-skins.min.css">
+    <script src="https://webapi.amap.com/maps?v=1.4.2&key=f52a1bb11408e8a46dc884b2aaa44edc&plugin=AMap.PolyEditor,AMap.CircleEditor"></script>
+    <!-- <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script> -->
+    <style type="text/css">
+        *{margin: 0; padding: 0;}
+        ul,li{list-style: none;}
+        body {
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            font-size: 12px;;
+        }
+
+        #mapContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        input[type="text"] {
+            height: 25px;
+            outline: none;
+            border: 0;
+            border: 1px solid #CCCCCC;
+            padding: 0 4px;
+        }
+
+        .button-group {
+            position: absolute;
+            /* top: 20px; */
+            right: 20px;
+            font-size: 12px;
+            padding: 10px;
+        }
+
+        .menu{position: absolute; top: 50px;  left: 20px; width: 350px;}
+        .sidebar-form{position: fixed; width: 350px; height: 43px; line-height: 40px; background-color: #fff; box-shadow: 1px 2px 1px rgba(0,0,0,.15); border: 0!important;}
+        .menu_list{margin: 55px 0 0 0; width: 350px; background-color: #fff; overflow: hidden; padding-top: 15px!important; box-shadow: 1px 2px 1px rgba(0,0,0,.15);-webkit-transition: all .3s ease-in-out;-o-transition: all .3s ease-in-out;transition: all .3s ease-in-out}
+        .menu_list ul{overflow-y: auto;}
+        /*.menu_list:hover ul{overflow-y: auto;}*/
+        .menu_list ul::-webkit-scrollbar{width: 8px; background-color: #fff;}
+        .menu_list ul::-webkit-scrollbar-thumb{background-color: #adadad; border-radius: 5px;}
+        .menu_list ul::-webkit-scrollbar-track{background-color: #fff;}
+        .menu_list li{width: 316px; line-height: 22px; padding: 5px 8px 15px 8px; margin: 0 10px 0 15px; border-bottom: 1px solid #eaeaea;}
+        .menu_list li:nth-last-child(1){border: none;}
+        /*.menu_list li span{color: #0a67f2; font-weight: bold; font-size: 16px; padding-right: 5px;}*/
+        .menu_list li p:nth-child(2){padding-bottom: 7px; font-size: 14px; color: #333;}
+        p{margin: 0;}
+        .menu_list li a{color: #999; display: inline-block; width: 100%; text-decoration: none; padding-top: 5px;}
+        .menu_list li:hover,.menu_list li:visited,.menu_mark{background-color: rgba(0,0,0,0.05);}
+        .btn{padding: 0 12px; font-size: 20px; color: #808499;}
+        .form-control{font-size: 16px; padding: 0 8px!important;}
+        .result_hide{padding: 15px 0 10px 0;margin: 55px 0 0 0; width: 349px; background-color: #fff; color: #3385ff; text-align: center; font-size: 14px; padding: 10px 0 10px 0; -webkit-transition: all .3s ease-in-out;-o-transition: all .3s ease-in-out;transition: all .3s ease-in-out}
+        .btn-style-blue{height: 28px;line-height: 28px;color: #FFF;border: 0;outline: none;padding-left: 5px;padding-right: 5px;border-radius: 3px;margin-bottom: 4px;cursor: pointer;background-color: #0D9BF2;}
+        .btn-style-gray{height: 28px;line-height: 28px;color: #FFF;border: 0;outline: none;padding-left: 5px;padding-right: 5px;border-radius: 3px;margin-bottom: 4px;cursor: pointer;background-color: #bcbcbc;}
+        .font-color-red{color: #f00;}
+        .font-color-blue{color: #00c0ff;}
+        .button-group{bottom:50px;}
+        #tip{bottom:20px; top:auto; font-size:14px;}
+        .amap-maptype-list{display: none!important;}
+
+    </style>
+</head>
+<body class="skin-blue">
+<div id="mapContainer" style="background-color:rgba(0,0,0,0.5)"></div>
+<div>
+    <div id="tip" style="color:#f00;"><strong>温馨提示：双击左键或者单击右键可以结束坐标录入！</strong><br><span id="info"></span></div>
+
+</div>
+<div >
+    <div id="resultInfo"></div>
+</div>
+<!--左侧列表-->
+<div class="menu">
+    <div class="sidebar-form">
+        <div class="input-group">
+            <input id="search" type="text" name="q"   class="form-control" placeholder="搜索">
+            <span class="input-group-btn">
+                <button onClick="cleanSearch()" class="btn btn-flat"><i class="fa fa-remove" style="color: #bbc0c2; font-weight: normal;"></i></button>
+              </span>
+        </div>
+    </div>
+    <div class="menu_list">
+        <ul id="namelist">
+            <!-- <li>
+                <a href="#"><p><span>1.</span>呼家楼小区</p>
+                <p>朝阳区呼家楼街道呼家楼小区朝阳区呼家楼街道呼家楼小区朝阳区呼家楼街道呼家楼小区</p></a>
+            </li> -->
+        </ul>
+    </div>
+    <div class="result_hide" style="display: none;">展开搜索结果</div>
+</div>
+<!--左侧列表-->
+<div id="villageInfo" style="display:none;overflow-x:hidden;margin-bottom:0; height:auto;" class="panel panel-primary" >
+    <ul class="vill" id="village">
+    </ul>
+    <span>该小区坐标已录入，是否重新录入？</span>
+</div>
+<div id="deletevillageInfo" style="display:none;overflow-x:hidden;margin-bottom:0; height:auto;" class="panel panel-primary" >
+    <ul class="vill" id="village">
+    </ul>
+    <span>是否删除已选中绿色小区？</span>
+</div>
+<div id="saveQuestion" style="display:none;overflow-x:hidden;margin-bottom:0; height:auto;" class="panel panel-primary" >
+    <ul class="vill" id="village">
+    </ul>
+    <span>继续选择将会丢失未保存坐标信息，是否继续？</span>
+</div>
+<div id="editarea" style="display:none;overflow-x:hidden;margin-bottom:0; height:auto;" class="panel panel-primary" >
+    <ul class="vill" id="village">
+    </ul>
+    <span>不同小区地理坐标有交叉，请修改后进行保存!</span>
+</div>
+
+<script src="../hr/plugins/jQuery/jQuery-2.2.0.min.js"></script>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script src="//webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+<script type="text/javascript">
+    autodivheight();
+    function autodivheight(){ //函数：获取尺寸
+        //获取浏览器窗口高度
+        var winHeight=0;
+        if (window.innerHeight)
+            winHeight = window.innerHeight;
+        else if ((document.body) && (document.body.clientHeight))
+            winHeight = document.body.clientHeight;
+        //通过深入Document内部对body进行检测，获取浏览器窗口高度
+        if (document.documentElement && document.documentElement.clientHeight)
+            winHeight = document.documentElement.clientHeight;
+        //DIV高度为浏览器窗口的高度
+        //document.getElementById("test").style.height= winHeight +"px";
+        //DIV高度为浏览器窗口高度的一半
+        document.getElementById("namelist").style.maxHeight= winHeight - 200 +"px";
+    }
+    window.onresize=autodivheight; //浏览器窗口发生变化时同时变化DIV高度
+</script>
+<script type="text/javascript">
+    //保存时存放area的数组
+    var x = getUrlParamByKey("x");
+    var storeId = getUrlParamByKey("storeno");
+    var id = getUrlParamByKey("id");
+    var a = x.split(",");
+    var position=[Number(a[0]),Number(a[1])];
+    //已存在的小区id
+    id=decodeURIComponent(id);
+    //该数组用于该小区操作坐标错误时，撤销操作
+    var polygonArray = [];
+    //服务区域
+    var polygonArea = [];
+    //存放所有小区的数组
+    var areaAry = [];
+    var lastIdx;
+    var storeno="";
+    var isDrawing = false;
+
+    const POLYGON_STATE_DRAW = 0;
+    const POLYGON_STATE_DRAW_EDIT = 1;
+    const POLYGON_STATE_UPDATE_EDIT = 2;
+    const POLYGON_STATE_RECORDED = 3;
+
+
+    $(function(){
+        doManager("TinyVillageManager", "findTinyvillageByTownId",storeId, function(data, textStatus, XMLHttpRequest) {
+            if(data.result){
+                var aaa = data.data;
+                if(data.data!='null'){
+                    polygonArea = eval('('+data.data+')')[0].data;
+                    areaAry = eval('('+data.data+')')[1].data;
+                    var arrCoordinates = eval('('+data.data+')')[2].data;
+                    storeno = eval('('+data.data+')')[3].store.storeno;
+                    if (areaAry!=null&&areaAry.length>0){
+                        for(var i=0;i<areaAry.length;i++){
+                            var polygons=[];
+                            var string = areaAry[i].name;
+                            var area_id = areaAry[i].id;
+                            var area_name = areaAry[i].areaname;
+                            var dellable = areaAry[i].dellable;
+                            if(id == area_id){
+                                var psel = document.getElementById("search");
+                                psel.value = string;
+                                index = i
+                            }
+                            if(arrCoordinates!=null && arrCoordinates.length>0){
+                                for(var x=0;x<arrCoordinates.length;x++){
+                                    if(area_id == arrCoordinates[x].id){
+                                        arrCoordinates[x].data[0].pop();
+                                        areaAry[i]['area'] = arrCoordinates[x].data[0];
+                                        areaAry[i]['store_no'] = arrCoordinates[x].storeNo;
+                                        areaAry[i]['storeName'] = arrCoordinates[x].storeName;
+                                        break;
+                                    }
+                                }
+                            }
+                            if(dellable ==1){
+                            	if(areaAry[i].area == null){
+                                    if(area_name!=null){
+                                        $("#namelist").append("<li name='"+area_id+"' id='"+area_id+"' onclick='eventHandleNavList("+i+")'>"+
+                                            "<input type='hidden' value='"+i+"'>"+
+                                            "<p><span>"+(i+1)+".</span><span id='tinyvillage_"+area_id+"'>"+"<strong style='color:#0189e8;'>(待删除)</strong>"+string+"</span></p>"+
+                                            "<p><span class='font-color-red'>"+"未录入坐标,&nbsp;</span>已绑片区:"+area_name+"</p>"+
+                                            "</li>");
+                                    }else{
+                                        $("#namelist").append("<li name='"+area_id+"' id='"+area_id+"' onclick='eventHandleNavList("+i+")'>"+
+                                            "<input type='hidden' value='"+i+"'>"+
+                                            "<p><span>"+(i+1)+".</span><span id='tinyvillage_"+area_id+"'>"+"<strong style='color:#0189e8;'>(待删除)</strong>"+string+"</span></p>"+
+                                            "<p><span class='font-color-red'>"+"未录入坐标,&nbsp;</span>未绑定片区"+"</p>"+
+                                            "</li>");
+                                    }
+                                }else{
+                                    if(area_name!=null){
+                                        $("#namelist").append("<li name='"+area_id+"' id='"+area_id+"' onclick='eventHandleNavList("+i+")'>"+
+                                            "<input type='hidden' value='"+i+"'>"+
+                                            "<p><span>"+(i+1)+".</span><span id='tinyvillage_"+area_id+"'>"+"<strong style='color:#0189e8;'>(待删除)</strong>"+string+"</span></p>"+
+                                            "<p><span class='font-color-blue'>"+"已录入坐标,&nbsp;</span>已绑片区:"+area_name+"</p>"+
+                                            "</li>");
+                                    }else{
+                                        $("#namelist").append("<li name='"+area_id+"' id='"+area_id+"' onclick='eventHandleNavList("+i+")'>"+
+                                            "<input type='hidden' value='"+i+"'>"+
+                                            "<p><span>"+(i+1)+".</span><span id='tinyvillage_"+area_id+"'>"+"<strong style='color:#0189e8;'>(待删除)</strong>"+string+"</span></p>"+
+                                            "<p><span class='font-color-blue'>"+"已录入坐标,&nbsp;</span>未绑定片区"+"</p>"+
+                                            "</li>");
+                                    }
+                                }
+                            }else{
+                            	if(areaAry[i].area == null){
+                                    if(area_name!=null){
+                                        $("#namelist").append("<li name='"+area_id+"' id='"+area_id+"' onclick='eventHandleNavList("+i+")'>"+
+                                            "<input type='hidden' value='"+i+"'>"+
+                                            "<p><span>"+(i+1)+".</span><span id='tinyvillage_"+area_id+"'>"+string+"</span></p>"+
+                                            "<p><span class='font-color-red'>"+"未录入坐标,&nbsp;</span>已绑片区:"+area_name+"</p>"+
+                                            "</li>");
+                                    }else{
+                                        $("#namelist").append("<li name='"+area_id+"' id='"+area_id+"' onclick='eventHandleNavList("+i+")'>"+
+                                            "<input type='hidden' value='"+i+"'>"+
+                                            "<p><span>"+(i+1)+".</span><span id='tinyvillage_"+area_id+"'>"+string+"</span></p>"+
+                                            "<p><span class='font-color-red'>"+"未录入坐标,&nbsp;</span>未绑定片区"+"</p>"+
+                                            "</li>");
+                                    }
+                                }else{
+                                    if(area_name!=null){
+                                        $("#namelist").append("<li name='"+area_id+"' id='"+area_id+"' onclick='eventHandleNavList("+i+")'>"+
+                                            "<input type='hidden' value='"+i+"'>"+
+                                            "<p><span>"+(i+1)+".</span><span id='tinyvillage_"+area_id+"'>"+string+"</span></p>"+
+                                            "<p><span class='font-color-blue'>"+"已录入坐标,&nbsp;</span>已绑片区:"+area_name+"</p>"+
+                                            "</li>");
+                                    }else{
+                                        $("#namelist").append("<li name='"+area_id+"' id='"+area_id+"' onclick='eventHandleNavList("+i+")'>"+
+                                            "<input type='hidden' value='"+i+"'>"+
+                                            "<p><span>"+(i+1)+".</span><span id='tinyvillage_"+area_id+"'>"+string+"</span></p>"+
+                                            "<p><span class='font-color-blue'>"+"已录入坐标,&nbsp;</span>未绑定片区"+"</p>"+
+                                            "</li>");
+                                    }
+                                }
+                            }
+                            
+                        }
+                        initArea(areaAry,polygonArea);
+                    }
+                }
+            }else{
+                $$.showMessage("系统信息", "数据加载异常！");
+            }},false);
+
+        $("#search").keyup(function(th){
+            var searchStr = $("#search").val();
+            $("span[id^='tinyvillage_']").each(function(i,t){
+                var id =  $(t).attr("id");
+                var tinyname = $(t).text();
+                var idArr = id.split("_");
+
+                if(tinyname.indexOf(searchStr)<0){
+                    $("#"+idArr[1]).hide();
+                }else{
+                    $("#"+idArr[1]).show();
+                }
+            })
+        });
+
+        $(".result_hide").hover(function(){
+            setNavListVisible(true);
+        });
+
+        $("#search").keyup();
+        if (id != "null") {
+            eventHandleNavList(parseInt($($("#"+id).find("span")[0]).html().split(".")[0]) - 1);
+        }
+    })
+
+    //初始化地图对象，加载地图
+    var map = new AMap.Map("mapContainer", {
+        resizeEnable : true,
+        center :position,//创建中心点坐标
+        zoom : 15,
+        //zooms : [ 4, 16 ],
+        doubleClickZoom : false
+    });
+
+    map.plugin(["AMap.MapType"],function(){
+        //地图类型切换
+        var type= new AMap.MapType({
+            defaultType:0 //使用2D地图
+        });
+        map.addControl(type);
+    });
+
+    map.plugin(["AMap.ToolBar"],function(){
+        //加载工具条
+        var toolBaropt = {
+            offset :new AMap.Pixel(30,100),//相对于地图容器左上角的偏移量，正数代表向右下偏移。默认为AMap.Pixel(10,10)
+            /*
+             *控件停靠位置
+             *LT:左上角;
+             *RT:右上角;
+             *LB:左下角;
+             *RB:右下角;
+             *默认位置：LT
+             */
+            position : 'RT',
+            ruler : true,//标尺键盘是否可见，默认为true
+            noIpLocate : false,//定位失败后，是否开启IP定位，默认为false
+            locate : true,//是否显示定位按钮，默认为false
+            liteStyle : false,//是否使用精简模式，默认为false
+            direction : true,//方向键盘是否可见，默认为true
+            autoPosition : false,//是否自动定位，即地图初始化加载完成后，是否自动定位的用户所在地，在支持HTML5的浏览器中有效，默认为false
+
+            /**
+             *是否使用高德定位sdk用来辅助优化定位效果，默认：false.
+             *仅供在使用了高德定位sdk的APP中，嵌入webview页面时使用
+             *注：如果要使用辅助定位的功能，除了需要将useNative属性设置为true以外，
+             *还需要调用高德定位idk中，AMapLocationClient类的startAssistantLocation()方法开启辅助H5定位功能；
+             *不用时，可以调用stopAssistantLocation()方法停止辅助H5定位功能。具体用法可参考定位SDK的参考手册
+             */
+            useNative : false
+        }
+        var tool = new AMap.ToolBar(toolBaropt);
+        map.addControl(tool);
+    });
+
+
+
+    var googleLayer = null;
+    //服务区域
+    var  serviceRange;
+
+    function initArea(areaAry, polygonArea) {
+        map.clearMap();
+        //服务区域多边形
+        serviceRange = new AMap.Polygon({
+            path: polygonArea,//设置多边形边界路径
+            strokeColor: "#F00", //线颜色
+            strokeOpacity: 0.9, //线透明度
+            strokeWeight: 2,    //线宽
+            fillColor: "#00DD00", //填充色
+            fillOpacity: 0//填充透明度
+        });
+        serviceRange.setMap(map);
+        serviceRange.on("click", function () {
+            setNavListVisible(false);
+        });
+
+        var polygon;
+        for(var i=0;i<areaAry.length;i++){
+            if(areaAry[i].area!=null && areaAry[i].area.length>0){
+                polygon = new AMap.Polygon({
+                    path: cloneAry(areaAry[i].area),//设置多边形边界路径
+                    strokeColor: "#FF33FF", //线颜色
+                    strokeOpacity: 1.0, //线透明度
+                    strokeWeight: 2,    //线宽
+                    fillColor: "#1791fc", //填充色
+                    fillOpacity: 0.45,//填充透明度
+                    extData:{"idx":i,"state":3} // state 0: 新录入  1： 录入编辑 2： 更新编辑  3：已录入
+                });
+                polygon.setMap(map);
+                areaAry[i]["polygon"] = polygon;
+                if (storeno == areaAry[i].store_no) {
+                    areaAry[i]["editor"] =  new AMap.PolyEditor(map, polygon);
+                    polygon.on("click",function(e){
+                        lastIdx = eventHandlePolygon(areaAry, lastIdx, e);
+                    });
+                    polygon.on('rightclick', function(e) {
+                        lastIdx = eventHandlePolygon(areaAry, lastIdx, e);
+                    });
+                } else {
+                    polygon.on("click",function(e){
+                        lastIdx = eventHandlePolygon(areaAry, lastIdx, e);
+                    });
+                    polygon.on('rightclick', function(e) {
+                        lastIdx = eventHandlePolygon(areaAry, lastIdx, e);
+                    });
+                }
+            }
+        }
+    }
+
+    var cloneAry = function (srcArg) {
+        coordinateStr = [];
+        for(var idx in srcArg) {
+            coordinateStr[idx] = srcArg[idx];
+        }
+        return coordinateStr;
+    };
+
+    var getAryFromObj = function (pathObj) {
+        coordinateStr = [];
+        for(var idx in pathObj) {
+            coordinateStr.push([pathObj[idx].lng,pathObj[idx].lat]);
+        }
+        return coordinateStr;
+    }
+
+    // 多边形事件处理
+    var eventHandlePolygon	= function(areaAry, lastIdx, e) {
+        // 导航列表显示当前选中区域的信息
+        setNavListVisible(true);
+        // 如果是在录入模式的话，不允许操作别的区域
+        if (isDrawing) {
+            $$.showMessage("系统信息", areaAry[lastIdx].name + " 小区坐标录入中！");
+            throw false;
+        }
+        var idx = e.target.getExtData().idx;
+        var returnIdx = idx;
+        var hasMenu = true;
+
+        // 初次选择对象,设置被选择对象的状态
+        if (typeof(lastIdx) == "undefined") {
+            setPageStyle(areaAry, lastIdx, idx, true);
+        } else {
+            // 两次选择一个对象，什么都不做
+            if (idx == lastIdx) {
+                console.log("the same polygon was clicked!")
+            } else {
+                // 选择不同的对象
+                var orgPolygonState = areaAry[lastIdx].polygon.getExtData().state;
+                // 选择前的对象是录入，编辑中的状态
+                if (orgPolygonState == POLYGON_STATE_DRAW || orgPolygonState == POLYGON_STATE_DRAW_EDIT || orgPolygonState == POLYGON_STATE_UPDATE_EDIT) {
+                    if (confirm("录入\\编辑中的坐标信息未保存，是否继续？")) {
+                        // 同步数据状态
+                        setDataState(areaAry, lastIdx, idx);
+                        // 多边形状态
+                        setPageStyle(areaAry, lastIdx, idx, true);
+                    } else {
+                        // 继续编辑
+                        returnIdx = lastIdx;
+                        hasMenu = false;
+                    }
+                } else if (orgPolygonState == POLYGON_STATE_RECORDED) {
+                    // 多边形状态
+                    setPageStyle(areaAry, lastIdx, idx, true);
+                }
+            }
+        }
+
+        if(hasMenu && areaAry[idx].store_no != storeno) {
+            $$.showMessage("系统信息", areaAry[idx].name + " 小区已被"+areaAry[idx].storeName+"录入坐标！");
+        }
+
+        if(e.type == "rightclick" && hasMenu) {
+            setContextMenu(areaAry, e);
+        }
+        return returnIdx;
+    };
+
+    // 设置页面的样式
+    var setPageStyle = function (areaAry, offIdx, onIdx, bAnchor) {
+        setPolygonStyle (areaAry, offIdx, onIdx);
+        setNavListStyle(areaAry, onIdx, bAnchor);
+    };
+
+    // 同步页面数据状态
+    var setDataState = function (areaAry, offIdx, onIdx) {
+        var lmap;
+        if (typeof(onIdx) != "undefined") {
+            if (typeof(areaAry[onIdx].polygon) != "undefined") {
+                lmap = areaAry[onIdx].polygon.getMap();
+            }
+        }
+        if (typeof(offIdx) != "undefined") {
+            if (typeof(areaAry[offIdx].polygon) != "undefined") {
+                lmap = areaAry[offIdx].polygon.getMap();
+            }
+        }
+        if (typeof(lmap) == "undefined") {
+            return;
+        }
+        var offState = areaAry[offIdx].polygon.getExtData().state;
+        // 新录入的多边形
+        if (offState == POLYGON_STATE_DRAW || offState == POLYGON_STATE_DRAW_EDIT) {
+            // 录入编辑中的多边形，关掉编辑器
+            if (offState == POLYGON_STATE_DRAW_EDIT) {
+                areaAry[offIdx].editor.close();
+            }
+            lmap.remove(areaAry[offIdx].polygon);
+            delete areaAry[offIdx].polygon;
+            delete areaAry[offIdx].area;
+            delete areaAry[offIdx].editor;
+        } else if (offState == POLYGON_STATE_UPDATE_EDIT) {
+            areaAry[offIdx].editor.close();
+            areaAry[offIdx].polygon.setPath(cloneAry(areaAry[offIdx].area));
+            areaAry[offIdx].polygon.getExtData().state = POLYGON_STATE_RECORDED;
+        }
+    };
+
+    // 设置导航列表样式
+    var setNavListStyle = function (areaAry, idx, bAnchor) {
+        var id = areaAry[idx].id;
+        if (bAnchor) {
+            window.location.href="#"+id;
+        }
+        $(".menu_list li").removeClass("menu_mark");
+        $("#"+id).addClass("menu_mark");
+    };
+    // 设置多边形样式
+    var setPolygonStyle = function (areaAry, offIdx, onIdx) {
+        var offOption = {
+            strokeColor: "#FF33FF", //线颜色
+            strokeOpacity: 1.0, //线透明度
+            strokeWeight: 2,    //线宽
+            fillColor: "#1791fc", //填充色
+            fillOpacity: 0.45//填充透明度
+        };
+
+        var onOption = {
+            strokeColor: "#00DD00", //线颜色
+            strokeOpacity: 1.0, //线透明度
+            strokeWeight: 2,    //线宽
+            fillColor: "#1791fc", //填充色
+            fillOpacity: 0.45//填充透明度
+        };
+        if (typeof(offIdx) != "undefined") {
+            if(typeof(areaAry[offIdx].polygon) != "undefined") {
+                areaAry[offIdx].polygon.setOptions(offOption);
+            }
+        }
+
+        if (typeof(onIdx) != "undefined") {
+            if(typeof(areaAry[onIdx].polygon) != "undefined") {
+                areaAry[onIdx].polygon.setOptions(onOption);
+            }
+        }
+    };
+    var drawHandle;
+    var mouseTool = null;
+
+    map.on("click",function(e){
+        setNavListVisible(false);
+        if(!serviceRange.contains([e.lnglat.getLng(),e.lnglat.getLat()])){
+            if(e.type=="click") {
+                throw false;
+            }
+        }
+    });
+
+    var drawPolygon = function (map,areaAry, idx) {
+        //设置多边形的属性
+        var polygonOption = {
+            strokeColor : "#ffae00",
+            strokeOpacity : 1,
+            strokeWeight : 2,
+            extData:{"idx":idx,"state": POLYGON_STATE_DRAW}
+        };
+        map.plugin([ "AMap.MouseTool" ], function() {
+
+            mouseTool = new AMap.MouseTool(map);
+            isDrawing = true;
+            mouseTool.polygon(polygonOption);
+            drawHandle = AMap.event.addListener(mouseTool, "draw", function(e) {
+                var polygon = e.obj;
+                mouseTool.close();
+                isDrawing = false;
+                AMap.event.removeListener(drawHandle);
+                polygonOption.bubble = false;
+                polygon.setOptions(polygonOption);
+                areaAry[idx].polygon = polygon;
+                areaAry[idx].editor = new AMap.PolyEditor(map, polygon);
+                areaAry[idx].store_no = storeno;
+                // 设置上下文菜单
+                polygon.on("click",function(e){
+                    lastIdx = eventHandlePolygon(areaAry, lastIdx, e);
+                });
+                polygon.on('rightclick', function(e) {
+                    lastIdx = eventHandlePolygon(areaAry, lastIdx, e);
+                });
+            });
+        });
+    };
+
+    //点击左侧列表
+    var eventHandleNavList = function (idx) {
+        // 未录入的多次点击，不关闭录鼠标工具
+        if (isDrawing && lastIdx != idx) {
+            isDrawing = false;
+            mouseTool.close();
+        }
+
+        var destArea = areaAry[idx];
+        // 初次点击导航列表,设置被选择对象的状态
+        if (typeof(lastIdx) == "undefined") {
+            // 选择未录入的区域
+            if (typeof(destArea.polygon) == "undefined") {
+                drawPolygon(map, areaAry, idx);
+                setPageStyle(areaAry, lastIdx, idx, false);
+//                setNavListStyle(areaAry, idx, false);
+            } else {
+                // 选择已录入区域
+                setPageStyle(areaAry, lastIdx, idx, false);
+//                setPolygonStyle (areaAry, lastIdx, idx);
+//                setNavListStyle(areaAry, idx, false);
+            }
+            lastIdx = idx;
+        } else {
+            // 两次选择一个对象，什么都不做
+            if (idx == lastIdx) {
+                console.log("the same polygon was clicked!")
+            } else {
+                // 选择不同的对象
+                var orgArea = areaAry[lastIdx];
+                var descArea = areaAry[idx].polygon;
+                // 没有多边形
+                if (typeof(orgArea.polygon) == "undefined") {
+                    mouseTool.close();
+                    if (typeof(descArea) == "undefined") {
+                        drawPolygon(map, areaAry, idx);
+                    }
+                    // 多边形状态
+                    setPageStyle(areaAry, lastIdx, idx, false);
+                    lastIdx = idx;
+                } else {
+                    // 已有多边形
+                    var orgState = orgArea.polygon.getExtData().state;
+                    if (orgState == POLYGON_STATE_DRAW || orgState == POLYGON_STATE_DRAW_EDIT || orgState == POLYGON_STATE_UPDATE_EDIT) {
+                        if (confirm("录入\\编辑中的坐标信息未保存，是否继续？")) {
+                            // 选择未录入多边形
+                            if (typeof(descArea) == "undefined") {
+                                drawPolygon(map, areaAry, idx);
+                            }
+                            // 同步数据状态
+                            setDataState(areaAry, lastIdx, idx);
+                            // 多边形状态
+                            setPageStyle(areaAry, lastIdx, idx, false);
+                            lastIdx = idx;
+                        } else {
+                            console.log("编辑原来的对象");
+                        }
+                    } else if (orgState == POLYGON_STATE_RECORDED) {
+                        // 选择未录入多边形
+                        if (typeof(descArea) == "undefined") {
+                            drawPolygon(map, areaAry, idx);
+                        }
+                        // 多边形状态
+                        setPageStyle(areaAry, lastIdx, idx, false);
+                        lastIdx = idx;
+                    }
+                }
+            }
+        }
+        if(typeof(areaAry[idx].polygon) != "undefined") {
+            if(areaAry[idx].store_no != storeno) {
+                $$.showMessage("系统信息", areaAry[idx].name + " 小区已被"+areaAry[idx].storeName+"录入坐标！");
+            }
+        }
+    };
+
+    function savePolygon(areaAry, idx) {
+    	if(!AMap.GeometryUtil.isRingInRing(areaAry[idx].polygon.getPath(),serviceRange.getPath())){
+    		$$.showMessage("系统信息","坐标范围超出门店服务范围，请修改后保存！");
+    		return ;
+    	};
+        var requestPara = {};
+        requestPara['tiny_village_id']=areaAry[idx].id;
+        // 设置后端保存信息
+        requestPara['area_name'] = areaAry[idx].areaname;
+        requestPara['coord'] = getCoordinateString(areaAry[idx].polygon);
+        requestPara['vallage_area'] = areaAry[idx].polygon.getArea();
+        requestPara['employee_a_no'] = areaAry[idx].employee_a_no;
+        requestPara['employee_b_no'] = areaAry[idx].employee_b_no;
+        requestPara['store_id'] = storeId;
+        requestPara['area_no'] = areaAry[idx].area_no;
+        var isSaved = false;
+        // 保存划片信息
+        doManager("MongoDBManager", "saveTinyVillageCoord", requestPara, function(data, textStatus, XMLHttpRequest) {
+            if (data.result) {
+                var jsonData = $.fromJSON(data.data);
+                if(jsonData.code == 200){
+                    areaAry[idx]["store_no"] = storeno;
+                    var valliage_name = areaAry[idx].name;
+                    isSaved = true;
+                    areaAry[idx].area = getAryFromObj(areaAry[idx].polygon.getPath());
+                    $$.showMessage("坐标录入",valliage_name + '坐标,保存成功！');
+                }else if(jsonData.code==9000033){ //坐标交叉保存失败
+                    $("#editarea").dialog({
+                        bgiframe: true,
+                        title: '坐标录入',
+                        width: 300,
+                        height: 200,
+                        modal: true,
+                        buttons: {
+                            "${form.ui.ok}": function () {
+                                $("#editarea").dialog('close');
+                            }
+                        }
+                    });
+
+                }else{
+                    $$.showMessage("系统信息", jsonData.message+",保存失败!");
+                    editArea(areaAry,idx);
+                }
+            } else {
+                $$.showMessage("系统信息", "保存失败!");
+                editArea(areaAry,idx);
+            };
+        },false);
+        return isSaved;
+    }
+
+    function deletePolygon(areaAry,idx){
+        var bSuccess = false;
+        $("#deletevillageInfo").dialog({
+            bgiframe: true,
+            title: '坐标录入',
+            width: 300,
+            height: 200,
+            modal: true,
+            buttons: {
+                "${form.ui.ok}": function () {
+                    $("#deletevillageInfo").dialog('close');
+                    var requestParam = {};
+                    requestParam['tiny_village_id'] = areaAry[idx].id;
+                    var valliage_name = areaAry[idx].name;
+                    doManager("MongoDBManager", "deleteTinyVillageCoord", requestParam, function(data, textStatus, XMLHttpRequest) {
+                        if (data.result) {
+                            var jsonData = $.fromJSON(data.data);
+                            if(jsonData.code == 200){
+                                map.remove(areaAry[idx].polygon);
+                                delete areaAry[idx].area;
+                                delete areaAry[idx].polygon;
+                                delete areaAry[idx].editor;
+                                bSuccess = true;
+                                $$.showMessage("坐标录入", valliage_name+",删除成功!");
+                                var labelEml = $($($("li[name='"+areaAry[idx].id+"']").find("p")[1]).children());
+                                labelEml.attr("class","font-color-red")
+                                labelEml.html("未录入坐标,&nbsp;");
+                                drawPolygon(map, areaAry, idx);
+                            }else{
+                                $$.showMessage("坐标录入", jsonData.message+",删除失败!");
+                            }
+                        } else {
+                            $$.showMessage("系统信息", "删除失败");
+                        }
+                    });
+                },
+                "${query.ui.cancel}": function () {
+                    $("#deletevillageInfo").dialog('close');
+                }
+            }
+        });
+        return bSuccess;
+    }
+
+    var setNavListVisible = function (bOnOff) {
+        if (bOnOff) {
+            // 打开
+            $('.menu_list').css('display','block');
+            $('.result_hide').css('display','none');
+        } else {
+            // 关闭
+            $('.menu_list').css('display','none');
+            $('.result_hide').css('display','block');
+        }
+    };
+
+    function cleanSearch(){
+        $("#search").val("");
+        $("#search").keyup();
+    }
+
+    var setContextMenu = function (areaAry, e) {
+        var target = e.target;
+        var state = target.getExtData().state;
+        var idx = target.getExtData().idx;
+        var contextMenu = new AMap.ContextMenu();
+
+        // 新录入
+        if (state == POLYGON_STATE_DRAW) {
+            contextMenu.addItem("保存", function() {
+                    if(savePolygon(areaAry, idx)) {
+                        areaAry[idx].polygon.getExtData().state = POLYGON_STATE_RECORDED;
+                        setPolygonStyle(areaAry, lastIdx, idx);
+                        var labelEml = $($($("li[name='"+areaAry[idx].id+"']").find("p")[1]).children());
+                        labelEml.attr("class","font-color-blue");
+                        labelEml.html("已录入坐标,&nbsp;")
+                    } else {
+                        areaAry[idx].editor.open();
+                        areaAry[idx].polygon.getExtData().state = POLYGON_STATE_DRAW_EDIT;
+                    }
+                },
+                0);
+            contextMenu.addItem("撤销", function () {
+                    map.remove(areaAry[idx].polygon);
+                    delete areaAry[idx].polygon;
+                    delete areaAry[idx].area;
+                    delete areaAry[idx].editor;
+                    drawPolygon (map,areaAry, idx);
+                },
+                1);
+            contextMenu.addItem("编辑",function () {
+                    areaAry[idx].editor.open();
+                    areaAry[idx].polygon.getExtData().state= POLYGON_STATE_DRAW_EDIT;
+                },
+                2);
+            // 录入编辑中
+        } else if (state == POLYGON_STATE_DRAW_EDIT) {
+            contextMenu.addItem("保存", function() {
+                    if(savePolygon(areaAry, idx)) {
+                        areaAry[idx].editor.close();
+                        areaAry[idx].polygon.getExtData().state = POLYGON_STATE_RECORDED;
+                        setPolygonStyle(areaAry, lastIdx, idx);
+                        var labelEml = $($($("li[name='"+areaAry[idx].id+"']").find("p")[1]).children());
+                        labelEml.attr("class","font-color-blue");
+                        labelEml.html("已录入坐标,&nbsp;");
+                    } else {
+                        areaAry[idx].editor.open();
+                        areaAry[idx].polygon.getExtData().state = POLYGON_STATE_DRAW_EDIT;
+                    }
+                },
+                0);
+            contextMenu.addItem("撤销", function () {
+                    areaAry[idx].editor.close();
+                    map.remove(areaAry[idx].polygon);
+                    delete areaAry[idx].polygon;
+                    delete areaAry[idx].area;
+                    delete areaAry[idx].editor;
+                    drawPolygon (map,areaAry, idx);
+                },
+                1);
+        } else if (state == POLYGON_STATE_UPDATE_EDIT) {
+            contextMenu.addItem("保存", function() {
+                    if(savePolygon(areaAry, idx)) {
+                        areaAry[idx].editor.close();
+                        areaAry[idx].polygon.getExtData().state = POLYGON_STATE_RECORDED;
+                        setPolygonStyle(areaAry, lastIdx, idx);
+                        var labelEml = $($($("li[name='"+areaAry[idx].id+"']").find("p")[1]).children());
+                        labelEml.attr("class","font-color-blue");
+                        labelEml.html("已录入坐标,&nbsp;");
+                    } else {
+                        areaAry[idx].editor.open();
+                        areaAry[idx].polygon.getExtData().state = POLYGON_STATE_UPDATE_EDIT;
+                    }
+                },
+                0);
+            contextMenu.addItem("撤销", function () {
+                    areaAry[idx].polygon.setPath(cloneAry(areaAry[idx].area));
+                },
+                1);
+        } else if (state == POLYGON_STATE_RECORDED) {
+            contextMenu.addItem("编辑",function () {
+                    areaAry[idx].editor.open();
+                    areaAry[idx].polygon.getExtData().state = POLYGON_STATE_UPDATE_EDIT;
+                },
+                0);
+            contextMenu.addItem("删除", function () {
+                    deletePolygon(areaAry, idx);
+                },
+                1);
+        }
+        contextMenu.open(map, e.lnglat);
+        if (areaAry[idx].store_no != storeno) {
+            contextMenu.close();
+        }
+    };
+
+    // 根据多边形获取后端请求坐标串
+    var getCoordinateString = function (polygonObj) {
+        var polygon = null;
+        var points = [];
+        polygon = polygonObj.getPath();
+        for(var k in polygon) {
+            points.push(polygon[k].lng + "," + polygon[k].lat);
+        }
+        return points.join(";");
+    };
+
+</script>
+</body>
+</html>

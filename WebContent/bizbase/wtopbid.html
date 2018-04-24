@@ -1,0 +1,162 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta http-equiv="Pragma" content="no-cache">
+        <meta http-equiv="Expires" content="-1">
+        <meta http-equiv="Cache-Control" content="max-age:3600000">
+        <script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js">
+        </script>
+        <script language="javascript" src="../scripts/common/common-tool.js">
+        </script>
+        <script language="javascript" src="../scripts/common/common-core.js">
+        </script>
+        <script language="javascript" src="../scripts/common/common-form.js">
+        </script>
+        <script language="javascript" src="../scripts/default-ready.js">
+        </script>
+        <link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <script language="JavaScript">
+			/**
+             * 显示登录用户名
+             */
+            $(function(){
+                var url = $$.PMSDispatchActionUrl;
+                var data = new PMSRequestObject("userManager", "getCurrentUserDTO");
+                $$.ajax(url, "requestString=" + data.toJsonString(), function(datas, textStatus, XMLHttpRequest){
+                    var str = datas.data;
+                    var userObj = $.fromJSON(str);
+                    var userid = userObj.id;
+                    var data2 = new PMSRequestObject("userManager", "getUserDTO", [userid]);
+                    $$.ajax(url, "requestString=" + data2.toJsonString(), function(datas2, textStatus, XMLHttpRequest){
+                        var str2 = datas2.data;
+                        var userDTO = $.fromJSON(str2);
+                        $("#userName").html(userDTO.name);
+                    });
+                    
+                });
+            });
+            
+            function doLogout(){
+                if (confirm("确定注销？")) {
+                    urlStr = "../logout.do";
+                    $.ajax({
+                        url: urlStr,
+                        async: false,
+                        success: function(){
+                            window.top.opener = null;
+                            window.top.open('', '_self');
+                            window.top.close();
+                        }
+                    });
+                }
+            }
+            
+            
+            
+         //获取服务器时间   
+            get = function(id){
+                return document.getElementById(id)
+            }
+            if (document.all) {
+                window.XMLHttpRequest = function(){
+                    var get = ['Microsoft.XMLHTTP', 'Msxml2.XMLHTTP'];
+                    for (var i = 0; i < get.length; i++) {
+                        try {
+                            return new ActiveXObject(get[i])
+                        } 
+                        catch (e) {
+                        }
+                    };
+                        };
+            }
+            webDate = function(fn){
+                var Htime = new XMLHttpRequest();
+                Htime.onreadystatechange = function(){
+                    Htime.readyState == 4 && (fn(new Date(Htime.getResponseHeader('Date'))));
+                };
+                Htime.open('HEAD', '/?_=' + (-new Date()));
+                Htime.send(null);
+            }
+            window.time = new Date();
+            time2String = function(t){
+                with (t) 
+                return [getFullYear(), '-', ('0' + (getMonth() + 1)).slice(-2), '-', ('0' + getDate()).slice(-2), ' ', ('0' + getHours()).slice(-2), ': ', ('0' + getMinutes()).slice(-2), ': ', ('0' + getSeconds()).slice(-2)].join('')
+            }
+            setInterval(function(){
+                webDate(function(webTime){
+                    get('timeSpan').innerHTML = time2String(time = webTime);
+                })
+            }, 1000)
+            function resizeWindow(){
+                document.getElementById('midTd').width = (document.body.clientWidth - 24) + 'px';
+            }
+            window.onresize = resizeWindow;
+            window.onload = resizeWindow;
+        </script>
+        <style>
+            A.userInfo:link {
+                font-size: 12px;
+                color: #ffffff;
+                text-decoration: none;
+            }
+            
+            A.userInfo:visited {
+                font-size: 12px;
+                color: #ffffff;
+                text-decoration: none;
+            }
+            
+            A.userInfo:active {
+                font-size: 12px;
+                color: #ffffff;
+                text-decoration: none;
+            }
+            
+            A.userInfo:hover {
+                font-size: 12px;
+                color: #ff0000;
+                text-decoration: none;
+            }
+            
+            .userInfoTd {
+                margin-top: 10px;
+                margin-right: 8px;
+            }
+        </style>
+    </head>
+    <body topmargin="0" leftmargin="0" marginwidth="0" marginheight="0" class="shellBody" background="images/i2/i2shellbackground.gif">
+        <table width="100%" height="100%" border="0" style="background-image:url(images/i2/masthead.jpg);background-repeat:no-repeat;" cellspacing="0" cellpadding="0" class="shellBackground">
+            <tr height="40">
+                <td nowrap="yes" colspan="3">
+                    <table id="tableId" cellpadding="0" cellspacing="0"  width="100%">
+                        <tr height="40">
+                            <td width="80%">
+                            </td>
+                            <td width="20%" align="right" valign="middle" nowrap="yes" class="f01" id="shellActions">
+                                <div class="userInfoTd">
+                                    用户：<a id="userName" class="userInfo"></a>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <strong>系统时间：</strong>
+                                    <span id="timeSpan">refresh...</span>
+                                    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="loginuser_info.html" target="appFrame" class="a02">修改用户信息</a>
+                                    | <a target="_top" href="javascript:void(0)" class="a02" onclick="doLogout();">注销</a>
+                                    | <a href="#" class="a02">帮助</a>
+                                    | <a href="#" class="a02">关于</a>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+                </td>
+            </tr>
+            <tr>
+                <td height="6" style="background-image:url(images/i2/outerborder_topleft.gif);width:12px">
+                </td>
+                <td height="6" id="midTd" style="background-image:url(images/i2/outerborder_topbar.gif);">
+                </td>
+                <td height="6" style="background-image:url(images/i2/outerborder_topright.gif);width:12px">
+                </td>
+            </tr>
+        </table>
+    </body>
+</html>

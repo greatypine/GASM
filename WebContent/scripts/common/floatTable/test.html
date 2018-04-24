@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script src="../bidLib.js"></script>
+<script src="floatTableExtend.js"></script>
+<link rel="stylesheet" href="floatTableExt.css" media="all" />
+</head>
+<body>
+	<div id="wrapper">
+		<div id="dTest" style="width: 100%;">
+			<table style="width: 100%;">
+				<tr>
+					<td>1</td>
+					<td>2</td>
+					<td>3</td>
+					<td>4</td>
+					<td>5</td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td>2</td>
+					<td>3</td>
+					<td>4</td>
+					<td>5</td>
+				</tr>
+				<tr>
+					<td>1</td>
+					<td>2</td>
+					<td>3</td>
+					<td>4</td>
+					<td>5</td>
+				</tr>
+			</table>
+		</div>
+	</div>
+	<script>
+		$(function(){
+			$$.addFloatTable({
+				width:"200px",wrapperId:"wrapper",
+				data:[
+						{title:"title1",value:"value1",rowId:"row1",href:"www.qq.com"},
+						{title:"title2",value:"value2",rowId:"row2",href:"www.qq.com",fn:function(){alert("do click");}},
+						{title:"title3",value:"value3",rowId:"row3"}
+					]
+			});
+		});
+	</script>
+</body>
+</html>

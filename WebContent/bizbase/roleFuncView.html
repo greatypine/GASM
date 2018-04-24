@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Untitled Document</title>
+		 <link rel="stylesheet" type="text/css" href="css/i2/style_sheet_core.css"/>
+		 <link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		<script src="js/lib.js" type="text/javascript"></script>
+		<script>
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+			
+			function returnPage(){
+				window.location = "role_management.html";
+			}
+			var request = getRequestParams();
+			var id = request['id'];
+			$(function(){
+				$("#roleEntity\\.id").val(id);
+				$$.executeSearch('roleFunQuery','conditionDiv');
+			});
+		</script>
+	</head>
+	<body>
+		   <div class="rightcont clear">
+			<div class="title clear">
+				<div class="arrowleft">
+				</div>
+				<div class="ico2">
+				</div>
+				<div class="ico1">
+				</div>
+				<a href="#">角色管理 </a>
+			</div>
+			<div class="containerheader">
+         		<a href="#" onclick="toggleBiz('containerbody','pic');"><img  src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>&nbsp;角色权限显示
+     	 	</div>
+			<div class="containerbody" id="containerbody"  style="padding:0px;">
+				<div style="display:none;" id="conditionDiv">
+					<input name="roleEntity.id" id="roleEntity.id" type="hidden" operator="1" />
+				</div>
+				<table class="bigteble" style="border:none;">
+					<tr>
+						<td>
+							<div style="padding:5px;">
+								<div id="gridContainer" queryid="roleFunQuery"
+								 searchDiv="conditionDiv" queryformat="simple"
+								 autoload="false" showsearch="false"
+								 showdisplay="false" showtitle="true" 
+								 showprint="false" showpaging="true" 
+								 showcheckbox="false">
+							   </div>
+							</div>
+						</td>
+					</tr>
+					<tr class="Colorbar3">
+						<td>
+							<div style="padding:0px 5px 0px 0px;">
+								<button class="buttonu" onclick="returnPage()">返回</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+		</div>
+	</body>
+</html>

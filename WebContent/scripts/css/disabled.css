@@ -1,0 +1,9 @@
+select[disabled]{
+	color: black;
+}
+input[disabled][type='text']{
+	color: black;
+}
+textarea[disabled]{
+	color: black;
+}

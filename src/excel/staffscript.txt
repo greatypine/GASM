@@ -1,0 +1,38 @@
+<script>
+	rowindex+=1;
+	var flag = false;	
+	if(r[0] == "set") {
+		var objectType;
+		if(r[7]=="国家重大专项") {
+			objectType = 0;
+		}else if(r[7]=="973") {
+			objectType = 1;
+		}else if(r[7]=="863") {
+			objectType = 2;
+		}else if(r[7]=="基金") {
+			objectType = 3;
+		}else if(r[7]=="软科学") {
+			objectType = 4;
+		}else if(r[7]=="重点新产品") {
+			objectType = 5;
+		}else if(r[7]=="其他") {
+			objectType = 6;
+		}
+		
+		var x = createBy("com.cnpc.pms.national.entity.NationalInfo",{});
+		
+		x.projectName = r[2];
+		x.objectName = r[3];
+		x.orgName  = r[4];
+		x.projectManager  = r[5];
+		x.overallBudget  = r[6];
+		x.objectType = objectType;
+		x.teamMembers = r[8]+","+r[9];
+		x.teamMembersName  = r[10];
+		x.status = -1;
+		
+	 	save(x);
+		flag=true;
+	}
+	flag;
+</script>

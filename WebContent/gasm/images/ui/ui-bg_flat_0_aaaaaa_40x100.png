@@ -1,0 +1,281 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+	<title>Admin Template Admin Panel | Design Template | Backend Admin Design | Admin UI Theme | Control Panel Skin | Admintasia 2.3  </title>
+	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+	<link rel='stylesheet' id='bbp-default-bbpress-css'  href='http://www.admintasia.com/wp-content/plugins/bbpress/templates/default/css/bbpress.css?ver=2.2.3' type='text/css' media='screen' />
+<link rel='stylesheet' id='contact-form-7-css'  href='http://www.admintasia.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=3.3.2' type='text/css' media='all' />
+<script type='text/javascript' src='http://www.admintasia.com/wp-includes/js/jquery/jquery.js?ver=1.8.3'></script>
+<link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.admintasia.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.admintasia.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 3.5.1" />
+
+		<script type="text/javascript">
+			/* <![CDATA[ */
+			var ajaxurl = 'http://www.admintasia.com/wp-admin/admin-ajax.php';
+
+						/* ]]> */
+		</script>
+
+	<!-- HeadSpace SEO 3.6.41 by John Godley - urbangiraffe.com -->
+<meta name="description" content="Admin Panel | Design Template | Backend Admin Design | Admin UI Theme | Control Panel Skin | Admintasia 2.3 is a plain HTML, CSS, JQuery admin template that wil" />
+<meta name="keywords" content="Admin Template,admintasia, admin design, Jquery 1.4.2, sortable tables, dialog boxes, widgets" />
+<!-- HeadSpace -->
+<script type="text/javascript" src="http://www.admintasia.com/wp-content/themes/enlightened/js/jquery.js"></script><script type="text/javascript" src="http://www.admintasia.com/wp-content/themes/enlightened/js/fancybox.js"></script><script type="text/javascript" src="http://www.admintasia.com/wp-content/themes/enlightened/js/easing.js"></script><script type="text/javascript" src="http://www.admintasia.com/wp-content/themes/enlightened/js/tooltip.js"></script><script type="text/javascript" src="http://www.admintasia.com/wp-content/themes/enlightened/js/custom.js"></script><link rel="stylesheet" href="http://www.admintasia.com/wp-content/themes/enlightened/style.css" type="text/css" media="screen" />
+<link rel="stylesheet" href="http://www.admintasia.com/wp-content/themes/enlightened/css/fancybox.css" type="text/css" media="screen" />
+	<link rel="alternate" type="application/rss+xml" title="RSS 2.0" href="http://www.admintasia.com/feed/" />
+	<link rel="pingback" href="http://www.admintasia.com/xmlrpc.php" />
+	<link rel="stylesheet" href="http://www.admintasia.com/wp-content/themes/enlightened/css/dark_blue.css" type="text/css" media="screen" />
+
+<!--[if IE 6]>
+	<script src="http://www.admintasia.com/wp-content/themes/enlightened/js/pngfix.js"></script>
+	<script type="text/javascript">
+		DD_belatedPNG.fix('.links li a, img, .but-big, .but-small, a.footer-but'); // argument is a CSS selector
+	</script>
+<![endif]-->
+</head>
+<body class="pages-bg">
+<!-- Page wrapper div BEGIN -->
+	<div id="wrapper">
+<!-- Header - Menu div BEGIN -->
+		<div id="header">
+			<div class="float-left">
+				<a href="http://www.admintasia.com/" class="logo" title="Admintasia is a plain HTML, CSS, JQuery template that can be easily integrated in your existing application to give it a fresh new modern look or be used to quickly develop a professional user interface for your next web application."><img src="http://www.admintasia.com/wp-content/themes/enlightened/images/logo.png" alt="Admin Panel | Design Template | Backend Admin Design | Admin UI Theme | Control Panel Skin | Admintasia 2.3"/></a>
+			</div>
+			<div class="float-right">
+				<ul>
+	<li><a href="http://www.admintasia.com/category/feature-tour/">Feature Tour</a></li>	
+<li class="page_item page-item-424"><a href="http://www.admintasia.com/admintasia-testimonials/">Testimonials</a></li>
+<li class="page_item page-item-6"><a href="http://www.admintasia.com/pricing/">Pricing</a></li>
+<li class="page_item page-item-137"><a href="http://www.admintasia.com/demo/">Live Demo</a></li>
+<li class="page_item page-item-4"><a href="http://www.admintasia.com/support/">Support</a></li>
+<li class="page_item page-item-14"><a href="http://www.admintasia.com/blog/">Blog</a></li>
+<li class="page_item page-item-12"><a href="http://www.admintasia.com/affiliates/">Affiliates</a></li>
+	
+	
+				</ul>
+			</div>
+		</div>
+<!-- Header - Menu div END -->
+		<div class="clearfix"></div>
+<!-- Features div BEGIN -->
+		<div id="features">
+			<div id="feat-content">
+
+
+		<div class="post">
+		
+			<h2>Page Not Found</h2>
+			
+			<p>Looks like the page you're looking for isn't here anymore. Try browsing the <a href="">categories</a>, <a href="">archives</a>, or using the search box below.</p>
+			
+			<br />
+<b>Warning</b>:  include(/home/toddgmp/admintasia.com/wp-content/themes/enlightened/searhform.php) [<a href='function.include'>function.include</a>]: failed to open stream: No such file or directory in <b>/home/toddgmp/admintasia.com/wp-content/themes/enlightened/404.php</b> on line <b>11</b><br />
+<br />
+<b>Warning</b>:  include() [<a href='function.include'>function.include</a>]: Failed opening '/home/toddgmp/admintasia.com/wp-content/themes/enlightened/searhform.php' for inclusion (include_path='.:/usr/local/lib/php:/usr/local/php5/lib/pear') in <b>/home/toddgmp/admintasia.com/wp-content/themes/enlightened/404.php</b> on line <b>11</b><br />
+		
+		</div> <!-- .post -->
+	
+	
+
+<!-- begin sidebar -->
+
+<div id="search-2" class="box widget_search"><h3>Search the Site</h3><div class="content"<form method="get" id="searchform" action="http://www.admintasia.com">
+	<input type="text" value="Search" onclick="value=''" name="s" id="s" />
+	<input type="submit" id="searchsubmit" value="Search" />
+</form>
+</div></div><div id="categories-3" class="box widget_categories"><h3>Admin Categories</h3><div class="content"		<ul>
+	<li class="cat-item cat-item-210"><a href="http://www.admintasia.com/category/admintasia-releases/" title="View all posts filed under Admintasia Releases">Admintasia Releases</a>
+</li>
+	<li class="cat-item cat-item-95"><a href="http://www.admintasia.com/category/affiliates/" title="View all posts filed under Affiliates">Affiliates</a>
+</li>
+	<li class="cat-item cat-item-7"><a href="http://www.admintasia.com/category/feature-tour/available-widgets/" title="Admintasia comes with more than 16 JQuery plugins varying from Charts to Tabs, Accordions, different style drop down menus and many more. Each plugin with its CSS file is separated into different files, so developers have the ability to load the plugins only on the page they use it. Click here to see some screenshots of the plugins. ">Available Widgets</a>
+</li>
+	<li class="cat-item cat-item-1"><a href="http://www.admintasia.com/category/blog/" title="View all posts filed under Blog">Blog</a>
+</li>
+	<li class="cat-item cat-item-3"><a href="http://www.admintasia.com/category/feature-tour/" title="It&#039;s very easy to modify or adapt Admintasia with it&#039;s clean code and helpful css classes and layouts.">Feature Tour</a>
+</li>
+	<li class="cat-item cat-item-4"><a href="http://www.admintasia.com/category/feature-tour/forms/" title="The form elements of Admintasia are styled to suit both a fluid or fixed layout. Also, you have a WYSIWYG Editor that you can use, an Edit in Place plugin and JQuery Form Validation plugin.">Forms</a>
+</li>
+	<li class="cat-item cat-item-6"><a href="http://www.admintasia.com/category/feature-tour/layout-options/" title="You can create almost any variation of layout and design structure with the options offered in Admintasia. You can have pages with the sidebar on the left or right, you can set a layout width if you like. Admintasia has all kind of elements available, from different style content boxes, multiple column layouts, drop down menus, icons, links, buttons, inputs and many more.">Layout Options</a>
+</li>
+	<li class="cat-item cat-item-33"><a href="http://www.admintasia.com/category/feature-tour/multiple-themes/" title="Admintasia comes with many free themes, so you can get a great-looking user interface up and running without having to hire a designer. Also, we release new free themes each month.">Multiple Themes</a>
+</li>
+	<li class="cat-item cat-item-80"><a href="http://www.admintasia.com/category/blog/promotions/" title="View all posts filed under Promotions">Promotions</a>
+</li>
+	<li class="cat-item cat-item-65"><a href="http://www.admintasia.com/category/blog/site-news/" title="View all posts filed under Site News">Site News</a>
+</li>
+	<li class="cat-item cat-item-5"><a href="http://www.admintasia.com/category/feature-tour/tables/" title="Regarding the tables that can be created in Admintasia, you have a FlexiGrid plugin ready to be used, Sortable Tables, Check All Fields option and paginated table rows. Tables are fluid, so they will always inherit the width of their container.">Tables</a>
+</li>
+		</ul>
+</div></div><div id="bbp_forums_widget-3" class="box widget_display_forums"><h3>Support Forums</h3><div class="content"
+			<ul>
+
+				
+					<li><a class="bbp-forum-title" href="http://www.admintasia.com/forums/forum/admintasia-announcements/" title="Admintasia Announcements">Admintasia Announcements</a></li>
+
+				
+			</ul>
+
+			</div></div>		<div id="recent-posts-3" class="box widget_recent_entries">		<h3>Recent Posts</h3><div class="content"		<ul>
+					<li>
+				<a href="http://www.admintasia.com/admintasia-support-forum-spam-is-unrelentless/" title="Admintasia Support: Forum Spam is Unrelentless">Admintasia Support: Forum Spam is Unrelentless</a>
+						</li>
+					<li>
+				<a href="http://www.admintasia.com/jquery-issue-solved-small-update/" title="JQuery Issue Solved &#8211; Small Update">JQuery Issue Solved &#8211; Small Update</a>
+						</li>
+					<li>
+				<a href="http://www.admintasia.com/new-release-admintasia-2-3/" title="New Release Admintasia 2.3">New Release Admintasia 2.3</a>
+						</li>
+					<li>
+				<a href="http://www.admintasia.com/admintasia-2-3-to-have-great-new-color-schemes/" title="Admintasia 2.3 to Have Great New Color Schemes">Admintasia 2.3 to Have Great New Color Schemes</a>
+						</li>
+					<li>
+				<a href="http://www.admintasia.com/admintasia-2-2-is-here/" title="Admintasia 2.2 is Here">Admintasia 2.2 is Here</a>
+						</li>
+				</ul>
+		</div></div><div id="text-3" class="box widget_text"><h3>Like us and Get 20% Off</h3><div class="content"			<div class="textwidget"><iframe src="//www.facebook.com/plugins/likebox.php?href=http%3A%2F%2Fwww.facebook.com%2Fadmintasia&amp;width=200&amp;height=240&amp;colorscheme=light&amp;show_faces=true&amp;border_color&amp;stream=true&amp;header=true" scrolling="no" frameborder="0" style="border:none; overflow:hidden; width:200px; height:240px;" allowTransparency="true"></iframe></div>
+		</div></div>
+<!-- Sidebar div END -->
+		<div class="clearfix"></div>
+	</div>
+<!-- Footer div BEGIN -->
+	<div id="footer">
+		<div class="wrapper">
+			<div id="subfooter">
+				<div class="newsletter float-left">
+					<form action="http://feedburner.google.com/fb/a/mailverify" method="post" target="popupwindow" onsubmit="window.open('http://feedburner.google.com/fb/a/mailverify?uri=wbthemes', 'popupwindow', 'scrollbars=yes,width=550,height=520');return true">
+						<h4>Subscribe to our Newsletter</h4>
+						<label for="email">Enter your email:</label>
+						<input type="text" name="email" id="email"/>
+						<input type="hidden" value="wbthemes" name="uri"/>
+						<input type="hidden" name="loc" value="en_US"/>
+						<button type="submit" class="subscribe">Subscribe</button>
+					</form>
+				</div>
+				<div class="float-right">
+						<a href="http://twitter.com/quickbeamllc" class="footer-but twitter tooltip" title="Follow us on Twitter">Follow us on Twitter</a>
+		
+						<a href="http://www.admintasia.com/feed/" class="footer-but rss tooltip" title="Subscribe to our RSS feed">Subscribe to our RSS feed</a>
+					</div>
+			</div>
+			<div class="footer-widgets wrapper">
+<div id="tag_cloud-2" class="box widget_tag_cloud"><h3>Admin Tags</h3><div class="content"<div class="tagcloud"><a href='http://www.admintasia.com/tag/accordion/' class='tag-link-8' title='2 topics' style='font-size: 8pt;'>accordion</a>
+<a href='http://www.admintasia.com/tag/add-to-table-modal/' class='tag-link-17' title='2 topics' style='font-size: 8pt;'>Add to table modal</a>
+<a href='http://www.admintasia.com/tag/admin/' class='tag-link-93' title='6 topics' style='font-size: 14.023255813953pt;'>Admin</a>
+<a href='http://www.admintasia.com/tag/admintasia/' class='tag-link-10' title='21 topics' style='font-size: 22pt;'>admintasia</a>
+<a href='http://www.admintasia.com/tag/admintasia-widgets/' class='tag-link-152' title='7 topics' style='font-size: 14.837209302326pt;'>admintasia widgets</a>
+<a href='http://www.admintasia.com/tag/affiliate-program/' class='tag-link-96' title='3 topics' style='font-size: 9.953488372093pt;'>affiliate program</a>
+<a href='http://www.admintasia.com/tag/ajax/' class='tag-link-90' title='4 topics' style='font-size: 11.581395348837pt;'>Ajax</a>
+<a href='http://www.admintasia.com/tag/apple-pie/' class='tag-link-70' title='2 topics' style='font-size: 8pt;'>apple pie</a>
+<a href='http://www.admintasia.com/tag/backend/' class='tag-link-92' title='2 topics' style='font-size: 8pt;'>Backend</a>
+<a href='http://www.admintasia.com/tag/black-rose/' class='tag-link-68' title='2 topics' style='font-size: 8pt;'>Black Rose</a>
+<a href='http://www.admintasia.com/tag/blue/' class='tag-link-79' title='3 topics' style='font-size: 9.953488372093pt;'>blue</a>
+<a href='http://www.admintasia.com/tag/blueberry/' class='tag-link-77' title='2 topics' style='font-size: 8pt;'>blueberry</a>
+<a href='http://www.admintasia.com/tag/component/' class='tag-link-13' title='4 topics' style='font-size: 11.581395348837pt;'>component</a>
+<a href='http://www.admintasia.com/tag/dashboard-icons/' class='tag-link-27' title='2 topics' style='font-size: 8pt;'>Dashboard Icons</a>
+<a href='http://www.admintasia.com/tag/datepicker/' class='tag-link-37' title='3 topics' style='font-size: 9.953488372093pt;'>Datepicker</a>
+<a href='http://www.admintasia.com/tag/demo/' class='tag-link-121' title='8 topics' style='font-size: 15.651162790698pt;'>demo</a>
+<a href='http://www.admintasia.com/tag/e-junkie-com/' class='tag-link-100' title='5 topics' style='font-size: 12.883720930233pt;'>e-junkie.com</a>
+<a href='http://www.admintasia.com/tag/flexigrid/' class='tag-link-15' title='4 topics' style='font-size: 11.581395348837pt;'>flexigrid</a>
+<a href='http://www.admintasia.com/tag/form-validation/' class='tag-link-16' title='2 topics' style='font-size: 8pt;'>Form validation</a>
+<a href='http://www.admintasia.com/tag/gray/' class='tag-link-72' title='3 topics' style='font-size: 9.953488372093pt;'>gray</a>
+<a href='http://www.admintasia.com/tag/information-messages/' class='tag-link-26' title='4 topics' style='font-size: 11.581395348837pt;'>Information Messages</a>
+<a href='http://www.admintasia.com/tag/javascript/' class='tag-link-89' title='3 topics' style='font-size: 9.953488372093pt;'>JavaScript</a>
+<a href='http://www.admintasia.com/tag/jquery/' class='tag-link-91' title='10 topics' style='font-size: 17.116279069767pt;'>Jquery</a>
+<a href='http://www.admintasia.com/tag/jquery-ui/' class='tag-link-14' title='12 topics' style='font-size: 18.255813953488pt;'>jquery ui</a>
+<a href='http://www.admintasia.com/tag/layout/' class='tag-link-25' title='11 topics' style='font-size: 17.767441860465pt;'>layout</a>
+<a href='http://www.admintasia.com/tag/modals/' class='tag-link-40' title='2 topics' style='font-size: 8pt;'>Modals</a>
+<a href='http://www.admintasia.com/tag/multiple-columns-setup/' class='tag-link-32' title='3 topics' style='font-size: 9.953488372093pt;'>Multiple columns setup</a>
+<a href='http://www.admintasia.com/tag/multiple-content-boxes/' class='tag-link-31' title='2 topics' style='font-size: 8pt;'>Multiple content boxes</a>
+<a href='http://www.admintasia.com/tag/multiple-themes/' class='tag-link-33' title='3 topics' style='font-size: 9.953488372093pt;'>Multiple Themes</a>
+<a href='http://www.admintasia.com/tag/paginated-table-rows/' class='tag-link-22' title='2 topics' style='font-size: 8pt;'>Paginated table rows</a>
+<a href='http://www.admintasia.com/tag/photo-manager/' class='tag-link-42' title='3 topics' style='font-size: 9.953488372093pt;'>Photo Manager</a>
+<a href='http://www.admintasia.com/tag/sortable-columns/' class='tag-link-23' title='2 topics' style='font-size: 8pt;'>Sortable columns</a>
+<a href='http://www.admintasia.com/tag/sortable-tables/' class='tag-link-21' title='5 topics' style='font-size: 12.883720930233pt;'>Sortable Tables</a>
+<a href='http://www.admintasia.com/tag/special-offer/' class='tag-link-110' title='5 topics' style='font-size: 12.883720930233pt;'>special offer</a>
+<a href='http://www.admintasia.com/tag/theme/' class='tag-link-24' title='5 topics' style='font-size: 12.883720930233pt;'>theme</a>
+<a href='http://www.admintasia.com/tag/togglable-smart-boxes/' class='tag-link-58' title='2 topics' style='font-size: 8pt;'>Togglable smart boxes</a>
+<a href='http://www.admintasia.com/tag/ui/' class='tag-link-9' title='10 topics' style='font-size: 17.116279069767pt;'>ui</a>
+<a href='http://www.admintasia.com/tag/ui-template/' class='tag-link-64' title='2 topics' style='font-size: 8pt;'>ui template</a>
+<a href='http://www.admintasia.com/tag/ui-theme/' class='tag-link-71' title='19 topics' style='font-size: 21.348837209302pt;'>ui theme</a>
+<a href='http://www.admintasia.com/tag/useful-icons/' class='tag-link-28' title='2 topics' style='font-size: 8pt;'>Useful icons</a>
+<a href='http://www.admintasia.com/tag/user-experience/' class='tag-link-11' title='14 topics' style='font-size: 19.395348837209pt;'>user experience</a>
+<a href='http://www.admintasia.com/tag/user-interface/' class='tag-link-20' title='12 topics' style='font-size: 18.255813953488pt;'>user interface</a>
+<a href='http://www.admintasia.com/tag/widget/' class='tag-link-12' title='10 topics' style='font-size: 17.116279069767pt;'>widget</a>
+<a href='http://www.admintasia.com/tag/widgets/' class='tag-link-117' title='6 topics' style='font-size: 14.023255813953pt;'>widgets</a>
+<a href='http://www.admintasia.com/tag/wysiwyg-editor/' class='tag-link-19' title='2 topics' style='font-size: 8pt;'>WYSIWYG Editor</a></div>
+</div></div><div id="archives-2" class="box widget_archive"><h3>Archives</h3><div class="content"		<ul>
+			<li><a href='http://www.admintasia.com/2012/11/' title='November 2012'>November 2012</a></li>
+	<li><a href='http://www.admintasia.com/2012/10/' title='October 2012'>October 2012</a></li>
+	<li><a href='http://www.admintasia.com/2012/05/' title='May 2012'>May 2012</a></li>
+	<li><a href='http://www.admintasia.com/2012/03/' title='March 2012'>March 2012</a></li>
+	<li><a href='http://www.admintasia.com/2011/09/' title='September 2011'>September 2011</a></li>
+	<li><a href='http://www.admintasia.com/2011/06/' title='June 2011'>June 2011</a></li>
+	<li><a href='http://www.admintasia.com/2011/02/' title='February 2011'>February 2011</a></li>
+	<li><a href='http://www.admintasia.com/2010/10/' title='October 2010'>October 2010</a></li>
+	<li><a href='http://www.admintasia.com/2010/09/' title='September 2010'>September 2010</a></li>
+	<li><a href='http://www.admintasia.com/2010/08/' title='August 2010'>August 2010</a></li>
+	<li><a href='http://www.admintasia.com/2010/07/' title='July 2010'>July 2010</a></li>
+	<li><a href='http://www.admintasia.com/2010/06/' title='June 2010'>June 2010</a></li>
+	<li><a href='http://www.admintasia.com/2010/05/' title='May 2010'>May 2010</a></li>
+	<li><a href='http://www.admintasia.com/2009/11/' title='November 2009'>November 2009</a></li>
+	<li><a href='http://www.admintasia.com/2009/10/' title='October 2009'>October 2009</a></li>
+		</ul>
+</div></div>			
+			<div class="clearfix"></div>
+			<div class="wrapper">
+				<ul id="navigation" class="wrapper">
+				<li class="page_item page-item-430"><a href="http://www.admintasia.com/thank-you-for-purchasing/">Admintasia Purchase</a></li>
+<li class="page_item page-item-254"><a href="http://www.admintasia.com/front-row/">front-row</a></li>
+<li class="page_item page-item-247"><a href="http://www.admintasia.com/sitemap/">Sitemap</a></li>
+<li class="page_item page-item-231"><a href="http://www.admintasia.com/stats/">stats</a></li>
+<li class="page_item page-item-112"><a href="http://www.admintasia.com/terms-conditions/">Terms and Conditions</a></li>
+<li class="page_item page-item-424"><a href="http://www.admintasia.com/admintasia-testimonials/">Testimonials</a></li>
+<li class="page_item page-item-482"><a href="http://www.admintasia.com/your-information-was-sent/">Your Information Was Sent</a></li>
+<li class="page_item page-item-3"><a href="http://www.admintasia.com/features/">Feature Tour</a></li>
+<li class="page_item page-item-6"><a href="http://www.admintasia.com/pricing/">Pricing</a></li>
+<li class="page_item page-item-137"><a href="http://www.admintasia.com/demo/">Live Demo</a></li>
+<li class="page_item page-item-8"><a href="http://www.admintasia.com/services/">Services</a></li>
+<li class="page_item page-item-260"><a href="http://www.admintasia.com/website-templates/">Website Templates</a></li>
+<li class="page_item page-item-4"><a href="http://www.admintasia.com/support/">Support</a></li>
+<li class="page_item page-item-14"><a href="http://www.admintasia.com/blog/">Blog</a></li>
+<li class="page_item page-item-12"><a href="http://www.admintasia.com/affiliates/">Affiliates</a></li>
+<li class="page_item page-item-10"><a href="http://www.admintasia.com/contact-us/">Contact us</a></li>
+					
+          <li class="float-right">Copyright 2011&copy; <a href="http://www.admintasia.com/"  title="Admintasia is a plain HTML, CSS, JQuery template that can be easily integrated in your existing application to give it a fresh new modern look or be used to quickly develop a professional user interface for your next web application."> 
+            Admin Panel | Design Template | Backend Admin Design | Admin UI Theme | Control Panel Skin | Admintasia 2.3            </a></li>
+				</ul>
+			</div>
+			<div class="clearfix"></div>
+			<div class="spec">
+				<b><a href="http://www.admintasia.com/" title="Admintasia Admin Themes">Admin Theme</a></b>
+			</div>
+			</div>
+		</div>
+<!-- Footer div END -->
+	</div>
+<script type="text/javascript">
+
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-17266457-1']);
+  _gaq.push(['_setDomainName', '.admintasia.com']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script><script type='text/javascript' src='http://www.admintasia.com/wp-content/plugins/contact-form-7/includes/js/jquery.form.min.js?ver=3.23'></script>
+<script type='text/javascript'>
+/* <![CDATA[ */
+var _wpcf7 = {"loaderUrl":"http:\/\/www.admintasia.com\/wp-content\/plugins\/contact-form-7\/images\/ajax-loader.gif","sending":"Sending ..."};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.admintasia.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=3.3.2'></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Cache-Control" Content="no-cache">
+<meta http-equiv="Pragma" Content="no-cache">
+<meta http-equiv="Expires" Content="0">
+<title>BP上下级关系</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script>
+	function stateReset() {
+		document.form00.reset();
+	}
+
+	$(function() {
+		onSearch();
+	});
+
+	function onSearch() {
+		$$.executeSearch('crmBpExtQuery', 'conditionsDiv');
+	}
+
+	function newSubmit(){
+		window.location.href = 'crmBpExtAdd.html';
+	}
+
+	var viewObj = {
+	html: '<a href="#" class="blue">查看</a>',
+		func: function(queryid, data, nTr, allColumns, allColumnsDataMap){
+		var ID = allColumnsDataMap.id;
+		window.location = "crmBpExtView.html?ID=" + ID;
+		}
+	}
+
+	var editObj = {
+		html: '<a href="#" class="blue">编辑</a>',
+		func: function(queryid, data, nTr, allColumns, allColumnsDataMap){
+			window.location = "crmBpExtEdit.html?ID=" + allColumnsDataMap.id;
+		}
+		}
+
+	var delObj = {
+	html: '<a href="#" class="blue">删除</a>',
+		func: function(queryid, data, nTr, allColumns, allColumnsDataMap){
+			$$.showPromptDialog("系统提示", "确认删除？", false, 320, function(){
+				doManager("CrmBpExtManager", "delCrmBpExtByID", allColumnsDataMap.id, function(datas, textStatus, XMLHttpRequest){
+					if (datas.result) {
+						onSearch();
+					}
+					else {
+						$$.showMessage("系统提示", datas.message);
+						}
+					},true,{
+						showWaiting: true
+						});
+				});
+			}
+	}
+
+	$pmspage.opArr = [viewObj, editObj, delObj];
+
+	var COLUMNS = {
+			"bpCode": function(aData, iColumn, sColumnName, map){
+				var value = map[sColumnName];
+				return "<a href='#' onclick='doProjectView(" + map.id + ")'>" + value + "</a>";
+			}
+	}
+	function doProjectView(id){
+		window.location = "crmBpExtView.html?ID="+id;
+	}
+	</script>
+</head>
+<body style="height: 100%">
+	<div id="pageheardiv" class="title clear">
+		<div class="arrowleft" style="cursor: hand;" onclick="toggleNavi();">
+		</div>
+		<div class="ico2"></div>
+		<div class="ico1"></div>
+		<a href="#">BP上下级关系</a>
+	</div>
+	<div class="containerbody padding4px">
+		<div class="containerheader">
+			<a href="#" onclick="toggleDiv('conditionsDiv','pic2');"><img 
+				src="../scripts/images/22.png" align="absmiddle" id="pic2" /></a>&nbsp;&nbsp;搜索条件
+		</div>
+		<form id="form00" name="form00" class="pmsForm">
+			<div id="conditionsDiv" class="containerbody">
+				<table cellpadding="0" cellspacing="0"
+					style="min-width: 100%; width: auto">
+					<tr>
+						<td align="right">BP下编码:</td>
+						<td class="basetext"><input id="bpCode" name="bpCode"
+							class="inputtext" value="" /></td>
+						<td align="right">BP上级编码:</td>
+						<td class="basetext"><input id="superbpCode"
+							name="superbpCode" class="inputtext" value="" /></td>
+					</tr>
+					<tr class="Colorbar3">
+						<td colspan="4"><input type="button" class="buttonu"
+							value="新建" onclick="newSubmit();" />&nbsp;|&nbsp; <input
+							type="button" class="buttonu" value="查询" onclick="onSearch();" />&nbsp;|&nbsp;
+							<input type="button" class="buttonu" value="重置"
+							onclick="stateReset()" />&nbsp;</td>
+					</tr>
+				</table>
+			</div>
+		</form>
+
+		<div id="mainPlant" showNo="true" titleAlign="center"
+			fnRender="renderColumns" showcheckbox="false" showRidaoButton="true"
+			searchDiv="conditionsDiv" usecache="true" queryid="crmBpExtQuery"
+			showsearch="false" showdisplay="false" showtitle="true"
+			autoload="false" showprint="false" showpaging="true"
+			operators="$pmspage.opArr"></div>
+	</div>
+</body>
+</html>

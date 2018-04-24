@@ -1,0 +1,122 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <title>岗位查询</title>
+        <meta name="author" content="Wang Shicheng">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+        <!--  <link rel="stylesheet" href="script/tree/jquery.treeview.css" /> -->
+        <script type="text/javascript" src="../scripts/lib-main.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/pms.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/pmsCommon.js">
+        </script>
+        <script src="../bizbase/js/orgDialog.js" type="text/javascript"></script>
+        <script type="text/javascript" charset="utf-8">
+            var checkType = getUrlParamByKey("checkType");
+            $(document).ready(function(){
+                if (checkType == 0) {
+                    $("#userContainer").attr("checkmode", "single");
+                }
+				/**
+				 * 默认组织机构
+				 */
+                doSearch();
+            });
+            
+            function doClean(){
+            }
+        </script>
+    </head>
+    <!-- Body -->
+    <body>
+        <div>
+            <table class="bigteble">
+                <tr>
+                    <td style="padding:5px;" bgcolor="#FFFFFF">
+                        <div id="containerbody">
+                            <table class="Querytable">
+                                <tr class="Colorbar1">
+                                    <td width="20" align="center">
+                                        <a href="#" onClick="toggleBiz('conditionsDiv','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+                                    </td>
+                                    <td>
+                                        <strong>搜索条件</strong>
+                                    </td>
+                                </tr>
+                            </table>
+                            <div id="userSearchConditionsDiv">
+                            	<form id="searchForm" class="pmsForm" validate="true" clienvalidate="true">
+                                    <table width="100%" border="0" cellspacing="0" cellpadding="0">
+                                        <tr>
+                                            <td>
+                                            <table class="bigteble">
+                                                <tr>
+                                                    <td align="left" width="8%" class="basetext">
+                                                        用户名称:
+                                                    </td>
+                                                    <td class="baseform" align="left" width="20%">
+                                                    	<input type="hidden" id="positionCode" name="positionCode" class="inputtext" />
+                                						<input type="text" id="name" name="name" class="inputtext" />
+													</td>
+                                                </tr>
+                                            </table>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td>
+                                                <table class="bigteble">
+                                                    <tr class="Colorbar3">
+                                                        <td>
+                                                            <input class="buttonu" type="button" value="重置" onclick="doClean();"/>|<input class="buttonu" type="button" value="查询" onclick="doSearch();"/>
+                                                        </td>
+                                                    </tr>
+                                                </table>
+                                            </td>
+                                        </tr>
+                                    </table>
+                                </form>
+                            </div>
+                            <div id="userContainer" queryid="cnpcPositionSearch" queryformat="simple" showsearch="false" autoload="false" searchDiv="userSearchConditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="true">
+                            </div>
+                            
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </body>
+</html>
+<script language="javascript">
+    
+    function doSearch(){
+            $$.executeSearch('cnpcPositionSearch', 'userSearchConditionsDiv');
+    }
+    
+    function doSubmit(){
+        var json;
+        var objs = $$.getSelectedObj("cnpcPositionSearch");
+        if (objs.length != 0) {
+            if (checkType == 0) {
+                json = '{"ids":"' + objs[0][0]+'"}';
+            }
+            else {
+                var ids = "";
+                for (var i = 0; i < objs.length; i++) {
+                    if (i == objs.length - 1) {
+                        ids += objs[i][0];
+                    }
+                    else {
+                        ids += objs[i][0] + ",";
+                    }
+                }
+                json = '{"ids":"' + ids+'"}';
+            }
+        }
+        parent.win.callBack(json);
+        parent.win.hide();
+    }
+</script>

@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>工单信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="../scripts/auto.js"></script>
+    <style>
+        .panel-body{padding-bottom: 0;}
+        .panel-body td{padding-top:15px;}
+        
+    </style>
+</head>
+<script>
+    var win;
+    var array=new Array();
+	var curr_user;
+	function initcurruser(){
+  		//取得当前登录人的门店
+		doManager("UserManager", "getCurrentUserDTO",null,
+    				function(data, textStatus, XMLHttpRequest) {
+    					if (data.result) {
+    						 curr_user = JSON.parse(data.data);
+    					}
+    	},false);
+  	}
+	
+	
+    $(function () {
+    	initCareerGroup();
+    	
+    	initcurruser();
+    	doClean();
+        //页面加载成功后需要获取数据
+        searchList();
+        
+        $("#imp_base_div").click(function(){
+            $("#imp_data_div").toggle(500);
+            if($("#imp_base_div").html()=="-"){
+            	$("#imp_base_div").html("+");
+            }else{
+            	$("#imp_base_div").html("-");
+            }
+        });
+        
+        $("#cstmz_actv").remove();
+        
+        $(".display").css("width","auto");
+        
+        
+    });
+
+    
+     //初始化所有的事业群 
+	function initCareerGroup(){
+		doManager("DataHumanTypeManager", "queryAllDataHumanTypes", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						for (i = 0; i < jsonData.length; i++) {
+							$("#career_group").append("<option>" + jsonData[i].career_group + "</option>");
+						}
+					}
+				}, false);
+	}
+  
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+    	//判断是否多个门店 发生切换变化 
+    	if(!checkStoreChange()){
+    		return;
+    	}
+        $$.executeSearch('querystoreorderlist', 'conditionsDiv');
+        
+        $("#cstmz_actv").remove();
+    }
+
+    //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str == "" || str == "undefined" || typeof(str) == "undefined";
+    }
+
+
+    function doClean() {
+        document.service_qa.reset();
+        $("#store\\.id").val("");
+    }
+
+  //列表中 列的处理
+    var COLUMNS = {
+            "worder_type": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value==0){
+                	ret="产品类";
+                }
+                if(value!=null&&value==1){
+                	ret="服务类";
+                }
+                return ret;
+            },
+            "worder_status": function(aData, iColumn, sColumnName, map){
+            	var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value==0){
+                	ret="待确认";
+                }
+                if(value!=null&&value==1){
+                	ret="已确认";
+                }
+                if(value!=null&&value==2){
+                	ret="已完成";
+                }
+                return ret;
+            }
+            
+        }
+    
+  
+  
+  
+  function toEditCareerPage(id){
+	  //点击编辑事业群时，判断门店是否变化
+    	if(!checkStoreChange()){
+    		return;
+    	}
+	  
+	  //此处 先根据ID查询 是否分配过 事业群 然后取出来 
+	  var src_career_group = "";
+	  doManager("HumanresourcesManager", "queryHumanresourceById", [id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						src_career_group = jsonData.career_group;
+					}
+		}, false);
+	  
+		$("#career_group").attr("value",src_career_group);
+		$("#career_group option[text='"+src_career_group+"']").attr("selected", true);
+	  
+    	var div = $("#doStoreMultDiv");
+	      div.dialog({
+	          bgiframe : true,
+	          title : "修改事业群数据",
+	          width : 380,
+	          height : 300,
+	          buttons : {
+	              "确定" : function() {
+	                  doUpdateHumanresourceCareerGroup($(this),id);
+	              },
+	              "取消" : function() {
+	                  $(this).dialog("close");
+	              }
+	          },
+	          modal : false
+	      });
+  }
+  
+    //判断默认门店 是否发生切换了。
+    function checkStoreChange(){
+    	var top_store=window.parent.document.getElementById("userName").innerHTML;
+   		//var top_store=window.top.frames['i2ui_shell_top'].document.getElementById("userName").innerHTML;
+    	   var storeischange=false;
+    	 	//取得当前门店 状态 
+   	       	doManager("storeManager", "queryCurrentStoreInfo",null,
+   					function(data, textStatus, XMLHttpRequest) {
+   						if (data.result) {
+   							var curStoreObj = JSON.parse(data.data);
+   							curStore = curStoreObj;
+   						}
+   			},false);
+    	   if(top_store!=null&&top_store.length>0){
+    		  var str_arr = top_store.split('<option');
+    		  for(i=0;i<str_arr.length;i++){
+    			  var va = str_arr[i];
+    			  if(va.indexOf('selected=')>-1&&va.indexOf(curStore.name)<0){
+    				  storeischange = true;
+    			  }
+    		  }
+    	   }
+    	   if(storeischange){
+    		   $$.showConfirm("提示","门店发生异动！ 需要刷新页面！ ",function () {
+    			   parent.location.reload();
+   				});
+    		   return;
+    	   }
+    	   return true;
+   	}
+  
+  function doUpdateHumanresourceCareerGroup(obj_div,id){
+	  var career_group = $("#career_group  option:selected").val();
+	  //alert(id+"--"+career_group);
+	  var obj = new Object();
+	  obj.id=id;
+	  obj.career_group=career_group;
+	  
+	  doManager("HumanresourcesManager", "updateHumanresourceCareerGroupById",obj,
+		 function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var curStoreObj = JSON.parse(data.data);
+							if(curStoreObj!=null){
+								searchList();
+								obj_div.dialog("close");
+							}
+						}else{
+							$$.showMessage("系统信息", "修改失败 !");
+						}
+	     },false);
+	  
+  }
+  
+  
+  function addStoreOrder(){
+	  window.location.href="storeorder_add.html";	
+  }
+    
+  
+  
+  var editObj = {
+			html : '<a href="#">编辑 </a>',
+			resourceId : "storeorder_List_update",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				alert(id);
+				//window.location.href = "human_store_edit.html?id="+id;
+			}
+		}
+  
+  $pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
+  
+</script>
+<style type="text/css">
+    .but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+	.auto{max-height:100px; overflow-y:scroll;}
+	
+</style>
+<body style="height: 100%">
+
+<div class="panel panel-default">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+              门店工单:工单管理
+        </h4>
+    </div>
+</div>
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            工单查询
+           <!--  <span class="but">
+                <input type="button" onclick="exportExcel();" value="门店员工花名册生成"/>
+            </span> -->
+        </div>
+        
+        
+        
+        <div class="panel-body" id="imp_data_div">
+            <div id="conditionsDiv" style="margin-top: 0px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+                  <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                    <tr>
+                      <td width="33.33%">
+                        <p>员工姓名</p>
+                        <p><input id="employee_name" name="employee_name" type="text" style="width:80%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
+                      </td>
+                      <td width="33.33%">
+                        <p>员工编号</p>
+                        <p><input id="employee_no" name="employee_no" type="text" style="width:80%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
+                      </td>
+                      <td width="33.33%">
+                       <!--  <p>状态</p>
+                        <p><select name="humanstatus" style="width:80%;" class="form-control">
+                          <option value="">全部</option>
+                          <option value="1">在职</option>
+                          <option value="2">离职</option>
+                        </select></p> -->
+                      </td>
+                    </tr>
+                  </table>
+                </form>
+            </div>
+        </div>
+        <div class="clearfix" style="padding: 10px 0 15px 0;">
+        <div class="col-sm-1 pull-right">
+	            <button class="btn btn-block btn-danger"  id="addStoreOrder"  onclick="addStoreOrder();">新增</button>
+	          </div>
+	          
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-success" onclick="doClean();">重置</button>
+          </div>
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-warning" onclick="searchList()">查询</button>
+          </div>
+        </div>
+    </div>
+    <input type="hidden" id="store_id" isautotab="true" />
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="querystoreorderlist" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+	<div id="doStoreMultDiv" class="panel panel-primary" style="display: none;">
+            <!--<div class="panel-heading">-->
+            <!--</div>-->
+            <div class="panel-body">
+                <table  cellpadding="0" cellspacing="0" >
+                	<tr>
+                		<td align="right" >选择事业群：</td>
+                        <td >
+                           		<select id="career_group" name="career_group" style="width: 170px;display:inline-block;height:30px;padding:0;" class="form-control">
+					</select>
+                        </td>
+                	</tr>
+                </table>
+            </div>
+        </div>
+
+</body>
+
+<script>
+	/* var autoComplete = new AutoComplete("storename","auto",array);
+	document.getElementById("storename").onkeyup = function(event){
+		autoComplete.start(event);
+	}
+	
+	var autoComplete_box = new AutoComplete("storename_box","auto1",array);
+	document.getElementById("storename_box").onkeyup = function(event){
+		autoComplete_box.start(event);
+	} */
+	
+</script>
+
+</html>

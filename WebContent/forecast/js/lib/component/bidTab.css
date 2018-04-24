@@ -1,0 +1,7 @@
+.tab_active{
+	display:block;
+}
+.tab_unActive{
+	display:none;
+}
+.tab_containerbody{padding:0px;}

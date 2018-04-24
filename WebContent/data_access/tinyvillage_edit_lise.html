@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<script type="text/javascript" src="../scripts/jquery-1.7.1.min.js"></script>
+ <script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript">
+var win;
+var obj;
+var id = getUrlParamByKey("id");
+var address = getUrlParamByKey("address");
+var index = parent.layer.getFrameIndex(window.name); //获取窗口索引
+$(function () {
+	//alert(id);
+	$("#id").val(id);
+	$("#address").val(decodeURI(address));
+	//alert(address);
+})
+function baocun(){
+	var arr = [ "id", "address" ];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		doManager("TinyVillageManager", "updateTinyVillageInfo", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				alert("修改成功！ ");
+				//window.close();
+				parent.layer.close(index);
+			} else {
+				$$.showMessage("系统信息", "修改失败!");
+			}
+		});
+}
+</script>
+</head>
+<body>
+	<div class="panel panel-primary">
+        <div class="panel-heading">小区坐标维护</div>
+        </div>
+        </div>
+        <form action="" method="post" class="pmsForm">
+        <input type="hidden" name="id" id="id" style="height: 30px;"/>
+        <table style="margin-left: 30px;">
+		<tr>
+			<td>
+				<p>小区地址：</p>
+				<p><input type="text" name="address" id="address" style="height: 30px;"/></p>
+			</td>
+			</tr>
+			</table>
+			</form>
+			<div class="panel-footer" align="right">
+        <button class="btn btn-primary" onclick="baocun();">
+            保存
+        </button>
+       
+    </div>
+</body>
+</html>

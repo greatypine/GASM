@@ -1,0 +1,226 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="author" content="Zhong Youyuan">
+		<title>角色编辑</title>
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link rel="stylesheet" href="script/datepicter/jquery.ui.all.css" />
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		<script src="js/lib.js" type="text/javascript"></script>
+		<script type="text/javascript" src="js/common-validation-bizbase.js"></script>
+		<style>
+			html {
+			    overflow: hidden;
+			    height: 100%;
+			}
+			
+			body {
+			    overflow: auto;
+			    background: #E6E6E6 url(images/right.jpg) repeat-y right top;
+			    height: 100%;
+			}
+			
+			table {
+			    border: 0px solid #000;
+			}
+			
+			td {
+			    border: 0px solid #000;
+			}
+		</style>
+		<script>
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+			
+			var request = getRequestParams();
+			var id = request['id'];
+			
+			$(function() {
+				var roleObj;
+				if (id || "" == id) {
+					var url = $$.PMSDispatchActionUrl;
+					var data = new PMSRequestObject("roleManager", "getRoleDTOById", [id]);
+					$$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(datas, textStatus, XMLHttpRequest) {
+						var str = datas.data;
+						var role = $.fromJSON(str);
+						roleObj=role;
+						$("#hiddenId").val(id);
+						$("#roleName").val(role.name);
+						$("#roleCode").val(role.code);
+						$("#note").val(role.note);
+						var roleDisabled = role.disabledFlag;
+						if(roleDisabled == 0){
+							$("input[name=radioA]").eq(0).attr("checked",true);
+						}else{
+							$("input[name=radioA]").eq(1).attr("checked",true);
+						}
+				});
+				}
+			});
+			
+			/**
+			* 修改角色名称唯一性校验
+			* @param {Object} value
+			* @param {Object} element
+			*/
+			$.validator.addMethod("roleNameEditValid", function(value, element) {
+				var flag;
+				if (checkEditRoleName()) {
+					return false;
+				}
+				else {
+					return true;
+				}
+			}, "角色名已存在");
+			
+			/**
+			 * 判断roleName是否存在
+			 */
+			function checkEditRoleName() {
+				var nowRoleName = $("#roleName").val();
+				var idVal = $("#hiddenId").val();
+				if (validateExistsByEdit("com.cnpc.pms.bizbase.rbac.rolemanage.entity.Role", idVal, "name", nowRoleName)) {
+					return true;
+				}
+				return false;
+			}
+			var $validator;
+			$(document).ready(function() {
+				$validator = new PMSValidator($("#roleAddForm")[0], 
+					{
+						bNormalDisplay: false,
+						iDisplayLength: 20
+					})
+			})
+			
+			function editRole() {
+				var flag = $validator.clientValidate();
+				if (!flag) {
+					return false;
+				}
+				var div = $("<div></div>");
+				div.html("确定修改？");
+				var roleObject = 
+					{
+						id: $("#hiddenId").val(),
+						name: $("#roleName").val(),
+						code: $("#roleCode").val(),
+						disabledFlag:getRadioVal("radioA"),
+						note:$("#note").val()
+//						type: $("#roleType").val(),
+//						roleAttribute:$("#roleAttribute").val()
+//						pk_rolegroup: $("#pk_rolegroup").val(),
+//						pk_org: $("#orgId").val()
+					
+					};
+				div.dialog(
+					{
+						bgiframe: true,
+						title: "提示",
+						width: 320,
+						buttons: 
+							{
+								"确定": function() {
+									doManager("roleManager", "updateRoleDTO", roleObject, function(data, textStatus, XMLHttpRequest) {
+										div.dialog("close");
+										window.location="role_management.html";
+									});
+								},
+								"取消": function() {
+									$(this).dialog("close");
+								}
+							},
+						modal: true
+					});
+			}
+		</script>
+	</head>
+	<body>
+		<div class="rightcont clear">
+			<div class="panel panel-default">
+				<div class="panel-heading">
+					<h4 class="panel-title">
+						用户与权限 :角色管理</a><span>></span>角色编辑
+					</h4>
+				</div>
+			</div>
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<a href="#" onclick="toggleBiz('containerbody','pic');"><img  src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>&nbsp;角色编辑
+				</div>
+				<div class="panel-body" id="containerbody" >
+					<form id="roleAddForm" class="pmsForm" validate="true" clientValidate="true">
+						<table class="bigteble" style="border:none;">
+							<tr>
+								<td  class="Querytext">
+									角色名称:<font color="red">*</font>
+								</td>
+								<td class="Queryform">
+									<input type="text" name="roleName" id="roleName" class="form-control" style="width: 60%" validate="required: true,roleNameEditValid: true" size="23"/>
+								</td>
+								<td class="Querytext">
+									角色编码:
+								</td>
+								<td class="Queryform">
+									<input type="text" name="roleCode" id="roleCode" class="form-control" style="width: 60%" readonly/>
+								</td>
+							</tr>
+							<!--	<tr>
+                                    <td class="Queryform">
+                                                   角色级别:
+                                    </td>
+                                    <td class="Querytext">
+                                       <select  class="pmsSelect" name="roleType" id="roleType" src="roleType"  inputType="select" readonly="readonly" validate="{required:true}"  style="width:170px"></select>
+                                    </td>
+                                    <td class="Queryform">
+                                                   角色类型:
+                                    </td>
+                                    <td class="Querytext">
+                                        <select id="roleAttribute"  style="width:175px;"  >
+                                        </select>
+                                    </td>
+                                </tr>
+                                -->
+							<tr>
+								<td class="Queryform">
+									停用标志:
+								</td>
+								<td>
+									<input class="pmsRadio" name="radioA" data="[['0','是'],['1','否']]">
+								</td>
+								<td class="Querytext">
+									备注:
+								</td>
+								<td class="Queryform">
+									<input type="text" name="note" id="note" size="23" class="form-control" style="width: 60%"/>
+								</td>
+							</tr>
+							<input type="hidden" id="hiddenId">
+							<input type="hidden" id="orgId">
+						</table>
+					</form>
+				</div>
+				<div class="panel-footer" align="right">
+					<input align="right" role="button" class="btn btn-primary" onClick="editRole()" value="保存" type="button" />
+					<input align="right" role="button" class="btn btn-primary" onClick="javascript:history.go(-1)" value="返回" type="button" />
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

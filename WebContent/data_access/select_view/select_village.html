@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>选择社区</title>
+    <script type="text/javascript" src="../../scripts/bidLib.js"></script>
+    <link href="../../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript">
+        $(function () {
+            //页面加载成功后需要获取数据
+            searchList();
+        });
+
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            $$.executeSearch('selectVillageQuery', 'conditionsDiv');
+        }
+
+        function doSubmit(){
+            var json;
+            var objs = $$.getSelectedObj("selectVillageQuery");
+            if (objs.length != 0) {
+                json = {id:objs[0][0],name:objs[0][2]};
+            }else{
+                $$.showMessage('系统消息','请选择街道');
+            }
+            parent.win.callBack(json);
+            parent.win.hide();
+        }
+    </script>
+    <style type="text/css">
+        html,body{
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+    <div id="bodyDiv">
+        <div id="userGroupInfo" class="panel panel-primary">
+            <div class="panel-heading">
+                <a href="#" onclick="toggleBizBiz('conditionsDiv','pic');"><img src="../../scripts/images/22.png" align="absmiddle" id="pic"/></a>&nbsp;搜索条件
+            </div>
+            <div id="conditionsDiv" class="panel-body">
+                    <table class="bigteble">
+                        <tr>
+                            <td align="left" width="12%" class="basetext">
+                                社区名称:
+                            </td>
+                            <td class="baseform" align="left" width="38%">
+                                <input type="text" name="name" id="name" class="form-control" style="width: 70%"/>
+                            </td>
+                            <td align="left" width="12%" class="basetext">
+                                居委会地址:
+                            </td>
+                            <td class="baseform" align="left" width="38%">
+                                <input type="text" name="committee_address" id="committee_address" class="form-control" style="width: 70%"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="panel-footer"  align="right">
+                    <input class="btn btn-primary" onClick="searchList()" value="查询" type="button"/>
+                </div>
+            </div>
+            <div id="gridContainer" searchDiv="conditionsDiv" queryid="selectVillageQuery" queryformat="simple" class="panel panel-primary"
+                 showprint="false" showsearch="false" showtitle="true" showpaging="true" showcheckbox="true"
+                 checkmode="single" autoload="false" showno="false">
+            </div>
+        </div>
+    </body>
+</html>

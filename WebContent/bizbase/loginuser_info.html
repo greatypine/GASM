@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="author" content="Zhong Youyuan">
+		<title>用户信息</title>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		<script type="text/javascript" src="js/lib.js"></script>
+		<style type="text/css">
+			table {
+			    border: 0px solid #000;
+			}
+			
+			td {
+			    border: 0px solid #000;
+			}
+		</style>
+		<script>
+			var userid;
+			$(function() {
+				var url = $$.PMSDispatchActionUrl;
+				var data = new PMSRequestObject("userManager", "getCurrentUserDTO");
+				
+				$$.ajax(url, "requestString=" + data.toJsonString(), function(datas, textStatus, XMLHttpRequest) {
+					var str1 = datas.data;
+					var userObj1 = $.fromJSON(str1);
+					userid = userObj1.id;
+					var data2 = new PMSRequestObject("userManager", "getUserDTO", [userid]);
+					
+					$$.ajax(url, "requestString=" + encodeURIComponent(data2.toJsonString()), function(datas2, textStatus, XMLHttpRequest) {			
+						var str = datas2.data;
+						var userObj = $.fromJSON(str);
+						$("#userName").text(userObj.name);
+						$("#userAccount").text(userObj.code);
+						$("#userPassword").text(userObj.password);
+						$("#phone").text(userObj.phone);
+						$("#fax").text(userObj.fax);
+						$("#email").text(userObj.email);
+						$("#mobilephone").text(userObj.mobilephone);
+						$("#pwdparam").text(userObj.pwdparam);
+						$("#mobilephone").text(userObj.mobilephone);
+						$("#email").text(userObj.email);
+						$("#phone").text(userObj.phone);
+						$("#fax").text(userObj.fax);
+						$("#pwdparam").text(userObj.pwdparam);
+						$("#innerpassword").text(userObj.innerpassword);
+						$("#employeeId").text(userObj.employeeId);
+						
+						if(userObj.usergroup != null){
+							$("#userGroupName").text(userObj.usergroup.name);
+						}
+						
+						if (userObj.disabledFlag==0) {
+							$("#disabledFlag").text("是");	
+						} else {
+							$("#disabledFlag").text("否");	
+						}
+						
+						if (userObj.sex==0 || userObj.sex == '男') {
+							$("#userSex").text("男");	
+						} else {
+							$("#userSex").text("女");	
+						}
+						
+						if (userObj.usertype == 2) {
+							$("#usertype").text("系统管理员");
+						}
+					});
+				});
+			});
+					
+			function editPage() {
+				var url = "loginuser_edit.html?userId=" + userid;
+				window.location.href = url;
+			}
+			
+			function editPassword() {
+				var url = "passwordModify.html?userId=" + userid;
+				window.location.href = url;
+			}
+		</script>
+	</head>
+	<body>
+	<div class="rightcont clear">
+		<div class="box">
+			<div class="title clear">
+					<div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();">
+              	    </div>
+					<div class="ico2">
+					</div>
+					<div class="ico1">
+					</div>
+					<a href="#">用户信息 </a>
+			</div>
+			<div class="containerheader">
+         		 <a href="#" onclick="toggleBiz('containerbody','pic');"><img  src="../scripts/images/22.png" align="absmiddle" id="pic" /></a> 用户信息
+     	 	 </div>
+			 <div  id="containerbody">
+				<table class="bigteble">	
+				  <tr>
+				  	<td>
+					<table class="bigteble" style="border:none;">
+						<tr>
+							<td class="Querytext">姓名:</td>
+							<td  id="userName" class="Queryform"></td>
+							<td class="Querytext">登录账号:</td>
+							<td id="userAccount" class="Queryform"></td>
+						</tr>
+						<tr>
+							<td class="Querytext">性别:</td>
+							<td id="userSex" class="Queryform"></td>
+							<td class="Querytext">手机号码:</td>
+							<td id="mobilephone" class="Queryform"></td>
+						</tr>
+						<tr>
+							<td class="Querytext">岗位:</td>
+							<td id="pk_position" class="Queryform"></td>
+							<td class="Querytext">所在角色组:</td>
+							<td id="userGroupName" class="Queryform"></td>
+						</tr>
+						<tr>
+							<td class="Querytext">员工编号:</td>
+							<td id="employeeId" class="Queryform"></td>
+							<td class="Querytext">邮箱:</td>
+							<td id="email" class="Queryform"></td>
+						</tr>
+						<tr>
+							<td class="Querytext">电话:</td>
+							<td id="phone" class="Queryform"></td>
+							<td class="Querytext">传真:</td>
+							<td id="fax" class="Queryform"></td>
+						</tr>
+						<tr>
+							<td class="Querytext">UKey:</td>
+							<td id="pwdparam" class="Queryform"></td>
+						</tr>
+				 </table>	
+			</td>
+		  </tr>
+		 </table>
+		 <div style="padding:2px 5px 2px 0px;" class="containerheader" align="right">
+			<!-- <input class="buttonu"  type="button" value="修改信息" onclick="editPage()"/> -->
+
+			<!-- <input class="buttonu"  type="button" value="修改密码" onclick="editPassword()"/> -->
+		 	
+		 </div>
+		 </div>
+		</div>
+	</div>
+	</div>
+</body>
+</html>

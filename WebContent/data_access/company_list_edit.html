@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="renderer" content="webkit">
+    <title>写字楼修改</title>
+
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    <script type="text/javascript" src="select_view/select_option.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <script type="text/javascript" src="./select_view/select_option.js"></script>
+    <script type="text/javascript" src="../scripts/auto.js"></script>
+    
+  <style type="text/css">
+	td {
+		width=50%;
+	}
+	p{
+	margin-top: 10px;
+	margin-bottom: 10px;
+	}
+	table input,table select{border:1px solid #ccc; border-radius:3px; line-height: 30px; height: 30px; width:200px;}
+	.panel-heading .but{float:right; text-align: center;}
+	.but input {
+		background-color: transparent;
+		border: 1px solid #fff;
+		border-radius: 3px;
+		padding: 0 13px;
+		margin-right: 30px;}
+	 .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+    .increase{width:240px; height:160px; background-color:#fff; border:2px dashed #cecece; position:relative; margin:0 auto;}
+    .inc1{border:4px solid #c1bfc0; height:0; width:126px; border-radius:10px; position:absolute; top:50%; left:50%; margin:-4px 0 0 -63px;}
+    .inc2{border:4px solid #c1bfc0; height:126px; width:0; border-radius:10px; position:absolute; top:50%; left:50%; margin:-63px 0 0 -4px;}
+    .img_plus{margin-left: 5px;width: 14px;height: 14px;cursor: pointer}
+    .img_minus{margin-left: 5px;width: 14px;height: 14px;cursor: pointer}
+    .header_img{
+        width: 100%;
+        height: 100%;
+        float: right;
+        border-radius:50%
+    }
+</style>
+<script type="text/javascript">
+var id=getUrlParamByKey("id");
+var familyArray=null;
+var lst_select_tiny;
+var lst_select_village;
+var pro_id;
+var obj;
+function doShowRelation(){
+    $('#family_div').dialog({
+        bgiframe : true,
+        title : "提示",
+        width : 900,
+        height : 600,
+        buttons : {
+            "确定" : function() {
+                var flag = getChilds();
+                if(flag){
+                    $(this).dialog("close");
+                }
+            },
+            "取消" : function() {
+                $(this).dialog("close");
+            }
+        },
+        modal : true
+    });
+}
+
+function getChilds(){
+    var ulArray = $('#family_div').find('.panel-primary');
+     familyArray.splice(0,familyArray.length);
+    var allFamily = new Array();
+    for(var i = 0;i < ulArray.length;i++){
+        var office_company = $(ulArray[i]).find('input[name="office_company"]').val().replace(/(^\s*)|(\s*$)/g, "");
+        var office_floor_of_company = $(ulArray[i]).find('input[name="office_floor_of_company"]').val();
+        var company_id = $(ulArray[i]).find('input[name="company_id"]').val();
+        if(!checkValue(office_floor_of_company) || !checkValue(office_company)) {
+            $$.showMessage('提示','请输入完整的入驻公司信息，或删除不完整的信息');
+            return false;
+        }
+        if(!checkValue(office_floor_of_company)) {
+                $$.showMessage('提示',"请输入楼层");
+                return false;
+        }
+        var family = {
+            office_company: office_company,
+            office_floor_of_company: office_floor_of_company,
+            company_id:company_id
+        };
+       	var info = office_company+"_"+office_floor_of_company;
+       
+       	allFamily.push(info);
+       	
+        familyArray.push(family);
+        
+    }
+    
+    var nary=allFamily.sort(); 
+   
+	for(var i=0;i<nary.length;i++){
+		if (nary[i]==nary[i+1]){
+			 $$.showMessage('提示',"入驻公司出现重复！");
+			return false;
+		} 
+	}
+    
+    //childs = familyArray;
+    return true;
+}
+
+
+function addFamily(family) {
+    if(typeof(family) == 'undefined') {
+        family = {
+            office_company: '',
+            office_floor_of_company: '',
+            company_id:''
+        };
+    }
+    var $div_parent = $('#family_div');
+    var $div_btn = $div_parent.find('#div_btn');
+    $div_btn.before('<div style="float: left;width: 30%;margin-top: 20px;margin-right: 2%" class="panel panel-primary"></div>');
+    var $div_content = $div_parent.find('.panel-primary:last');
+    $div_content.append('<div class="panel-heading">入驻公司<span class="but"><input type="button" value="删除"/></span></div><div class="panel-body">' +
+            '<table cellpadding="0" cellspacing="0" style="min-width: 95%;margin: 10px 0; width: auto">' +
+            '<tr><td>公司名称</td>' +
+            '<td><input name="office_company" type="text" class="form-control" style="width: 90%; margin-left:10px;"  value="'+family.office_company+'"/></td></tr>' +
+            '<tr><td>所在楼层</td>' +
+            '<td>' +
+//            '<div class="input-group" style="width: 90%; margin-left:10px;">' +
+            '<input name="office_floor_of_company" type="text" class="form-control" style="width: 90%; margin-left:10px;" maxlength="3"  value="'+family.office_floor_of_company+'" />' +
+//            '<span class="input-group-addon">岁</span></div>' +
+            '</td></tr>'+'<td><input name="company_id" type="hidden" class="form-control" style="width: 90%; margin-left:10px;"  value="'+family.company_id+'"/></td></tr>'+'</table></div>');
+    
+    
+
+    $div_content.find("input[name='office_floor_of_company']").keyup(function () {
+        $(this).val( $(this).val().replace(/\D/g,''));
+    });
+    $div_content.find("input[type='button']").click(function(){
+        var flag = false;
+        $div_content.find('.form-control').each(function(){
+            var value = $(this).val();
+            if(!flag && value != null && value != ""){
+                flag = true;
+            }
+        });
+        if(flag){
+            $$.showConfirm("提示","包含已输入的数据是否删除？",function () {
+                $div_content.remove();
+            });
+        }else{
+            $div_content.remove();
+        }
+    });
+}
+function checkValue(value){
+    if(value == null || value == ''){
+        return false;
+    }
+    return true;
+}
+
+function doSave(){
+	var arr = [  "office_name", "office_address", "office_area",
+				"office_floor", "office_type","company","town_id","office_parking","village_id","office_id","job" ];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		o['company']=familyArray;
+		o['office_id']=id;
+		doManager("officeManager", "updateOffice", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				alert("更新成功");
+				window.location.href = 'company_list.html';
+			} else {
+				$$.showMessage("系统信息", "修改失败!");
+			}
+		});
+}
+$(function(){
+	$("#id").val(id);
+	doManager("officeManager", "getOfficeDataById",id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				familyArray = new Array();
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+					if("showSelectName"==key){
+						if(va!=null){
+							if(va.length>12){
+								va=va.substring(0, 9)+"...";
+							}
+							$("#showSelectName").html(va);
+						}
+					}
+					if(key=="company"&&jsonData[key]!=null){
+						for(var i=0;i<va.length;i++){
+							var office_company=va[i].office_company;
+							var office_floor_of_company=va[i].office_floor_of_company;
+							var company_id=va[i].company_id;
+							var family = {
+						            office_company: office_company,
+						            office_floor_of_company: office_floor_of_company,
+						            company_id:company_id
+						        };
+							familyArray.push(family);
+						}
+						$(familyArray).each(function(i,obj){
+							addFamily(obj);
+						});
+					}
+				}
+				getVillage();
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+	});
+	
+	//街道变化
+	$('#town_name').keyup(function(event){
+		var c=$("#province_name").val();
+		var str_name=$("#town_name").val();
+		var ght={"name":str_name,"id":c};
+		 $('#town-search').children().remove();
+		doManager('TownManager','getTownByTown_name_Info',ght,function(data){
+            if(data.result){
+               lst_select_tiny = JSON.parse(data.data);
+                $(lst_select_tiny).each(function(index,element){
+                    $('#town-search').append('<option value="'+element.name+'">');
+                });
+            }else{
+                $$.showMessage("提示",data.message);
+            }
+        });
+	})
+	//社区变化
+	$('#village_name').keyup(function(event){
+		var b=$("#town_id").val();
+		var str_name=$("#village_name").val();
+		$('#village-search').children().remove();
+		var ght={"name":str_name,"town_id":b};
+		$('#village_id').val('');
+		doManager('VillageManager','getVillageListByTown_idAndVillage_name',ght,function(data){
+            if(data.result){
+            	lst_select_village = JSON.parse(data.data);
+                $(lst_select_village).each(function(index,element){
+                    $('#village-search').append('<option value="'+element.name+'">');
+                });
+            }else{
+                $$.showMessage("提示",data.message);
+            }
+        });
+	})
+	
+	$('#town_name').change(function(){
+        $(lst_select_tiny).each(function(index,element){
+            if(element.name == $('#town_name').val()){
+                $('#town_id').val(element.id);
+               // $('#gb_code').val(element.gb_code);
+               // building_option();
+            }
+        });
+    });
+	$('#village_name').change(function(){
+        $(lst_select_village).each(function(index,element){
+            if(element.name == $('#village_name').val()){
+                $('#village_id').val(element.id);
+               // $('#village_gb_code').val(element.gb_code);
+                //building_option();
+            }
+        });
+    });
+	
+	
+})
+
+		function yanzhen(){
+			var office_name=$("#office_name").val().replace(/(^\s*)|(\s*$)/g, "");
+			var office_address=$("#office_address").val().replace(/(^\s*)|(\s*$)/g, "");
+			var town_id=$('#town_id').val();
+			var village_id=$('#village_id').val();
+			if(town_id == "" || town_id == null){
+				alert("街道不能为空或街道不正确!");
+				return;
+			}
+			if(village_id == "" || village_id == null){
+				alert("社区不能为空或社区不正确!");
+				return;
+			}
+			if(office_name == "" || office_name == null){
+				alert("请输入写字楼名称!");
+				return;
+			}
+			if(office_address == "" || office_address == null){
+				alert("请输入写字楼地址!");
+				return;
+			}
+			doSave();
+		}
+
+
+
+
+
+//加载省份信息
+function getProvince(){
+	doManager("ProvinceManager", "getProvince",obj, function(data, textStatus,
+			XMLHttpRequest) {
+		if (data.result) {
+			if(data.data!="null"){
+				var jso=JSON.parse(data.data);
+				 $(jso).each(function(index,element){
+		           if($("#province_id").val()==element.province_id){
+		        	   $('#province_name').append('<option selected="selected" value="'+element.province_id+'">'+element.province_name+'</option>');
+		           }else{
+		        	   $('#province_name').append('<option value="'+element.province_id+'">'+element.province_name+'</option>'); 
+		           }
+		            });	
+				
+			}else{
+				$$.showMessage("系统信息", "信息加载异常");
+				return false;
+			}
+		} else {
+			$$.showMessage("系统信息", "信息加载异常");
+			return false;
+		}
+	});
+}
+function getVillage(){
+	ccc=$("#town_id").val();
+	doManager("TownManager", "getTownParentInfoByTown_id",ccc, function(data, textStatus,
+			XMLHttpRequest) {
+		if (data.result) {
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+				}
+				getProvince();
+			}else{
+				$$.showMessage("系统信息", "信息加载异常");
+				return false;
+			}
+		} else {
+			$$.showMessage("系统信息", "信息加载异常");
+			return false;
+		}
+	});
+}
+
+
+
+var win;
+function showCustomerWin(callback){
+      win = new checkWin(callback);
+      win.show();
+  }
+
+function setCustomerSelect(jsons){
+ 	var selectCustomerNames ="";
+ 	var selectCustomerIds = "";
+ 	var selectIDS="";
+ 	var selectCustomerZw="";
+ 	var Zws="";
+		$.each(jsons,function(n,value) {
+			/* var obj="<tr>"+
+					"<th>"+value.id+"</th>"+
+					"<th>"+value.name+"</th>"+
+					"<th>"+value.address+"</th>"+
+					"<th><a href=\"#\" onclick=\"deletetr(this);\"><font color=\"blue\">删除</font></a></th>"+
+				    "</tr>"; */
+			var objid = value.id;
+			var objZw = value.zw;
+			var ids="";
+			var name="";
+			if(n>=0){
+				ids=objid.split(",")[0];
+				name=objid.split(",")[1];
+			}
+				if(objZw==="请选择"){
+					selectCustomerNames+=","+name;
+				}else{
+					selectCustomerNames+=","+name+"("+objZw+")";
+				}
+				selectCustomerIds+=","+ids+"-"+name+"-"+objZw;
+				selectCustomerZw+=","+objid+"-"+objZw;
+		})
+		selectCustomerNames=selectCustomerNames.substring(1,selectCustomerNames.length);
+		selectCustomerIds=selectCustomerIds.substring(1,selectCustomerIds.length);
+		selectCustomerZw=selectCustomerZw.substring(1,selectCustomerZw.length);
+		if(selectCustomerNames.length>12){
+			selectCustomerNames=selectCustomerNames.substring(0, 9)+"...";
+		}
+		$("#showSelectName").html(selectCustomerNames);
+		$("#job").val(selectCustomerIds);
+		$("#selectCustomerZw").val(selectCustomerZw);
+ };
+ 
+ /**
+ *
+ * @param {Object} callback 	回调函数
+ * 返回值json
+ */
+var checkWin = function(callback){
+    this.win = $("<div style='overflow-y: hidden'></div>");
+    var par = $("#job").val();
+    var city = encodeURIComponent($("#citySelect").val());
+    var _this = this;
+    var initWin = function(){
+        _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/selectCustomerBusiness_checkbox.html?imss='+par+'" scrolling="yes"></iframe>');
+        _this.win.dialog({
+            bgiframe: true,
+            title:"选择负责人",
+            autoOpen:false,
+            width:_this.width,
+            height:_this.height,
+            buttons : {
+                "确定": function(){
+             	    var selVal=window.frames["selectWin"].yanzhen();
+             	  // this.callBack=selVal; 
+             	   
+                    
+                    if(selVal==0){
+                 	   $$.showMessage("系统信息", "请给负责人选择职务!");
+                    }else{
+                 	   window.frames["selectWin"].doSubmit();
+                 	   _this.win.remove();
+                    }
+                  
+                },
+                "取消":function(){
+                    _this.hide();
+                    _this.win.remove();
+                }
+            },
+            modal:true
+        });
+    };
+    this.width = 800;
+    this.height = 730;
+    this.callBack = function(json){
+        if (callback && typeof(callback) == 'function') {
+            callback(json);
+        }
+    };
+
+    this.show = function(){
+        _this.win.dialog("open");
+    };
+
+    this.hide = function(){
+        if(_this.onSubmitHandler){
+            _this.onSubmitHandler();
+        }
+        _this.win.dialog("close");
+    };
+    initWin();
+}
+</script>
+
+</head>
+<body>
+	<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+	<input name="town_id" id="town_id" type="hidden" />
+	<input name="village_id" id="village_id" type="hidden"/>
+    <div class="panel-heading">写字楼信息修改
+		<span id="btnSave" onclick="yanzhen();" disabled="false"> 保存</span>
+    	<span id="btnBack" onclick="javascript:history.go(-1);" disabled="false"> 返回</span>
+		
+		<!-- <span class="but">
+			<input name="" type="submit" onclick="yanzhen();" value="保存">
+			<input name="" type="button" onclick="javascript:history.go(-1);" value="返回">
+		</span> -->
+	</div>
+    <div class="panel-body" id="temp1">
+	<form action="" method="post" class="pmsForm">
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p style="display: none";><select name="province_name" id="province_name"></select></p>
+				<p class="read">街道名称：<span style="color: red">*</span></p>
+				<p class="read"> 
+					<input type="text" name="town_name" readonly="readonly" id="town_name" list="town-search" onkeyup="value=value.replace(/^\s+|\s+$/g,'').replace(/\'/g,'')"/>
+					<datalist id="town-search"></datalist>
+				</p>
+			</td>
+			<td width="33.33%">
+				<p>社区名称：<span style="color: red">*</span></p>
+				<p><input type="text" name="village_name" id="village_name" list="village-search" onkeyup="value=value.replace(/^\s+|\s+$/g,'').replace(/\'/g,'')"/></p>
+				<datalist id="village-search"></datalist>
+			</td>
+			<td width="33.33%">
+				<input type="hidden" name="id" id="id" style="display:none"/>
+				<p>写字楼名称：<span style="color: red">*</span></p>
+				<p><input type="text" name="office_name" id="office_name"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">写字楼地址：<span style="color: red">*</span></p>
+				<p class="read"> <input type="text" name="office_address" id="office_address"/></p>
+			</td>
+
+			<td>
+				<p>物业级别：</p>
+				<p><select  name="office_type" id="office_type">
+						<option value="甲级">甲级</option>
+						<option value="乙级">乙级</option>
+						<option value="丙级">丙级</option>
+						<option value="其他">其他</option>
+					</select>
+				</p>
+				
+			</td>
+			<td>
+				<p>面积：</p>
+				<p><input type="text"  name="office_area" id="office_area" onkeyup="value=value.replace(/[^\d.]/g,'')"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>总楼层：</p>
+				<p><input type="text"  name="office_floor" id="office_floor" onkeyup="value=value.replace(/[^\d]/g,'')"/></p>
+			</td>
+			<td>
+				<p>停车位：</p>
+				<p><input type="text"  name="office_parking" id="office_parking" onkeyup="value=value.replace(/[^\d]/g,'')"/></p>
+			</td>
+			<td>
+				<p>入驻公司：</p>
+				<p>
+					<button class="btn btn-primary" onclick="doShowRelation()">添加入驻公司</button></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p>负责人：<span style="font-size: 3;color: red;">(如果选择负责人必须选择职务)</span></p>
+				<p><label id="showSelectName" style='overflow:hidden;width: 100px;'></label>
+					<input type="hidden" id="selectCustomerName" value="" />
+					<input type="hidden" id="job" value="" />
+					<input type="hidden" id="selectCustomerZw" value="" />
+					<button class="btn btn-primary" onclick="showCustomerWin(setCustomerSelect);">选择负责人</button></p>
+			</td>
+			<td>&nbsp;</td>
+			<td>&nbsp;</td>
+		</tr>
+	</table>
+	</form>
+	</div>
+</div>
+<div id="family_div" style="display: none;">
+                <div id="div_btn" style="float: left;width: 30%;margin-top: 7%;margin-right: 2%;" onclick="addFamily()">
+                    <div class="increase">
+                        <div class="inc1"></div>
+                        <div class="inc2"></div>
+                    </div>
+                </div>
+            </div>
+</body>
+</html>

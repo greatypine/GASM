@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>人员信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="../scripts/auto.js"></script>
+    <style>
+        .panel-body{padding-bottom: 0;}
+        .panel-body td{padding-top:15px;}
+    </style>
+</head>
+<script>
+var p_name = decode64(getUrlParamByKey("u_name"));
+var p_employee_no = decode64(getUrlParamByKey("employee_no"));
+var p_humanstatus = decode64(getUrlParamByKey("humanstatus"));
+var p_storename = decode64(getUrlParamByKey("storename"));
+var p_zw = decode64(getUrlParamByKey("zw"));
+var p_citySelect = decode64(getUrlParamByKey("citySelect"));
+
+
+    var win;
+    var array=new Array();
+	//初始化所有门店 
+	function initallstore() {
+		doManager("StoreManager", "findStoresByCurrCitys", null,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					for(i=0;i<jsonData.length;i++){
+						array.push(jsonData[i].name);
+					}
+				}
+			}, false);
+	}
+	var curr_user;
+	function initcurruser(){
+  		//取得当前登录人的门店
+		doManager("UserManager", "getCurrentUserDTO",null,
+    				function(data, textStatus, XMLHttpRequest) {
+    					if (data.result) {
+    						 curr_user = JSON.parse(data.data);
+    						
+    					}
+    	},false);
+  	}
+	
+	
+	function initSearchQueryCondition(){
+		if(p_name!=null&&p_name.length>0){
+			$("#name").val(p_name);
+		}
+		if(p_employee_no!=null&&p_employee_no.length>0){
+			$("#employee_no").val(p_employee_no);
+		}
+		if(p_humanstatus!=null&&p_humanstatus.length>0){
+			$("#humanstatus").attr("value",p_humanstatus);
+		}
+		if(p_storename!=null&&p_storename.length>0){
+			$("#storename").val(p_storename);
+		}
+		if(p_zw!=null&&p_zw.length>0){
+			$("#zw").val(p_zw);
+		}
+		if(p_citySelect!=null&&p_citySelect.length>0){
+			$("#citySelect").val(p_citySelect);
+		}
+		
+	}
+	
+    $(function () {
+    	initcurruser();
+    	initallstore();
+    	
+    	doClean();
+    	
+    	initSearchQueryCondition();
+    	
+        //页面加载成功后需要获取数据
+        searchList();
+        
+        $("#display_base_div").click(function(){
+            $("#base_data_div").toggle(500);
+            if($("#display_base_div").html()=="-"){
+            	$("#display_base_div").html("+");
+            }else{
+            	$("#display_base_div").html("-");
+            }
+        });
+
+        $("#display_base_div_hg").html("+");
+        $("#base_data_div_hg").hide();
+        
+        $("#display_base_div_hg").click(function(){
+            $("#base_data_div_hg").toggle(500);
+            if($("#display_base_div_hg").html()=="-"){
+            	$("#display_base_div_hg").html("+");
+            }else{
+            	$("#display_base_div_hg").html("-");
+            }
+        });
+        
+        $("#imp_base_div").click(function(){
+            $("#imp_data_div").toggle(500);
+            if($("#imp_base_div").html()=="-"){
+            	$("#imp_base_div").html("+");
+            }else{
+            	$("#imp_base_div").html("-");
+            }
+        });
+        
+    });
+
+    //操作列
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('humanresourcesQuery', 'conditionsDiv');
+    }
+
+    //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str == "" || str == "undefined" || typeof(str) == "undefined";
+    }
+
+    function downloadTemplate(){
+        var path = getRootPath();
+        window.open(path + "/downloadExcel.action?fileName=xx_express_template&skip=true");
+    }
+
+    //自定义一个上传Excel的方法
+    function uploadExcel() {
+    	$('button[name="upload"]').attr("disabled",true);
+        var content = $('input[name="file"]').val();
+        //文件不能为空
+        if (isnull(content)) {
+            $$.showMessage("${system.info}", "请选择文件!");
+            $('button[name="upload"]').attr("disabled",false);
+            return false;
+        }
+        //后缀必须为xls,不支持2007
+        var suffix = content.match(/^(.*)(\.)(.{1,8})$/)[3];
+        if ("xls" != suffix && 'rar' != suffix && 'zip' != suffix && "xlsx" != suffix) {
+            $$.showMessage("${system.info}", "请上传xls,xlsx,rar或zip文件");
+            $('button[name="upload"]').attr("disabled",false);
+            return false;
+        }
+        var path = getRootPath();
+        var $form_upload = $("#uploadFrom");
+        $form_upload.attr("action", path + "/excelUpload.action?model=human_template");
+        $form_upload.submit();
+        $('button[name="upload"]').attr("disabled",false);
+        $('input[name="file"]').val('');
+    }
+    
+    //自定义一个上传Excel的方法
+    function uploadHSTKExcel() {
+	  	$('button[name="uploadHSTK"]').attr("disabled",true);
+        var content = $('input[name="filehstk"]').val();
+        //文件不能为空
+        if (isnull(content)) {
+            $$.showMessage("${system.info}", "请选择文件!");
+            $('button[name="uploadHSTK"]').attr("disabled",false);
+            return false;
+        }
+        //后缀必须为xls,不支持2007
+        var suffix = content.match(/^(.*)(\.)(.{1,8})$/)[3];
+        if ("xls" != suffix && 'rar' != suffix && 'zip' != suffix && "xlsx" != suffix) {
+            $$.showMessage("${system.info}", "请上传xls,xlsx,rar或zip文件");
+            $('button[name="uploadHSTK"]').attr("disabled",false);
+            return false;
+        }
+        var path = getRootPath();
+        var $form_upload = $("#uploadFromhstk");
+        $form_upload.attr("action", path + "/excelUpload.action?model=human_template_hstk");
+        $form_upload.submit();
+        $('button[name="uploadHSTK"]').attr("disabled",false);
+        $('input[name="filehstk"]').val('');
+    }
+
+    function importSuccess() {
+        $$.showMessage("系统信息", "导入成功");
+        $('input[name="filehstk"]').val("");
+        searchList();
+    }
+
+    function doClean() {
+        document.service_qa.reset();
+        $("#store\\.id").val("");
+    }
+
+    function doAdd(){
+    	window.location.href="human_store_add.html";
+    }
+
+    function exportExcel(){
+        var path = getRootPath();
+        window.open(path + "/downloadExcel.action?fileName=human_list");
+//        doManager("HumanresourcesManager","exportHumanExcel",null,function(
+//                data, textStatus, XMLHttpRequest) {
+//            if(data.result){
+//                var path = JSON.parse(data.data);
+//                window.open(path);
+//            }else{
+//                $$.showMessage(data.message);
+//            }
+//        });
+    }
+
+  //列表中 列的处理
+    var COLUMNS = {
+            "humanstatus": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value==0){
+                	ret="<font color='red'>未分配门店</font>";
+                }
+                if(value!=null&&value==1){
+                	ret="<font color='green'>在职</font>";
+                }
+				if(value!=null&&value==2){
+                	ret="<font color='grey'>离职</font>";
+                }
+                return ret;
+            },
+            "editdelete": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var id = map['id'];
+                var humanstatus = map['humanstatus'];
+                var create_user_id = map['create_user_id'];
+                var editbtn = "<a href='javascript:toEditPage("+id+")'>编辑</a>";
+                var delbtn = "";
+                if(humanstatus!=null&&humanstatus.indexOf("未分配门店")>-1&&create_user_id==curr_user.id){
+                    delbtn = "<a href='javascript:delHuman("+id+");'>删除</a>";
+                }
+                var ret = editbtn+" "+delbtn;
+                return ret;
+            },
+            "zw": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var career_group = map['career_group'];
+                var zw = map['zw'];
+				if(zw=='服务专员'){
+					if(career_group==null||career_group.trim()==""){
+						zw+="[<font color='red'>暂未分配</font>]";
+					}else{
+						zw+="["+career_group+"]";
+					}
+					
+				}
+                return zw;
+            }
+            
+        }
+    
+  
+  function delHuman(human_id){
+    	$$.showConfirm('提示','<font color="red">正在删除未分配门店的员工信息，此操作不可恢复！确定删除？？？</font>',function(){
+			//alert("执行删除 ！"+human_id);
+			doManager("HumanresourcesManager", "removeHumanresourceById",[human_id], function(
+					data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					if(data.data.length>10){
+						$$.showMessage("系统信息", "删除成功！");
+					}else{
+						searchList();
+					}
+				} else {
+					$$.showMessage("系统信息", "删除失败!");
+				}
+			});
+			
+        });
+  }
+  
+  
+    var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "xxExpress_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("XxExpressManager", "deleteXxExpress", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'xx_express_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		}
+    var editObj = {
+			html : '<a href="#">编辑 </a>',
+			resourceId : "humanstore_List_update",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "human_store_edit.html?id="+id;
+			}
+		}
+    var publishObj = {
+			html : '<a href="#">查看 </a>',
+			resourceId : "humanstore_List_detail",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "human_store_detail.html?id="+id;
+			}
+		}
+    //$pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
+    
+  
+  function toEditPage(id){
+	  //************************
+	  var u_name = $("#name").val();
+	  var employee_no = $("#employee_no").val();
+	  var humanstatus = $("#humanstatus  option:selected").val();
+	  var storename = $("#storename").val();
+	  var zw = $("#zw").val();
+	  var citySelect = $("#citySelect").val();
+	  
+	  var searchUrl = "";
+	  if(u_name!=null&&u_name.length>0){
+		  searchUrl = searchUrl+"&u_name="+encode64(u_name);
+	  }
+	  if(employee_no!=null&&employee_no.length>0){
+		  searchUrl = searchUrl+"&employee_no="+encode64(employee_no);
+	  }
+	  if(humanstatus!=null&&humanstatus.length>0){
+		  searchUrl = searchUrl+"&humanstatus="+encode64(humanstatus);
+	  }
+	  if(storename!=null&&storename.length>0){
+		  searchUrl = searchUrl+"&storename="+encode64(storename);
+	  }
+	  if(zw!=null&&zw.length>0){
+		  searchUrl = searchUrl+"&zw="+encode64(zw);
+	  }
+	  if(citySelect!=null&&citySelect.length>0){
+		  searchUrl = searchUrl+"&citySelect="+encode64(citySelect);
+	  }
+	
+	  window.location.href = "human_store_edit.html?id="+id+searchUrl;
+  }
+  
+  
+  function doStoreMult(){
+	  $("#storename_box").val("");
+	  var objs = $$.getSelectedObj("humanresourcesQuery");
+	  if(objs!=null&&objs.length>0){
+		  //判断是未分配门店的数据
+		  var isHaveStore=false;
+		  $(objs).each(function(i,obj){
+			  if(obj[8].indexOf('未分配门店')==-1){
+				  isHaveStore=true;
+				  return false;
+			  }
+		  });
+		  if(isHaveStore){
+			  $$.showMessage("系统信息", "请选择未分配门店数据! ");
+		  }else{
+			  var div = $("#doStoreMultDiv");
+		      div.dialog({
+		          bgiframe : true,
+		          title : "批量分配门店数据",
+		          width : 380,
+		          height : 300,
+		          buttons : {
+		              "确定" : function() {
+		                  doUpdateHumanresourceMult($(this));
+		                  
+		              },
+		              "取消" : function() {
+		                  $(this).dialog("close");
+		              }
+		          },
+		          modal : false
+		      });
+		  }
+	  }else{
+		  $$.showMessage("系统信息", "请选择数据! ");
+	  }
+	  
+	  
+  }
+  
+  function doUpdateHumanresourceMult(obj_div){
+	  var storename_box = $("#storename_box").val();
+	  if(storename_box==null||storename_box==""||storename_box.trim()==""){
+		  $$.showMessage("系统信息", "请填写门店! ");
+		  $("#storename_box").val("");;
+	  }else{
+		  //判断填写的门店是否存在 
+		  
+		  if (!checkStorename(storename_box.trim())) {
+			  $$.showMessage("系统信息", "不存在的门店！请检查门店是否填写正确！  ");
+		  }else{
+			  var arrs = Array();
+			  var objs = $$.getSelectedObj("humanresourcesQuery");
+			  $(objs).each(function(i,obj){
+				  var obj_appr = {
+    		                id: obj[0],
+    		                storename:storename_box
+    		            };
+  				  arrs.push(obj_appr);
+			  });
+			  
+			  doManager("HumanresourcesManager", "updateHumanresourcesMult", [arrs,storename_box] ,
+						function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								var jsonData = $.fromJSON(data.data);
+								if(jsonData!=null){
+									searchList();
+									obj_div.dialog("close");
+								}else{
+									$$.showMessage("系统信息", "批量分配门店失败 !");
+								}
+							}
+				}, false); 
+
+		  }
+		  
+	  }	  
+	  
+  }
+  
+  function checkStorename(store_name){
+	  var notexist=false;
+		doManager("StoreManager", "findStoreByName", store_name,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if(jsonData==null){
+							notexist=true;
+						}
+					}
+				}, false);
+		
+		if(notexist){
+			$$.showMessage("系统信息","填写的门店不存在 ，请添加门店后再录入!");
+			return ;
+		}
+		
+		return true;
+  }
+    
+</script>
+<style type="text/css">
+    .but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+	.auto{max-height:100px; overflow-y:scroll;}
+</style>
+<body style="height: 100%">
+<div class="panel panel-default" style="margin: 10px">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+              门店数据维护:员工基础数据管理
+        </h4>
+    </div>
+</div>
+<div class="rightcont clear">
+<div class="panel panel-primary">
+        <div class="panel-heading"><label id="display_base_div">-</label>&nbsp;【非海格】导入国安物业、天坤、汇思等数据 【员工编号、门店为空】&nbsp;&nbsp;<font color="red">请确保文件中只有当日入职的信息!!</font></div>
+        <div class="panel-body" id="base_data_div" style="padding-top: 0px;">
+            <div id="uploadDiv">
+                <!-- <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom" target="hframe" style="width:50%; float:left;">
+                    <div class="form-group">
+                        <div class="form-group input-group">
+                            导入物业数据(海格)：(例：一份花名册（2016.9.26）.xlsx)
+                            <p><input type="file" isuploadtable="true" name="file" class="form-control" style="width:60%; height:35px;">
+                                <span class="input-group-btn" style="width:10%; display:inline-block;">
+                                    <button type="button" class="btn btn-default" onclick="uploadExcel();" name="upload">
+                                        <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+                                    </button>
+                                </span>
+                                <br><font color='red'>请确保导入文件中sheet页的名称为 国安社区 </font>
+                            </p>
+                        </div>
+					</div>
+                        <iframe name="hframe" id="hframe" style="display: none"></iframe>
+                    
+                </form> -->
+                
+                <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFromhstk" target="hframehstk" style="width:100%; float:left;">
+                    <div class="form-group">
+                        <div class="form-group input-group">
+                            	<table>
+                            		<tr>
+                            			<td>
+                            				<input type="file" isuploadtable="true" name="filehstk" class="form-control" style="width:75%; height:35px;">
+			                                <span class="input-group-btn" style="width:10%; display:inline-block;">
+			                                    <button type="button" class="btn btn-default" onclick="uploadHSTKExcel();" name="uploadHSTK">
+			                                        <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+			                                    </button>
+			                                </span>
+                            			</td>
+                            			<td>
+                            				<font color='red'>提示:1.请确保导入文件与门店员工花名册表头一致 <a href="https://imagedata.guoanshequ.com/file_manager/TKHS_template.xlsx">下载模板（非海格）</a><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.请确保导入文件中[员工编号][门店]两列为空<br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;3.导入前，确保Excel中无公式！</font>
+                            			</td>
+                            		<tr>
+                            	</table>
+                            	
+                        </div>
+                    </div>
+                    <iframe name="hframehstk" id="hframehstk" style="display: none"></iframe>
+                </form>
+                
+                
+            </div>
+        </div>
+    </div>
+
+
+
+<div class="panel panel-primary">
+        <div class="panel-heading"><label id="display_base_div_hg">-</label>&nbsp;【海格】导入海格数据&nbsp;&nbsp;<font color="red">请确保文件中只有当日入职的信息!!</font></div>
+        <div class="panel-body" id="base_data_div_hg" style="padding-top: 20px;">
+            <div id="uploadDiv">
+                <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom" target="hframe" style="width:100%; float:left;">
+                    <div class="form-group">
+                        <div class="form-group input-group">
+        <!--                     导入海格数据：(例：一份花名册（2016.9.26）.xlsx) &nbsp; -->
+                            <table>
+                            	<tr>
+                            		<td>
+                            			<p><input type="file" isuploadtable="true" name="file" class="form-control" style="width:75%; height:35px;">
+			                                <span class="input-group-btn" style="width:10%; display:inline-block;">
+			                                    <button type="button" class="btn btn-default" onclick="uploadExcel();" name="upload">
+			                                        <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+			                                    </button>
+			                                </span>
+			                            </p>
+                            		</td>
+                            		<td>
+                            			<font color='red'>提示:1.请确保导入文件中sheet页的名称为 国安社区 <a href="https://imagedata.guoanshequ.com/file_manager/HG_template.xlsx"> 下载模板（海格）</a><br />&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;2.导入前，确保Excel中无公式！</font>
+                            		</td>
+                            	</tr>
+                            </table>
+                        </div>
+					</div>
+                        <iframe name="hframe" id="hframe" style="display: none"></iframe>
+                    
+                </form>
+                
+               <!--  <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFromhstk" target="hframehstk" style="width:50%; float:left;">
+                    <div class="form-group">
+                        <div class="form-group input-group">
+                            导入汇思、天坤数据：(例：汇思-中信国安花名册.xlsx) 
+                            <p><input type="file" isuploadtable="true" name="filehstk" class="form-control" style="width:60%; height:35px;">
+                                <span class="input-group-btn" style="width:10%; display:inline-block;">
+                                    <button type="button" class="btn btn-default" onclick="uploadHSTKExcel();" name="uploadHSTK">
+                                        <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+                                    </button>
+                                </span>
+                                <br><font color='red'>请确保导入文件与门店员工花名册表头一致<br />请确保导入文件中[员工编号][门店]两列为空</font>
+                            </p>
+                        </div>
+                    </div>
+                    <iframe name="hframehstk" id="hframehstk" style="display: none"></iframe>
+                </form> -->
+                
+                
+            </div>
+        </div>
+    </div>
+    
+
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <label id="imp_base_div">-</label>&nbsp;导入人员查询
+            <span class="but">
+                <input type="button" onclick="exportExcel();" value="门店员工花名册生成"/>
+            </span>
+        </div>
+        <div class="panel-body" id="imp_data_div">
+            <!-- <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+                <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom"
+                      target="hframe">
+                    <div class="form-group">
+                        <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                            <input type="file" isuploadtable="true" name="file" class="form-control">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="();" name="upload">
+                                    <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+                                </button>
+                            </span>
+                        </div>
+                        <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                        <button name="download" class="btn btn-outline btn-default" onclick="downloadTemplate();">下载模板</button>
+                    </div>
+                </form>
+            </div> -->
+            <div id="conditionsDiv" style="margin-top: 0px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">员工姓名:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                            <td width="5%">员工编号:</td>
+                            <td>
+                                <input id="employee_no" name="employee_no" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                            <td width="3%">状态:</td>
+                             <td>
+                                <select id="humanstatus" name="humanstatus" style="width:80%;" class="form-control">
+                                	<option value="">全部</option>
+                                	<option value="0">未分配门店</option>
+                                	<option value="1">在职</option>
+                                	<option value="2">离职</option>
+                                </select>
+                            </td>
+                            
+                        </tr>
+                        <tr>
+                        
+                        <!-- <td style="width: 30%">
+                             门店:<div class="input-group" style="width:70%;">
+                                    <input type="text" name="storename" id="storename" class="form-control" placeholder="选择门店" readonly/>
+                                    <span class="input-group-btn">
+                                         <button type="button" class="btn btn-default" name="upload" onclick="showStoreWin(setStoreSelect)">
+                                            <img src="../scripts/images/search.png" alt="查询" style="height: 20px"/>
+                                        </button>
+                                    </span>
+                                </div>
+                                
+                            </td> -->
+                            <td width="3%">门店:</td>
+                            <td>
+                            	<div class="input-group" style="width:60%;">
+				                        <input type="text" id="storename" name="storename" class="auto-inp form-control" likeOption="false">
+				                        <div class="auto hidden" id="auto">
+				                            <div class="auto_out">1</div>
+				                            <div class="auto_out">2</div>
+				                        </div>
+				                    </div>
+                            </td>
+                            <td width="3%">职位:</td>
+                            <td>
+                                <input id="zw" name="zw" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                            <td width="3%">城市:</td>
+                            <td>
+                            	<input id="citySelect" name="citySelect" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="doStoreMult();">批量分配门店</button>
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+            <button class="btn btn-primary" onclick="doAdd();">新增</button>
+        </div>
+    </div>
+    <input type="hidden" id="store_id" isautotab="true" />
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="humanresourcesQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="true" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+	
+	
+	
+	<div id="doStoreMultDiv" class="panel panel-primary" style="display: none;">
+            <!--<div class="panel-heading">-->
+            <!--</div>-->
+            <div class="panel-body">
+                <table  cellpadding="0" cellspacing="0" >
+                	<tr>
+                		<td align="right" >填写门店<label style="color:red;">*</label>：</td>
+                        <td >
+                           		<input type="text" id="storename_box" name="storename_box" class="auto-inp">
+		                        <div class="auto hidden" style="margin-left: 105px;width: 170px;margin-top: 25px;" id="auto1">
+		
+		                        </div>
+                        </td>
+                	</tr>
+                </table>
+            </div>
+        </div>
+	
+</div>
+</body>
+
+<script>
+	var autoComplete = new AutoComplete("storename","auto",array);
+	document.getElementById("storename").onkeyup = function(event){
+		autoComplete.start(event);
+	}
+	
+	var autoComplete_box = new AutoComplete("storename_box","auto1",array);
+	document.getElementById("storename_box").onkeyup = function(event){
+		autoComplete_box.start(event);
+	}
+	
+</script>
+
+</html>

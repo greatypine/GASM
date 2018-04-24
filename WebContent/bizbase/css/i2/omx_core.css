@@ -1,0 +1,35 @@
+/* BODY CONTENT FRAME */
+.contentBody {background-color:#E0E0E0; margin:0px; border-right:1px solid #ffffff; border-bottom:1px solid #ffffff; border-top:1px solid #999999; border-left:1px solid #999999;}
+
+.containerBodyUneditable      {background-color : #F7F8FD; font-family:verdana,  sans-serif;  font-size:11px;   border-left:1px solid #999999; border-right:1px solid #999999; }
+.containerBodyToplevel      {background-color : #E0E0E0; font-family:verdana,  sans-serif;  font-size:11px;   border-left:1px solid #999999; border-right:1px solid #999999; }
+
+.containerBodyIndentToplevel      {background-color : #E0E0E0; font-family:verdana,  sans-serif;  font-size:11px;  border-left:1px solid #999999; border-right:1px solid #999999; padding-left: 8px; padding-right: 8px; padding-bottom: 8px;}
+.containerBodyIndentUnEditable      {background-color : #F7F8FD; font-family:verdana,  sans-serif;  font-size:11px;  border-left:1px solid #999999; border-right:1px solid #999999; padding-left: 8px; padding-right: 8px; padding-bottom: 8px;}
+
+.bottomBorder     {border-bottom:1px solid #999999; }
+.leftBorder     {border-left:1px solid #999999; }
+.rightBorder     {border-right:1px solid #999999; }
+
+.wizardPanel             {background: #F7F8FD;}
+
+.inputFieldIE      {font-family: verdana, arial, san-serif; font-size:11px; color: #505050; padding-left: 8px; padding-top: 2px; padding-bottom: 2px; border: 1px solid #999999;}
+.inputFieldIENumeric {font-family: verdana, arial, san-serif; font-size:11px; color: #505050; padding-left: 8px; padding-top: 2px; padding-bottom: 2px; padding-right: 8px; border: 1px solid #999999; text-align="right"}
+
+
+/* BODY CONTENT FRAME */
+.contentFrameBody {background-color:#E0E0E0; margin:6px; border-right:1px solid #ffffff; border-bottom:1px solid #ffffff; border-top:1px solid #999999; border-left:1px solid #999999;}
+
+/*REQUIRED FIELD FRAMEWORK*/
+.instructionArea  {background:#f7f8fd; font-family:verdana,sans-serif,arial,helvetica; font-size:10px; color: #505050; padding-left: 5px; padding-right: 6px; padding-top: 3px;padding-bottom: 3px;border-bottom:1px solid #999999;}
+.instructionArea_new  {background:#f7f8fd; font-family:verdana,sans-serif,arial,helvetica; font-size:10px; color: #505050; padding-left: 0px; padding-right: 0px; padding-top: 0px;padding-bottom: 1px;border-bottom:1px solid #999999;}
+.instructionItem  {background:#f7f8fd; font-family:verdana,sans-serif,arial,helvetica; font-size:10px; color: #505050;  cellspacing:6px  }
+
+.textArea       {background:#f0f0f0; font-family:verdana,sans-serif; font-size:11px; color: #505050;}
+
+
+.checkboxColumn{background-color:#D1D6F0;}
+.unEditableArea      {background-color : #F7F8FD; font-family:verdana,  sans-serif;  font-size:11px;   border-left:1px solid #999999; border-right:1px solid #999999;  border-bottom:1px solid #999999; border-top:1px solid #999999; }
+.editableArea      {background-color : white; font-family:verdana,  sans-serif;  font-size:11px;    border-right:1px solid #999999;  border-bottom:1px solid #999999; }
+
+.unEditableContainer{background:#eceef8;}

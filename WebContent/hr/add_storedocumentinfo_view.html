@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>任务记录</title>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        
+        <script type="text/javascript" src="../startbootstrap/js/jquery.1.10.2.min.js"></script>
+    	<script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+    	
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+        <script type="text/javascript" src="../scripts/auto.js"></script>
+
+
+    </head>
+    <style type="text/css">
+        td{
+            padding-top: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+        var store_id = getUrlParamByKey('store_id');
+        var workMonth = getUrlParamByKey('workMonth');
+        var isappro = getUrlParamByKey('isappro');
+        var id = getUrlParamByKey('scoreid');
+        var work_id = getUrlParamByKey('work_id');
+        $(function(){
+        	//alert(isappro);
+            //$('#content').attr('src','add_store_reference.html?isTotalView=1&work_id='+work_id+'&store_id='+store_id+'&workMonth='+workMonth);
+            $('#content').attr('src','add_storedocumentinfo_reference.html?store_id='+store_id+'&work_id='+work_id);
+
+            doManager("scoreRecordTotalManager","findScoreRecordTotalById",id,function(data){
+                if(data.result){
+                    var score_record = JSON.parse(data.data);
+                    if(score_record.commit_status == 1&&isappro=="y"){
+                        $('#div_button').show();
+                        
+                        //$('#remark').text(score_record.remark);
+                        $('#remark').text('');
+                        $('#remark').attr('disabled',false);
+                    }
+                }
+            });
+            $('#ok').click(function(){
+                submitReturn(3,'通过任务')
+            });
+            $('#cancel').click(function(){
+                submitReturn(2,'退回任务')
+            });
+            $('#btnBack').click(function () {
+                doBack();
+            });
+        });
+        function setIframeHeight() {
+            var iframe = document.getElementById('content');
+            if (iframe) {
+                var iframeWin = iframe.contentWindow || iframe.contentDocument.parentWindow;
+                if (iframeWin.document.body) {
+                    iframe.height = iframeWin.document.documentElement.scrollHeight || iframeWin.document.body.scrollHeight;
+                    $('#panel_body')[0].height = iframe.height;
+
+                }
+            }
+        }
+
+        function submitReturn(commit_status,title){
+        	//3通过任务    2退回任务
+            var obj = {
+                id: id,
+                remark:$('#remark').val(),
+                commit_status:commit_status
+            };
+
+            if(obj.remark == null || obj.remark == '' || obj.remark.trim()==''){
+                if(commit_status == 2){
+                    $$.showMessage('提示','请填写备注');
+                    return;
+                }else{
+                    obj.remark = '通过审核';
+                }
+            }
+            var index = layer.load(1, {
+		    	  shade: [0.1,'#fff'] //0.1透明度的白色背景
+		    	 });
+           	//obj.id  score_record_total 的 id 
+            //$$.showMessage('提示','功能开发中...');
+             doManager('scoreRecordTotalManager','updateScoreRecordTotalToReturn',obj,function(data){
+                if(data.result){
+                	layer.close(index);
+                    $$.showMessage('提示',title + '成功！',function(){
+                        doBack();
+                    });
+                }else{
+                	layer.close(index);
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        }
+
+        function doBack(){
+            history.go(-1);
+        }
+    </script>
+    <body style="height: 100%">
+	    <div class="panel panel-primary" style="width: 100%;">
+            <div id="panel_body" class="panel-body" style="padding: 0;">
+                <iframe id="content" src=""  height="100%" width="100%" frameborder="0" ></iframe>
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <label for="remark" style="width: 100%;text-align: left;">备注信息<label style="color: red">*</label>：</label><textarea class="form-control" id="remark" maxlength="120" placeholder="通过审核" disabled></textarea>
+                <div id="div_button" style="margin-top: 10px;display: none">
+                    <button id="ok" class="btn btn-primary">通过审核</button>
+                    <button id="cancel" class="btn btn-primary">退回审核</button>
+                    <button id="btnBack" class="btn btn-primary">返回</button>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

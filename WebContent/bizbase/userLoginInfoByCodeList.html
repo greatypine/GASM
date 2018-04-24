@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Cache-Control" Content="no-cache">
+<meta http-equiv="Pragma" Content="no-cache">
+<meta http-equiv="Expires" Content="0">
+<title>用户登录记录</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script>
+	var code;
+	$(function() {
+		var url = $$.PMSDispatchActionUrl;
+		var data = new PMSRequestObject("userManager", "getCurrentUserDTO");
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas, textStatus, XMLHttpRequest){
+			var str = datas.data;
+			var userObj = $.fromJSON(str);
+			code = userObj.code;
+			$("#userCode").val(code);
+			onSearch();
+		});
+	});
+
+	function onSearch() {
+		$("#userCode").val(code);
+		if (comepareDate($("#s1").val(), $("#s2").val()) < 0) {
+			$$.showMessage("系统信息", "查询开始时间不能大于结束时间!");
+		}
+		$$.executeSearch('userLoginInfoQuery', 'conditionsDiv');
+	}
+
+	function stateReset() {
+		document.form00.reset();
+	}
+	
+	//格局化日期：MM/dd/yyyy,传入的日期字符串格式为"YYYY-MM-DD"
+	function formatDateTOparseByStr(datestr) {
+		mymonth = datestr.substr(5, 2);
+		myweekday = datestr.substr(8, 2);
+		myyear = datestr.substr(0, 4);
+		return (mymonth + "/" + myweekday + "/" + myyear);
+	}
+	
+	function comepareDate(date1, date2) {
+		date1 = formatDateTOparseByStr(date1);
+		date2 = formatDateTOparseByStr(date2);
+		var days;
+		var days = (Date.parse(date2) - Date.parse(date1)) / (24 * 60 * 60 * 1000);
+		return days;
+	}
+	
+</script>
+</head>
+<body style="height: 100%">
+	<div id="pageheardiv" class="title clear">
+		<div class="arrowleft" style="cursor: hand;" onclick="toggleNavi();">
+		</div>
+		<div class="ico2"></div>
+		<div class="ico1"></div>
+		<a href="#">用户登录记录</a>
+	</div>
+	<div class="containerbody padding4px">
+		<div class="containerheader">
+			<a href="#" onclick="toggleDiv('conditionsDiv','pic2');"><img 
+				src="../scripts/images/22.png" align="absmiddle" id="pic2" /></a>&nbsp;&nbsp;搜索条件
+		</div>
+		<form id="form00" name="form00" class="pmsForm">
+			<div id="conditionsDiv" class="containerbody">
+				<table cellpadding="0" cellspacing="0"
+					style="min-width: 100%; width: auto">
+					<tr>
+					<input id="userCode" name="userCode" type="hidden"/>
+						<td align="right">登录时间 从</td>
+						<td class="basetext">
+							<input id="s1" name="loginDate" revalidate="true" 
+	                            style="width:130px;" type="text" likeOption="false"
+								validate="formatDate:true" class="pmsDateField inputtext_dis"
+								yearRange="-100:+0" style="width: 70px; margin-right: 5px;"
+								readonly /></td>
+						<td align="right">到</td>
+						<td class="basetext">
+							<input id="s2" name="loginDate" revalidate="true" 
+	                            style="width:130px;" type="text" likeOption="false"
+								validate="formatDate:true" class="pmsDateField inputtext_dis"
+								yearRange="-100:+0" style="width: 70px; margin-right: 5px;"
+								readonly /></td>
+					</tr>
+					<tr class="Colorbar3">
+						<td colspan="4">
+							<input type="button" class="buttonu" value="查询" onclick="onSearch();" />&nbsp;|&nbsp;
+							<input type="button" class="buttonu" value="重置"
+							onclick="stateReset()" />&nbsp;</td>
+					</tr>
+				</table>
+			</div>
+		</form>
+
+		<div id="mainPlant" showNo="true" titleAlign="center"
+			fnRender="renderColumns" showcheckbox="false" showRidaoButton="true"
+			searchDiv="conditionsDiv" usecache="true" queryid="userLoginInfoQuery"
+			showsearch="false" showdisplay="false" showtitle="true"
+			autoload="false" showprint="false" showpaging="true"
+			operators="$pmspage.opArr"></div>
+	</div>
+</body>
+</html>

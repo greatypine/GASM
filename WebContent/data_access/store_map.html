@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no, width=device-width">
+    <title>输入提示后查询</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
+	<script type="text/javascript" src="https://webapi.amap.com/maps?v=1.3&key=f52a1bb11408e8a46dc884b2aaa44edc&plugin=AMap.Autocomplete,AMap.PlaceSearch"></script>
+    <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script>
+    <style type="text/css">
+    	.amap-marker-content{
+    		display:none;
+    	}
+    	#tip {
+	background-color: #fff;
+	padding-left: 10px;
+	padding-right: 10px;
+	border: 0px solid #969696;
+	position: absolute;
+	font-size: 12px;
+	height: 26px;
+	/*min-width: 340px;*/
+	right: 10px;
+	bottom: 20px;
+	border-radius: 3px;
+	line-height: 20px;
+}
+
+input[type="button"] {
+	height: 25px;
+	outline: none;
+	border: 0;
+	border: 1px solid #CCCCCC;
+	padding: 0 4px;
+}
+.button-group {
+	position: absolute;
+	top: 20px;
+	right: 20px;
+	font-size: 12px;
+	padding: 10px;
+}
+    </style>
+</head>
+<body>
+<div id="container"></div>
+<div id="myPageTop">
+    <table>
+        <tr>
+            <td>
+                <label>请输入关键字：</label>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <input id="tipinput"/>
+            </td>
+        </tr>
+    </table>
+</div>
+<script type="text/javascript">
+	var position=[];
+	var store_cood = getUrlParamByKey("store_position");
+	var city_name = decodeURI(getUrlParamByKey("city_name"));
+	//var store_cood="116.459771,39.922132";
+	var city_code;
+	var ad_code;
+	var formataddress;
+	
+	var geocoder;
+	  var map = new AMap.Map("container", {
+	        resizeEnable: true
+	    });
+	  
+    //地图加载
+	    $(function(){
+		if(store_cood!=null&&store_cood!=""){
+			position[0]=Number(store_cood.split(",")[0]);
+			position[1]=Number(store_cood.split(",")[1]);
+			var marker= new AMap.Marker({
+	            position: position,
+	            map: map
+	        })
+			map.setCenter(position);
+			map.setZoom(15);
+			marker.on("rightclick",function(e){
+				var contextMenu = new AMap.ContextMenu();
+				contextMenu.addItem("删除", function() {
+					store_cood=null;
+					map.remove(marker);
+		        },
+		        0);
+				contextMenu.open(map, e.lnglat);
+			})
+			geocoder.getAddress(position, function(status, result) {
+			    if (status == 'complete' && result.info == 'OK') {
+			    	city_code=result.regeocode.addressComponent.citycode;
+			    	/* alert(result.regeocode.addressComponent.city==''?result.regeocode.addressComponent.province:result.regeocode.addressComponent.city+"---------"+result.regeocode.addressComponent.citycode);
+			    	alert(result.regeocode.formattedAddress);  */
+			    	ad_code=result.regeocode.addressComponent.adcode;
+			    	formataddress=result.regeocode.formattedAddress;
+			    }else{
+			       //获取地址失败
+			       alert("获取地址失败");
+			    }
+			}); 
+			
+			
+		}else{
+			map.setCity(city_name);
+		}
+	}) 
+  
+    //输入提示
+    var autoOptions = {
+        input: "tipinput"
+    };
+    var auto = new AMap.Autocomplete(autoOptions);
+    var placeSearch = new AMap.PlaceSearch({
+        map: map
+    });  //构造地点查询类
+    AMap.event.addListener(auto, "select", select);//注册监听，当选中某条记录时会触发
+    function select(e) {
+        placeSearch.setCity(e.poi.adcode);
+        placeSearch.search(e.poi.name);  //关键字查询查询
+    }
+    //根据坐标获查询详细地址
+    AMap.service('AMap.Geocoder',function(){//回调函数
+        //实例化Geocoder
+        geocoder = new AMap.Geocoder({
+            city: "010"//城市，默认：“全国”
+        });
+        //TODO: 使用geocoder 对象完成相关功能
+    })
+    map.on('click', function(e) {
+    	if(store_cood!=null&&store_cood!=""){
+    		alert("请移除当前坐标点后重新定位!");
+    		return false;
+    	};
+    	store_cood=e.lnglat.lng+","+e.lnglat.lat;
+		var marker= new AMap.Marker({
+            position: e.lnglat,
+            map: map,
+            extData:{}
+        })
+		marker.on("rightclick",function(e){
+			var contextMenu = new AMap.ContextMenu();
+			contextMenu.addItem("删除", function() {
+				store_cood=null;
+				map.remove(marker);
+	        },
+	        0);
+			contextMenu.open(map, e.lnglat);
+		})
+		
+		geocoder.getAddress(e.lnglat, function(status, result) {
+		    if (status == 'complete' && result.info == 'OK') {
+		    	city_code=result.regeocode.addressComponent.citycode;
+		    	ad_code=result.regeocode.addressComponent.adcode;
+		    	formataddress=result.regeocode.formattedAddress;
+		    }else{
+		       //获取地址失败
+		       alert("获取地址失败");
+		    }
+		});  
+    })
+    function doSubmit(){
+    	setTimeout(function(){		
+    	},1000);
+    	var jsons=new Array();
+		var json = {position:store_cood,adcode:ad_code,cityCode:city_code,gaodeaddress:formataddress};
+		jsons.push(json);
+	    parent.checkStoreWin.callBack(jsons);
+	    parent.checkStoreWin.hide();
+        }
+</script>
+</body>
+</html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html>
+	<head>
+	    <meta http-equiv="X-UA-Compatible" content="IE=8">
+	    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	    <title>文件管理</title>
+		<script type="text/javascript" src="../scripts/bidLib.js"></script>
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+			  type="text/css">
+		<style type="text/css">
+			.list-view-header {
+				position: relative;
+				z-index: 3;
+				height: 43px;
+				background: #f7f7f7;
+			}
+			.list_header {
+				position: relative;
+				z-index: 1
+			}
+			.list_header > ul {
+				background: #f7f7f7;
+				border-radius: 2px;
+				border: 1px solid #d2d2d2;
+				color: #888;
+				height: 41px;
+				line-height: 41px;
+				overflow: hidden;
+			}
+
+			.list_header > ul > .col {
+				float: left;
+				border-left: 1px solid #fff;
+				border-right: 1px solid #e5e5e5;
+				text-indent: 10px;
+			}
+			.first-col {
+				border-left: 0;
+				text-indent: 0;
+				width: 60%;
+			}
+			.second-col {
+				width: 17%;
+			}
+
+			.last-col {
+				width: 23%;
+			}
+
+			li {
+				display: list-item;
+				text-align: -webkit-match-parent;
+				margin: 0;
+				padding: 0;
+			}
+
+			ul, li, ol {
+				list-style: none;
+			}
+
+			.module-list-view {
+				position: relative;
+				overflow: hidden;
+			}
+
+			.list-view {
+				height: 100%;
+			}
+
+			.list_row {
+				border-bottom: 1px solid #ebebeb;
+				height: 40px;
+				line-height: 40px;
+				vertical-align: middle;
+			}
+
+			.list_row:hover {
+				background-color: #94B2E6;
+			}
+
+			.list_row > ul > .col {
+				float: left;
+				cursor: pointer;
+				text-indent: 10px;
+			}
+
+			.history_label {
+				height: 30px;
+				line-height: 30px;
+				color: #696369;
+				font-size: 12px;
+				padding-left: 10px;
+			}
+			.first-col > span:hover {
+				text-decoration:underline;
+			}
+			.file{ position:absolute; top:0; right:80px; height:24px; filter:alpha(opacity:0);opacity: 0;width:260px }
+		</style>
+		<script type="text/javascript">
+
+			var dCode = null;
+
+			var dText = null;
+
+			var file_root = null;
+
+			$(document).ready(function(){
+				getDownloadPath();
+				initView();
+			});
+
+			function getDownloadPath(){
+				doManager("UploadFolderManager","getFileRoot",[],function(data,textStatus, XMLHttpRequest){
+					if(data.result){
+						file_root = JSON.parse(data.data);
+					}
+				});
+			}
+
+			function getFileList(){
+				$('.history_label').html('<a href="#" onclick="initView()">全部文件</a>&nbsp;>&nbsp;' + dText);
+				$('#btnNewFolder').hide();
+				doManager('uploadFolderManager','getFileListByFolderName',dCode,function(data,textStatus, XMLHttpRequest){
+					if(data.result){
+						var jsonData = JSON.parse(data.data);
+						var $ul_list = $(".list-view").children('ul');
+						$ul_list.children().remove();
+						$(jsonData).each(function(index,dict){
+							$ul_list.append('<li class="list_row"></li>');
+							var $li_row = $ul_list.find('li:last');
+							$li_row.dblclick(function(){
+								downloadFile(dict);
+							});
+							$li_row.append('<ul></ul>');
+							var $ul_row = $li_row.find("ul:last");
+							$ul_row.append('<li	class="col first-col"></li>');
+							$ul_row.append('<li class="col second-col">'+dict.size+'</li>');
+							$ul_row.append('<li class="col last-col">'+dict.modified+'</li>');
+							var $first_col = $ul_row.find('li:first');
+							$first_col.append('<img src="../images/file.png" style="margin-right: 10px">');
+							$first_col.append('<span>'+dict.name+'</span>');
+							var $span = $first_col.find('span:last');
+							$span.click(function(){
+								downloadFile(dict);
+							});
+						});
+					}
+				});
+			}
+
+			function downloadFile(dict){
+				var filename = encodeURI(encodeURI(dict.name));
+				window.open(getRootPath() + "/downloadFile.action?folder_name="+dCode+"&file_name="+filename);
+			}
+
+
+			function initView(){
+				dCode = null;
+				$('.history_label').html('全部文件');
+				$('#btnNewFolder').show();
+				var $ul_list = $(".list-view").children('ul');
+				$ul_list.children().remove();
+				var obj = {};
+				doManager('uploadFolderManager','getUploadFolderList',obj,function(data,textStatus, XMLHttpRequest){
+					if(data.result){
+						var jsonData = JSON.parse(data.data);
+						$(jsonData).each(function(index,dict){
+							$ul_list.append('<li class="list_row"></li>');
+							var $li_row = $ul_list.find('li:last');
+							$li_row.append('<ul></ul>');
+							$li_row.click(function(){
+								dCode = dict.dictCode;
+								dText = dict.dictText;
+								$(this).find('input[type="radio"]').attr("checked","checked");
+							});
+
+							$li_row.dblclick(function(){
+								dCode = dict.dictCode;
+								dText = dict.dictText;
+								getFileList();
+							});
+							var $ul_row = $li_row.find("ul:last");
+							$ul_row.append('<li	class="col first-col"></li>');
+							$ul_row.append('<li class="col second-col">-</li>');
+							$ul_row.append('<li class="col last-col">-</li>');
+							var $first_col = $ul_row.find('li:first');
+							$first_col.append('<input type="radio" name="cbxSelect">');
+							$first_col.append('<img src="../images/folder.gif" style="margin-right: 10px">');
+							$first_col.append('<input type="hidden" name="folder" value="'+dict.dictCode+'">');
+							$first_col.append('<span>'+dict.dictText+'</span>');
+							var $span = $first_col.find('span:last');
+							$span.click(function(){
+								dCode = dict.dictCode;
+								dText = dict.dictText;
+								getFileList();
+							});
+						});
+					}
+
+				});
+			}
+
+			function doSave(){
+				var str_dictCode = $('#dictCode').val();
+				var str_dictText = $('#dictText').val();
+
+				if(!/^[a-zA-Z_1-9]{0,20}$/.test(str_dictCode)){
+					$$.showMessage('系统提示','请输入文件夹编码，编码应为英文，数字，下划线组成');
+					return;
+				}
+
+				if(str_dictText == '' || str_dictText == null){
+					$$.showMessage('系统提示','请输入文件夹名称');
+					return;
+				}
+
+				if(str_dictText.length > 20){
+					$$.showMessage('系统提示','文件夹名称长度小于20位');
+					return;
+				}
+
+				var obj = {
+					dictCode:str_dictCode,
+					dictText:str_dictText
+				}
+				doManager('uploadFolderManager','saveUploadFolder',obj,function(data,textStatus, XMLHttpRequest){
+					if(data.result){
+						var jsonData = JSON.parse(data.data);
+						if(jsonData.code == 200){
+							initView();
+							$("#addUploadFolder").dialog('close');
+						}else{
+							$$.showMessage('系统提示',jsonData.message);
+						}
+					}
+				});
+			}
+
+			function showAddFolder() {
+				$("#addUploadFolder").dialog({
+					bgiframe: true,
+					title: '添加上传文件夹',
+					width: 700,
+					height: 300,
+					modal: true,
+					buttons: {
+						"${form.ui.ok}": function () {
+							doSave();
+						},
+						"${query.ui.cancel}": function () {
+							$("#addUploadFolder").dialog('close');
+						}
+					}
+				});
+			}
+
+			function selectFile(){
+				if(dCode == null){
+					$$.showMessage("系统提示","请选择要上传的文件夹");
+					return;
+				}
+				$(".file").click();
+			}
+
+			function submitFile(){
+				$("#file_name").val(dCode);
+				$("#uploadFrom").submit();
+			}
+
+			function finishedUpload(){
+				$(".file").val('');
+				$$.showMessage('系统提示','完成上传');
+				getFileList();
+			}
+
+			function uploadError(){
+				$(".file").val('');
+				$$.showMessage('系统提示','上传失败');
+			}
+		</script>
+	</head>
+	<body>
+		<div class="rightcont clear">
+			 <div class="panel panel-default">
+			 	<div class="panel-heading">
+					<form action="../fileUpload.action" method="post" enctype="multipart/form-data"
+						  id="uploadFrom" target="hframe">
+							<input type="file" multiple name="upload" class="file" onchange="submitFile();">
+							<input type="hidden" id="file_name" name="file_name">
+					</form>
+					<iframe name="hframe" id="hframe" style=" display: none"></iframe>
+					<button class="btn btn-primary" onclick="selectFile();">上传</button>
+					<button id="btnNewFolder" class="btn btn-default" style="margin-left: 10px;display: none;" onclick="showAddFolder();" >新建文件夹</button>
+				</div>
+			 	<div class="panel-body">
+					<div class="history_label"></div>
+					<div class="list-view-header">
+						<div class="list_header">
+							<ul>
+								<li	class="col first-col">
+									<label>文件名</label>
+								</li>
+								<li class="col second-col"><label>大小</label></li>
+								<li class="col last-col"><label>上传时间</label></li>
+							</ul>
+						</div>
+					</div>
+					<div class="module-list-view">
+						<div class="list-view">
+							<ul>
+
+							</ul>
+						</div>
+					</div>
+			 	</div>
+			 </div>
+		</div>
+
+		<div id="addUploadFolder" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+			<div id="ConditonMainDiv" class="panel-body">
+				<table class="bigteble" style="width:auto;border:none;width: 100%">
+					<tr>
+						<td width="20%" align="left" class="basetext">
+							文件夹编码:<span style="color: red">*</span>
+						</td>
+						<td width="80%" class="baseform" align="left" >
+							<input type="text" name="dictCode" id="dictCode" class="form-control" style="width: 90%"/>
+						</td>
+					</tr>
+					<tr>
+						<td  class="basetext" align="left" style="padding-top: 20px">
+							文件夹名称:<span style="color: red">*</span>
+						</td>
+						<td class="baseform" align="left"  style="padding-top: 20px">
+							<input type="text" name="dictText" id="dictText" class="form-control" style="width: 90%"/>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>

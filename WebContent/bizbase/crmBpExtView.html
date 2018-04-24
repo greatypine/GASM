@@ -1,0 +1,63 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<meta http-equiv="Cache-Control" Content="no-cache">
+<meta http-equiv="Pragma" Content="no-cache">
+<meta http-equiv="Expires" Content="0">
+<title>BP上下级关系</title>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script>
+	$(function() {
+		var id = getUrlParamByKey("ID");
+		//取得信息并显示
+		doManager("CrmBpExtManager", "getCrmBpExtByID", id, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var Info = $.fromJSON(data.data);
+				setFormSimpleData(Info, "form00");
+			} else {
+				alert("获取信息出错。");
+			}
+		}, false);
+	})
+</script>
+</head>
+<body style="height: 100%">
+	<div id="pageheardiv" class="title clear">
+		<div class="arrowleft" style="cursor: hand;" onclick="toggleNavi();">
+		</div>
+		<div class="ico2"></div>
+		<div class="ico1"></div>
+		<a href="#">BP上下级关系</a>
+	</div>
+	<div class="containerbody padding4px">
+		<div class="containerheader">
+			<a href="#" onclick="toggleDiv('conditionsDiv','pic2');"><img 
+				src="../scripts/images/22.png" align="absmiddle" id="pic2" /></a>&nbsp;&nbsp;BP上下级关系详情
+		</div>
+		<form id="form00" name="form00" class="pmsForm">
+			<div id="conditionsDiv" class="containerbody">
+				<table cellpadding="0" cellspacing="0"
+					style="min-width: 100%; width: auto">
+					<tr>
+						<td width="15%"></td>
+						<td width="35%"></td>
+						<td width="15%"></td>
+						<td width="35%"></td>
+					</tr>
+					<tr>
+						<td align="right">BP下级编码：</td>
+						<td align="left"><input id="bpCode" name="bpCode"
+							class="inputtext_dis" readonly="readonly" /></td>
+						<td align="right">BP上级编码：</td>
+						<td align="left"><input id="superbpCode"
+							name="superbpCode" class="inputtext_dis" readonly="readonly" /></td>
+					</tr>
+				</table>
+			</div>
+		</form>
+	</div>
+</body>
+</html>

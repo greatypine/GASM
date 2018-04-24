@@ -1,0 +1,25 @@
+body  .layui-layer-iframe  .layui-layer-title{
+	background-color:#00c0ef
+}
+
+body    .layui-layer-title{
+	background-color:#00c0ef
+}
+
+ body [id^='layui-layer-iframe']{
+	height:520px
+} 
+
+ 
+
+body .layer-ext-crmskin .layui-layer-btn .layui-layer-btn0 {
+	background-color:#00c0ef;
+	border-color:#00c0ef;
+	color:#ffffff;
+}
+
+body .layer-ext-crmskin .layui-layer-btn .layui-layer-btn0 {
+	background-color:#00c0ef;
+	border-color:#00c0ef;
+	color:#ffffff;
+}

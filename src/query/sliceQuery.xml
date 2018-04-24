@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmsquery>
+
+	<query id="aboutAreaDtoQuery" header="片区信息" baseclass="com.cnpc.pms.slice.dto.AreaDto"  method="areaManager.selectAreaDto">
+        <column key="id" header="主键" type="java.lang.Long" operator="in" align="center" allowSort="true" display="false" width="1%"/>
+        <column key="store_id" header="门店主键" type="java.lang.Long" operator="eq" align="center" allowSearch="true" allowSort="true" display="false" width="1%"/>
+        <column key="name" header="片区名" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="6%"/>
+        <column key="area_no" header="片区编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="10%"/>
+        <column key="townName" header="街道" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="10%"/>
+        <column key="villageName" header="社区" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="10%"/>
+        <column key="tinVillageName" header="小区" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="10%"/>
+        <column key="employeeName" header="国安侠" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="9%"/>
+        <column key="city_id" header="城市" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="true" display="false" />
+    </query>
+    <query id="areaQuery" header="片区信息" baseclass="com.cnpc.pms.slice.entity.Area"  order="id desc"  filter="status = 0">
+        <column key="id" header="主键" type="java.lang.Long" operator="in" align="center" allowSort="true" display="false"/>
+        <column key="store_id" header="门店主键" type="java.lang.Long" operator="eq" align="center" allowSearch="true" allowSort="true" display="false" />
+        <column key="name" header="片区名" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="15%"/>
+        <column key="employee_a_no" header="负责国安侠A编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="15%"/>
+        <column key="employee_a_name" header="负责国安侠A" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="15%"/>
+        <column key="employee_b_no" header="负责国安侠B编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="15%"/>
+        <column key="employee_b_name" header="负责国安侠B" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true" width="15%"/>
+    </query>
+
+    <query id="villageSliceQuery" header="社区信息" baseclass="com.cnpc.pms.personal.entity.Village"  order="id desc">
+        <column key="id" header=""  type="java.lang.Long" align="center" display="true" allowSearch="true" allowSort="false" width="10%"/>
+        <column key="town_id" header="街道编码" type="java.lang.Long"  align="center" allowSearch="true" allowSort="true" display="false"/>
+        <column key="gb_code" header="国标码" type="java.lang.String"  align="center" operator="like" allowSearch="true"  allowSort="true" width="45%"/>
+        <column key="name" header="社区名" type="java.lang.String"  align="center" operator="like" allowSearch="true" allowSort="true" width="45%"/>
+    </query>
+
+    <query id="tinyVillageSliceQuery" header="小区信息"  order="id desc" method="tinyVillageManager.getTinyVillageBygb_code">
+        <column key="id" header="" display="true" type="java.lang.Long" allowSearch="true" allowSort="true" align="center" width="10%"/>
+        <column key="village_name" header="社区名"  align="center" allowSort="true" type="String" width="30%"/>
+        <column key="name" header="小区名"  align="center" allowSort="true" type="String" width="30%"/>
+        <column key="address" header="小区地址"  align="center" allowSort="true" type="String" width="30%"/>
+    </query>
+
+    <query id="buildingSliceQuery" header="楼房信息"  order="id desc" method="buildingManager.queryBuilding">
+        <column key="id" header="" display="true" allowSearch="true" allowSort="true" align="center" width="10%"/>
+        <column key="village_id" header="小区编号" display="false" allowSearch="true" allowSort="true" align="center"/>
+        <column key="village_name" header="社区名"  align="center" allowSort="true" width="30%"/>
+        <column key="tin_name" header="小区名"  align="center" allowSort="true"  width="30%"/>
+        <column key="name" header="楼号"  align="center" allowSort="true" width="30%"/>
+    </query>
+</pmsquery>

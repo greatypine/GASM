@@ -1,0 +1,403 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<meta name="" content="" >
+		<title>组织机构</title>
+		<link rel="stylesheet" type="text/css" href="css/i2/style_sheet_core.css"/>
+		<script src="js/lib.js" type="text/javascript"></script>
+		<script src="js/refDialog.js" type="text/javascript"></script>
+		<script>
+			function add() {
+				var div = document.getElementById("htmlbody");
+				div.style.display="block";
+			}
+			function save(){
+				var orgUnit = 
+					{
+						code: $("#UnitCode").val(),
+						name: $("#UnitName").val(),
+						parent_id: $("#parentId").val(),
+						shortname: $("#ShortName").val(),
+						corpType: $("#UnitPerproty").val(),
+						legalbodycode: $("#Legalbodycode").val(),
+						regcapital: $("#Capital").val(),
+						taxpayercode: $("#TaxID").val(),
+						bankdoc: $("#Bank").val(),
+						bankaccount: $("#Account").val(),
+						postaddr: $("#UnitAddr").val(),
+						zipcode: $("#ZipCode").val(),
+						phone: $("#Phone").val(),
+						fax: $("#Fax").val(),
+						linkman: $("#Linkman").val(),
+						email: $("#Email").val(),
+						innercode:$("#ERPC").val(),
+						isBidOrg:getRadioVal("radioB"),
+						isPurOrg:getRadioVal("radioA"),
+						isLocalCompany:getRadioVal("radioC"),
+						isEntityOrg: getRadioVal("radioE"),
+						enablestate:getRadioVal("radioF"),
+						website:$("#WebSite").val(),
+						orgCode:$("#OrgCode").val(),
+						cable:$("#Cable").val(),
+						settlement:$("#Settlement").val(),
+						financeCode:$("#FinanceCode").val(),
+						districtID:$("#DistrictID").val(),
+						license:$("#License").val(),
+						otherLicense:$("#OtherLicense").val(),
+						erpOrg:$("#ERPO").val(),
+						erpOrgGroup:$("#ERPG").val(),
+						erpSource:$("#ERPS").val()
+					};
+				doManager("purStruOrgManager", "add", orgUnit, function(data, textStatus, XMLHttpRequest) {
+					$$.showMessage("${system.info}","添加组织机构成功!");
+					window.parent.leftFrame.location.reload();
+					var returnObj = $.fromJSON(data.data);
+				});
+			}
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+			var request = getRequestParams();
+			var id = request['id'];
+			var name = request['name'];
+			$(document).ready(function(){
+				$("#info").html("组织所属信息("+name+")");
+				$("#parentName").val(name);
+				$("#parentId").val(id);
+			});
+		</script>
+		<style type="text/css">
+			table {
+			    border: 0px solid #000;
+			}
+			
+			td {
+			    border: 0px solid #000;
+			}
+			
+			.main {
+				background-color:#E0E0E0;
+			}
+		</style>
+		
+	</head>
+	<body>
+		<div class="rightcont  clear ">
+			<div class="box">
+				<div class="containerheader" align="left">
+					<button class="buttonu" id="NewAdd" onclick="add()">
+						新增下级组织
+					</button>&nbsp;
+				</div>
+				<div id="htmlbody" style="display:none;">
+				<div id="info">
+					
+					</div>
+				<div class="containerbody">
+					<form id="zuzhijigou-add" class="pmsForm" validate="true" clientvalidate="true">
+						<table width="82%" border="0" align="center" cellpadding="0" cellspacing="0" bordercolor="red" class="layout">
+							<tr>
+								<td align="left" nowrap="true" colspan="4">
+									基本信息:
+								</td>
+							</tr>
+							<tr>
+								<td width="12%" align="left" nowrap="true" >
+									上级组织:
+								</td>
+								<td width="31%">
+									<input type="text" id="parentName" validate="requried:true," class="inputtext_dis" readonly/>
+									<input type="hidden" id = "parentId">
+								</td>
+								<td width="15%" align="left" nowrap="true">
+									是否是采购组织:
+								</td>
+								<td width="42%">
+									<input class="pmsRadio" id="radioA" name="radioA"  data="[['0','是',],['1','否','checked']]"/>
+								</td>
+							</tr>
+							<tr>
+								<td width="15%" align="left" nowrap="true">
+									是否是招标组织:
+								</td>
+								<td width="42%">
+									<input class="pmsRadio" id="radioB" name="radioB" data="[['0','是'],['1','否','checked']]" />
+								</td>
+								<td width="15%" align="left" nowrap="true">
+									是否是地区公司:
+								</td>
+								<td width="42%">
+									<input class="pmsRadio" id="radioC" name="radioC" data="[['0','是','checked'],['1','否']]" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									单位编码:<font color="red">
+										*
+									</font>
+								</td>
+								<td>
+									<input type="text" id="UnitCode" name="UnitCode" class="inputtext" validate="required:true" />
+								</td>
+								<td align="left" nowrap="true">
+									单位名称:
+								</td>
+								<td>
+									<input type="text" id="UnitName" name="UnitName" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									企业性质:
+								</td>
+								<td>
+									<input type="text" id="UnitPerproty" name="UnitPerproty" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									单位简称:
+								</td>
+								<td>
+									<input type="text" id="ShortName" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									单位地址:
+								</td>
+								<td>
+									<input type="text" id="UnitAddr" name="UnitAddr" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									邮编:
+								</td>
+								<td>
+									<input type="text" id="ZipCode" name="ZipCode" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									单位网址:
+								</td>
+								<td>
+									<input type="text" id="WebSite" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									组织机构代码:
+								</td>
+								<td>
+									<input type="text" id="OrgCode" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									法人:
+								</td>
+								<td>
+									<input type="text" id="Legalbodycode" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									注册资金(万元):
+								</td>
+								<td>
+									<input type="text" id="Capital" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td width="15%" align="left" nowrap="true">
+									是否是实体单位:
+								</td>
+								<td width="42%">
+									<input class="pmsRadio" name="radioD" data="[['0','是','checked'],['1','否']]" />
+								</td>	
+								<td width="15%" align="left" nowrap="true">
+									是否虚拟组织:
+								</td>
+								<td width="42%">
+									<input class="pmsRadio" name="radioV" data="[['0','是','checked'],['1','否']]" />
+								</td>
+							<tr>
+							<tr>
+								<td align="left" nowrap="true" colspan="4">
+									联系信息:
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									联系人:
+								</td>
+								<td>
+									<input type="text" id="Linkman" name="Linkman" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									电话:
+								</td>
+								<td>
+									<input type="text" id="Phone" name="Phone" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									邮箱:
+								</td>
+								<td>
+									<input type="text" id="Email" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									传真:
+								</td>
+								<td>
+									<input type="text" id="Fax" name="Fax" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									电报挂号:
+								</td>
+								<td>
+									<input type="text" id="Cable" name="Cable" class="inputtext" />
+								</td>
+								<td colspan="2">
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true" colspan="4">
+									财务信息:
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									开户银行:
+								</td>
+								<td>
+									<input type="text" id="Bank" name="Bank" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									账号:<font color="red">
+										*
+									</font>
+								</td>
+								<td>
+									<input type="text" id="Account" name="Account" class="inputtext" validate="required:true" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									税号:
+								</td>
+								<td>
+									<input type="text" id="TaxID" name="TaxID" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									结算单位名称:
+								</td>
+								<td>
+									<input type="text" id="Settlement" class="inputtext">
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									财务编号:
+								</td>
+								<td>
+									<input type="text" id="FinanceCode" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									财务地区编号:
+								</td>
+								<td>
+									<input type="text" id="DistrictID" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true" colspan="4">
+									许可信息:
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									生产许可证:<font color="red">
+										*
+									</font>
+								</td>
+								<td>
+									<input type="text" id="License" class="inputtext" validate="required:true" />
+								</td>
+								<td align="left" nowrap="true">
+									其他许可证:
+								</td>
+								<td>
+									<input type="text" id="OtherLicense" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true" colspan="4">
+									ERP信息:
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									ERP公司代码:
+								</td>
+								<td>
+									<input type="text" id="ERPC" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									ERP采购组织:
+								</td>
+								<td>
+									<input type="text" id="ERPO" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									ERP采购组:
+								</td>
+								<td>
+									<input type="text" id="ERPG" class="inputtext" />
+								</td>
+								<td align="left" nowrap="true">
+									ERP源系统:
+								</td>
+								<td>
+									<input type="text" id="ERPS" class="inputtext" />
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									停用标识:
+								</td>
+								<td>
+									<input class="pmsRadio" name="radioE" data="[['0','是'],['1','否']]" />
+								</td>
+								<td colspan="2">
+								</td>
+							</tr>
+							<tr>
+								<td colspan="4" align="right" valign="middle" nowrap="true">
+									<button class="buttonu" id="Save" onclick="save()">
+										提交
+									</button>&nbsp;
+									<button class="buttonu" id="Return" onclick="">
+										返回
+									</button>
+								</td>
+							</tr>
+							</div>
+						</table>
+					</form>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

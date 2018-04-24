@@ -1,0 +1,24 @@
+td {
+    white-space: nowrap; /*请注意这个属性是单元格不折行的属性*/
+}
+table.display{
+	border: 1px solid #000;
+	margin: 0 auto;
+	clear: both;
+	table-layout:auto;
+}
+html{
+    scrollbar-shadow-color: #FFFFFF;
+    scrollbar-highlight-color: #FFFFFF;
+    scrollbar-arrow-color: #656363;
+    scrollbar-face-color: #d1d6f0;
+    scrollbar-track-color: #FFFFFF;
+    scrollbar-3dlight-color: #59ADBB;
+    scrollbar-darkshadow-color: #59ADBB;
+}
+.tdnormal{
+	white-space:normal;
+}
+.rightcont {
+    min-width: 700px; 
+}

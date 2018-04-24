@@ -1,0 +1,24 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html>
+  <head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>PMS Chat</title>
+    <link href="chat.css" rel="stylesheet">
+    <script type="text/javascript" src="../jquery/jquery-1.5.js"></script>
+   	<script type="text/javascript" src="assets/util.js"></script>
+ 	<script type="text/javascript" src="core/ajax-pushlet-client.js"></script>
+    <script type="text/javascript" src="chat.js"></script>
+  </head>
+  <body>
+   <center>
+   <h3 />
+     <iframe id="chatContents" name="chatContents" src="contents.html"></iframe>
+	  <form action="#" onSubmit="sendMsg(); return false;">
+         <input type="text" name="msg" id="msg" />&nbsp;
+         <input type="submit" name="submit" value ="发言" />
+       </form>
+     </center>
+  </body>
+</html>

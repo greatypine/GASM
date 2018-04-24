@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>小区片区</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript">
+        var array_ids = [];
+        var array_zws = [];
+        var array_idszw = [];
+        var id;
+        var zw;
+        var arr =new Array();
+        $(function(){
+            imss=getUrlParamByKey("imss");
+            if(imss!=null&&""!=imss){
+                var obj=decodeURIComponent(imss).split(",");
+                for(n in obj){
+                    if(obj[n]!=null&&obj[n]!=""){
+                        var ters=obj[n].split("-");
+                        var paramObj=new Object();
+                        paramObj.id=ters[0];
+                        paramObj.zw=ters[2];
+                        array_ids.push(ters[0]+","+ters[1]);
+                        array_zws.push(ters[2]);
+                        arr.push(paramObj);
+                    }
+                }
+                if(arr.length>0){
+                    var idss="";
+                    for(var n in arr){
+                        idss+=","+arr[n].id;
+                    }
+                    idss=idss.substring(1,idss.length);
+                    insertSort(idss);
+                }
+            }
+            searchList();
+            //$("div.dataTables_length select").attr("disabled","disabled");
+
+        })
+        function insertSort(ids){
+            doManager("customerManager", "updateCustomerSortById",ids, function(data, textStatus,
+                                                                                XMLHttpRequest) {
+            },false)
+        }
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            if(array_ids.length>0){
+                arr.splice(0,arr.length);
+                for(j=0;j<array_ids.length;j++){
+                    var tes=array_ids[j].split(",");
+                    var paramObj=new Object();
+                    paramObj.id=tes[0];
+                    paramObj.zw=array_zws[j];
+                    arr.push(paramObj);
+
+                }
+            };
+            $$.executeSearch('communityAreaChecBoxQuery', 'conditionsDiv');
+        }
+        function  yanzhen(){
+            if(array_zws.indexOf("请选择")>-1){
+                return 0;
+            }else{
+                return 1;
+            }
+        }
+        function doSubmit(){
+            var jsons=new Array();
+            if (array_ids.length != 0) {
+                for(i=0;i<array_ids.length;i++){
+                    var json = {id:array_ids[i],zw:array_zws[i]};
+                    jsons.push(json);
+                }
+
+            }
+            parent.win.callBack(jsons);
+            parent.win.hide();
+        }
+
+        var COLUMNS = {
+            "id": function(aData, iColumn, sColumnName, map){
+                var id = map[sColumnName];
+                var customername = map["name"];
+                var objstr = id+","+customername;
+                if(arr!=""&&arr.length>0){
+                    for(n in arr){
+                        if(id==arr[n].id){
+                            //如果有checked放入店名
+                            return '<input type="checkbox" id="'+id+'" checked="true" name="chkbox" onclick="checkboxClick(this)" value="'+objstr+'"/>';
+                        }
+                    }
+                }
+                return '<input type="checkbox" id="'+id+'" name="chkbox" onclick="checkboxClick(this);" value="'+objstr+'"/>';
+
+            },
+            "trade": function(aData, iColumn, sColumnName, map){
+                var id = map["id"];
+                //alert($(id).val());
+                var ime=$(id).val();
+                if(arr!=""&&arr.length>0){
+                    for(n in arr){
+                        if(ime.split(",")[0]==arr[n].id){
+                            var ret="";
+                            ret="<select name='zw' onchange='changetip(this)'>";
+                            if("请选择"===arr[n].zw){
+                                ret=ret+"<option value='请选择' selected='selected'>请选择</option>";
+                            }else{
+                                ret=ret+"<option value='请选择'>请选择</option>";
+                            }
+                            if("街道主任"===arr[n].zw){
+                                ret=ret+"<option value='街道主任' selected='selected'>街道主任</option>";
+                            }else{
+                                ret=ret+"<option value='街道主任'>街道主任</option>";
+                            }
+
+                            if("街道书记"===arr[n].zw){
+                                ret=ret+"<option value='街道书记' selected='selected'>街道书记</option>";
+                            }else{
+                                ret=ret+"<option value='街道书记'>街道书记</option>";
+                            }
+                            if("科长"===arr[n].zw){
+                                ret=ret+"<option value='科长' selected='selected'>科长</option>";
+                            }else{
+                                ret=ret+"<option value='科长'>科长</option>";
+                            }
+
+                            if("办事员"===arr[n].zw){
+                                ret=ret+"<option value='办事员' selected='selected'>办事员</option>";
+                            }else{
+                                ret=ret+"<option value='办事员'>办事员</option>";
+                            }
+                            ret=ret+"</select>";
+                            return ret;
+                        }
+                    }
+                }
+                return '<select name="zw" onchange="changetip(this)"><option value="请选择">请选择</option><option value="街道主任">街道主任</option><option value="街道书记">街道书记</option><option value="科长">科长</option><option value="办事员">办事员</option></select>';
+            }
+        }
+
+        function checkboxClick(_this){
+            var $select = $(_this).parent().parent().find('select[name="zw"]');
+            var value = $(_this).val();
+            var index = array_ids.indexOf(value);
+            if(index == -1){
+                array_ids.push(value);
+                array_zws.push($select.val());
+            }else{
+                array_ids.splice(index,1);
+                array_zws.splice(index,1);
+            }
+            if(array_ids.length>0){
+                arr.splice(0,arr.length);
+                for(j=0;j<array_ids.length;j++){
+                    var tes=array_ids[j].split(",");
+                    var paramObj=new Object();
+                    paramObj.id=tes[0];
+                    paramObj.zw=array_zws[j];
+                    arr.push(paramObj);
+
+                }
+            };
+        }
+        //当职务发生变化时调用此方法
+        function changetip(_this){
+            var $input=$(_this).parent().parent().find('input[name="chkbox"]');
+            //alert($(_this).val());
+            var ises=$input.val();
+            var arrses=ises.split(",")[0];
+            if($("#"+arrses).attr("checked")==true){
+                var index = array_ids.indexOf($input.val());
+                if(index != -1){
+                    array_ids.splice(index,1,$input.val());
+                    array_zws.splice(index,1,$(_this).val());
+                }
+            }
+            if(array_ids.length>0){
+                arr.splice(0,arr.length);
+                for(j=0;j<array_ids.length;j++){
+                    var tes=array_ids[j].split(",");
+                    var paramObj=new Object();
+                    paramObj.id=tes[0];
+                    paramObj.zw=array_zws[j];
+                    arr.push(paramObj);
+                }
+            };
+        }
+
+        var editObj = {
+            html : '<a href="#">编辑 </a>',
+            resourceId : "humanstore_List_update",
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.id;
+                window.location.href = "areaCheckBox.html?id="+id;
+            }
+        }
+//        var publishObj = {
+//            html : '<a href="#">查看 </a>',
+//            resourceId : "humanstore_List_detail",
+//            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+//                var id = allColumnsDataMap.id;
+//                window.location.href = "human_store_detail.html?id="+id;
+//            }
+//        }
+        $pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
+
+    </script>
+
+</head>
+<body>
+<div id="bodyDiv">
+    <div id="userGroupInfo" class="panel panel-primary">
+        <div class="panel-heading">
+            <a href="#" onclick="toggleBizBiz('conditionsDiv','pic');"><img src="../scripts/images/22.png" align="absmiddle" id="pic"/></a>&nbsp;搜索条件
+        </div>
+        <div id="conditionsDiv" class="panel-body">
+            <table class="bigteble">
+                <tr>
+                    <td align="left" width="40%" class="basetext">
+                        小区名称:				<input  name="community_name" id="community_name" class="form-control" style="width: 40%"/>
+                    </td>
+                    <td align="left" width="40%">
+                        片区名称:             <input type="text" name="address_relevanceName" id="address_relevanceName" maxlength="11" class="form-control" style="width: 40%"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="panel-footer"  align="right">
+            <input class="btn btn-primary" onClick="searchList()" value="查询" type="button"/>
+        </div>
+    </div>
+    <div id="gridContainer" searchDiv="conditionsDiv" queryid="communityAreaChecBoxQuery" queryformat="simple" class="panel panel-primary"
+         operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+         showprint="false" showsearch="false" showtitle="true" showpaging="true" showcheckbox="true"
+         checkmode="multi" autoload="false" showno="false">
+    </div>
+</div>
+</body>
+</html>

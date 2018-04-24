@@ -1,0 +1,529 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>门店信息录入明细审核</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script> 
+
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+.panel{border-radius:0; border:0; margin:0;}
+form{border:1px solid #337ab7;background-color:#fff;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	height:55px; line-height:55px; padding:5px 0;
+}
+table tr:nth-child(2n){background-color:#f2f2f2;}
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 58%;
+	height: 35px;
+	line-height: 35px;
+	border: 1px solid #e2e2e2;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;outline:none; border-radius:3px;
+}
+table td label{padding-left:10px; color:#999;}
+table te .letter{ letter-spacing:2em;}
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.form-control{margin:0; height:40px;}
+.input-group-btn button{height:40px;}
+</style>
+
+<script type="text/javascript">
+	
+	var id = getUrlParamByKey("id");
+
+	var storename = "";
+	$(function(){
+		doManager("StoreAddressManager", "queryStoreAddressById", id,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if(jsonData!=null){
+							var id=jsonData.id;
+							var site_selection_id = jsonData.site_selection_id;
+							var site_requirement_id = jsonData.site_requirement_id;
+							var store_address = jsonData.store_address;
+							var total_area = jsonData.total_area;
+							var used_area = jsonData.used_area;
+							var store_rent = jsonData.store_rent;
+							var renttax_flag = jsonData.renttax_flag;
+							var electric_quantity = jsonData.electric_quantity;
+							var store_style = jsonData.store_style;
+							
+							var fourpillar_flag = jsonData.fourpillar_flag;
+							var inside_height = jsonData.inside_height;
+							var twofloor_flag = jsonData.twofloor_flag;
+							var door_size = jsonData.door_size;
+							var sign_size = jsonData.sign_size;
+							var water_flag = jsonData.water_flag;
+							var onefloor_flag = jsonData.onefloor_flag;
+							var firecontrol_flag = jsonData.firecontrol_flag;
+							var houseowner_flag = jsonData.houseowner_flag;
+							var contact_name = jsonData.contact_name;
+							var contact_tel = jsonData.contact_tel;
+							var store_remark = jsonData.store_remark;
+							
+							var store_pic = jsonData.store_pic;
+							var store_rightpic = jsonData.store_rightpic;
+							var store_leftpic = jsonData.store_leftpic;
+							var store_oppositepic = jsonData.store_oppositepic;
+							
+							var store_pic1 = jsonData.store_pic1;
+							var store_pic2 = jsonData.store_pic2;
+							var store_pic3 = jsonData.store_pic3;
+							var store_pic4 = jsonData.store_pic4;
+							var store_pic5 = jsonData.store_pic5;
+							
+							var additional_remarks = jsonData.additional_remarks;
+							var store_status=jsonData.store_status;
+							var status_remarks = jsonData.status_remarks;
+							//赋值到页面中 。
+							
+							
+							$("#id").val(id);
+							$("#site_selection_id").val(site_selection_id);
+							$("#site_requirement_id").val(site_requirement_id);
+							$("#store_address").val(store_address);
+							$("#total_area").val(total_area);
+							$("#used_area").val(used_area);
+							$("#store_rent").val(store_rent);
+							$("#renttax_flag").val(renttax_flag);
+							$("#electric_quantity").val(electric_quantity);
+							$("#store_style").val(store_style);
+							$("#fourpillar_flag").val(fourpillar_flag);
+							$("#inside_height").val(inside_height);
+							$("#twofloor_flag").val(twofloor_flag);
+							$("#door_size").val(door_size);
+							$("#sign_size").val(sign_size);
+							$("#water_flag").val(water_flag);
+							$("#onefloor_flag").val(onefloor_flag);
+							$("#firecontrol_flag").val(firecontrol_flag);
+							$("#houseowner_flag").val(houseowner_flag);
+							$("#contact_name").val(contact_name);
+							$("#contact_tel").val(contact_tel);
+							$("#store_remark").val(store_remark);
+
+							$("#additional_remarks").val(additional_remarks);
+							$("#status_remarks").val(status_remarks);
+							$("#store_status").attr("value",store_status);
+							
+							var arrinput = ["store_address","total_area","used_area","store_rent","renttax_flag","electric_quantity","store_style","fourpillar_flag","inside_height","twofloor_flag","door_size","sign_size","water_flag","onefloor_flag","firecontrol_flag","houseowner_flag","contact_name","contact_tel","store_remark"];
+							for (var i in arrinput) {
+								var v = arrinput[i];
+								$("#"+v).attr("disabled",true);
+							}
+							
+							
+							//图片  id="pic_group"
+							var pic_group_html = "";
+							//正面近景 
+							if(store_pic!=null&&store_pic.trim().length>0){
+								var store_pic_html = "<a href='javascript:showcardinfo(\""+store_pic+"\")'>正面近景</a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_pic_html;
+							}
+							//右侧街道 
+							if(store_rightpic!=null&&store_rightpic.trim().length>0){
+								var store_rightpic_html = "<a href='javascript:showcardinfo(\""+store_rightpic+"\")'>右侧街道 </a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_rightpic_html;
+							}
+							//左侧街道 
+							if(store_leftpic!=null&&store_leftpic.trim().length>0){
+								var store_leftpic_html = "<a href='javascript:showcardinfo(\""+store_leftpic+"\")'>左侧街道 </a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_leftpic_html;
+							}
+							//对面照片
+							if(store_oppositepic!=null&&store_oppositepic.trim().length>0){
+								var store_oppositepic_html = "<a href='javascript:showcardinfo(\""+store_oppositepic+"\")'>对面照片 </a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_oppositepic_html;
+							}
+							
+							//室内一
+							if(store_pic1!=null&&store_pic1.trim().length>0){
+								var store_pic1_html = "<a href='javascript:showcardinfo(\""+store_pic1+"\")'>室内一 </a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_pic1_html;
+							}
+							//室内二
+							if(store_pic2!=null&&store_pic2.trim().length>0){
+								var store_pic2_html = "<a href='javascript:showcardinfo(\""+store_pic2+"\")'>室内二 </a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_pic2_html;
+							}
+							//室内三
+							if(store_pic3!=null&&store_pic3.trim().length>0){
+								var store_pic3_html = "<a href='javascript:showcardinfo(\""+store_pic3+"\")'>室内三 </a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_pic3_html;
+							}
+							//室内四
+							if(store_pic4!=null&&store_pic4.trim().length>0){
+								var store_pic4_html = "<a href='javascript:showcardinfo(\""+store_pic4+"\")'>室内四 </a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_pic4_html;
+							}
+							//室内五
+							if(store_pic5!=null&&store_pic5.trim().length>0){
+								var store_pic5_html = "<a href='javascript:showcardinfo(\""+store_pic5+"\")'>室内五 </a>";
+								pic_group_html+="&nbsp;&nbsp;&nbsp;&nbsp;"+store_pic5_html;
+							}
+							
+							
+							
+							$("#pic_group").html(pic_group_html);
+							
+							
+							
+							
+						}
+					}
+		}, false);
+		
+	});
+	
+	
+	
+	function showcardinfo(file_name){
+		  
+		  var rootPath = "https://imagedata.guoanshequ.com/file_manager/upload_folder/siteselection/";
+		  $("#showcard").attr("src",rootPath+file_name);
+		  
+		  var imgdiv = $("#showcarddiv");
+		  imgdiv.dialog({
+	            bgiframe : true,
+	            title : "名片查看",
+	            width : 680,
+	            height: 500,
+	            buttons : {
+	                "确定" : function() {
+	                	 $(this).dialog("close");
+	                },
+	                "取消" : function() {
+	                    $(this).dialog("close");
+	                }
+	            },
+	            modal : false
+	        });
+	  }
+	
+	
+	function doBack(){
+		window.location.href = 'store_address_list.html';
+	}
+	
+	function dataCheck() {
+		var status_remarks = $("#status_remarks").val();
+		var additional_remarks = $("#additional_remarks").val();
+		var store_status = $("#store_status option:selected").val();
+		
+		/* if (store_name == "" || store_name == null||store_name.trim()=="") {
+			$$.showMessage("系统信息", "请填写门店名称 !");
+			return;
+		}
+		if (bonus == "" || bonus == null||bonus.trim()=="") {
+			$$.showMessage("系统信息", "请填写奖励金!");
+			return;
+		}
+		if (requirement == "" || requirement == null||requirement.trim()=="") {
+			$$.showMessage("系统信息", "请填写商铺要求!");
+			return;
+		}
+		if (area == "" || area == null||area.trim()=="") {
+			$$.showMessage("系统信息", "请填写使用面积!");
+			return;
+		}
+		if (address == "" || address == null||address.trim()=="") {
+			$$.showMessage("系统信息", "请填写位置要求!");
+			return;
+		} */
+		
+		return true;
+	}
+	
+	
+	function doSave(){
+		if (!dataCheck()) {
+			return;
+		}
+		
+		var id = $("#id").val();
+		var status_remarks = $("#status_remarks").val();
+		var additional_remarks = $("#additional_remarks").val();
+		var store_status = $("#store_status option:selected").val();
+		
+		var obj = new Object();
+		obj.id=id;
+		obj.status_remarks=status_remarks;
+		obj.additional_remarks=additional_remarks;
+		obj.store_status=store_status;
+		
+		//门店名称未发生变化 直接保存 
+		doManager("StoreAddressManager", "saveStoreAddressRemark", obj,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					if(jsonData!=null){
+						window.location.href = 'store_address_list.html';
+					}
+				}
+			}, false);
+	}
+	
+    
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">选址管理 :查看房源信息 
+        	<span class="but">
+        		<input name="" type="button" onclick="doSave();" value="保存"/>
+                <input name="" type="button" onclick="doBack();" value="返回"/>
+            </span>
+        </div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						详细地址：<input type="text" id="store_address" value=""/>
+					</p>
+				</td>
+				<td>
+					<p>
+					<p>
+						状态：<select id="store_status">
+							<option value="0">待审核</option>
+							<option value="1">审核通过待勘察</option>
+							<option value="2">审核驳回</option>
+							<option value="3">勘察通过待签约</option>
+							<option value="4">勘察驳回</option>
+							<option value="5">签约失败</option>
+							<option value="6">签约成功</option>
+						    </select>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="3">
+					<p></p>
+					<p>
+						状态变更备注：<input type="text" id="status_remarks" value=""/>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						计租面积：<input type="text" id="total_area" value="" style="width:40%;"/>
+					</p>
+				</td>
+				<td>
+					<p>
+						使用面积：<input type="text" id="used_area" value=""/>
+					</p>
+				</td>
+				<td>
+					<p>
+						预计租金：<input type="text" id="store_rent" value=""/>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						租金是否含税：<input type="text" id="renttax_flag" value="" style="width:40%;"/>
+					</p>
+				</td>
+				<td>
+					<p>
+						店铺电量：<input type="text" id="electric_quantity" value=""/>
+					</p>
+				</td>
+				<td>
+					<p>
+						店铺格局：<input type="text" id="store_style" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						承重墙是否超过4个：<input type="text" id="fourpillar_flag" value="" style="width:40%;"/>
+					</p>
+				</td>
+				<td>
+					<p>
+						内部层高：<input type="text" id="inside_height" value=""/>
+					</p>
+				</td>
+				<td>
+					<p>
+						是否有自建二层：<input type="text" id="twofloor_flag" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						门面宽度：<input type="text" id="door_size" value="" style="width:40%;"/>
+					</p>
+				</td>
+				<td>
+					<p>
+						招牌尺寸：<input type="text" id="sign_size" value=""/>
+					</p>
+				</td>
+				<td>
+					<p>
+						是否有上下水：<input type="text" id="water_flag" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						是否为纯一层：<input type="text" id="onefloor_flag" value="" style="width:40%;"/>
+					</p>
+				</td>
+				<td>
+					<p>
+						是否有消防验收：<input type="text" id="firecontrol_flag" value=""/>
+					</p>
+				</td>
+				<td>
+					<p>
+						是否为房东直租：<input type="text" id="houseowner_flag" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						出租方联系人：<input type="text" id="contact_name" value="" style="width:40%;"/>
+					</p>
+				</td>
+				<td>
+					<p>
+						出租方联系方式：<input type="text" id="contact_tel" value=""/>
+					</p>
+				</td>
+				<td>
+					<!-- <p>
+						奖励金：<input type="text" id="bonus" value=""/>
+					</p> -->
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<p></p>
+					<p>
+						店铺情况介绍：<input type="text" id="store_remark" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<p></p>
+					<p>
+						补充说明：<input type="text" id="additional_remarks" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="3">
+					<p></p>
+					<p>
+						图片信息 ：<b id="pic_group"></b>
+					</p>
+				</td>
+			</tr>
+             <input type="hidden" id="id" value=""/>
+             <input type="hidden" id="site_selection_id" value=""/>
+             <input type="hidden" id="site_requirement_id" value=""/>
+                       
+		</table>
+	</form>
+	
+	
+	<div id="showcarddiv" class="panel panel-primary" style="display: none;">
+        	<img id="showcard" src="" style="width: 600px;height: 380px;">
+    </div>
+        
+</body>
+
+
+</html>

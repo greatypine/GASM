@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="author" content="Zhong Youyuan">
+		<title>修改用户信息</title>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		<script type="text/javascript" src="js/lib.js"></script>
+		<script type="text/javascript" src="js/common-validation-bizbase.js"></script>
+		<script type="text/javascript" src="js/userCommon.js"></script>
+		<style type="text/css">
+			table {
+			    border: 0px solid #000;
+			}
+			
+			td {
+			    border: 0px solid #000;
+			}
+		</style>
+		<script>
+			$(function() {
+				initUserInfo(true);
+			})
+		</script>
+	</head>
+	<body>
+		<div class="rightcont body_bg clear">
+			<div class="box">
+				<div class="title clear">
+					<div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();">
+					</div>
+					<div class="ico2">
+					</div>
+					<div class="ico1">
+					</div>
+					<a href="#">登录用户信息 </a>
+				</div>
+				<div class="containerheader">
+					<a href="#" onclick="toggleBiz('userDiv','pic');"><img src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>登录用户信息修改
+				</div>
+				<div id="userDiv">
+					<table class="bigteble" style="border:none;">
+						<tr>
+							<td>
+								<div class="containerbody" style="padding:5px;">
+									<form class="pmsForm" id="userEditForm" validate="true" clientvalidate="true">
+										<table style=" background:#f7f8fd;" cellpadding="0" cellspacing="0" border="0" bordercolor="red">
+											<tr>
+												<td class="Querytext" nowrap="nowrap">
+													用户名称:<span class="red">*</span>
+												</td>
+												<td class="Queryform">
+													<input type="text" name="userName" id="userName" validate="required:true" />
+												</td>
+												<td class="Querytext" nowrap="nowrap">
+													性别:
+												</td>
+												<td class="Queryform">
+													<input class="pmsRadio" name="sex" data="[['0','男'],['1','女']]" />
+												</td>
+											</tr>
+											<tr>
+												<td class="Querytext" nowrap="nowrap">
+													手机号码:
+												</td>
+												<td class="Queryform">
+													<input type="text" name="mobilephone" id="mobilephone" validate="{isMobile:true}" maxlength="11"/>
+												</td>
+												<td class="Querytext" nowrap="nowrap">
+													电话:
+												</td>
+												<td class="Queryform">
+													<input type="text" name="phone" id="phone" validate="{isTel:true}"/>
+												</td>
+											</tr>
+											<tr>
+												<td class="Querytext" nowrap="nowrap">
+													邮箱:
+												</td>
+												<td class="Queryform">
+													<input type="text" name="email" id="email" validate="email:true" />
+												</td>
+												<td class="Querytext" nowrap="nowrap">
+													传真:
+												</td>
+												<td class="Queryform">
+													<input type="text" name="fax" id="fax" validate="{isTel:true}"/>
+												</td>
+											</tr>
+										</table>
+									</form>
+								</div>
+							</td>
+						</tr>
+						<tr class="Colorbar3">
+							<td>
+								<div style="padding:0px 5px 0px 0px;">
+									<input class="buttonu" align="right" type="button" value="确定" onclick="editUserInfo();"/>&nbsp;
+									<input class="buttonu" align="right" type="button" value="返回" onclick="returnPage();"/>
+								</div>
+							</td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

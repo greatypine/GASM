@@ -1,0 +1,33 @@
+#all{ width:1003px; height:740px;margin:0 auto; overflow:hidden;}
+#top{ width:955px; height:45px; background:url(../images/topbg.jpg) repeat-x; line-height:45px; color:#fff; font-size:12px; padding:0 24px;}
+.date{ float:left; }
+.shouye{ float:right; }
+.shouye a{ padding-left:20px;}
+.shouye a:link,.shouye a:visited{ color:#fff; text-decoration:none;}
+.shouye a:hover,.shouye a:active{ color:#fabe00; text-decoration:none;}
+.ceenter{ width:1003px; height:241px; background:url(../images/centerbg-yadea1.jpg) no-repeat; padding-top:252px;}
+.ceenterB{ width:1003px; height:161px; background:url(../images/centerB.jpg) repeat-x;}
+#footer{ width:1003px; height:41px; background:url(../images/footer.jpg) repeat-x; color:#ccffff; font-size:12px; line-height:41px; text-align:center;}
+.centerbody{ width:850px; height:220px;  margin-left:85px; overflow:hidden;}
+.tz{  width:250px; height:220px;float:left;}
+.tz h3{ padding-bottom:5px;}
+.hd{ width:300px; height:220px; float:left;}
+.hd h3{ padding-bottom:5px;}
+.dl{ width:273px; height:118px;  float:left; padding-top:102px; padding-left:27px;}
+.title{ font-size:14px; color:#000000; font-family:"微软雅黑","黑体","宋体"; padding-left:20px; font-weight:bold;}
+span.more{ float:right; padding-right:20px;}
+.newslist{ padding-left:20px; font-size:12px;}
+.newslist li{ line-height:25px; padding-left:10px; background:url(../images/li.jpg) no-repeat left center;}
+.newslist a:link,.newslist a:visited{ color:#ffffff; text-decoration:none;}
+.newslist a:hover,.newslist a:active{ color:#ffffff; text-decoration:none;}
+
+.trt input{ width:68px; height:26px; background:url(../images/trt.jpg) no-repeat; border:0; cursor:pointer; margin-top:10px;}
+.txt{ width:197px; height:19px; border:1px solid #b9bcbf; padding:2px 0; padding-left:5px; line-height:19px; color:#666;}
+.dl li{ line-height:40px; height:40px; font-size:14px; font-weight:bold; color:#666666;}
+.dl li.current{ padding-left:45px; font-weight:100;}
+.current span{ float:left; padding-right:10px;_padding-right:8px;}
+.myspan{ margin-top:4px;_margin-top:3px;}
+.tit{ margin-top:17px; display:inline;_ margin-top:13px; }
+.myspan2{ margin-top:4px;}
+
+

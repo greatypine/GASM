@@ -1,0 +1,376 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css"/>
+		<link rel="stylesheet" href="script/tree/jquery.treeview.css" />
+		<script src="js/lib.js" type="text/javascript"></script>
+		<script src="js/refDialog.js" type="text/javascript"></script>
+		<script src="js/orgModify.js" type="text/javascript"></script>
+		<script src="../baseInfo/city.js" 			type="text/javascript"></script>
+		<script src="../baseInfo/citySelect.js" 		type="text/javascript"></script>
+		<style>
+			html {
+			    overflow: auto;
+			    height: 100%;
+			}
+			
+			body {
+			    overflow: auto;
+			    background: #E6E6E6 url(images/right.jpg) repeat-y right top;
+			    height: 100%;
+			    padding-right: 5px;
+			}
+		</style>
+		<script>
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+			var request = getRequestParams();
+			//获取上级组织机构编号
+			var parent_id = request['parentId'];
+			var orgLevel = parseInt(request['orgLevel']) + 1;
+			function checkUnitCode(){
+				if (validateExists("com.cnpc.pms.bizbase.rbac.orgview.entity.PurStruOrg", "code", $("#UnitCode").val())) {
+					return true;
+				}
+				return false;
+			}
+			
+			//省市区街道的验证,区不一定存在，不用验证，后台处理即可
+			function validateSelect(){
+				var province = $("#province option:selected").val();
+				var city = $("#city option:selected").val();
+				var area = $("#area option:selected").val();
+				if("-1"==province || "-1"==city || "-1"==area){
+					return false;
+				}
+				return true;
+			}
+			
+			function addOrg() {
+
+				/* if(getRadioVal("radioE") == ''){
+					$$.showMessage("${system.info}","单位属性不能为空!");
+					return false;	
+				} */
+				var $validator = new PMSValidator($("#orgAdd")[0], 
+				{
+					bNormalDisplay: false,
+					iDisplayLength: 999
+				});
+				var flag = $validator.clientValidate();
+				if (!flag) {
+					return false;
+				}
+				if (!validateSelect()) {
+					$$.showMessage("验证失败", "请检查地址信息是否选择正确!");
+					return;
+				}
+
+		        if (getRadioVal("radioE")=="2" && $("#businessType").val()=="") {
+		          $$.showMessage("${system.info}","单位属性为“科研单位”时，业务类型不能为空，请选择!");
+		          return false;
+		        }
+		        //没有街道信息，则使用空字符串代替
+		        var streetName = $("#street option:selected").attr('data-name');
+				if(streetName == '请选择'){
+					streetName = '';
+				}
+				var orgUnit = {
+					code: $("#UnitCode").val(),
+					name: $("#UnitName").val(),
+					parent_id: parent_id,
+					shortname: $("#ShortName").val(),
+					postaddr: $("#UnitAddr").val(),
+					zipcode: $("#ZipCode").val(),
+					phone: $("#Phone").val(),
+					fax: $("#Fax").val(),
+					linkman: $("#Linkman").val(),
+					email: $("#Email").val(),
+					entityOrgFlag:orgLevel-1,
+			        logisticsFlag:getRadioVal("logisticsFlag"),
+			        businessType:$("#businessType").val(),
+					enablestate:getRadioVal("radioF"),
+					website:$("#WebSite").val(),
+					cable:$("#Cable").val(),
+					orderNo:$("#orderNo").val(),
+					//add agentCode
+				    agentCode:$("#agentCode").val(),
+				    province : $("#province option:selected").attr('data-name'),
+					city : $("#city option:selected").attr('data-name'),
+					area : $("#area option:selected").attr('data-name'),
+					street : streetName,
+					//在这里要增加orgLevel,机构的层级，根节点为1
+					orgLevel : orgLevel
+				};
+				transportInformation(orgUnit);
+			}
+			$(document).ready(function(){
+				var request = getRequestParams();
+				//var parentName = request['parentName'];
+				var parentName = decodeURI(getUrlParamByKey("parentName"));
+				$("#parentName").val(parentName);
+			});
+			
+			function transportInformation(orgUnit){
+				doManager("purStruOrgManager", "add", orgUnit, function(data, textStatus, XMLHttpRequest){
+					if (data.result == true) {
+						var returnObj = $.fromJSON(data.data);
+						if (returnObj.parentDisabled) {
+							$$.showMessage("${system.info}", "所属组织机构为停用状态!");
+						}else {
+							$$.showMessage("${system.info}", "添加组织机构成功!");
+							window.setTimeout(function(){
+								window.parent.leftFrame.location.reload();
+								window.parent.appFrame.location = "orgModify.html?id=" + returnObj.id + "&name=" + returnObj.name + "&parentName=" + $("#parentName").val() + "&parentId=" + $("#parentId").val()+"&orgLevel=" + orgLevel;;
+							}, "1000");
+						}
+					}else{
+						$$.showMessage("${system.info}", "服务器保存失败!");
+					}
+				}, true,{
+                    showWaiting: true
+                });
+			}
+		</script>
+		<style type="text/css">
+			table {
+				border: 0px solid #000;
+			}
+			td {
+				border: 0px solid #000;
+			}
+		</style>
+	</head>
+	<body style="margin-left:3px;" background="images/leftbg.png">
+		<div align="left" id="Mytree" class="tree">
+		</div>
+		<div class="rightcont body_bg clear">
+			<div class="box">
+				<div class="containerbody">
+					<form id="orgAdd" class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+						<table class="layout" cellpadding="0" cellspacing="0" border="0" bordercolor="red">
+							<tr>
+								<td align="left" nowrap="true" colspan="4">
+									<strong>基本信息:</strong>
+								</td>
+							</tr>
+							<tr>
+								<td width="12%" align="left" nowrap="true" >
+									上级组织:
+								</td>
+								<td width="31%">
+									<input type="text" name="parentName" id="parentName" validate="required:true," class="inputtext_dis" readonly/>
+									<input type="hidden" id = "parentId">
+								</td>
+								<td align="left" nowrap="true">
+									机构编码:<font color="red">
+										*
+									</font>
+								</td>
+								<td>
+									<input type="text" id="UnitCode" name="UnitCode" class="inputtext" validate="unitCodeValid:true,required:true,isCorrectCode:true">
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									机构名称:<font color="red">
+										*
+									</font>
+								</td>
+								<td>
+									<input type="text" id="UnitName" name="UnitName" class="inputtext" validate="required:true">
+								</td>
+								
+								<td align="left" nowrap="true">
+									机构简称:<font color="red">*</font>
+								</td>
+								<td>
+									<input type="text" id="ShortName" class="inputtext" validate="required:true">
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									省:<font color="red">*</font>
+								</td>
+								<td>
+									<select class="province inputtext" id="province" name="province" validate="required:true">
+									</select>
+								</td>
+								<td align="left" nowrap="true">
+									市:<font color="red">*</font>
+								</td>
+								<td>
+									<select class="city inputtext" id="city" name="city" validate="required:true" >
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									区:<font color="red">*</font>
+								</td>
+								<td>
+									<select class="area inputtext " id="area" name="area" validate="required:true" >
+									</select>
+								</td>
+								<td align="left" nowrap="true">
+									街道:
+								</td>
+								<td>
+									<select class="street inputtext " id="street" name="street" validate="required:true" >
+									</select>
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									机构地址:<font color="red">*</font>
+								</td>
+								<td>
+									<input type="text" id="UnitAddr" name="UnitAddr" class="inputtext" validate="required:true">
+								</td>
+								<td align="left" nowrap="true">
+									联系人:
+								</td>
+								<td>
+									<input type="text" id="Linkman" name="Linkman" class="inputtext"/>
+								</td>
+								<!-- <td align="left" nowrap="true">
+									单位网址:
+								</td>
+								<td>
+									<input type="text" id="WebSite" name="WebSite" class="inputtext">
+								</td> -->
+							</tr>
+							<!-- <tr>
+								<td align="left" nowrap="true">
+									邮编:
+								</td>
+								<td>
+									<input type="text" id="ZipCode" name="ZipCode" class="inputtext" validate="{isZipCode:true}">
+								</td>
+								<td align="left" nowrap="true">
+									排序号:
+								</td>
+								<td>
+									<input type="text" id="orderNo" name="orderNo" value="0" class="inputtext" validate="required:true,number:true" >
+								</td>
+							</tr>
+							<tr>
+								<td width="15%" align="left" nowrap="true">
+									单位属性:<font color="red">
+										*
+									</font>
+								</td>
+								<td width="42%">
+									<input class="pmsRadio" name="radioE" data="[['0','机关单位'],['1','分院','checked'],['2','科研单位'],['3','室']]">
+								</td>
+								<td align="left" nowrap="true">
+									后勤单位:
+								</td>
+								<td>
+									<input class="pmsRadio" name="logisticsFlag" data="[['0','否'],['1','是','checked']]" />
+								</td>
+							</tr>-->
+              <tr style="display:none">
+                <!-- <td align="left" nowrap="true">
+                  业务类型:
+                </td>
+                <td>
+                  <select id="businessType" name="businessType" class="pmsSelect inputselect" src="PROJECT_STAT_TYPE" showblank="true">
+                  </select>
+                </td> -->
+                <td align="left" nowrap="true">
+                  停用标识:
+                </td>
+                <td>
+                  <input class="pmsRadio" name="radioF" data="[['0','是'],['1','否','checked']]" />
+                </td>
+              </tr> 
+							<!-- <tr>
+								<td align="left" nowrap="true" colspan="4">
+									<strong>联系信息:</strong>
+								</td>
+							</tr> -->
+							<tr>
+								<td align="left" nowrap="true">
+									电话:
+								</td>
+								<td>
+									<input type="text" id="Phone" name="Phone" class="inputtext" validate="{isTel:true}"/>
+								</td>
+								<td align="left" nowrap="true">
+									邮箱:
+								</td>
+								<td>
+									<input type="text" id="Email" class="inputtext" validate="{email:true}">
+								</td>
+							</tr>
+							<tr>
+								<td align="left" nowrap="true">
+									传真:
+								</td>
+								<td>
+									<input type="text" id="Fax" name="Fax" class="inputtext" validate="{isTel:true}">
+								</td>
+								<td align="left" nowrap="true">
+									排序号:
+								</td>
+								<td>
+									<input type="text" id="orderNo" name="orderNo" value="0" class="inputtext" validate="required:true,number:true" >
+								</td>
+							</tr>
+							<!-- <tr>
+								<td align="left" nowrap="true">
+									电报挂号:
+								</td>
+								<td>
+									<input type="text" id="Cable" name="Cable" class="inputtext">
+								</td>
+								<td align="left" nowrap="true">
+									经销商编码:
+								</td>
+								<td>
+									<input type="text" id="agentCode" name="agentCode" class="inputtext">
+								</td>
+							</tr> -->
+
+							<tr>
+								<td align="right" nowrap="true" colspan="4">
+									<button class="buttonu" id="Save" onclick="addOrg()">&nbsp;
+										提交
+									</button>
+									<button class="buttonu" id="Return" onclick="window.history.go(-1)">
+										返回
+									</button>
+								</td>
+							</tr>
+						</table>
+					</form>
+				</div>
+			</div>
+        </div>
+    <script type="text/javascript">
+	/**渲染下拉框中的省市区*/
+		var selectVa2 = new CitySelect({
+			data   		: data,
+			provId		: '#province',
+			cityId 		: '#city',
+			areaId 		: '#area',
+			streetId	: '#street',
+			isSelect 	: false
+		}); 
+	</script>
+	</body>
+</html>

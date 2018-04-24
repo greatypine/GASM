@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>社区信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+   <style type="text/css">
+    	.display{
+    		width:100%
+    	}
+    	#xuhaoid{
+    		width:7%
+    	}
+    </style>
+</head>
+<script type="text/javascript">
+var win;
+$(function () {
+	//获取当前登录的用户
+	 doManager("UserManager", "findUserInfo", '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							if(data.data!="null"){
+								var jsonData = $.fromJSON(data.data);
+								if(jsonData==3223||jsonData==3224||jsonData==3225){
+									$("#inser").hide();
+									$pmspage.opArr = [ editObj  ];
+								}else{
+									$pmspage.opArr = [ editObj  ];  
+								}
+								//console.log(jsonData);
+							}
+						} else {
+							$$.showMessage("系统信息", "信息加载异常!");
+						}
+					},false);
+    //页面加载成功后需要获取数据
+    searchList();
+    $(".operateHeader").width("5%");
+    $("#cstmz_actv").remove();
+});
+//记载页面时请求数据列表默认的方法
+function searchList() {
+    $$.executeSearch('villageQuery', 'conditionsDiv');
+    $(".operateHeader").width("5%");
+}
+function doClean() {
+    document.service_qa.reset();
+    searchList();
+}
+function addVillage(){
+	window.location.href = 'village_add.html';
+}
+
+  var editObj = {
+		html : '<a href="#" class="blue">修改</a>',
+		resourceId: "village_List_edit",
+		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+			var id = allColumnsDataMap.id;
+			window.location.href = "village_list_edit.html?id="+id;
+		}
+	}
+/*  var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "village_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("VillageManager", "deleteVIllageByID", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'village_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		} */
+//$pmspage.opArr = [ editObj  ];  
+</script>
+<body style="height: 100%">
+	<div class="panel panel-default" style="margin: 10px">
+	    <div class="panel-heading">
+	        <h4 class="panel-title">
+	           地址信息:社区信息
+	        </h4>
+	    </div>
+	</div>
+	    <div class="panel panel-primary">
+        <div class="panel-heading">社区信息查询</div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td>区(县)名称:</td>
+                            <td>
+                                <input id="county_name" name="county_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td>街道名称:</td>
+                            <td>
+                                <input id="town_name" name="town_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td>社区名称:</td>
+                            <td>
+                                <input id="village_name" name="village_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td>社区国标码:</td>
+                            <td>
+                                <input id="gb_code" name="gb_code" type="text" style="width:60%" maxlength="12" onkeyup="value=value.replace(/[^\d.]/g,'')" class="form-control"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <!-- <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" id="inser" onclick="addVillage()">添加</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+        </div> -->
+        
+        <div class="clearfix" style="padding: 10px 0 15px 0;">
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-success" onclick="doClean();">重置</button>
+          </div>
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-warning" onclick="searchList()">查询</button>
+          </div>
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-danger"  id="inser"  onclick="addVillage()">添加</button>
+          </div>
+        </div>
+        
+        
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="villageQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+</body>
+</html>

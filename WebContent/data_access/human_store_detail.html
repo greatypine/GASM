@@ -1,0 +1,500 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>分配门店明细信息</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+.panel{border-radius:0; border:0; margin:0;}
+form{border:1px solid #337ab7; padding-top:15px; padding-bottom:10px; background-color:#fff;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 33%;
+	padding: 5px 0;
+	height:35px; line-height:35px;
+}
+
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 80%;
+	height: 40px;
+	line-height: 40px;
+	border: 1px solid #dad9d7;
+	margin-top: 5px;
+}
+table td label{padding-left:10px;}
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center; margin-right:20px;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px;}
+
+</style>
+
+<script type="text/javascript">
+Date.prototype.format=function(fmt) {        
+    var o = {        
+    "M+" : this.getMonth()+1, //月份        
+    "d+" : this.getDate(), //日        
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
+    "H+" : this.getHours(), //小时        
+    "m+" : this.getMinutes(), //分        
+    "s+" : this.getSeconds(), //秒        
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度        
+    "S" : this.getMilliseconds() //毫秒        
+    };        
+    var week = {        
+    "0" : "\u65e5",        
+    "1" : "\u4e00",        
+    "2" : "\u4e8c",        
+    "3" : "\u4e09",        
+    "4" : "\u56db",        
+    "5" : "\u4e94",        
+    "6" : "\u516d"       
+    };        
+    if(/(y+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
+    }        
+    if(/(E+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
+    }        
+    for(var k in o){        
+        if(new RegExp("("+ k +")").test(fmt)){        
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
+        }        
+    }        
+    return fmt;        
+} 
+
+	var id = getUrlParamByKey("id");
+
+	
+	function dataCheck() {
+		var store_id = $('#store_id').val();
+		if (store_id == "" || store_id == null) {
+			alert("请选择门店!");
+			return;
+		}
+		/*
+		var obj = document.getElementsByName("isPhoneNo");
+		for (i = 0; i < obj.length; i++) {
+			if (!/^((0\d{2,3}-\d{7,8})|(1[35784]\d{9}))$/.test(obj[i].value)) {
+				alert("请输入正确的电话!");
+				return;
+			}
+		}*/
+		return true;
+	}
+	
+	//初始化快递公司 
+	function initExpressCompany() {
+		doManager("ExpressCompanyManager", "queryAllExpressName", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						var emList = jsonData.expressCompany;
+						//$("#express_company").append("<option></option>");
+						for (i = 0; i < emList.length; i++) {
+							$("#express_company").append("<option>" + emList[i].express_name + "</option>");
+						}
+					}
+				}, false);
+	}
+	
+	function defaultva(key,va,msg){
+		if(va==null||va==""){
+			document.getElementById(key).value=msg;
+		}else{
+			document.getElementById(key).value = va;
+		}
+	}
+	
+
+	$(function() {
+		//initExpressCompany();	
+		doManager("HumanresourcesManager", "queryHumanresourceById", id , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				for (var key in jsonData) {
+					var va = jsonData[key];
+					var ele = document.getElementById(key);
+					
+					if (ele != null && ele != undefined) {
+						document.getElementById(key).innerHTML = va;
+					}
+				}
+				
+				
+				//$("#express_company").attr("value",express_company);
+				//$("#express_company option[text='"+express_company+"']").attr("selected", true);
+				
+			}
+		});
+		
+		
+	});
+
+	function doSave() {
+		
+		if (!dataCheck()) {
+			return;
+		}
+		var arr = ["id","orgname", "deptlevel1", "deptlevel2", "deptlevel3","reporthigher","store_id","storename", "zw"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		//o["express_company"] = $("#express_company  option:selected").text();
+		doManager("HumanresourcesManager", "updateHumanresources", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				alert("保存成功！ ");
+				window.location.href = 'human_store_list.html';
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		});
+	}
+
+	
+	function doBack(){
+		window.location.href = 'human_store_list.html';
+	}
+	
+	 function showStoreWin(callback){
+         win = new checkWin(callback);
+         win.show();
+     }
+
+     function setStoreSelect(json){
+         $("#store_id").val(json.id);
+         $("#storename").val(json.name);
+     }
+     
+     
+     
+     var checkWin = function(callback){
+         this.win = $("<div style='overflow-y: hidden'></div>");
+         var _this = this;
+         var initWin = function(){
+             _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/select_view/select_store.html" scrolling="no"></iframe>');
+             _this.win.dialog({
+                 bgiframe: true,
+                 title:"选择门店",
+                 autoOpen:false,
+                 width:_this.width,
+                 height:_this.height,
+                 buttons : {
+                     "确定": function(){
+                         window.frames["selectWin"].doSubmit();
+                         _this.win.remove();
+                     },
+                     "取消":function(){
+                         _this.hide();
+                         _this.win.remove();
+                     }
+                 },
+                 modal:true
+             });
+         };
+         this.width = 900;
+         this.height = 730;
+         this.callBack = function(json){
+             if (callback && typeof(callback) == 'function') {
+                 callback(json);
+             }
+         };
+
+         this.show = function(){
+             _this.win.dialog("open");
+         };
+
+         this.hide = function(){
+             if(_this.onSubmitHandler){
+                 _this.onSubmitHandler();
+             }
+             _this.win.dialog("close");
+         };
+         initWin();
+     }
+     
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">员工信息采集管理 :分配门店明细信息<span class="but"><input name="" type="button" onclick="doBack();" value="返回"/></span></div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true"
+		displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<p>
+						姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:<label id="name"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						员工编号:<label id="employee_no"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						人员类别:<label id="isofficial"></label>
+					</p>
+				</td>
+
+			</tr>
+			<tr>
+
+				<td>
+					<p>
+						所属机构:<label id="orgname"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						一级部门:<label id="deptlevel1"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						二级部门:<label id="deptlevel2"></label>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>
+						三级部门:<label id="deptlevel3"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						门&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;店:<label id="storename"></label>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						汇报上级:<label id="reporthigher"></label>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<p>
+						职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位:<label id="zw"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级:<label id="professnallevel"></label>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						外包/实习生入职日期:<label id="entrydate"></label>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<p>
+						员工入职日期:<label id="topostdate"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						合同签订情况:<label id="contractdate"></label>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						签订次数:<label id="signcount"></label>
+					</p>
+				</td>
+			</tr>
+			
+			
+			
+			<tr>
+				<td>
+					<p>
+						是否转正:<label id="isofficial"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						身份证号码:<label id="cardnumber"></label>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别:<label id="sex"></label>
+					</p>
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td>
+					<p>
+						生&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日:<label id="birthday"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						民&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;族:<label id="nation"></label>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;籍:<label id="censusregister"></label>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td>
+					<p>
+						学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历:<label id="education"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						毕业院校:<label id="school"></label>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						专&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;业:<label id="profession"></label>
+					</p>
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td>
+					<p>
+						婚姻状况:<label id="marriage"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						联系电话（本人电话）:<label id="phone"></label>
+					</p>
+				</td>
+				<td>&nbsp;</td>
+				
+			</tr>
+			
+			
+			<tr>
+				<td>
+					<p>
+						紧急联系人姓名:<label id="relationname"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						紧急联系人电话:<label id="tel"></label>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						与紧急联系人关系:<label id="relationtype"></label>
+					</p>
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td>
+					<p>
+						招聘渠道:<label id="jobchannel"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						推荐人姓名:<label id="offername"></label>
+						<input type="hidden" id="id" />
+						<input type="hidden" id="store_id" isautotab="true" />
+					</p>
+				</td>
+				<td>&nbsp;</td>
+				
+			</tr>
+
+		</table>
+	</form>
+	
+</body>
+</html>

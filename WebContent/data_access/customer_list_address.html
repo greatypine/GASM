@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>房屋信息列表</title>
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <style type="text/css">
+            .display{
+                width:100%
+            }
+           #service_qa td{
+                padding-bottom: 20px;
+            }
+            .but {
+                float: right;
+                text-align: center;
+            }
+            /*.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}*/
+			
+			.but input{color:#337ab7;}
+        </style>
+    </head>
+
+    <script type="text/javascript">
+        var win;
+        var month_one;
+		var month_last;
+		var dayNum; 
+        var str_employee_no = getUrlParamByKey('employee_no');
+        var grade = getUrlParamByKey('grade');
+        var cardtype = getUrlParamByKey('cardtype');
+        $(function () {
+            $('#employee_no').val(str_employee_no);
+            if(cardtype==0){//国安侠
+            	 $('#employee_no').attr("disabled","disabled");
+            }
+            //doClean();
+            //页面加载成功后需要获取数
+            $('input[name="pic"]').click(function(){
+                $('#is_pic').val($('input[name="pic"]:checked').val());
+            });
+            doManager('UserManager','getCurrentUserDTO',null,function(data){
+                if(data.result){
+                    var userDto = JSON.parse(data.data)
+                    $('#store_id').val(userDto.store_id);
+                    $("#grade").val(grade);
+                    $("#query_grade").val(grade);
+                    $$.executeSearch('viewCustomerAddress', 'conditionsDiv');
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        });
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            $$.executeSearch('viewCustomerAddress', 'conditionsDiv');
+        }
+
+
+        function doClean() {
+            document.service_qa.reset();
+        }
+        var editObj = {
+            html : '<a href="#">编辑 </a>',
+            resourceId : "humanstore_List_update",
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.id;
+                window.location.href = "house_edit.html?customer_id="+id+"&house_id="+allColumnsDataMap.house_id+"&source=dataCard";
+            }
+        }
+        $pmspage.opArr = [editObj];
+
+        var COLUMNS = {
+            "address": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                if(value.length > 10){
+                    value = value.substring(0,10) + "...";
+                }
+                return value;
+            },
+            "mobilephone": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value!=""&&value.length>6){
+                    ret=value.substring(0,3)+"****"+value.substring(value.length-4,value.length);
+                }
+                return ret;
+            }
+        }
+        
+        function setGrade(){
+        	var grade = $("#query_grade").val();
+        	
+        	$("#grade").val(grade);
+        }
+    </script>
+    <body style="height: 100%">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+            用户单体画像查询
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                                <td width="8%" align="right">员工编码：</td>
+                                <td width="30%">
+                                    <input type="text" id="employee_no" name="employee_no" class="form-control" maxlength="20" style="width: 66%" />
+                                    <input type="hidden" id="store_id" name="store_id" likeOption="false" />
+                                </td>
+                                <td width="8%" align="right">查询时间：</td>
+                                <td width="25%">
+                                   <select id="query_date" name="query_date" class="form-control"  style="width: 40%">
+                                       <option value="0">本月</option>
+                                       <option value="1">上月</option>
+                                   </select>
+                                </td>
+                                
+                            </tr>
+                            <tr>
+                                <td width="8%" align="right">
+                                	<select id="query_grade" name="query_grade" class="form-control" onchange="setGrade()"  style="width: 100%">
+                                       <option value="first">6字段</option>
+                                       <option value="second">18字段</option>
+                                   </select>
+                                	</td>
+                                <td width="26%">
+                                	<span>完成状态：</span>
+                                    <input type="radio" name="complete_status" likeOption="false" value="0" checked />完成&nbsp;&nbsp;
+                                    <input type="radio" name="complete_status" likeOption="false" value="1" />未完成
+                                </td>
+                                <td  align="right"></td>
+                                <td >
+									<input type="hidden" name="grade" id="grade" likeOption="false"/>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <input type="button" class="btn btn-primary" onclick="searchList();" value="查询"/>
+                <input type="button" class="btn btn-primary" onclick="doClean();" value="重置"/>
+            </div>
+        </div>
+        <div id="centerQueryGridContainer" class="panel panel-primary" queryid="viewCustomerAddress" operators="$pmspage.opArr"
+             titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+             showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+             showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+    </body>
+    </html>

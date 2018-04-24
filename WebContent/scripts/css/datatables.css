@@ -1,0 +1,339 @@
+
+
+/** css of table's header & footer div **/
+.ui-widget-header { 
+	border: 2px solid #c0d0e8; /* i2 light blue */
+	background-color:#BEc5e7; /* i2 blue */
+	color:#292929;
+}
+
+
+/* Layout helpers
+----------------------------------*/
+.ui-helper-hidden { display: none; }
+.ui-helper-hidden-accessible { position: absolute; left: -99999999px; }
+.ui-helper-reset { margin: 0; padding: 0; border: 0; outline: 0; line-height: 1.2; text-decoration: none; font-size: 100%; list-style: none; }
+.ui-helper-clearfix:after { content: "."; display: block; height: 0; clear: both; visibility: hidden; }
+.ui-helper-clearfix {display: inline-block;}
+
+/* required comment for clearfix to work in Opera */
+* html .ui-helper-clearfix { height:1%; }
+.ui-helper-clearfix { display:block; }
+
+/* states and images */
+.ui-icon { display: block; text-indent: -99999px; overflow: hidden; background-repeat: no-repeat; }
+
+/* Overlays */
+.ui-widget-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; }
+
+/* Component containers 弹出窗口样式
+----------------------------------*/
+.ui-widget { font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif; font-size: 11px; }
+.ui-widget .ui-widget { font-size: 1em; }
+.ui-widget input, .ui-widget select, .ui-widget textarea, .ui-widget button { font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif; font-size: 1em; }
+.ui-widget-content { border: 1px solid #dddddd; background: #eeeeee url(images/ui-bg_highlight-soft_100_eeeeee_1x100.png) 50% top repeat-x; color: #333333; }
+.ui-widget-content a { color: #333333; }
+.ui-widget-header a { color: #ffffff; }
+
+/* 弹出窗口样式 */
+.ui-dialog { position: absolute; padding: .2em; width: 300px; overflow: hidden; }
+.ui-dialog .ui-dialog-titlebar { padding: .1em 1em .1em; position: relative;  }
+.ui-dialog .ui-dialog-title { float: left; margin: .1em 16px .2em 0; } 
+.ui-dialog .ui-dialog-titlebar-close { position: absolute; right: .3em; top: 50%; width: 19px; margin: -10px 0 0 0; padding: 1px; height: 18px; }
+.ui-dialog .ui-dialog-titlebar-close span { display: block; margin: 1px; }
+.ui-dialog .ui-dialog-titlebar-close:hover, .ui-dialog .ui-dialog-titlebar-close:focus { padding: 0; }
+.ui-dialog .ui-dialog-content { position: relative; border: 0; padding: .5em 1em; background: none; overflow: auto; zoom: 1; }
+.ui-dialog .ui-dialog-buttonpane { text-align: left; border-width: 1px 0 0 0; background-image: none; margin: .1em 0 0 0; padding: .3em 1em .5em .4em; }
+.ui-dialog .ui-dialog-buttonpane .ui-dialog-buttonset { float: right; }
+.ui-dialog .ui-dialog-buttonpane button { margin: .5em .4em .5em 0; cursor: pointer; }
+.ui-dialog .ui-resizable-se { width: 14px; height: 14px; right: 3px; bottom: 3px; }
+.ui-draggable .ui-dialog-titlebar { cursor: move; }
+
+
+/* General page setup */
+body {
+	text-align:left;
+	font-family:"Lucida Grande",verdana,arial,helvetica,sans-serif;color:#505050;
+	margin:0px;
+	padding:0;
+	display:block;
+	scroll:no;
+	font-size:12px;
+	}
+
+
+/*
+ * 列表表头样式
+ */
+
+.paging_two_button .ui-button {
+	float: left;
+	cursor: pointer;
+	* cursor: hand;
+}
+
+.paging_full_numbers .ui-button {
+	padding: 0px 6px;
+	margin: 0;
+	cursor: pointer;
+	* cursor: hand;
+}
+
+.ui-buttonset .ui-button {
+	margin-right: -0.1em !important;
+}
+
+.paging_full_numbers {
+	width: 180px !important;
+	padding-top:3px;
+}
+
+.ui-toolbar {
+	padding: 3px;
+	margin-top:5px;
+}
+
+.dataTables_paginate {
+	width: auto;
+}
+
+.dataTables_info {
+	padding-top: 2px;
+}
+
+table.display thead th {
+	cursor: pointer;
+	* cursor: hand;
+	background:#3a90cb;
+    color: #fff;
+    text-align: center;
+}
+
+/*
+ * add by lvpeng  表格表头排序样式
+ * Sort arrow icon positioning
+ */
+table.display thead th div.DataTables_sort_wrapper {
+	position: relative;
+	padding-right: 20px;
+	padding-right: 20px;
+}
+
+table.display thead th div.DataTables_sort_wrapper span {
+	position: absolute;
+	top: 50%;
+	margin-top: -8px;
+	right: 0;
+}
+/*end by lvpeng*/
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables display
+ */
+div.table-container {
+    margin: 10px;
+	/*overflow:scroll;*/
+	overflow:auto;
+	scrollbar-shadow-color: #FFFFFF;
+	scrollbar-highlight-color: #FFFFFF;
+	scrollbar-arrow-color: #656363;
+	scrollbar-face-color: #d1d6f0;
+	scrollbar-track-color: #FFFFFF;
+	scrollbar-3dlight-color: #59ADBB;
+	scrollbar-darkshadow-color: #59ADBB;
+}
+table.display {
+	width: 100%;
+	clear: both;
+	table-layout: fixed;
+	border-collapse: collapse;
+}
+table.display td button:nth-child(1){background-color: #f4f4f4;color: #444;border: 1px solid #ddd;box-shadow: none;border-radius: 3px;font-size: 14px;padding: 4px 12px;}
+table.display td button:nth-child(2){background-color: #ff7701;color: #444;border: 1px solid #ddd;box-shadow: none;border-radius: 3px;font-size: 14px;padding: 4px 12px;}
+table.display td {
+	text-align:center;
+    padding-left:5px;
+    white-space:nowrap;/*请注意这个属性是单元格不折行的属*/
+	
+	height:40px;
+}
+table.display th {
+	text-align:center;
+    white-space:nowrap;/*请注意这个属性是单元格不折行的属*/
+	height:40px;
+	font-weight:bold;
+    border: 0;
+	
+}
+table.display td.detailsTd {
+	background-color: #F0FFFF;
+	border: 1px solid #8DB6CD;
+}
+.detailsTable td, .detailsTable th {
+	background-color: #F0FFFF;
+	border: 1px solid #8DB6CD;
+}
+table.pagingtable {}
+table.pagingtable td{
+	vertical-align:middle;
+	text-align:center;
+	padding-right:2px;
+	cursor:pointer;
+}
+table.display tfoot th {
+	padding: 3px 0px 3px 10px;
+	font-weight: bold;
+	font-weight: normal;
+}
+
+table.display tr.heading2 td {
+	border-bottom: 1px solid #aaa;
+}
+
+table.display td {
+	verticalAlign:left;
+	padding-left:5px;
+	white-space:nowrap;
+	padding: 3px 10px;
+}
+
+table.display td.center {
+	text-align: center;
+}
+
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * DataTables row classes 列表中应用的样式
+ */
+table.display tr.odd.gradeA {
+	background-color: #ddffdd;
+}
+
+table.display tr.even.gradeA {
+	background-color: #eeffee;
+}
+
+table.display tr.odd.gradeA {
+	background-color: #ddffdd;
+}
+
+table.display tr.even.gradeA {
+	background-color: #eeffee;
+}
+
+table.display tr.odd.gradeC {
+	background-color: #ddddff;
+}
+
+table.display tr.even.gradeC {
+	background-color: #eeeeff;
+}
+
+table.display tr.odd.gradeX {
+	background-color: #ffdddd;
+}
+
+table.display tr.even.gradeX {
+	background-color: #ffeeee;
+}
+
+table.display tr.odd.gradeU {
+	background-color: #ddd;
+}
+
+table.display tr.even.gradeU {
+	background-color: #eee;
+}
+
+tr.odd {
+	background-color: #fff;
+}
+
+tr.even {
+	background-color: #f2f2fa;
+}
+
+#config-container div{	
+	margin-left:1%;
+	margin-bottom:1%;
+	margin-right:1%
+}
+	
+#config-dialog div{
+	float:left;
+}
+
+div.config-page-sort{
+	width:45px;
+	height:227px;
+	margin:0px;
+}
+
+.config-page-up{
+	position:relative;
+	top:88px;
+}
+
+.config-page-down{
+	position:relative;
+	top:98px;
+}
+
+div.config-page-list{
+	background-color:#D1D6F0;
+	width:243px;
+	height:255px;
+	border-width:1px;
+	border-style:solid;
+	border-color:#999999;
+}
+
+div.config-page-selector{
+	width:45px;
+	height:227px;
+	margin:0px;
+}
+
+.config-page-select-all{
+	position:relative;
+	top:67px;
+}
+
+.config-page-select{
+	position:relative;
+	top:72px;
+}
+
+
+.config-page-unselect{
+	position:relative;
+	top:77px;
+}
+
+.config-page-unselect-all{
+	position:relative;
+	top:82px;
+}
+
+.config-page-field-title{
+	font-weight:bold;
+	background-color:#D1D6F0;
+	text-align:left;
+	border-width:1px;
+	border-top-width:0px;
+	border-color:#999999;
+	float:left;
+	height: 18px; 
+	line-height: 18px; 
+	overflow: hidden
+}
+
+clear{
+	clear:both;
+}
+
+config-confirm-container{
+	float:none;
+	width:570px;
+}

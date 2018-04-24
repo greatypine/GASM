@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xsi:schemaLocation="http://www.cnpc.com/2010/pmsconfig pmsconfig.xsd"
+	xmlns="http://www.cnpc.com/2010/pmsconfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+	<module id="eval">
+		<package id="eval">
+			<daopackage interfacePackage="com.cnpc.pms.eval.dao" implementPackage="com.cnpc.pms.eval.dao.impl"/>
+			<managerpackage implementPackage="com.cnpc.pms.eval.manager.impl"  interfacePackage="com.cnpc.pms.eval.manager"></managerpackage>
+		</package>
+	</module>
+</application>

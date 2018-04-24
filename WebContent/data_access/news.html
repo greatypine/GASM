@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>消息页面</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+    	.display{
+    		width:100%
+    	}
+    </style>
+    <script type="text/javascript">
+    var win;
+	$(function () {
+	    //页面加载成功后需要获取数据
+	    searchList();
+	});
+	//记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('newsQuery', 'conditionsDiv');
+    }
+    var editObj = {
+    		html : '<a href="#" class="blue" style="white-space:nowrap;" nowrap>审核</a>',
+    		resourceId: "business_List_edit",
+    		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+    			var id = allColumnsDataMap.key_id;
+    			var type_id=allColumnsDataMap.type_id;
+    			if(type_id==1){
+    				window.location.href = "town_back.html?id="+id;
+    			}else if(type_id==2){
+    				window.location.href = "village_back.html?id="+id;
+    			}else if(type_id==3){
+    				window.location.href = "business_back.html?id="+id;
+    			}
+    			
+    		}
+    	}
+    $pmspage.opArr = [ editObj]; 
+    </script>
+</head>
+<body>
+ <div class="rightcont">
+    <div class="panel panel-primary">
+        <div class="panel-heading">消息</div>
+    </div>
+ </div>
+
+		<div id="centerQueryGridContainer" class="panel panel-primary" queryid="newsQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+</body>
+</html>

@@ -1,0 +1,161 @@
+.uploadFileTableHeader {
+	text-align: center;
+	background: #ADB6E1 url(tablebg.jpg) repeat-x;
+	border: 1px solid #888888;
+	height: 18px;
+	line-height: 22px;
+	padding-top: 3px;
+	padding-left: 3px;
+	color: #28356F;
+	font-weight: bold;
+	vertical-align: middle;
+}
+.bidTableLabel{
+	white-space:nowrap;
+}
+.uploadFileTableDataCenter {
+    text-align: center;
+}
+
+.commonTableBorder {
+	border: 1px solid #888888;
+	vertical-align: top;
+	height: 22px;
+}
+.commonTableColumn_td_style{
+	text-overflow:ellipsis;
+	overflow:hidden; 
+}
+.uploadFileTableBtn {
+    border-top: 1px solid #FFFFFF;
+    border-right: 1px solid #E4DB83;
+    border-bottom: 1px solid #E4DB83;
+    border-left: 1px solid #fff;
+    background: #FFF6A6;
+    padding: 0px 5px;
+    cursor: pointer;
+}
+
+.biddingTableTextBorder{
+	border: 1px solid #888888;
+}
+
+.uploadFileTable{
+	border-collapse:collapse;
+}
+
+.fileInputWidth{
+	width:99%
+}
+
+.displayNone{
+	display:none
+}
+
+.uploadTableRowLineHeight{
+	line-height: 22px;
+}
+
+tr.commonTableTrEvenBg{
+	background-color:#ECEEF8;
+}
+
+tr.commonTableTrOddBg{
+	background-color:#ffffff;
+}
+
+tr.commonTableTrHoverBg{
+	background-color:#FF9;
+}
+table.commonTable td{
+	white-space:normal;
+	padding:1px;
+	word-break:break-all;
+}
+table.commonTable
+{
+padding:0px;
+margin:0px;
+table-layout:auto;/*防止表格变形*/
+}
+
+.commonTableHiddenColumnContent{
+	display:none;	
+}
+
+div.commonTableContainer
+{
+	padding:0px;
+	margin:0px;
+	table-layout:auto;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-bottom-width: 1px;
+	border-left-width: 1px;
+	border-top-style: none;
+	border-right-style: solid;
+	border-bottom-style: none;
+	border-left-style: solid;
+	border-top-color: #888888;
+	border-right-color: #888888;
+	border-bottom-color: #888888;
+	border-left-color: #888888;
+}
+
+
+
+div.commonTable_title_all_border
+{
+	background:#BEC5E7;
+	line-height:20px;
+	color:#505050;
+	font-weight:bold;
+	padding-left:0px;
+	border: 1px solid #999999;
+	text-indent: 6px;
+}
+
+div.commonTable_title
+{
+	background:#BEC5E7;
+	line-height:20px;
+	color:#505050;
+	font-weight:bold;
+	padding-left:0px;
+	border-top-width: 1px;
+	border-right-width: 1px;
+	border-left-width: 1px;
+	border-top-style: solid;
+	border-right-style: solid;
+	border-left-style: solid;
+	border-top-color: #999999;
+	border-right-color: #999999;
+	border-left-color: #999999;
+	text-indent: 6px;
+}
+.label_click_link{
+	color: #06C;
+	cursor:hand;
+}
+.label_click_hover{
+	color: #00F;
+	cursor:hand;
+}
+.commonTable_inputText{ border:1px solid #ABADB3;min-width:80px; background:#fff;}
+
+.commonTable_inputText_dis{ background:#CCC;border:1px solid #ABADB3;  min-width:80px;}
+
+
+
+a:link.detail {
+	color: #06C;
+}
+a:visited.detail {
+	color: #009;
+}
+a:hover.detail {
+	color: #00F;
+}
+a:active.detail {
+	color: #00F;
+}

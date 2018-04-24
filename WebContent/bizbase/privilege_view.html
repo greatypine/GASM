@@ -1,0 +1,120 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="author" content="Zhong Youyuan">
+        <title>数据权限信息</title>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+        <script type="text/javascript" src="js/lib.js"></script>
+        <script>
+            var id = getUrlParamByKey('priId');
+            $(function(){
+                if (null != id || "" == id) {
+                    var url = $$.PMSDispatchActionUrl;
+                    var data = new PMSRequestObject("privilegeManager", "getPrivilegeDTO", [id]);
+                    $$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(datas, textStatus, XMLHttpRequest){
+                        var str = datas.data;
+                        var priObj = $.fromJSON(str);
+                        $("#code").html(priObj.code);
+                        $("#showName").html(priObj.showName);
+						var select = $("#businessType")[0];
+						for(var i=0;i<select.options.length;i++){
+							if(select.options[i].value==priObj.businessId){
+								select.options[i].selected = true;
+								var businessValue =select.options[i].text; 
+								$("#businenssTypeValue").text(businessValue);
+								break;
+							}
+						}
+                    });
+                }
+            })
+            function returnPage(){
+				window.location="privilege_manager.html";
+            }
+            
+        </script>
+    </head>
+    <body>
+        <div class="rightcont clear">
+            <div class="title clear">
+                <div class="arrowleft"  style="cursor:hand;" onclick="toggleNavi();">
+				</div>
+                <div class="ico2">
+                </div>
+                <div class="ico1">
+                </div>
+                <a href="#">用户与权限 :</a>&nbsp;
+                <a href="#" onclick="javascript:history.go(-1);">数据权限管理 </a><span>></span>
+				<a href="#">数据权限信息</a>
+            </div>
+            <div class="containerheader">
+             	<a href="#" onclick="toggleBiz('containerbody','pic');"><img src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>&nbsp;数据权限信息
+            </div>
+            <div id="containerbody">
+                    	<table class="bigteble">
+                    		<tr>
+                    			<td style="padding:5px;" bgcolor="#FFFFFF">
+									<form class="pmsForm" id="Form01">
+	                    			 <table class="bigteble">
+			                            <tr>
+			                                <td class="Querytext">
+			                                    权限名称:
+			                                </td>
+			                                <td id="code" class="Queryform">
+			                                </td>
+			                                <td class="Querytext">
+			                                    显示名称:
+			                                </td>
+			                                <td id="showName" class="Queryform">
+			                                </td>
+			                                <td class="Querytext">
+			                                    业务类别:
+			                                </td class="Queryform">
+											<td id="businenssTypeValue">
+			                                	<select  style="display:none;" class="pmsSelect" id="businessType" name="businessType" src="businessType"/>
+			                                </td>
+			                            </tr>
+									  </table>
+									</form>
+                    		   </td>
+                    		</tr>
+							<tr>
+								<td>
+									<div style="display:none;" id="conditionDiv">
+                                        <input name="privilege.id" id="privilege.id" type="hidden" operator="1"/>
+                                    </div>
+                                    <script type="text/javascript">
+                                        $("#privilege\\.id").val(id);
+                                    </script>
+								</td>
+							</tr>
+							<tr>
+								<td>
+									<table>
+										<tr>
+											<td style="padding:5px;">
+												 <div id="gridContainer" queryid="conditionQuery" 
+												 	queryformat="simple" showdisplay="false" 
+													searchDiv="conditionDiv" showprint="false" 
+													showpaging="true" showsearch="false">
+			                                    </div>
+											</td>
+										</tr>
+									</table>
+								</td>
+							</tr>
+							  <tr class="Colorbar3">
+                                <td>
+                                	<div style="padding:0px 5px 0px 0px;">
+                                  	 <input align="right" role="button" class="buttonu" onClick="returnPage()"  value="返回" type="button" />
+                              		</div>
+							    </td>
+                            </tr>
+                    	</table>
+            </div>
+        </div>
+    </body>
+</html>

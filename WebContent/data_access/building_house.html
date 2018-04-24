@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>AdminLTE 2 | Blank Page</title>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <!-- Bootstrap 3.3.6 -->
+  <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+   <!-- Font Awesome -->
+  <link rel="stylesheet" href="../custom_css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../custom_css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../custom_css/AdminLTE.min.css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+
+   <style>
+    body{background-color: #f1f1f1;}
+    .lf_xinxi img{max-height: 100px;}
+    .bd_infor h5{font-size: 16px; font-weight: bold; height: 35px; line-height: 35px; margin: 10px 0;}
+    .bd_infor li{border-bottom: 1px solid #d5d5d5; padding:0 0 10px 0; overflow: hidden; margin:0 20px 10px 30px;}
+    .bd_infor li:nth-last-child(1){border: none;}
+    .bd_infor li .border-yellow{min-width: 120px; height: 30px; line-height: 30px; margin: 10px 10px 5px 10px; display: inline-block; position: relative; border: 1px solid #f39c12; text-align: center;}
+    .close{float: none; position: absolute; top: -14px; right: -8px; opacity: 0.8; text-shadow: none;}
+    .bd_infor-fj input{width: 100px; display: inline-block; margin-left: 10px; height: 28px;}
+    .bd_infor-fj>span{margin: 10px 10px 5px 0;}
+  </style>
+  <script type="text/javascript">
+  var building_id="144671";
+  var building_name="8号楼";
+ $(function(){
+	   
+	  doManager("HouseManager", "findBuildingHouseForBuildingId",building_id , function(data,
+	  			textStatus, XMLHttpRequest) {
+	  		if (data.result) {
+	  			if(data.data!="[]"){
+	  				var arr = eval('('+data.data+')');
+	  				var $lastli=$(".no-padding").find("li:last");
+	  				var building_unit_no="";
+	  				var str='';
+	  				for(var i=0;i<arr.length;i++){
+	  					if(arr[i].building_unit_no!=building_unit_no){
+	  						building_unit_no=arr[i].building_unit_no;
+	  						str+='</div></li><li><h5 class="clearfix"><span class="col-lg-1 bg-aqua text-center">'+building_name+'</span> <span class="col-lg-1 text-red">'+arr[i].building_unit_no+'单元</span></h5><div class="clearfix">';
+	  					}else{
+	  						str+=' <span class="border-yellow">'+arr[i].building_house_no+'<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>';
+	  					}
+	  				}
+	  				if(str.length>0){
+	  					str=str.substring(11,str.length+1);
+	  					str=str+'</div></li>';
+	  				}
+	  				console.log(str);
+	  				$lastli.before(str);
+	  			}else{
+	  				alert("meiyoushuju");
+	  			}
+	  		} else {
+	  			$$.showMessage("系统信息", "信息加载异常");
+	  		}
+	  	},false); 
+	  
+  }) 
+  //当点击添加小区时调用此方法
+  function addbuildingunit(){
+	  var $lastli=$(".no-padding").find("li:last");
+	  var stt='<li><h5 style="overflow:hidden;clear:both;" class="clearfix"><span class="col-lg-1 bg-aqua text-center">'+building_name+'</span> <span class="col-lg-2"><input type="text" placeholder="单元号例：1" class="form-control col-lg-2" /></span><span style="margin-left: -10px;">单元</span></h5>'+
+         ' <div class="clearfix bd_infor-fj">'+
+           ' <span style="position: relative;"><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>'+
+           ' <span style="width: 100px; margin-left: 20px; display: inline-block"><button type="button" onclick="addBuildingHouse(this);" class="btn btn-block btn-default btn-sm">添加房间号</button></span>'+
+          '</div></li> '
+           $lastli.before(stt);
+	
+}
+//当单击添加房间时调用此方法
+function addBuildingHouse(_this){
+	//获取当前button所在的span
+	var $butspan=$(_this).parent();
+	$butspan.before('<span style="position: relative;"><input type="text" placeholder="房间号" class="form-control"><button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button></span>');
+	
+}
+  
+  </script>
+  
+  
+  
+  
+  
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <div class="container">
+      <!-- Main content -->
+      <section class="content-header">
+          <div class="box box-default">
+            <div class="box-header with-border text-light-blue"><b>小区信息</b></div>
+            <!-- /.box-header -->
+            <div class="box-body lf_xinxi">
+              <div class="col-lg-8">
+                <p>小区名称：呼家楼小区</p>
+                <p>小区地址：北京市朝阳区呼家楼街道</p>
+              </div>
+              <div class="col-lg-4 text-right">
+                <img src="dist/img/avatar5.png">
+              </div>
+            </div>
+            <!-- /.box-body -->
+          </div>
+          <!-- /.box -->
+
+      </section>
+      <section class="content-header">
+        <div class="box box-default">
+          <div class="box-header text-light-blue"><strong>楼房信息</strong><span class="col-lg-1 pull-right"><button type="button" class="btn btn-block btn-primary btn-sm">保存</button></span></div>
+          <div class="box-body no-padding bd_infor">
+            <ul class="no-padding">
+              <li><span class="col-sm-2"><button type="button" onclick="addbuildingunit();" class="btn btn-block btn-default btn-sm">添加单元</button></span></li>
+            </ul>
+            <!-- /.item -->
+          </div>
+
+        </div>
+      </section>
+      <!-- /.content -->
+
+
+    </div>
+  </div>
+  <!-- /.content-wrapper -->
+
+
+</div>
+<!-- ./wrapper -->
+
+</body>
+</html>

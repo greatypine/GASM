@@ -1,0 +1,230 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <title>用户查询</title>
+        <meta name="author" content="Wang Shicheng">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="./js/userActivityTree.js"></script>
+        <script type="text/javascript" src="./js/bizbaseQuery.js"></script>
+        <script type="text/javascript" charset="utf-8">
+            var userpath = "";
+            $(document).ready(function(){
+//                var query1 = document.getElementById("userContainer")
+//                query1.style.display = "none";
+//                var query2 = document.getElementById("userContainer2")
+//                query2.style.display = "none";
+                $validator2 = $("#searchForm").data("PMSValidator");
+                doSearch();
+            });
+            var editObj = {
+                html: '<a href="#" class="blue">编辑</a>',
+                func: function(queryid, data, nTr, allColumns, allColumnsDataMap){
+                    var val = '';
+                    if ("userQueryPage" == queryid) {
+                        val = allColumnsDataMap.id;
+                    }
+                    else {
+                        val = allColumnsDataMap.userId;
+                    }
+                    doManager("userManager", "getUserDTO", val, function(datas, textStatus, XMLHttpRequest){
+                        var user = $.fromJSON(datas.data);
+                        var orgId = user.pk_org;
+                        if (datas.result) {
+                            window.location = "userInformation_update.html?userId=" + val + "&orgId=" + orgId + "&queryEdit=true";
+                        }
+                    });
+                }
+            }
+            var viewObj = {
+                html: '<a href="#" class="blue">查看</a>',
+                func: function(queryid, data, nTr, allColumns, allColumnsDataMap){
+                    var val = '';
+                    if ("userQueryPage" == queryid) {
+                        val = allColumnsDataMap.id;
+                    }
+                    else {
+                        val = allColumnsDataMap.userId;
+                    }
+                    doManager("userManager", "getUserDTO", val, function(datas, textStatus, XMLHttpRequest){
+                        if (datas.result) {
+                            var type = "userQuery";
+                            window.location = "userInformation_view.html?userId=" + val + "&type=" + type;
+                        }
+                    });
+                }
+            }
+            
+            var aclObj = {
+                html: '<a href="#" class="blue">权限</a>',
+                func: function(queryid, data, nTr, allColumns, allColumnsDataMap){
+                    var val = "";
+                    if ("userQueryPage" == queryid) {
+                        val = allColumnsDataMap["usergroup.code"]
+                    }
+                    else {
+                        val = allColumnsDataMap.userGroupCode
+                    }
+                    
+                    window.location = "userGroupQuery.html?userGroupCode=" + val;
+                }
+            }
+            $pmspage.opArr = [viewObj, editObj, aclObj];
+            
+            
+            function openFuncTree(){
+                var callback = function(name, code){
+                    $("#activityName").val(name);
+                    $("#activity_Code").val(code);
+                };
+                openUserActivityTree(callback);
+            }
+            
+            function doClean(){
+                $("#userName").val('');
+                $("#userCode").val('');
+                $("#employeeId").val('');
+                $("#mobliephone").val('');
+                $("#usertype").val('');
+                $("#employeeId").val('');
+                $("#store_name").val('');
+                $("#enableFlag").attr('checked', true);
+                $("#disAbledflag").val("1");
+            }
+            
+            function showDiffUser(obj, index){
+                if ((obj[2] == 0 || obj[2] == null || obj[2] == '') && index != 2 && index != 0) {
+                    return "<span class='red'>" + obj[index] + "</span>";
+                }
+                else {
+                    return obj[index];
+                }
+            }
+            
+            function showDiffUser2(obj, index){
+                if ((obj[2] == 0 || obj[2] == null || obj[2] == '') && index != 2 && index != 0 && index != 11) {
+                    return "<span class='red'>" + obj[index] + "</span>";
+                }else {
+                    return obj[index];
+                }
+            }
+        </script>
+    </head>
+    <!-- Body -->
+    <body>
+        <div class="rightcont clear">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        用户与权限:用户查询
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <a href="#" onclick="toggleDiv('conditionsDiv','pic2');"><img src="../scripts/images/22.png" align="absmiddle" id="pic2"/></a>&nbsp;&nbsp;搜索条件
+                </div>
+                <div class="panel-body" id="userSearchConditionsDiv">
+
+                    <form id="searchForm" class="pmsForm" validate="true" clienvalidate="true">
+                        <table style="min-width:100%;width:auto" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td class="basetext" width="50%">
+                                    用户名称:
+                                    <input type="text" id="userName" name="userName" class="form-control" style="width: 50%"/>
+                                </td>
+                                <td class="basetext" width="50%">
+                                    登录名:
+                                    <input type="text" id="userCode" name="userCode" class="form-control" style="width: 50%"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="basetext">
+                                    员工号:
+                                    <input type="text" id= "employeeId" name="employeeId" class="form-control" style="width: 50%"/>
+                                </td>
+                                <td class="basetext">
+                                    员工电话:
+                                    <input type="text" id= "mobilephone" name="mobilephone" class="form-control" style="width: 50%"/>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td class="basetext">
+                                    门店:
+                                    <input type="text" class="form-control" name="store_name" id="store_name" style="width: 50%">
+                                </td>
+                                <td class="basetext" >
+                                    停用标记:<br/>
+                                    <input type="radio" id="enableFlag" name="disabledFlag" value="0" onclick="setDisabledFlag();"/>是
+                                    <input type="radio" name="disabledFlag" value="1" onclick="setDisabledFlag();" checked="checked"/>否
+                                    <input type="hidden" name="disAbledflag" id="disAbledflag"  value="1" likeOption="false" />
+                                </td>
+                            </tr>
+
+                        </table>
+                    </form>
+
+                </div>
+                <div class="panel-footer" style="text-align: right">
+                    <input class="btn btn-primary" type="button" value="重置" onclick="doClean();"/>&nbsp;&nbsp;
+                    <input class="btn btn-primary" type="button" value="查询" onclick="doSearch();"/>
+                </div>
+            </div>
+
+            <!--<div id="userContainer"  class="panel panel-primary" queryid="userQueryPage" queryformat="simple" showsearch="false" fnRender="showDiffUser" autoload="false" searchDiv="conditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" operators=$pmspage.opArr>-->
+            <!--</div>-->
+            <div id="userContainer2"  class="panel panel-primary" fnRender="renderColumns" queryid="userSearchQuery" queryformat="simple" showsearch="false" fnRender="showDiffUser2" autoload="false" searchDiv="userSearchConditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" operators=$pmspage.opArr>
+            <!--</div>-->
+        </div>
+        </div>
+    </body>
+</html>
+<script language="javascript">
+    
+    function doSearch(){
+        var $validator = new PMSValidator($("#searchForm")[0], {
+            bNormalDisplay: true,
+            iDisplayLength: 5
+        });
+        $validator.clean();
+        var result = $validator.clientValidate();
+        if (result == false) {
+            return;
+        }
+        $validator2.clean();
+        var passed = $validator2.clientValidate();
+        var rev = $validator2.clientRevalidate();
+        if (passed && rev) {
+            //判断是否点击了功能菜单树
+            var _value = $("#activity_Code").val()
+
+            $$.executeSearch('userSearchQuery', 'userSearchConditionsDiv');
+        }
+    }
+    
+    function setDisabledFlag(){
+        $("#disAbledflag").val($(":radio[name=disabledFlag][checked]").val());
+    }
+//	var COLUMNS = {
+//			   	"orgName": function(aData, iColumn, sColumnName, map){
+//			   		var orgId = map.pk_org;
+//					var orgName=map.orgName;
+//					doManager("purStruOrgManager", "getOrgFullName", [orgId+"","0"], function(data, textStatus, XMLHttpRequest){
+//                    if (data.result == true) {
+//                        if (data.data != "null") {
+//                            orgName = $.fromJSON(data.data);
+//                        }
+//                    }
+//                    else {
+//                        $$.showMessage("${system.info}", "取得组织机构出错!");
+//                    }
+//                }, false);
+//			   		return orgName;
+//			   	}
+//	}
+</script>

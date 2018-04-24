@@ -1,0 +1,165 @@
+/***********************
+ * display styles.
+ */
+body {
+    text-align: left;
+    font-family: "Lucida Grande", verdana, arial, helvetica, sans-serif;
+	background-color: #E6E6E6;
+    color: #505050;
+    margin: 0px;
+    padding: 0;
+    display: block;
+    scroll: no;
+    font-size: 12px;
+}
+
+table.display thead th {
+    padding: 3px 0px;
+    cursor: pointer;
+    *cursor:hand;
+    background-color:
+    #d1d6f0;
+    color:
+    #505050;
+}
+
+div.table-container {
+    /*overflow:scroll;*/
+    overflow: auto;
+    scrollbar-shadow-color: #FFFFFF;
+    scrollbar-highlight-color: #FFFFFF;
+    scrollbar-arrow-color: #656363;
+    scrollbar-face-color: #d1d6f0;
+    scrollbar-track-color: #FFFFFF;
+    scrollbar-3dlight-color: #59ADBB;
+    scrollbar-darkshadow-color: #59ADBB;
+}
+
+table.display {
+    border: 1px solid #000;
+    margin: 0 auto;
+    clear: both;
+    table-layout: fixed;
+    border-collapse: collapse;
+}
+
+table.display td {
+    text-align: left;
+    padding-left: 5px;
+    white-space: nowrap; /*单元格不换行*/
+    border: 1px solid #999;
+    height: 26px;
+}
+
+table.display th {
+    text-align: center;
+    white-space: nowrap; /*单元格不换行*/
+    border: 1px solid #999;
+    height: 26px;
+    font-weight: bold;
+}
+
+table.display tfoot th {
+    padding: 3px 0px;
+    font-weight: bold;
+    font-weight: normal;
+}
+
+table.display td {
+    verticalAlign: left;
+    padding-left: 5px;
+    white-space: nowrap; /*单元格不换行*/
+    padding: 3px 10px;
+}
+
+tr.odd {
+    background-color: #eceef8;
+}
+
+tr.even {
+    background-color: white;
+}
+
+/**************************************************************
+ * paging
+ */
+div.simple-table-paging-div {
+    background-color: #BEC5E7;
+    border: 2px solid #C0D0E8;
+    overflow: hidden; /*integrate all children.*/
+    color: #292929;
+    margin-top: 5px;
+}
+
+div.simple-table-paging-div div.simple-table-paging-size-div {
+    float: left;
+    padding: 0 2px;
+    min-width: 105px;
+    width: auto;
+}
+
+div.simple-table-paging-div div.simple-table-paging-info-div {
+    float: left;
+    padding: 0 2px;
+    margin-top: 3px;
+    min-width: 180px;
+    width: auto;
+}
+
+div.simple-table-paging-div div.simple-table-paging-buttons-div {
+    padding: 0 5px 0 5px;
+    min-width: 190px;
+    width: auto;
+    float: right;
+}
+
+table.simple-table-paging-table {
+}
+
+table.simple-table-paging-table td {
+    cursor: pointer;
+    padding: 0 5px 0 5px;
+    vertical-align: middle;
+}
+
+table.simple-table-paging-table td .go {
+    padding: 2px 6px;
+    color: #363636;
+    font-weight: bold;
+    font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif;
+    font-size: 11px;
+    background-color: #ECEEF8;
+}
+
+table.simple-table-paging-table td .go-hover {
+    padding: 2px 6px;
+    color: #C77405;
+    font-weight: bold;
+    font-family: Trebuchet MS, Tahoma, Verdana, Arial, sans-serif;
+    font-size: 11px;
+    background-color: white;
+}
+
+.paing-disabled {
+    opacity: 0.35; /*FF*/
+    filter: alpha(opacity = 60); /*IE8,""*/
+}
+
+/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+ * sorting
+ */
+th.simple-table-sort-asc {
+    background: #d1d6f0 url('images/sort_asc.gif') no-repeat center right !important;
+}
+
+th.simple-table-sort-desc {
+    background: #d1d6f0 url('images/sort_desc.gif') no-repeat center right !important;
+}
+
+th.simple-table-sortable {
+    background: #d1d6f0 url('images/sort_both.gif') no-repeat center right !important;
+}
+
+td.sorting {
+    background-color: #BEC5E7;
+}

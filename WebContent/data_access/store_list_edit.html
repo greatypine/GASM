@@ -1,0 +1,486 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+<link
+	href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css"
+	rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+ <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+<link
+	href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+<script type="text/javascript">
+var win;
+var obj;
+var id = getUrlParamByKey("store_id");
+
+$(function(){
+	$("store_id").val(id);
+	initview();
+})
+	
+function initview(){
+	if(id == null || id == ''){
+		$("#vill_des").text("门店信息添加");
+		return;
+	}
+	$("#store_id").val(id);
+	$("#vill_des").text("门店信息修改");
+	doManager("storeManager", "getStoreById",id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+				}
+				obj=$("#cityName").val() == ''?[null]:$("#cityName").val();
+				 doManager('storeKeeperManager','getShopManagerList',obj,function(data){
+			        if(data.result){
+			          var lst_user = JSON.parse(data.data);
+			            $(lst_user).each(function(index,element){
+			            	if(element.user_id==$("#shopsid").val()){
+			            		$('#skid').append('<option selected="selected" value="'+element.user_id+'">'+element.user_name+'</option>');
+			            	}else{
+			            		$('#skid').append('<option value="'+element.user_id+'">'+element.user_name+'</option>');
+			            	}
+			                
+			            });
+			        }else{
+			            $$.showMessage("提示",data.message);
+			        }
+			    }); 
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+	})
+}
+	
+	function dataCheck() {
+		var name=$("#name").val();
+		var town_name=$("#town_name").val();
+		var city_name=$("#cityName").val();
+		if(name == "" || name == null){
+			alert("请输入门店名称!");
+			return;
+		}
+		if(town_name == "" || town_name == null){
+			alert("请选择街道!");
+			return;
+		}
+		  if(city_name == "" || city_name == null){
+			alert("请选择所在城市!");
+			return;
+		} 
+		  
+		  if(id==null||id=='undefined'){
+			  var brr = [ "cityName","name"];
+			  var e = {};
+				for ( var i in brr) {
+					var v = brr[i];
+					var va = $("#" + v).val();
+					e[v] = va;
+				}
+				  doManager("StoreManager", "getStoreByCityAndName", e, function(data,
+							textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData!=null){
+								alert("门店已存在");
+								return;
+							}
+							doSave();
+						} else {
+							$$.showMessage("系统信息", "添加失败!");
+							
+						}
+					},true); 
+		  }else{
+			  var brr = [ "cityName","name"];
+			  var e = {};
+				for ( var i in brr) {
+					var v = brr[i];
+					var va = $("#" + v).val();
+					e[v] = va;
+				}
+				  doManager("StoreManager", "getStoreByCityAndName", e, function(data,
+							textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData!=null&&jsonData.store_id!=id){
+								alert("门店已存在");
+								return;
+							}
+							doSave();
+						} else {
+							$$.showMessage("系统信息", "添加失败!");
+							
+						}
+					},true); 
+		  }
+		 
+		  
+		
+	}
+	function doSave(){
+			var arr = [ "cityName","name",  "town_id",
+						"mobilephone", "address", "detail_address","skid","store_id","open_shop_time","town_name","platformid","platformname" ];
+				var o = {};
+				for ( var i in arr) {
+					var v = arr[i];
+					var va = $("#" + v).val();
+					o[v] = va;
+				}
+				o['store_id'] = id;
+				doManager("StoreManager", "updateStore", o, function(data,
+						textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if(id == null || id == ''){
+							alert("添加成功！");
+						}else{
+							alert("修改成功！");
+						}
+						window.location.href = 'store_list.html';
+					} else {
+						$$.showMessage("系统信息", "添加失败!");
+					}
+				});
+	}
+/* 	$(document).ready(function(){
+		$('select').change(function(){
+			alert($(this).val());
+		})
+	}) */
+	 $(function () {
+		 jeDate({
+             dateCell:"#open_shop_time",//isinitVal:true,
+             format:"YYYY-MM-DD",
+             isTime:false,
+             isinitVal:false,
+             zIndex:2000,
+             
+         });
+     });
+	 /**
+      * 选择城市,创建一个城市列表并显示
+      * @param {Object} callback
+      *
+      */
+     function showStoreWin(callback){
+    	var citySelect = $("#cityName").val();
+  		if (citySelect == "" || citySelect == null ||citySelect.trim()=="") {
+  			alert("请选择城市!");
+  			return;
+  		}
+         win = new checkWin(callback);
+         win.show();
+         
+         $('html, body').animate({scrollTop:0});
+     }
+      
+      /**
+      *
+      * @param {Object} callback 	回调函数
+      * 返回值json
+      */
+     var checkWin = function(callback){
+         this.win = $("<div style='overflow-y: hidden'></div>");
+         var par = $("#town_id").val();
+         var city = $("#cityName").val();
+         var _this = this;
+         var initWin = function(){
+             _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/select_town_checkbox.html?ids='+par+'&city='+city+'" scrolling="yes"></iframe>');
+             _this.win.dialog({
+                 bgiframe: true,
+                 title:"选择街道",
+                 autoOpen:false,
+                 width:_this.width,
+                 height:_this.height,
+                 buttons : {
+                     "确定": function(){
+                  	   /* var selVal=window.frames["selectWin"].getcheckedstoreid();
+                  	   this.callBack=selVal;  */
+                         window.frames["selectWin"].doSubmit();
+                         _this.win.remove();
+                     },
+                     "取消":function(){
+                         _this.hide();
+                         _this.win.remove();
+                     }
+                 },
+                 modal:true
+             });
+         };
+         this.width = 900;
+         this.height = 730;
+         this.callBack = function(json){
+             if (callback && typeof(callback) == 'function') {
+                 callback(json);
+             }
+         };
+
+         this.show = function(){
+             _this.win.dialog("open");
+         };
+
+         this.hide = function(){
+             if(_this.onSubmitHandler){
+                 _this.onSubmitHandler();
+             }
+             _this.win.dialog("close");
+         };
+         initWin();
+     }
+      
+      function setStoreSelect(jsons){
+      	var selectStoreNames = "";
+      	var selectStoreIds = "";
+  		$.each(jsons,function(n,value) {
+  			selectStoreNames+=","+value.name;
+  			selectStoreIds+=","+value.id;
+  		});
+  		if(selectStoreNames.length>0){
+  			selectStoreNames=selectStoreNames.substring(1,selectStoreNames.length);
+  			selectStoreIds=selectStoreIds.substring(1,selectStoreIds.length);
+  		}
+  		$("#town_name").val(selectStoreNames);
+  		$("#town_id").val(selectStoreIds);
+      }
+      
+      
+      
+      
+      
+      
+      function showPlatStoreWin(callback){
+           win = new checkWinStore(callback);
+           win.show();
+           $('html, body').animate({scrollTop:0});
+       }
+        
+        /**
+        *
+        * @param {Object} callback 	回调函数
+        * 返回值json
+        */
+       var checkWinStore = function(callback){
+           this.win = $("<div style='overflow-y: hidden'></div>");
+           var par = $("#platformid").val();
+           var _this = this;
+           var initWin = function(){
+               _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/select_storenotfindStore.html?platformid='+par+'" scrolling="yes"></iframe>');
+               _this.win.dialog({
+                   bgiframe: true,
+                   title:"选择平台门店",
+                   autoOpen:false,
+                   width:_this.width,
+                   height:_this.height,
+                   buttons : {
+                       "确定": function(){
+                    	   /* var selVal=window.frames["selectWin"].getcheckedstoreid();
+                    	   this.callBack=selVal;  */
+                           window.frames["selectWin"].doSubmit();
+                           _this.win.remove();
+                       },
+                       "取消":function(){
+                           _this.hide();
+                           _this.win.remove();
+                       }
+                   },
+                   modal:true
+               });
+           };
+           this.width = 900;
+           this.height = 730;
+           this.callBack = function(json){
+               if (callback && typeof(callback) == 'function') {
+                   callback(json);
+               }
+           };
+
+           this.show = function(){
+               _this.win.dialog("open");
+           };
+
+           this.hide = function(){
+               if(_this.onSubmitHandler){
+                   _this.onSubmitHandler();
+               }
+               _this.win.dialog("close");
+           };
+           initWin();
+       }
+        
+        function setPlatStoreSelect(jsons){
+        	var selectPlatStoreNames = "";
+        	var selectPlatStoreIds = "";
+    		$.each(jsons,function(n,value) {
+    			selectPlatStoreNames+=","+value.name;
+    			selectPlatStoreIds+=","+value.platformid;
+    		});
+    		if(selectPlatStoreNames.length>0){
+    			selectPlatStoreNames=selectPlatStoreNames.substring(1,selectPlatStoreNames.length);
+    			selectPlatStoreIds=selectPlatStoreIds.substring(1,selectPlatStoreIds.length);
+    		}
+    		$("#platformname").val(selectPlatStoreNames);
+    		$("#platformid").val(selectPlatStoreIds);
+        }
+      
+</script>
+</head>
+<style type="text/css">
+	td {
+		width=50%;
+	}
+	
+	p{margin-left: 200px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+	}
+	table{margin-left: 40px;
+		margin-top: 10px;
+	}
+	.read{
+		margin-left:200px;
+	}
+	#cityName{
+		background-color: #FFF;
+	}
+	#open_shop_time{
+		background-color: #FFF;
+	}
+	.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+</style>
+<body>
+	<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">
+        <a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+        <span id="vill_des"><span></span><br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span id="info"></span>
+    </div>
+    <div class="panel-body" id="temp1">
+	<form action="" method="post" class="pmsForm">
+	<input type="hidden" name="town_id" id="town_id"/>
+	<input type="hidden" name="store_id" id="store_id"/>
+	<input type="hidden" id="shopsid" name="shopsid"/>
+	<table>
+		<tr>
+			<td>
+				<p>所在城市：<span style="color: red">*</span></p>
+				<p> <input type="text" id="cityName"  class="cityinput form-control" readonly='true' onpropertychange="OnPropChanged (event)" placeholder="请输入城市"/>
+					<!-- <select id="sele" class="form-control" ></select> -->
+				</p>
+			</td>
+			<td>
+				<p>门店名称：<span style="color: red">*</span></p>
+				<p><input type="text" class="form-control" name="name" id="name"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">街道名称：<span style="color: red">*</span><button class="btn btn-primary" onclick="showStoreWin(setStoreSelect);">选择街道</button></p>
+				<p class="read">
+					<input type="text" class="form-control" name="town_name" readonly="readonly" id="town_name"/>
+				</p>
+			</td>
+			<td>
+				<p class="read">地址</p>
+				<p class="read"><input type="text" class="form-control" name="address" id="address"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">店长电话：</p>
+				<p class="read"><input type="text" class="form-control" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11" name="mobilephone" id="mobilephone"/></p>
+			</td>
+			<td>
+				<p>详细地址：</p>
+				<p><input type="text" class="form-control" name="detail_address" id="detail_address"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">门店店长：</p>
+				<p class="read">
+					<select class="form-control" id="skid">
+						<option value="">请选择</option>
+					</select>
+				</p>
+			</td>
+			<td>
+				<p class="read">开店时间：</p>
+				<p class="read">
+                       <input id="open_shop_time" type="text" likeOption="false" placeholder="请选择" name="open_shop_time" class="wicon form-control" readonly="readonly"  style="width: 200px; display: inline;" />
+					</p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">平台门店名称：<button class="btn btn-primary" onclick="showPlatStoreWin(setPlatStoreSelect);">选择平台门店</button></p>
+				<p class="read">
+					<input type="hidden" name="platformid" id="platformid"/>
+					<input type="text" class="form-control" name="platformname" readonly="readonly" id="platformname"/>
+				</p>
+			</td>
+			<td></td>
+		</tr>
+	</table>
+	</form>
+		</div>
+<div class="panel-footer" align="right">
+        <button class="btn btn-primary" onclick="dataCheck();">
+            提交
+        </button>
+        &nbsp &nbsp
+        <button class="btn btn-primary" onclick="javascript:history.go(-1);">
+            返回
+        </button>
+    </div>
+
+</div>
+
+</body>
+<script>
+	var test=new Vcity.CitySelector({input:'cityName',click_method:function(cityName){
+		if(cityName == '' && cityName == null){
+			return;
+		}
+			$('#skid').children().remove();
+			$('#town_name').attr("value","");
+			$('#town_id').attr("value","");
+			$('#skid').append('<option value="">请选择</option>');
+			 doManager('storeKeeperManager','getShopManagerList',cityName,function(data){
+		        if(data.result){
+		          var lst_user = JSON.parse(data.data);
+		            $(lst_user).each(function(index,element){
+		                $('#skid').append('<option value="'+element.user_id+'">'+element.user_name+'</option>');
+		            });
+		        }else{
+		            $$.showMessage("提示",data.message);
+		        }
+		    }); 
+	}});
+	
+		
+		
+	
+</script>
+</html>

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application>
+	<module id="base">
+		<package id="dict" noEntity="true">
+			<daopackage interfacePackage="com.cnpc.pms.base.dict.dao"/>
+			<managerpackage interfacePackage="com.cnpc.pms.base.dict.manager"/>
+		</package>
+		<package id="file">
+			<managerpackage interfacePackage="com.cnpc.pms.base.file.manager"/>
+		</package>
+		<package id="init" noEntity="true">
+			<daopackage interfacePackage="com.cnpc.pms.base.init.dao"/>
+			<managerpackage interfacePackage="com.cnpc.pms.base.init.manager"/>
+		</package>
+		<package id="query">
+			<managerpackage interfacePackage="com.cnpc.pms.base.query.manager">
+				<bean class="QueryManager" noEntity="true"/>
+			</managerpackage>
+		</package>
+		<package id="tree" noEntity="true">
+			<managerpackage interfacePackage="com.cnpc.pms.base.tree.manager"/>
+		</package>
+		<package id="message" noEntity="true">
+			<managerpackage interfacePackage="com.cnpc.pms.base.message.manager"/>
+		</package>
+		<package id="task">
+			<managerpackage interfacePackage="com.cnpc.pms.base.schedule.manager"/>
+		</package>
+		<package id="script" noEntity="true">
+			<managerpackage interfacePackage="com.cnpc.pms.base.script.manager"/>
+		</package>
+		<package id="chat">
+			<managerpackage interfacePackage="com.cnpc.pms.base.chat.manager"/>
+		</package>
+		<package id="queryconfig">
+			<managerpackage  interfacePackage="com.cnpc.pms.base.queryconfig.manager"/>
+		</package>
+		<package id="common-utility" noEntity="true">
+			<managerpackage interfacePackage="com.cnpc.pms.base.common.manager"/>
+		</package>
+	</module>
+</application>

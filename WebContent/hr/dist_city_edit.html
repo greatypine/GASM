@@ -1,0 +1,315 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>城市权限分配编辑</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script> 
+
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+.panel{border-radius:0; border:0; margin:0;}
+form{border:1px solid #337ab7;background-color:#fff;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	height:55px; line-height:55px; padding:5px 0;
+}
+table tr:nth-child(2n){background-color:#f2f2f2;}
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 58%;
+	height: 35px;
+	line-height: 35px;
+	border: 1px solid #e2e2e2;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;outline:none; border-radius:3px;
+}
+table td label{padding-left:10px; color:#999;}
+table te .letter{ letter-spacing:2em;}
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.form-control{margin:0; height:40px;}
+.input-group-btn button{height:40px;}
+</style>
+
+<script type="text/javascript">
+Date.prototype.format=function(fmt) {        
+    var o = {        
+    "M+" : this.getMonth()+1, //月份        
+    "d+" : this.getDate(), //日        
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
+    "H+" : this.getHours(), //小时        
+    "m+" : this.getMinutes(), //分        
+    "s+" : this.getSeconds(), //秒        
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度        
+    "S" : this.getMilliseconds() //毫秒        
+    };        
+    var week = {        
+    "0" : "\u65e5",        
+    "1" : "\u4e00",        
+    "2" : "\u4e8c",        
+    "3" : "\u4e09",        
+    "4" : "\u56db",        
+    "5" : "\u4e94",        
+    "6" : "\u516d"       
+    };        
+    if(/(y+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
+    }        
+    if(/(E+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
+    }        
+    for(var k in o){        
+        if(new RegExp("("+ k +")").test(fmt)){        
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
+        }        
+    }        
+    return fmt;        
+} 
+
+	var id = getUrlParamByKey("id");
+
+	
+	function dataCheck() {
+		var flag = $("#selectAll").attr("checked");
+		var city1 = $('#city1').val().trim();
+		var city2 = $('#city2').val().trim();
+		var city3 = $('#city3').val().trim();
+		var city4 = $('#city4').val().trim();
+		var city5 = $('#city5').val().trim();
+		
+		if(city1==""&&city2==""&&city3==""&&city4==""&&city5==""&&!flag){
+			$$.showMessage("系统信息", "请填写城市!");
+			return;
+		}
+		return true;
+	}
+	
+	
+	//记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('storekeepersubQuery', 'conditionsDiv');
+    }
+	
+
+	$(function() {
+		doManager("DistCityManager", "queryDistCitysByUserId", id , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				$("#pk_userid").val(jsonData.pk_userid);
+				$("#username").val(jsonData.username);
+				if(jsonData.city5!=null&&jsonData.city5=="全部"){
+					$(".cityinput").val("");
+					$(".cityinput").attr("disabled",true);
+					$(".cityinput").css("backgroundColor","#D3D3D3");
+					$("#selectAll").attr("checked","checked");
+				}else{
+					$("#city1").val(jsonData.city1);
+					$("#city2").val(jsonData.city2);
+					$("#city3").val(jsonData.city3);
+					$("#city4").val(jsonData.city4);
+					$("#city5").val(jsonData.city5);
+				}
+			}
+		}); 
+		
+		
+		
+		$("#selectAll").click(function(obj){
+			var flag = $("#selectAll").attr("checked");
+			if(flag){
+				$(".cityinput").val("");
+				$(".cityinput").attr("disabled",true);
+				$(".cityinput").css("backgroundColor","#D3D3D3");
+			}else{
+				$(".cityinput").val("");
+				$(".cityinput").attr("disabled",false);
+				$(".cityinput").css("backgroundColor","#FFFFFF");
+			}
+		});
+		
+		
+	});
+
+	function doSave() {
+		if (!dataCheck()) {
+			return;
+		}
+		
+		var flag = $("#selectAll").attr("checked");
+		
+		//var arr = ["id","name","employee_no","orgname","deptlevel1","deptlevel2","deptlevel3","reporthigher","store_id","storename","zw","jobchannel","offername","citySelect","interndate","cardnumber","birthday","nation","censusregister","education","school","profession","marriage","phone","relationname","tel","relationtype","isofficial","topostdate","contractdate","contractdatestart","contractdateend"];
+		var arr =["pk_userid","username","city1","city2","city3","city4","city5"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		//职务
+		o['isSelectAll']=flag;
+		doManager("DistCityManager", "updateDistCity", o , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				if(jsonData==null){
+					$$.showMessage("系统信息", "保存失败!不存在的城市编码！ 请先维护城市编码！ ");
+				}else{
+					window.location.href = 'dist_city_list.html';
+				}
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		});
+	}
+
+	
+	function doBack(){
+		window.location.href = 'dist_city_list.html';
+	}
+	
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">门店数据维护 :城市权限分配编辑
+        	<span class="but">
+                <input name="" type="submit" onclick="doSave();" value="保存"/>
+                <input name="" type="button" onclick="doBack();" value="返回"/>
+            </span>
+        </div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						<font color="red">*</font>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：<input type="text" id="username" isautotab="true" value="" style="width: 48%;" readonly="readonly"/>
+					</p>
+				</td>
+				
+				<td>
+					<p>
+						城&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市1：<input type="text" id="city1" isautotab="true"  class="cityinput" style="width: 48%;"/>
+					</p>
+				</td>
+			</tr>
+            
+             <tr>
+             
+             <td>
+					<p>
+						&nbsp;城&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市2：<input type="text" id="city2" isautotab="true"  class="cityinput"  style="width: 48%;"/>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						城&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市3：<input type="text" id="city3" isautotab="true"  class="cityinput"  style="width: 48%;"/>
+					</p>
+				</td>
+				<input type="hidden" id="pk_userid" />
+			</tr>
+			<tr>
+				<td>
+					<p>
+						&nbsp;城&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市4：<input type="text" id="city4" isautotab="true"  class="cityinput"  style="width: 48%;"/>
+					</p>
+				</td>
+
+				<td>
+					<p>
+						城&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市5：<input type="text" id="city5" isautotab="true"  class="cityinput"  style="width: 48%;"/>
+					</p>
+				</td>
+			</tr>
+            <tr>
+				<td>
+					<p><input type="checkbox" id="selectAll" isautotab="true" style="width: 15px;height: 15px;"/>全部城市</p>	
+				</td>
+
+				<td>
+				</td>
+			</tr>
+			       
+		</table>
+	</form>
+	
+	
+</body>
+
+<script>
+	var city1=new Vcity.CitySelector({input:'city1'});
+	var city2=new Vcity.CitySelector({input:'city2'});
+	var city3=new Vcity.CitySelector({input:'city3'});
+	var city4=new Vcity.CitySelector({input:'city4'});
+	var city5=new Vcity.CitySelector({input:'city5'});
+</script>
+
+</html>

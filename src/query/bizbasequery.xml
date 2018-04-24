@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<pmsquery>
+    <query id="userGroupQuery" header="角色组管理" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserGroup" order="id desc">
+        <column key="id" header="角色组编号" type="java.lang.Long" operator="in" align="left" allowSort="true" display="false"/>
+        <column key="name" header="角色组名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="code" header="角色组编码" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="disabledFlag" header="停用标志" type="java.lang.Integer" align="left" operator="like" allowSort="true" display="false" allowSearch="true"/>
+        <column key="orgEntity.id" header="组织机构" allowSearch="true" type="java.lang.Long" operator="eq" align="left" allowSort="true" display="false"/>
+        <column key="orgEntity.name" header="组织机构" allowSort="true" display="true" width="34%"/>
+        <column key="lastModifyDate" header="最后修改日期" type="java.util.Date" display="false" allowSearch="true"/>
+    </query>
+    <!--function manager-->
+    <query id="functionManager" header="添加目录" baseclass="com.cnpc.pms.bizbase.rbac.resourcemanage.entity.Function" dtoclass="com.cnpc.pms.bizbase.rbac.resourcemanage.dto.AddFunctionDTO" filter="type = 1">
+        <column key="id" type="java.lang.Long" display="false" width="33%"/>
+        <column key="path" header="内部号" allowSearch="true" operator="like" allowSort="true"/>
+        <column key="activityName" header="目录名称" allowSearch="true" operator="like" allowSort="true"/>
+    </query>
+    <!--<query id="cnpcPositionSearch" header="岗位管理" baseclass="com.cnpc.pms.bizbase.rbac.position.entity.CnpcPosition" order="code">-->
+        <!--<column key="id" type="java.lang.Long" display="false"/>-->
+        <!--<column key="name" header="岗位名称" allowSearch="true" operator="like" allowSort="true" width="50%"/>-->
+        <!--<column key="code" header="岗位编码" allowSearch="true" operator="like" allowSort="true" width="50%"/>-->
+    <!--</query>-->
+    <!-- cnpcPositionQuery -->
+    <!--<query id="cnpcPositionQuery" header="岗位管理" baseclass="com.cnpc.pms.bizbase.rbac.position.entity.CnpcPosition" order="code">-->
+        <!--<column key="id" width="20%" type="java.lang.Long" allowSearch="true" allowSort="true" display="false" operator="NOT_IN"/>-->
+        <!--<column key="name" width="40%" header="岗位名称" allowSearch="true" operator="like" allowSort="true"/>-->
+        <!--<column key="code" width="40%" header="岗位编码" allowSearch="true" operator="like" allowSort="true"/>-->
+    <!--</query>-->
+    <query id="roleQuery" header="角色管理" baseclass="com.cnpc.pms.bizbase.rbac.rolemanage.entity.Role" order="createDate desc, id desc">
+        <column key="id" header="" type="java.lang.Long" allowSort="true" display="false"/>
+        <column key="name" header="角色名称" allowSearch="true" operator="like" allowSort="true" width="20%"/>
+        <column key="code" header="角色编码" allowSearch="true" operator="like" allowSort="true" width="20%"/>
+        <column key="note" header="角色说明" allowSearch="false" width="20%"/>
+        <column key="createUserID" header="创建人" allowSearch="true" allowSort="true" width="20%"/>
+        <column key="createDate" header="创建时间" type="java.util.Date" allowSearch="false" operator="like" format="yyyy-MM-dd" allowSort="true" width="20%"/>
+        <column key="disabledFlag" header="停用标志" type="java.lang.Integer" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+    </query>
+    <query id="userGroupQueryPage" header="角色组查询" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserGroup" dtoclass="com.cnpc.pms.bizbase.rbac.usermanage.dto.UserGroupDTO" order="id desc">
+        <column key="id" header="角色组编号" type="java.lang.Long" display="false"/>
+        <column key="orgEntity.name" header="组织机构" allowSearch="false" allowSort="true" operator="like" width="20%" display="true"/>
+        <column key="name" header="角色组名称" width="20%" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like"/>
+        <column key="orgEntity.path" header="" allowSearch="true" allowSort="true" display="false" operator="like"/>
+        <column key="code" header="角色组编码" width="20%" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like"/>
+        <column key="disabledFlag" header="停用标志" type="java.lang.Integer" align="left" allowSearch="true" display="false"/>
+        <column key="createUserID" header="创建人" width="20%" allowSort="true" allowSearch="true" operator="like"/>
+        <column key="orgEntity.id" header="" allowSearch="true" allowSort="true" display="false" operator="in"/>
+        <column key="createDate" header="创建时间" width="20%" type="java.util.Date" allowSort="true" allowSearch="true" operator="between" display="true" format="yyyy-MM-dd"/>
+    </query>
+    <query id="roleFunQuery" header="角色功能权限" baseclass="com.cnpc.pms.bizbase.rbac.funcpermision.entity.RoleFunc">
+        <column key="roleEntity.id" header="角色" align="left" allowSort="true" allowSearch="true" display="false"/>
+        <column key="roleEntity.name" header="角色" allowSort="true" align="left"/>
+        <column key="functionEntity.id" header="功能节点" align="left" allowSearch="true" operator="like" display="false"/>
+        <column key="functionEntity.activityName" header="功能节点" align="left" allowSearch="true" operator="like" display="true" allowSort="true"/>
+    </query>
+
+    <query id="roleAppFunQuery" header="角色APP功能权限" baseclass="com.cnpc.pms.bizbase.rbac.funcpermision.entity.RoleAppFunc">
+        <column key="roleEntity.id" header="角色" align="left" allowSort="true" allowSearch="true" display="false"/>
+        <column key="roleEntity.name" header="角色" allowSort="true" align="left"/>
+        <column key="appFunctionEntity.id" header="功能节点" align="left" allowSearch="true" operator="like" display="false"/>
+        <column key="appFunctionEntity.activityName" header="功能节点" align="left" allowSearch="true" operator="like" display="true" allowSort="true"/>
+    </query>
+
+    <query id="userQuery" header="用户管理" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.User" order="id desc">
+        <column key="id" header="用户管理" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false"/>
+        <column key="usergroup.id" header="角色组编码" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false"/>
+        <column key="name" header="用户名称" allowSearch="true" type="java.lang.String" align="left" operator="like" allowSort="true" display="true" width="20%"/>
+        <column key="code" header="登录名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="20%"/>
+        <column key="usergroup.name" header="角色组名称" type="java.lang.String" align="left" allowSearch="false" display="true" width="20%"/>
+        <column key="mobilephone" header="移动电话" type="java.lang.String" align="left" allowSearch="true" allowSort="true" display="true" width="20%"/>
+        <column key="phone" header="电话" allowSearch="true" type="java.lang.String" align="left" allowSort="true" display="true" width="20%"/>
+    </query>
+    <query id="userQueryPage" header="用户查询" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.User" dtoclass="com.cnpc.pms.bizbase.rbac.usermanage.dto.UserDTO" order="orgOrderNo asc, id asc">
+        <column key="id" allowSearch="true" operator="NOT_IN" header="用户编号" type="java.lang.Long" display="false"/>
+        <column key="pk_org" header="组织机构" type="java.lang.Long" allowSearch="true" display="false" allowSort="true" operator="in"/>
+        <column key="disabledFlag" header="停用标志" type="java.lang.Integer" align="left" operator="eq" allowSearch="true" display="false"/>
+        <column key="usergroup.orgEntity.name" header="组织机构" allowSearch="false" allowSort="true" operator="like" display="true" width="14%"/>
+        <column key="name" header="用户名称" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="code" header="登录名" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="usertype" header="用户级别" allowSort="true" type="java.lang.Integer" allowSearch="true" display="false"/>
+        <column key="usergroup.id" header="角色组" display="false" allowSearch="true" operator="like"/>
+        <column key="usergroup.code" header="角色组" align="left" allowSearch="true" display="false"/>
+        <column key="usergroup.name" header="角色组" align="left" allowSort="true" display="true" width="14%"/>
+        <!--<column key="positionName" header="岗位" type="java.lang.String" align="left" display="true" width="14%"/>-->
+        <column key="createUserID" header="创建人" allowSort="true" allowSearch="true" operator="like" width="14%"/>
+        <column key="createDate" header="创建时间" type="java.util.Date" allowSort="true" allowSearch="true" operator="between" display="true" format="yyyy-MM-dd" width="14%"/>
+    </query>
+    <query id="userSearchQuery" header="用户查询" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.ViewUserSerach" order="orgOrderNo asc, id asc">
+        <column key="userId" allowSearch="true" header="用户编号" type="java.lang.Long" display="false"/>
+        <column key="pk_org" header="组织机构" type="java.lang.Long" allowSearch="true" display="false" allowSort="true" operator="in"/>
+        <column key="orgName" header="组织机构" allowSearch="false" allowSort="true" operator="like" display="true" width="14%"/>
+        <column key="disAbledflag" header="停用标志" type="java.lang.Integer" align="left" operator="eq" allowSearch="true" display="false"/>
+        <column key="userName" header="用户名称" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="userCode" header="登录名" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="employeeId" header="员工号" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="store_name" header="门店" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="mobilephone" header="手机号" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>
+        <column key="userGroupId" header="" display="false" allowSearch="true" operator="eq"/>
+        <column key="userGroupName" header="角色组" align="left" allowSort="true" display="true" width="14%"/>
+        <column key="createDate" header="创建时间" type="java.util.Date" allowSort="true" allowSearch="true" operator="between" display="true" format="yyyy-MM-dd" width="14%"/>
+        <column key="userGroupCode" header="角色组" align="left" allowSort="true" display="false"/>
+        <column key="orgOrderNo" header="组织排序" align="left" allowSort="true" display="false" allowSearch="false"/>
+        <column key="userOrderNo" header="用户排序" align="left" allowSort="true" display="false" allowSearch="false"/>
+        <column key="orgPath" header="path" allowSearch="true" allowSort="true" display="false" operator="like"/>
+    </query>
+    <!--<query id="userSearchByPositionQuery" distinct="userId, pk_org, orgName, userName, email, userCode, userType, userGroupId, userGroupName, positionName, createdUser, createDate, disAbledflag, orgPath, userGroupCode,positionCode,orgOrderNo,userOrderNo,zw,zc" header="" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.ViewUserSerach" order="orgOrderNo asc">-->
+        <!--<column key="userId" allowSearch="true" header="用户编号" type="java.lang.Long" display="false"/>-->
+        <!--<column key="pk_org" header="组织机构" type="java.lang.Long" allowSearch="true" display="false" allowSort="true" operator="in"/>-->
+        <!--<column key="orgName" header="组织机构" allowSearch="false" allowSort="true" operator="like" display="true" width="15%"/>-->
+        <!--<column key="disAbledflag" header="停用标志" type="java.lang.Integer" align="left" operator="eq" allowSearch="true" display="false"/>-->
+        <!--<column key="userName" header="用户名称" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="15%"/>-->
+        <!--<column key="userCode" header="登录名" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="14%"/>-->
+        <!--<column key="userGroupId" header="角色组编码" display="false" allowSearch="true" operator="eq"/>-->
+        <!--<column key="userGroupName" header="角色组" align="left" allowSort="true" display="true" width="14%"/>-->
+        <!--<column key="positionName" header="岗位" allowSearch="true" operator="like" type="java.lang.String" align="left" display="true" width="14%"/>-->
+        <!--<column key="createdUser" header="创建人" allowSort="true" allowSearch="true" operator="like" display="true" width="14%"/>-->
+        <!--<column key="createDate" header="创建时间" type="java.util.Date" allowSort="true" allowSearch="true" operator="between" display="true" format="yyyy-MM-dd" width="14%"/>-->
+        <!--<column key="userGroupCode" header="角色组" align="left" allowSort="true" display="false"/>-->
+        <!--<column key="activityCode" header="角色组" align="left" allowSort="true" display="false" allowSearch="true" operator="IN"/>-->
+        <!--<column key="positionCode" header="岗位编码" align="left" allowSort="true" display="false" allowSearch="true" operator="eq"/>-->
+        <!--<column key="orgOrderNo" header="组织排序" align="left" allowSort="true" display="false" allowSearch="false"/>-->
+        <!--<column key="userOrderNo" header="用户排序" align="left" allowSort="true" display="false" allowSearch="false"/>-->
+        <!--<column key="orgPath" header="path" allowSearch="true" allowSort="true" display="false" operator="like"/>-->
+    <!--</query>-->
+    <query id="roleActivityQuery" header="角色管理" baseclass="com.cnpc.pms.bizbase.rbac.rolemanage.entity.ViewRoleActivity" order="roleCode">
+        <column key="roleId" header="角色编号" type="java.lang.Long" operator="NOT_IN" align="left" allowSort="true" allowSearch="true" display="false"/>
+        <column key="roleCode" width="10%" header="角色编码" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true"/>
+        <column key="roleName" width="25%" header="角色名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true"/>
+        <column key="roleNote" width="10%" header="角色说明" type="java.lang.String" align="left" allowSearch="true"/>
+        <column key="activityName" header="功能节点名称" type="java.lang.String" align="left" allowSearch="true" operator="like" display="false"/>
+        <column key="activityCode" header="功能节点编码" type="java.lang.String" align="left" allowSearch="true" operator="like" display="false"/>
+    </query>
+    <query id="usergroupAuthQuery" header="角色管理" baseclass="com.cnpc.pms.bizbase.rbac.rolemanage.entity.ViewRoleOrder" filter="disabledFlag ='1'">
+        <column key="id" header="角色编号" type="java.lang.Long" operator="NOT_IN" align="left" allowSort="true" allowSearch="true" display="false"/>
+        <column key="code" width="10%" header="角色编码" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true"/>
+        <column key="name" width="15%" header="角色名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true"/>
+        <column key="note" header="角色说明" width="15%" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true"/>
+    </query>
+    <query id="privilegeQuery" header="数据权限" baseclass="com.cnpc.pms.bizbase.rbac.datapermission.entity.Privilege" order="createDate desc">
+        <column key="id" header="权限ID" type="java.lang.Long" align="left" display="false"/>
+        <column key="code" header="权限名称" type="java.lang.String" align="left" allowSearch="true" allowSort="true" operator="like"/>
+        <column key="showName" header="显示名称" type="java.lang.String" align="left" allowSearch="true" allowSort="true" operator="like"/>
+        <column key="businessId" header="业务类别" type="java.lang.String" align="left" dict="businessType" allowSearch="true" allowSort="true" operator="like"/>
+    </query>
+    <query id="conditionQuery" header="数据权限条件" baseclass="com.cnpc.pms.bizbase.rbac.datapermission.entity.BizbaseCondition" order="createDate desc">
+        <column key="id" header="权限条件ID" type="java.lang.Long" align="left" display="false"/>
+        <column key="fieldName" header="条件编码" type="java.lang.String" align="left" allowSort="true" width="20%"/>
+        <column key="fieldName2" header="条件名称" type="java.lang.String" dict="businessbidtype" align="left" allowSort="true" width="20%"/>
+        <column key="operation" header="操作符" type="java.lang.String" align="left" width="10%"/>
+        <column key="fieldValue" header="条件取值" type="java.lang.String" align="left" width="50%"/>
+        <column key="isCompatible" header="条件取值" align="left" display="false"/>
+        <column key="privilege.id" header="权限ID" type="com.cnpc.pms.bizbase.rbac.datapermission.dto.PrivilegeDTO" allowSearch="true" align="left" display="false"/>
+    </query>
+    <query id="functionQuery" header="角色功能权限" baseclass="com.cnpc.pms.bizbase.rbac.resourcemanage.entity.Function" order="roleId desc">
+        <column key="roleId" header="角色编号" type="java.lang.Long" align="left" display="false" allowSearch="true"/>
+        <column key="functionId" header="功能节点" type="java.lang.Long" align="left" display="false" allowSearch="true"/>
+        <column key="activityName" header="菜单" type="java.lang.String" align="left" display="true" allowSearch="true" operator="like"/>
+        <column key="buttonName" header="按钮" type="java.lang.String" align="left" display="true" allowSearch="true" operator="like"/>
+    </query>
+    <query id="roleFunctionView" header="角色功能权限" baseclass="com.cnpc.pms.bizbase.rbac.resourcemanage.entity.RoleFunctionView">
+        <column key="funcRoleId" header="" type="java.lang.Long" align="left" display="false" allowSearch="true"/>
+        <column key="functionId" header="" type="java.lang.Long" align="left" display="false" allowSearch="true"/>
+        <column key="menuName" header="菜单" width="25%" type="java.lang.String" align="left" display="true" allowSearch="true"/>
+        <column key="buttonName" header="按钮" width="25%" type="java.lang.String" align="left" display="true" allowSearch="true"/>
+    </query>
+   <query id="functionRoleQuery" header="角色功能权限" baseclass="com.cnpc.pms.bizbase.rbac.resourcemanage.entity.RoleFunctionView" method="roleFunctionViewManager.queryRoleFunctionView">
+        <column key="funcRoleId" header="" type="java.lang.Long" align="left" display="true" allowSearch="true"/>
+        <column key="functionId" header="" type="java.lang.Long" align="left" display="true" allowSearch="true"/>
+        <column key="menuName" header="菜单" width="25%" type="java.lang.String" align="left" display="true" allowSearch="true"/>
+        <column key="buttonName" header="按钮" width="25%" type="java.lang.String" align="left" display="true" allowSearch="true"/>
+    </query>
+    <query id="userGroupRoleQuery" header="角色分配查询" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserGroupRole">
+        <column key="id" header="角色组编号" type="java.lang.Long" operator="IN" align="left" allowSort="true" allowSearch="true" display="false"/>
+        <column key="userGroup.id" header="角色组编号" type="java.lang.Long" operator="IN" align="left" allowSort="true" allowSearch="true" display="false"/>
+        <column key="role.id" header="角色编号" type="java.lang.Long" align="left" allowSearch="true" operator="IN" allowSort="true" display="false"/>
+        <column key="role.code" header="角色编码" type="com.cnpc.pms.bizbase.rbac.rolemanage.entity.Role" align="left" allowSearch="true" operator="like" allowSort="true"/>
+        <column key="role.name" header="角色名称" type="com.cnpc.pms.bizbase.rbac.rolemanage.entity.Role" align="left" allowSearch="true" operator="like" allowSort="true"/>
+        <column key="role.note" header="角色说明" type="com.cnpc.pms.bizbase.rbac.rolemanage.entity.Role" align="left" allowSearch="true" operator="like" allowSort="true"/>
+    </query>
+    <!-- select user query-->
+    <query id="userSearchCheckQuery" distinct="userId, pk_org, orgName, userName, email, userCode, userType, userGroupId, userGroupName, createdUser, createDate, disAbledflag, orgPath, userGroupCode,orgOrderNo,userOrderNo,zw,zc" header="用户查询" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.ViewUserSerach" order="orgOrderNo asc,userOrderNo asc">
+        <column key="userId" allowSearch="true" header="用户编号" type="java.lang.Long" display="false"/>
+        <column key="pk_org" header="组织机构" type="java.lang.Long" allowSearch="true" display="false" allowSort="true" operator="in"/>
+        <column key="userName" header="用户名称" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="23%"/>
+        <column key="orgName" header="组织机构" allowSearch="false" allowSort="true" operator="like" display="true" width="30%"/>
+        <!--<column key="positionName" header="岗位" type="java.lang.String" align="left" display="false"/>-->
+        <column key="disAbledflag" header="停用标志" type="java.lang.Integer" align="left" operator="eq" allowSearch="true" display="false"/>
+        <column key="zw" header="职务" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="12%"/>
+        <column key="zc" header="职称" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="12%"/>
+        <column key="email" header="邮箱" type="java.lang.String" allowSort="true" allowSearch="true" display="true" operator="like" width="23%"/>
+        <column key="orgPath" header="path" allowSearch="true" allowSort="true" display="false" operator="like"/>
+        <column key="userGroupId" header="角色组编码" display="false" allowSearch="true" operator="eq"/>
+        <column key="userGroupCode" header="角色组" align="left" allowSort="true" display="false"/>
+        <column key="userCode" header="登录名" type="java.lang.String" allowSort="false" allowSearch="true" display="false" operator="like"/>
+        <!--<column key="positionCode" header="" align="left" allowSort="false" display="false" allowSearch="true" operator="in"/>-->
+        <column key="orgOrderNo" header="" align="left" allowSort="true" display="false" allowSearch="false"/>
+        <column key="userOrderNo" header="" align="left" allowSort="true" display="false" allowSearch="false"/>
+    </query>
+    <!--<query id="positionQueryid" header="岗位" baseclass="com.cnpc.pms.bizbase.rbac.position.entity.Position" order="">-->
+        <!--<column key="purStruOrg.id" type="java.lang.Long" allowSearch="true" display="false" operator="eq"/>-->
+        <!--<column key="purStruOrg.name" width="30%" header="所属组织" allowSearch="true" operator="like" allowSort="true"/>-->
+        <!--<column key="cnpcPosition.id" type="java.lang.Long" allowSearch="true" display="false" operator="eq"/>-->
+        <!--<column key="cnpcPosition.name" width="30%" header="岗位" allowSearch="true" operator="like" allowSort="true"/>-->
+        <!--<column key="createDate" header="创建时间" type="java.util.Date" format="yyyy-MM-dd" align="left" allowSearch="true" allowSort="true" display="true" width="20%"/>-->
+        <!--<column key="lastModifyDate" header="最后修改时间" type="java.util.Date" format="yyyy-MM-dd" align="left" allowSearch="true" allowSort="true" display="true" width="20%"/>-->
+    <!--</query>-->
+    <!-- 	<query id="expertUserQuery" 		   header="专家查询" 		   baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.ExpertUser" 		   order="sort asc">		<column key="id" allowSearch="true" header="" type="java.lang.Long" display="false"/>		<column key="isUsed" header="" type="java.lang.Integer" dict="EXPERTUSER_ISUSED" align="left" allowSearch="true" operator="in" allowSort="true" display="false" />		<column key="sort" allowSearch="true" header="" type="java.lang.Integer" display="false"/>		<column key="userName" header="姓名" allowSearch="true" allowSort="true" operator="like" display="true" width="20%"/>		<column key="unit" header="工作单位" allowSearch="true" allowSort="true" operator="like" display="true" width="10%"/>		<column key="isInner" header="院内/院外" type="java.lang.Integer" dict="EXPERTUSER_ISINNER" align="left" allowSearch="true" operator="in" allowSort="true" display="true" width="10%"/>		<column key="zw" header="职务" allowSearch="true" allowSort="true" operator="like" display="true" width="10%"/>		<column key="zc" header="职称" allowSearch="true" allowSort="true" operator="like" display="true" width="10%"/>		<column key="major" header="专业" type="java.lang.Integer" dict="EXPERTUSER_MAJOR" align="left" allowSearch="true" operator="in" allowSort="true" display="true" width="10%"/>		<column key="research" header="研究方向" type="java.lang.Integer" dict="EXPERTUSER_RESEARC" align="left" allowSearch="true" operator="in" allowSort="true" display="true" width="10%"/>		<column key="card" header="身份证号" allowSearch="true" allowSort="true" operator="like" display="true" width="10%"/>		<column key="phone" header="联系方式" allowSearch="true" allowSort="true" operator="like" display="true" width="10%"/>    </query>	-->
+	<!-- 物流专员,客服专员,服务代表与其上级BP对应的对应关系 -->
+	<!--  
+	<query id="crmBpExtQuery" header="上下级BP对应" order="bpCode" baseclass="com.yadea.crm.common.entity.CrmBpExt">
+		<column key="id" header="序号" type="java.lang.Long" allowSearch="true" operator="eq" display="false" />
+		<column key="bpCode" header="下级BP编号" type="java.lang.String" allowSearch="true" operator="like" allowSort="true" />
+		<column key="superbpCode" header="上级BP编号" type="java.lang.String" allowSearch="true" operator="like" allowSort="true" />
+	</query>
+	-->
+	<!-- 用户登录记录 -->
+	<query id="userLoginInfoQuery" header="用户登录记录" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserLoginInfo" order="loginDate desc">
+		<column key="id" header="序号" type="java.lang.Long" allowSearch="true" operator="eq" display="false" />
+		<column key="userId" header="用户Id号" type="java.lang.Long" display="false" />
+		<column key="userCode" header="用户登录号" type="java.lang.String" allowSearch="true" operator="eq" allowSort="true"/>
+		<column key="loginDate" header="登录时间" type="java.util.Date" allowSort="true" allowSearch="true" operator="between"/>
+		<column key="loginIP" header="登录的IP地址" type="java.lang.String" allowSort="true"/>
+		<column key="loginMachine" header="登录机的IP地址" type="java.lang.String" allowSort="true"/>
+		<column key="loginArea" header="登录地区" type="java.lang.String" allowSort="true"/>
+	</query>
+	<!-- 用户登录一小时内记录 -->
+	<query id="userLoginInfoQuery" header="用户登录记录" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserLoginInfo" order="loginDate desc">
+		<column key="id" header="序号" type="java.lang.Long" allowSearch="true" operator="eq" display="false" />
+		<column key="userId" header="用户Id号" type="java.lang.Long" display="false" />
+		<column key="userCode" header="用户登录号" type="java.lang.String" allowSearch="true" operator="like" allowSort="true"/>
+		<column key="loginDate" header="登录时间" type="java.util.Date" format="yyyy-MM-dd HH:mm:ss" allowSort="true" allowSearch="true" operator="between"/>
+		<column key="loginIP" header="登录的IP地址" type="java.lang.String" allowSort="true"/>
+		<column key="loginMachine" header="登录机的IP地址" type="java.lang.String" allowSort="true"/>
+		<column key="loginArea" header="登录地区" type="java.lang.String" allowSort="true"/>
+	</query>
+	<query id="healthRoomInfoListQuery" 	header="健康屋门店列表" baseclass="com.cnpc.pms.bizbase.rbac.orgview.entity.PurStruOrg"  order="id desc" filter="orgLevel = 4" businessId="((@forecast_orgCode# and state!=0) or @createuserid#)">
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true" operator="eq" 	allowSort="true" 					align="left"/>
+        <column key="code" 			header="机构编号" 	display="true" 		type="String" 			allowSearch="true" operator="like" 	allowSort="true" 	width="5%"		align="left" />
+        <column key="name" 			header="机构名称" 	display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="province" 		header="省" 			display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="city" 			header="市" 			display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="area" 			header="区" 			display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="street" 		header="街道" 		display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="postaddr" 		header="机构地址" 	display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="20%" 	align="left"/>
+        <column key="phone" 		header="联系电话" 	display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+    </query>
+    
+    <query id="healthRoomInfoListForJurisdictionQuery" 	header="健康屋门店列表" baseclass="com.cnpc.pms.bizbase.rbac.orgview.entity.PurStruOrg" method="purStruOrgManager.queryPurStruOrgForSelect" order="id desc" filter="orgLevel = 4" businessId="((@forecast_orgCode#) or @createuserid#)">
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true" operator="eq" 	allowSort="true" 					align="left"/>
+        <column key="code" 			header="机构编号" 	display="true" 		type="String" 			allowSearch="true" operator="like" 	allowSort="true" 	width="5%"		align="left" />
+        <column key="name" 			header="机构名称" 	display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="province" 		header="省" 			display="false" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="city" 			header="市" 			display="false" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="area" 			header="区" 			display="false" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="street" 		header="街道" 		display="false" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+        <column key="postaddr" 		header="机构地址" 	display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="20%" 	align="left"/>
+        <column key="phone" 		header="联系电话" 	display="true" 		type="String" 			allowSearch="true" allowSort="true" operator="like" 	width="10%" 	align="left"/>
+    </query>
+</pmsquery>

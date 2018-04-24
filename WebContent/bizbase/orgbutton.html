@@ -1,0 +1,47 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>orgbutton</title>
+		<link rel="stylesheet" type="text/css" href="css/i2/style_sheet_core.css"/>
+		<link rel="stylesheet" href="script/tree/jquery.treeview.css" />
+		<script src="js/lib.js" type="text/javascript"></script>
+	</head>
+	<body>
+		<div class="title clear">
+			<div class="arrowleft">
+			</div>
+			<div class="ico2">
+			</div>
+			<div class="ico1">
+			</div>
+			<a href="#">组织机构管理 </a>
+		</div>
+		<table border="no" align="right">
+			<tr>
+				<td>
+					<button class="buttonu" id="NewAdd" onclick="add()">
+						新增
+					</button>
+				</td>
+				<td>
+					<button class="buttonu" id="Edit">
+						修改
+					</button>
+				</td>
+				<td>
+					<button class="buttonu" id="Delete">
+						删除
+					</button>
+				</td>
+			</tr>
+		</table>
+		<script type="text/javascript">
+			function add() {
+				window.parent.appFrame.location.href = "orgAdd.html";
+				
+			}
+		</script>
+	</body>
+</html>

@@ -1,0 +1,145 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Frameset//EN" "http://www.w3.org/TR/html4/frameset.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <!-- Powered By PGL v2 -->
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="content-type" content="text/html;charset=UTF-8"/>
+        <meta http-equiv="Cache-Control" content="max-age:3600000">
+        <meta name="renderer" content="webkit">
+        <title>数据管理系统</title>
+        <link rel="shortcut icon" type="image/x-icon" href="../icon.png" />
+        <script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js">
+        </script>
+        <script language="javascript" src="../scripts/common/common-tool.js">
+        </script>
+        <script language="javascript" src="../scripts/common/common-core.js">
+        </script>
+        <script language="javascript" src="../scripts/common/common-form.js">
+        </script>
+        <script language="javascript" src="../scripts/default-ready.js">
+        </script>
+		<script language="javascript" src="js/bidCommon.js">
+        </script>
+        <script>
+            function getCurrentUser(){
+               var userObj=null;
+                doManager("userManager", "getCurrentUserDTO", "", function(data, textStatus, XMLHttpRequest){
+                    if (data.result == true) {
+                        if (data.data != null) {
+                            var returnObj = $.fromJSON(data.data);
+                            userObj = returnObj
+                            currentUser = userObj;
+                        }
+                    }
+                    else {
+                        $$.showMessage("系统提示", "取得登录人id信息出错!");
+                    }
+                }, false);
+                return userObj;
+            }
+            
+            function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+            
+            $(function(){
+            	var userObj = getCurrentUser();
+            	var rootPath = getRootPath();
+            	var sysauth = userObj.usergroup.sys_auth;
+            	
+            	var isManager = userObj.usergroup.code;
+                if(sysauth==null){
+	               	 if(isManager=="GLY"){
+	               		 //第一次 是管理员 可访问数据 
+	               		 sysauth="dataSys";
+	               	 }
+                }
+            	
+            	if(sysauth!=null&&sysauth.indexOf('dataSys')>-1){
+        		}else{
+        			//window.parent.location.href=rootPath+"/crm/loginplatform.html";
+        		}
+            	
+//                initView();
+                var request = getRequestParams();
+                document.getElementById("top").src = "wtop.html";
+                getPage();
+            });
+            
+            function getPage(){
+                var obj = getCurrentUser();
+                if (obj.indexPage!="" && obj.indexPage!=null &&obj.indexPage!="undefined") {
+				    $("#appFrame").attr("src","../indexs/"+obj.indexPage);
+                }else if(obj.usergroup.cardtype == null || obj.usergroup.cardtype == 2){
+                    $("#appFrame").attr("src", "../indexs/szIndex_yadea.html");
+                }else {
+                    //$("#appFrame").attr("src", "../workflow/toDoList.html");
+                    $("#appFrame").attr("src", "../indexs/data_index.html");
+				}
+            }
+
+            function initView(){
+                var nScrollWidth = document.body.offsetWidth ;
+                var nScrollHeight = document.body.offsetHeight;
+                $("#div_main").css("height",(nScrollHeight - 80)+"px");
+                $("#div_appFrame").css("width",(nScrollWidth - 280)+"px");
+            }
+        </script>
+        <style type="text/css">
+            iframe{
+                width: 100%;
+                height: 100%;
+            }
+            html,body{
+                height: 99%;
+            }
+        </style>
+    </head>
+    <!--<body>-->
+    <!--<div id="i2ui_main" name="i2ui_main" style="width: 100%;height: 100%">-->
+        <!--<div id="div_top" style="height: 80px;width: 100%">-->
+            <!--<iframe id="top" name="i2ui_shell_top" scrolling="no"></iframe>-->
+        <!--</div>-->
+        <!--<div id="div_main">-->
+            <!--<div id="div_i2ui_shell_left" style="height: 6px;width: 100%;float: left">-->
+                <!--<iframe name="i2ui_shell_left" src="ntop.html" scrolling="no"></iframe>-->
+            <!--</div>-->
+            <!--<div id="i2ui_shell_content" style="height: 100%;float: left">-->
+                <!--<div id="div_right_tree" style="width:280px;height: 100%;float: left">-->
+                    <!--<iframe name="leftFrame" src="dyFunctionTree1.html" style="overflow-x: hidden;overflow-y: auto"></iframe>-->
+                <!--</div>-->
+                <!--<div id="div_appFrame" style="height: 100%;float: left">-->
+                    <!--<iframe name="appFrame" id="appFrame" scrolling="yes"></iframe>-->
+                <!--</div>-->
+            <!--</div>-->
+            <!--<div id="div_i2ui_shell_right" style="width: 6px;height: 100%;float: left">-->
+                <!--<iframe name="i2ui_shell_right" src="ndow.html" scrolling="no"></iframe>-->
+            <!--</div>-->
+        <!--</div>-->
+        <!--<div id="div_i2ui_shell_bottom" style="height: 6px">-->
+            <!--<iframe name="i2ui_shell_left" src="wdow.html" scrolling="no"></iframe>-->
+        <!--</div>-->
+    <!--</div>-->
+    <!--</body>-->
+    <frameset name="i2ui_main" rows="86,*,12" marginwidth="0" border="0" frameborder="0" framespacing="0" marginheight="0">
+        <frame id="top" name="i2ui_shell_top" scrolling="no" frameborder="no" noresize="yes"/>
+        <frameset cols="6,*,6" marginwidth="0" border="0" frameborder="0" framespacing="1" marginheight="0">
+            <frame name="i2ui_shell_left" src="ntop.html" scrolling="no" frameborder="no" noresize="yes"/>
+            <frameset name="i2ui_shell_content" marginwidth="0" marginheight="0" cols="300,*" frameborder="no" border="0" bordercolor="#e6e6e6">
+                <frame marginwidth="0" marginheight="0" name="leftFrame" src="dyFunctionTree1.html" scrolling="yes"/>
+				<frame name="appFrame" id="appFrame" scrolling="yes"/>
+            </frameset><frame name="i2ui_shell_right" src="ndow.html" scrolling="no" frameborder="no" noresize="yes"/>
+        </frameset><frame name="i2ui_shell_bottom" src="wdow.html" scrolling="no" frameborder="no" noresize="yes"/>
+    </frameset>
+    <noframes>
+    </noframes>

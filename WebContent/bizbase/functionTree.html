@@ -1,0 +1,97 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>组织机构</title>
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+		<script type="text/javascript" src="js/lib.js"></script>
+		<SCRIPT LANGUAGE="JavaScript">
+			var zTree1;
+			var setting;
+			var myData;
+			var zNodes = [];
+			myData = $.toJSON(
+				{
+					managerName: "functionManager",
+					methodName: "getAllFuncTree"
+				});
+			setting = 
+				{
+					checkable: false,
+					async: true,
+					asyncParam: ["activityName", "id"], //获取节点数据时，必须的数据名称，例如：id、name
+					asyncParamOther: ["requestString", myData], //其它参数 ( key, value 键值对格式)
+					nameCol: "activityName",
+					callback: 
+						{
+							click: zTreeOnClick,
+							beforeExpand: beforeExpand
+						},
+					checkType: 
+						{
+							"Y": "",
+							"N": ""
+						}
+				}
+			function zTreeOnClick(event, treeId, treeNode) {
+				window.parent.appFrame.location = "functionModify.html?id=" + treeNode.id;
+			}
+			
+			function beforeExpand(treeId, treeNode) {
+				if (treeNode.nodes == null || treeNode.nodes.length == 0) {
+					if (treeNode.flag != true) {
+						var data = new PMSRequestObject("functionManager", "getAllChildsByParentId", [treeNode.id]);
+						$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								newNodes = eval("(" + data.data + ")");
+								addNode(newNodes, treeNode);
+							}
+						});
+					}
+					treeNode.flag = true;
+				}
+				else {
+					return true;
+				}
+				return false;
+			}
+			
+			function addNode(nodes, parNode) {
+				for (i = 0; i < nodes.length; i++) {
+					var newNode = nodes[i];
+					zTree1.addNodes(parNode, newNode);
+				}
+			}
+			
+			$(document).ready(function() {
+				var url = $$.PMSDispatchActionUrl;
+				refreshTree(url);
+			});
+			function refreshTree(asyncUrl) {
+				setting.asyncUrl = asyncUrl;
+				zTree1 = $("#treeDemos").zTree(setting, zNodes);
+			}
+		</SCRIPT>
+		<style>
+			html,body {
+				height: 100%;
+			    background: transparent;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="panel panel-primary" style="margin-bottom: 0;height: 100%">
+			<div class="panel-heading">
+				功能树
+			</div>
+			<div class="panel-body" style="height: 90%;padding: 0">
+				<ul id="treeDemos" class="tree" style="border:none;width:auto;background: transparent;">
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

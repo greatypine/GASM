@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>街道信息修改</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript">
+var id = getUrlParamByKey("id");
+var win;
+var obj;
+
+$(function () {
+	$("#id").val(id);
+	doManager("UserManager", "findUserInfo", '', function(
+			data, textStatus, XMLHttpRequest) {
+		if (data.result) {
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				if(jsonData==3223||jsonData==3224||jsonData==3225){
+					$("#name").attr("readonly","readonly");
+					$("#gb_code").attr("readonly","readonly");
+				}
+			}
+		} else {
+			$$.showMessage("系统信息", "信息加载异常!");
+		}
+	},false);
+	doManager("TownManager", "getTownListById",id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jsonData = $.fromJSON(data.data);
+				for ( var key in jsonData) {
+					var va = jsonData[key];
+					$("#"+key).val(va);
+					if("showSelectName"==key){
+						if(va!=null&&va.length>12){
+							va=va.substring(0, 9)+"...";
+						}
+						$("#showSelectName").html(va);
+					}
+				}
+				//getCounty();
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+	},false);
+})
+
+/* 	function getCounty(){
+	var county_id=$("#county_id").val();
+	doManager("CountyManager", "getCountyById",county_id, function(data, textStatus,
+			XMLHttpRequest) {
+		if(data.result){
+			if(data.data!="null"){
+				var jso=JSON.parse(data.data);
+				$("#county_id" ).val(jso.id);
+				$("#county_name" ).val(jso.name);
+				$("#county_gb_code" ).val(jso.gb_code);
+			}else{
+				$$.showMessage("系统信息", "加载信息错误");
+			}	
+		}else{
+			$$.showMessage("系统信息", "加载信息错误");
+		}
+	});
+	
+} */
+function yanzhen(){
+	var county_name=$("#county_name").val().replace(/(^\s*)|(\s*$)/g, "");
+	if(county_name==null||county_name==""){
+		alert("区名称不能为空");
+		return;
+	}
+	var county_id=$("#county_id").val();
+	if(county_id == "" || county_id == null){
+		alert("区名称不能为空或区不正确!");
+		return;
+	}
+	var name=$("#name").val().replace(/(^\s*)|(\s*$)/g, "");
+	if(name==null||name==""){
+		alert("街道名称不能为空");
+		return;
+	}
+	var gb_code=$("#gb_code").val();
+	if(gb_code==null||gb_code==""){
+		alert("街道国标码不能为空");
+		return;
+	}else{
+		var  c=gb_code.length;
+		if(c!=12){
+			alert("街道国标码必须为12位的数字!");
+			return;
+		}
+	}
+	yanzhentown();
+	}
+
+function yanzhentown(){
+	var o = {};
+	o['id']=$("#id").val();
+	o['gb_code']=$("#gb_code").val();
+	doManager("TownManager", "verifyUpdate",o , function(data,
+			textStatus, XMLHttpRequest) {
+		if (data.result) {
+			if(data.data!="null"){
+				alert("街道已存在!");
+				return;
+			}
+			doSave();
+		} else {
+			$$.showMessage("系统信息", "信息加载异常");
+			return;;
+		}
+	});
+}
+
+
+	function doSave(){
+		var arr = [ "name", "gb_code","job","resident_population_number","household_number","introduction","square_area","county_id","id" ];
+			var o = {};
+			for ( var i in arr) {
+				var v = arr[i];
+				var va = $("#" + v).val();
+				o[v] = va;
+			}
+			doManager("TownManager", "saveOrUpdateTown", o, function(data,
+					textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					alert("修改成功！");
+					window.location.href = 'town_list.html';
+				} else {
+					$$.showMessage("系统信息", "修改失败!");
+				}
+			});
+}
+var win;
+		   function showCustomerWin(callback){
+		         win = new checkWin(callback);
+		         win.show();
+		     }
+		
+		$(function(){
+			$("#showSelectName").html(showCustomerName);
+		})
+		var showCustomerName;
+		 /**
+	    *
+	    * @param {Object} callback 	回调函数
+	    * 返回值json
+	    */
+	   var checkWin = function(callback){
+	       this.win = $("<div style='overflow-y: hidden'></div>");
+	       var par = $("#job").val();
+	       var city = encodeURIComponent($("#citySelect").val());
+	       var _this = this;
+	       var initWin = function(){
+	           _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/select_townCustomer.html?imss='+par+'" scrolling="yes"></iframe>');
+	           _this.win.dialog({
+	               bgiframe: true,
+	               title:"选择负责人",
+	               autoOpen:false,
+	               width:_this.width,
+	               height:_this.height,
+	               buttons : {
+	                   "确定": function(){
+	                	   /* var selVal=window.frames["selectWin"].getcheckedstoreid();
+	                	   this.callBack=selVal;  */
+	                      // window.frames["selectWin"].doSubmit();
+	                       //_this.win.remove();
+	                	   var selVal=window.frames["selectWin"].yanzhen();
+		                	  // this.callBack=selVal; 
+		                       if(selVal==0){
+		                    	   $$.showMessage("系统信息", "请给负责人选择职务!");
+		                       }else{
+		                    	   window.frames["selectWin"].doSubmit();
+		                    	   _this.win.remove();
+		                       }
+	                   },
+	                   "取消":function(){
+	                       _this.hide();
+	                       _this.win.remove();
+	                   }
+	               },
+	               modal:true
+	           });
+	       };
+	       this.width = 800;
+	       this.height = 730;
+	       this.callBack = function(json){
+	           if (callback && typeof(callback) == 'function') {
+	               callback(json);
+	           }
+	       };
+
+	       this.show = function(){
+	           _this.win.dialog("open");
+	       };
+
+	       this.hide = function(){
+	           if(_this.onSubmitHandler){
+	               _this.onSubmitHandler();
+	           }
+	           _this.win.dialog("close");
+	       };
+	       initWin();
+	   }
+		
+	    function setCustomerSelect(jsons){
+	    	var selectCustomerNames ="";
+	    	var selectCustomerIds = "";
+	    	var selectIDS="";
+	    	var selectCustomerZw="";
+	    	var Zws="";
+			$.each(jsons,function(n,value) {
+				/* var obj="<tr>"+
+						"<th>"+value.id+"</th>"+
+						"<th>"+value.name+"</th>"+
+						"<th>"+value.address+"</th>"+
+						"<th><a href=\"#\" onclick=\"deletetr(this);\"><font color=\"blue\">删除</font></a></th>"+
+					    "</tr>"; */
+				var objid = value.id;
+				var objZw = value.zw;
+				var ids="";
+				var name="";
+				if(n>=0){
+					ids=objid.split(",")[0];
+					name=objid.split(",")[1];
+				}
+					if(objZw==="请选择"){
+						selectCustomerNames+=","+name;
+					}else{
+						selectCustomerNames+=","+name+"("+objZw+")";
+					}
+					selectCustomerIds+=","+ids+"-"+name+"-"+objZw;
+					selectCustomerZw+=","+objid+"-"+objZw;
+			})
+			selectCustomerNames=selectCustomerNames.substring(1,selectCustomerNames.length);
+			selectCustomerIds=selectCustomerIds.substring(1,selectCustomerIds.length);
+			selectCustomerZw=selectCustomerZw.substring(1,selectCustomerZw.length);
+			if(selectCustomerNames.length>12){
+				selectCustomerNames=selectCustomerNames.substring(0, 9)+"...";
+			}
+			$("#showSelectName").html(selectCustomerNames);
+			$("#job").val(selectCustomerIds);
+			$("#selectCustomerZw").val(selectCustomerZw);
+	    };
+</script>
+</head>
+<style type="text/css">
+	td {
+		width=50%;
+	}
+
+	p{
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	table input,table select{border:1px solid #ccc; border-radius:3px; line-height: 30px; height: 30px; width:200px;}
+	.panel-heading .but{float:right; text-align: center;}
+	.but input {
+		background-color: transparent;
+		border: 1px solid #fff;
+		border-radius: 3px;
+		padding: 0 13px;
+		margin-right: 30px;}
+		.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+</style>
+<body>
+		<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">街道信息修改
+    
+    <span id="btnSave" onclick="yanzhen();" disabled="false"> 保存</span>
+    <span id="btnBack" onclick="javascript:history.go(-1);" disabled="false"> 返回</span>
+    
+       <!--  <span class="but">
+			<input name="" type="submit" onclick="yanzhen();" value="保存">
+			<input name="" type="button" onclick="javascript:history.go(-1);" value="返回">
+		</span> -->
+    </div>
+    <div class="panel-body" id="temp1">
+	<form action="" method="post" class="pmsForm">
+	<input type="hidden" name="county_id" id="county_id"/>
+	<input type="hidden" name="id" id="id"/>
+	<table width="100%">
+		<tr>
+			<td width="33.33%">
+				<p>区(县)名称：<span style="color: red">*</span></p>
+				<p><input type="text" name="county_name" readonly="readonly" id="county_name" onkeyup="value=value.replace(/^\s+|\s+$/g,'').replace(/\'/g,'')"/></p>
+			</td>
+			<td width="33.33%">
+				<p>街道名称：<span style="color: red">*</span></p>
+				<p><input type="text" name="name" id="name" onkeyup="value=value.replace(/^\s+|\s+$/g,'').replace(/\'/g,'')"/></p>
+			</td>
+			<td width="33.33%">
+				<p class="read">街道国标码：<span style="color: red">*(必须为国家统计局网站数据)</span></p>
+				<p class="read"><input type="text" readonly="readonly" onkeyup="value=value.replace(/[^\d.]/g,'')" maxlength="12" name="gb_code" id="gb_code"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td width="33.33%">
+				<p>辖区面积：</p>
+				<p><input type="text" onkeyup="value=value.replace(/[^\d.]/g,'')" name="square_area" id="square_area"/></p>
+			</td>
+			<td>
+				<p class="read">街道介绍：</p>
+				<p class="read"><input type="text" name="introduction" id="introduction"/></p>
+			</td>
+			<td>
+				<p>户数：</p>
+				<p><input type="text" onkeyup="value=value.replace(/[^\d.]/g,'')" name="household_number" id="household_number"/></p>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<p class="read">常住人口：</p>
+				<p class="read"><input type="text" name="resident_population_number" onkeyup="value=value.replace(/[^\d.]/g,'')" id="resident_population_number"/></p>
+			</td>
+			<td>
+				<p>负责人：<span style="font-size: 3;color: red;">(如果选择负责人必须选择职务)</span></p>
+				<p><label id="showSelectName" style='overflow:hidden;width: 110px;'></label>
+					<input type="hidden" id="selectCustomerName" value="" />
+					<input type="hidden" id="job" value="" />
+					<input type="hidden" id="selectCustomerZw" value="" />
+					<button class="btn btn-primary" onclick="showCustomerWin(setCustomerSelect);">选择负责人</button></p>
+			</td>
+		</tr>       
+	</table>
+	</form>
+		</div>
+
+
+</div>
+</body>
+</html>

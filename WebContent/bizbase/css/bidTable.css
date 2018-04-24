@@ -1,0 +1,88 @@
+.uploadFileTableHeader {
+    text-align: center;
+    background: #D1D6F0  repeat-x;
+    border: 1px solid #888888;
+    height: 18px;
+    line-height: 22px;
+    padding-top: 3px;
+    padding-left: 3px;
+    color: #28356F;
+    font-weight: bold;
+}
+.bidTableLabel{
+	white-space:nowrap;
+}
+.uploadFileTableDataCenter {
+    text-align: center;
+}
+
+.uploadFileTableBorder {
+	border: 1px solid #888888;
+	text-align: left;
+	vertical-align: top;
+	height: 22px;
+}
+
+.uploadFileTableBtn {
+    border-top: 1px solid #FFFFFF;
+    border-right: 1px solid #E4DB83;
+    border-bottom: 1px solid #E4DB83;
+    border-left: 1px solid #fff;
+    background: #FFF6A6;
+    padding: 0px 5px;
+    cursor: pointer;
+}
+
+.biddingTableTextBorder{
+	border: 1px solid #888888;
+}
+
+.uploadFileTable{
+	border-collapse:collapse;
+}
+
+.fileInputWidth{
+	width:99%
+}
+
+.displayNone{
+	display:none
+}
+
+.uploadTableRowLineHeight{
+	line-height: 22px;
+}
+
+.uploadTableRow_evenBg{
+	background-color:#ECEEF8;
+}
+
+.uploadTableRow_oddBg{
+	background-color:#ffffff;
+}
+table.bidTable td{
+	white-space:normal;
+	padding:1px;
+	word-break:break-all;
+}
+table.bidTable
+{
+padding:0px;
+margin:0px;
+table-layout:auto;/*防止表格变形*/
+
+}
+
+
+a:link.detail {
+	color: #06C;
+}
+a:visited.detail {
+	color: #009;
+}
+a:hover.detail {
+	color: #00F;
+}
+a:active.detail {
+	color: #00F;
+}

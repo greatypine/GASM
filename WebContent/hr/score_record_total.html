@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>任务审核</title>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        
+        <script type="text/javascript" src="../startbootstrap/js/jquery.1.10.2.min.js"></script>
+    	<script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+    	
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+        <script type="text/javascript" src="../scripts/auto.js"></script>
+            
+
+
+    </head>
+    <style type="text/css">
+        td{
+            padding-top: 10px;
+        }
+        .auto{max-height:100px; overflow-y:scroll;}
+    </style>
+    <script>
+    var cur_user;
+    //取得当前登录人城市 
+    function installcity(){
+    	 doManager('UserManager','getCurrentUserCity',null,function(data){
+             if(data.result){
+                 var cityList = JSON.parse(data.data);
+                 var cityHtml = "";
+                 for(var o in cityList){
+                	var cityname =  cityList[o].cityname;
+                	cityHtml+="<option value='"+cityname+"'>"+cityname+"</option>";
+                 }
+                 $("#citySelect").html(cityHtml);
+                 $("#downloadCitySelect").html(cityHtml);
+             }
+         });
+    }
+    function initCurrUserDto(){
+    	//取得当前登录人的门店
+		doManager("UserManager", "getCurrentUserDTO",null,
+    				function(data, textStatus, XMLHttpRequest) {
+    					if (data.result) {
+    						var current_uesr = JSON.parse(data.data);
+    						cur_user = current_uesr;
+    					}
+    	},false);
+    }
+    var array=new Array();
+    
+    
+        var maxMonth = null;
+
+        $(function () {
+        	initCurrUserDto();
+        	
+        	installcity();
+        	
+        	initallstore();
+        	
+        	/* doManager("ScoreRecordManager", "queryMaxWorkMonth",null,
+    				function(data, textStatus, XMLHttpRequest) {
+    					if (data.result) {
+    						var workMonthObj = JSON.parse(data.data);
+    						$("#work_month").val(workMonthObj.work_month);
+    					}
+    		},false); */
+    		
+    		var date=new Date;
+    		var year = date.getFullYear();
+    		var month=date.getMonth();
+    		month = ("0"+month).slice(-2);
+    		//$("#work_month").val(year+"-"+month);
+    		$("#work_month").val("");
+    		
+            //setMaxWorkMonth();
+            if(maxMonth == null){
+                maxMonth = new Date().format('yyyy-MM');
+            }
+           /*  jeDate({
+                dateCell:"#add_work_month",//isinitVal:true,
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:true,
+                zIndex:2000,
+                choosefun:function(val) {
+                    findWorkTime(val);
+                }
+            });
+
+            jeDate({
+                dateCell:"#download_work_month",//isinitVal:true,
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:true,
+                zIndex:2000
+            }); */
+
+            jeDate({
+                dateCell:"#work_month",
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:false,
+                zIndex:2000
+            });
+
+           /*  jeDate({
+                dateCell:"#s1",//isinitVal:true,
+                format:"YYYY-MM-DD",
+                isTime:false
+            });
+
+            jeDate({
+                dateCell:"#s2",//isinitVal:true,
+                format:"YYYY-MM-DD",
+                isTime:false
+            }); */
+            //setNextWorkMonth();
+
+            //$("#work_month").val('');
+            
+            searchList();
+            
+        });
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            $$.executeSearch('scoreRecordTotalQuery', 'conditionsDiv');
+            
+            var selectObj = $(".panel-footer").find("select")[0];
+			$(selectObj).bind("change",function(){
+				//清空checkedbox
+				$(".checkboxHeader").find('input[type="checkbox"]').attr("checked",false);
+			});
+			
+        }
+
+
+        function doClean() {
+            document.service_qa.reset();
+        }
+//        var exportObj = {
+//            html : '<a href="#">导出Excel </a>',
+//            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+//                var id = allColumnsDataMap.id;
+//                doManager("WorkRecordManager", "saveWorkRecordForExcel",[id], function(
+//                        data, textStatus, XMLHttpRequest) {
+//                    if (data.result) {
+//                        //alert("导出成功！ ");
+//                        var ret = JSON.parse(data.data);
+//                        window.location.href=ret;
+//                    } else {
+//                        alert("导出失败！！ ");
+//                    }
+//                });
+//            }
+//        };
+//        var returnObj = {
+//            html : '<a name="a_return" href="#">退回</a>',
+//            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+//                var id = allColumnsDataMap.id;
+//                window.location.href = "relation_info.html?id="+id;
+//                if(allColumnsDataMap.commit_status != 3){
+//                    showReturnTotal(id,allColumnsDataMap.store_name,allColumnsDataMap.work_month,2);
+//                }
+//            }
+//        };
+//
+//        var confirmObj = {
+//            html : '<a name="a_confirm" href="#">确认</a>',
+//            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+//                var id = allColumnsDataMap.id;
+//                if(allColumnsDataMap.commit_status != 3){
+//                    showReturnTotal(id,allColumnsDataMap.store_name,allColumnsDataMap.work_month,3);
+//                }
+//                window.location.href = "relation_info.html?id="+id;
+//            }
+//        };
+
+        var viewObj = {
+            html : '<a name="a_confirm" href="#">详情</a>',
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.id;
+                var app_name = allColumnsDataMap.curr_appro_id_name;
+                var work_info_id = allColumnsDataMap.work_info_id;
+                var str_work_info_id = allColumnsDataMap.str_work_info_id
+                var isappro;
+                if(app_name.indexOf(cur_user.name)>-1){
+                	isappro="y";//可以审批 
+                }else{
+                	isappro="n";//当前不可审批 
+                }
+                
+                if(str_work_info_id=="异常订单申诉"){
+                    window.location.href = "exceptionorder_view.html?work_id="+work_info_id+"&isappro="+isappro+"&scoreid="+id+"&store_id="+allColumnsDataMap.store_id+"&workMonth="+allColumnsDataMap.work_month;
+                }else if(str_work_info_id=="门店选址审核"){
+                	/* alert("work_id--->"+work_info_id);
+                	alert("isappro---->"+isappro);
+                	alert("isappro---->"+allColumnsDataMap.store_id); */
+                    window.location.href = "add_store_view.html?work_id="+work_info_id+"&isappro="+isappro+"&scoreid="+id+"&store_id="+allColumnsDataMap.store_id+"&workMonth="+allColumnsDataMap.work_month;
+                }else if(str_work_info_id=="门店筹备审核"){ 
+                	/* alert("work_id--->"+work_info_id);
+                	alert("isappro---->"+isappro);
+                	alert("isappro---->"+allColumnsDataMap.store_id);  */
+                    window.location.href = "add_storedocumentinfo_view.html?work_id="+work_info_id+"&isappro="+isappro+"&scoreid="+id+"&store_id="+allColumnsDataMap.store_id+"&workMonth="+allColumnsDataMap.work_month;
+                
+                }else{
+                    window.location.href = "score_record_view.html?work_id="+work_info_id+"&isappro="+isappro+"&scoreid="+id+"&store_id="+allColumnsDataMap.store_id+"&workMonth="+allColumnsDataMap.work_month;
+                }
+            }
+        };
+        $pmspage.opArr = [viewObj];
+
+      //列表中 列的处理
+        var COLUMNS = {
+                "str_commit_status": function(aData, iColumn, sColumnName, map){
+                    var value = map['str_commit_status'];
+                    var ret = "";
+                    var app_name = map['curr_appro_id_name'];
+                    var isappro;
+                    if(app_name.indexOf(cur_user.name)>-1){
+                    	isappro="y";//可以审批 
+                    }else{
+                    	isappro="n";//当前不可审批 
+                    }
+                    
+                    if(value!=null&&isappro=="y"){
+                    	ret="<font color='red'>"+value+"</font>";
+                    }else{
+                    	ret="<font color='green'>"+value+"</font>";
+                    }
+                    return ret;
+                }
+                
+            }
+      
+
+        function checkValue(value){
+            if(value != null && value != ''){
+                return true;
+            }
+            return false;
+        }
+
+        //初始化所有门店
+        function initallstore() {
+        	doManager("StoreManager", "findStoreAll", null,
+        			function(data, textStatus, XMLHttpRequest) {
+        				if (data.result) {
+        					var jsonData = $.fromJSON(data.data);
+        					for(i=0;i<jsonData.length;i++){
+        						array.push(jsonData[i].name);
+        					}
+        				}
+        			}, false);
+        }
+
+      function approve_record(comm_status){
+    	  
+		  var remark_back = $("#remark").val();
+    	  if(comm_status==2){
+    		  if(remark_back==null||remark_back.trim()==""){
+        		  $$.showMessage("系统信息", "请填写驳回原因 !");
+        		  return ;
+        	  }
+    	  }
+    	  var arrs = new Array();
+    	  //批量审核通过
+    	  var objs = $$.getSelectedObj("scoreRecordTotalQuery");
+    	  
+    	  var index = layer.load(1, {
+		    	  shade: [0.1,'#fff'] //0.1透明度的白色背景
+		    	 });
+    	  
+    	  //校验选择的是否是审批过的
+    	  var isappro = "n";
+          if (objs.length != 0) {
+        	  $(objs).each(function(i,obj){
+        		  //取得每行中当前审批所有人的值 
+        		  var app_name = obj[10];
+        		  if(app_name.indexOf(cur_user.name)>-1){
+        			  isappro="y";//可以审批 
+        			  if(comm_status==3){
+        				  var obj_appr = {
+          		                id: obj[0],
+          		                remark:'审批通过',
+          		                commit_status:3
+          		            };
+        				  arrs.push(obj_appr);
+        			  }else if(comm_status==2){
+        				  
+        				  var obj_appr = {
+            		                id: obj[0],
+            		                remark:$("#remark").val(),
+            		                commit_status:2
+            		            };
+          				  arrs.push(obj_appr);
+        			  }
+                  }else{
+                	  isappro="n";//当前不可审批 
+                	  layer.close(index);
+                	  return false;
+                  }
+        	  });
+        	  
+        	 if(isappro=="y"){
+        		  
+        		 //可以审批  //调用批量审批方法 
+        		  doManager("scoreRecordTotalManager", "updateScoreRecordTotalToReturnMult", [arrs] ,
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							layer.close(index);
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData!=null){
+								window.location.href='score_record_total.html';
+							}else{
+								$$.showMessage("系统信息", "审批失败 !");
+							}
+						}else{
+							layer.close(index);
+						}
+					}); 
+        	 }else{
+        		 //存在已审批过的数据 
+        		 layer.close(index);
+        		 $$.showMessage("系统信息", "请选择当前审批人为自己的 <font color='red'>待审批</font> 数据 !");
+        	 }
+          }else{
+        	  layer.close(index);
+        	  $$.showMessage("系统信息", "请选择要审批的数据 !");
+          }
+      }
+      
+     /*  function back_record(){
+    	  //批量驳回 弹出窗口 批量填写驳回方法 
+    	  alert("功能开发中...");
+    	  var objs = $$.getSelectedObj("scoreRecordTotalQuery");
+          if (objs.length != 0) {
+        	  showInputMessage();
+          }else{
+        	  $$.showMessage("系统信息", "请选择要驳回的数据 !");
+          }
+      } */
+        
+      
+      function showInputMessage(comm_status){
+          var div = $("#showInputMessage");
+          div.dialog({
+              bgiframe : true,
+              title : "请填写驳回信息",
+              width : 380,
+              buttons : {
+                  "确定" : function() {   
+                	  approve_record(2);
+                  },
+                  "取消" : function() {
+                      $(this).dialog("close");
+                  }
+              },
+              modal : false
+          });
+      }
+      
+
+    </script>
+    <body style="height: 100%;">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+          任务审核
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                                <td width="5%">城市：</td>
+                                <td>
+                                    <input type="text" id="citySelect" name="citySelect"  style="width:60%"  class="form-control" likeOption="false" maxlength="20"  style="width: 50%"  />
+                                </td>
+                               
+                                <td width="5%" >门店名称：</td>
+                                <td>
+                                    <div class="input-group" style="width:60%;">
+				                        <input type="text" id="store_name" name="store_name" class="auto-inp form-control" likeOption="false">
+				                        <div class="auto hidden" id="auto">
+				                            <div class="auto_out">1</div>
+				                            <div class="auto_out">2</div>
+				                        </div>
+				                    </div>
+                                </td>
+                                <td width="5%">月份：</td>
+                                <td>
+                                    <input type="text" id="work_month" name="work_month"  style="width:60%"  class="wicon form-control" maxlength="20" likeOption="false" style="width: 50%"  />
+                                </td>
+                                
+                                <td width="5%">状态：</td>
+                                <td >
+                                    <select id="commit_status" name="commit_status" class="form-control"  style="width:100%" >
+                                    	<option value="1" selected="selected">待审批</option>
+                                    	<option value="3">已通过</option>
+                                    	<option value="2">已退回</option>
+                                    </select>
+                                </td>
+                                
+                            </tr>
+                            <!-- <tr>
+                                <td align="right" >月份：</td>
+                                <td >
+                                    <input type="text" id="work_month" name="work_month" class="wicon form-control" maxlength="20" likeOption="false"  />
+                                </td>
+                                <td align="right" ></td>
+                                <td >
+
+                                </td>
+                            </tr> -->
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" style="text-align: right">
+                <button class="btn btn-primary" onclick="searchList()">查询</button>
+                <button class="btn btn-primary" onclick="approve_record(3)">审批通过</button>
+                <button class="btn btn-primary" onclick="showInputMessage(2)">审批驳回</button>
+            </div>
+        </div>
+        <div id="centerQueryGridContainer" class="panel panel-primary" queryid="scoreRecordTotalQuery" operators="$pmspage.opArr"
+             titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="false"
+             showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+             showcheckbox="true" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+		
+		<div id="showInputMessage" class="panel panel-primary" style="display: none;">
+            <!--<div class="panel-heading">-->
+            <!--填写驳回的信息 -->
+            <!--</div>-->
+            <div class="panel-body">
+                <table  cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                	
+                    <tr>
+                        <td align="right" width="20%" >驳回原因<label style="color:red;">*</label>：</td>
+                        <td width="80%" >
+                        	<textarea class="form-control" id="remark" maxlength="120" placeholder="填写驳回原因"></textarea>
+                        </td>
+                    </tr>
+                </table>
+                <input type="hidden" id="work_month_id" name="work_month_id" /><!-- 无用 -->
+            </div>
+        </div>
+		
+		
+		
+    </body>
+    
+    
+    <script>
+		var autoComplete = new AutoComplete("store_name","auto",array);
+		document.getElementById("store_name").onkeyup = function(event){
+			autoComplete.start(event);
+		}
+		
+		
+		
+		
+		
+	</script>
+
+
+    </html>

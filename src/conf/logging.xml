@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<configuration>
+
+	<appender name="ErrorLoggerFileAppender" class="ch.qos.logback.core.FileAppender">
+		<file>/pmsapp/pmslog/pms.err</file>
+		<append>true</append>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>error</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.html.HTMLLayout">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss}, %p, %c, %t, %r, %ex, %F, %L, %C{1},
+				%M %m%n</pattern>
+		</layout>
+	</appender>
+
+	<appender name="ErrorLoggerConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>error</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss}, %p, %c, %t, %r, %ex, %F, %L, %C{1},
+				%M %m%n</pattern>
+		</layout>
+	</appender>
+
+
+
+	<appender name="RootFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/pmsapp/pmslog/pms.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/pmsapp/target/log/pms.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+    	</rollingPolicy>
+		<append>false</append>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
+		</layout>
+	</appender>
+
+	<!-- ETL生成的文件日志 -->
+	<appender name="EtlFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/pmsapp/pmslog/pmsetl.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/pmsapp/target/log/pmsetl.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+    	</rollingPolicy>
+		<append>true</append>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
+		</layout>
+	</appender>
+
+	<!-- AutoETL生成的文件日志 -->
+	<appender name="AutoEtlFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/pmsapp/pmslog/pmsautoetl.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/pmsapp/target/log/pmsautoetl.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+    	</rollingPolicy>
+		<append>true</append>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
+		</layout>
+	</appender>
+	
+	<!-- jco实时调用生成的文件日志 -->
+	<appender name="JcoFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/pmsapp/pmslog/pmsjco.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>target/log/pms.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+    	</rollingPolicy>
+		<append>false</append>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
+		</layout>
+	</appender>
+
+	<!-- 性能检测实时调用生成的文件日志 -->
+	<appender name="PerformFileAppender" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/pmsapp/pmslog/pmsperform.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>target/log/pms.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+    	</rollingPolicy>
+		<append>false</append>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
+		</layout>
+	</appender>
+
+	<appender name="RootConsoleAppender" class="ch.qos.logback.core.ConsoleAppender">
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>debug</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
+		</layout>
+	</appender>
+
+	<logger additivity="false" name="ErrorLogger">
+		<level value="error" />
+		<appender-ref ref="ErrorLoggerFileAppender" />
+		<appender-ref ref="ErrorLoggerConsoleAppender" />
+	</logger>
+
+	<logger name="com.cnpc.pms">
+		<level value="INFO"/> 
+	</logger>
+	
+	<logger name="com.yadea.crm.etl">
+		<level value="debug"/>
+		<appender-ref ref="EtlFileAppender" /> 
+	</logger>
+	
+	<logger name="com.yadea.crm.autoetl">
+		<level value="debug"/>
+		<appender-ref ref="AutoEtlFileAppender" /> 
+	</logger>
+	
+	<logger name="com.yadea.crm.common.jco">
+		<level value="debug"/>
+		<appender-ref ref="JcoFileAppender" /> 
+	</logger>
+	
+	<logger name="com.cnpc.pms.bizbase.filter.BeachmarkFilter">
+		<level value="INFO"/>
+		<appender-ref ref="PerformFileAppender" /> 
+	</logger>
+		
+	<root>
+		<level value="error" />
+		<appender-ref ref="RootConsoleAppender" />
+		<appender-ref ref="RootFileAppender" />
+	</root>
+
+</configuration>

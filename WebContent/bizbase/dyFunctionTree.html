@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Untitled Document</title>
+		<script type="text/javascript" src="js/lib.js"></script>
+		<style>
+			.tree-node-parent {
+			    background-image: url(scripts/images/root_menu_bg.png);
+			    background-repeat: repeat-x;
+			    background-position: top;
+			    top: 30px;
+			    bottom: 30px;
+			    font-weight: bold;
+			}
+			
+			ul, li {
+			    list-style-type: decimal;
+			}
+			
+			a, span {
+			    line-height: 20px;
+			}
+			
+			.tree-node {
+			    font-weight: normal;
+			}
+			
+		</style>
+		<SCRIPT LANGUAGE="JavaScript">
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+			
+			var request = getRequestParams();
+			
+			var module = request['module'];
+			var zTree1;
+			var setting;
+			var myData;
+			var zNodes = [];
+			var myData = $.toJSON(
+				{
+					managerName: "functionManager",
+					methodName: "getAllFuncNodes",
+					parameters: [module]
+				});
+			setting = 
+				{
+					checkable: false,
+					async: true,
+					asyncParam: ["name", "id"], //获取节点数据时，必须的数据名称，例如：id、name
+					asyncParamOther: ["requestString", myData]//其它参数 ( key, value 键值对格式)
+				}
+			
+			$(document).ready(function() {
+				var url = $$.PMSDispatchActionUrl;
+				refreshTree(url);
+			});
+			function refreshTree(asyncUrl) {
+				setting.asyncUrl = asyncUrl;
+				zTree1 = $("#treeDemo").zTree(setting, zNodes);
+			}
+		</SCRIPT>
+	</head>
+	<body style=" margin-left:5px;">
+		<div id="DIV">
+			<ul id="treeDemo" class="tree" style=" height:541px; border:1px solid #a6a6a6; width:auto;">
+			</ul>
+		</div>
+	</body>
+</html>

@@ -1,0 +1,15 @@
+		<pmsquery>
+   <query id="maintenanceQuery" header="客户检测信息表" baseclass="com.cnpc.pms.personal.entity.Maintenance" order="id asc">
+        <column key="id" header="序号" display="false" type="java.lang.Long" operator="in" allowSearch="true" allowSort="true" align="center"/>
+        <column key="name" header="客户姓名" type="String" display="true" allowSearch="true" allowSort="true" operator="like" width="10%" align="center"/>
+        <column key="mobilephone" header="客户手机号" type="String" display="true" allowSearch="true" allowSort="true" operator="like" width="15%" align="center"/>
+<!--         <column key="sex" header="性别" tips="true" type="String" allowSearch="true" allowSort="true" operator="like" width="300px" align="left"/>
+ -->    <column key="address" header="客户地址" type="String" display="true" allowSearch="true" allowSort="true" operator="like" width="10%" align="center"/>
+       	<column key="createDate" header="检测日期" operator="between" allowSearch="true" allowSort="true" width="15%" type="java.util.Date" format="yyyy-MM-dd" align="center"/>
+       <!--  <column key="lastModifyDate" header="最后日期" allowSearch="true" operator="eq" width="10%" allowSort="true" type="java.util.Date" format="yyyy-MM-dd" align="center"/> -->
+        <column key="lastModifyDate" header="最后更新日期" operator="between" allowSearch="true" allowSort="true" width="15%" type="java.util.Date" format="yyyy-MM-dd" align="center"/>
+        <column key="mainte_status" header="状态" type="int" allowSearch="true" allowSort="true" operator="in" width="10%"  align="center"/>
+       
+        <column key="status" header="标志位" type="java.lang.Long" allowSearch="true" allowSort="true" operator="in" width="10%"  align="center"/>
+    </query>
+</pmsquery> 

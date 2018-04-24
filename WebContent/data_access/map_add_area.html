@@ -1,0 +1,209 @@
+<!DOCTYPE HTML>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>地图坐标录入</title>
+    <link rel="stylesheet" href="https://cache.amap.com/lbs/static/main1119.css"/>
+    <link rel="stylesheet" href="../hr/bootstrap/css/bootstrap.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="../hr/bootstrap/css/font-awesome.min.css">
+    <!-- Ionicons -->
+    <link rel="stylesheet" href="../hr/bootstrap/css/ionicons.min.css">
+    <link rel="stylesheet" href="../data_access/dist/css/skins/_all-skins.min.css">
+    <script src="https://webapi.amap.com/maps?v=1.4.1&key=您申请的key值&plugin=AMap.PolyEditor,AMap.CircleEditor"></script>
+    <!-- <script type="text/javascript" src="https://cache.amap.com/lbs/static/addToolbar.js"></script> -->
+    <style type="text/css">
+        body {
+            margin: 0;
+            height: 100%;
+            width: 100%;
+            position: absolute;
+            font-size: 12px;;
+        }
+
+        #mapContainer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        input[type="text"] {
+            height: 25px;
+            outline: none;
+            border: 0;
+            border: 1px solid #CCCCCC;
+            padding: 0 4px;
+        }
+
+        .button-group {
+            position: absolute;
+            /* top: 20px; */
+            right: 20px;
+            font-size: 12px;
+            padding: 10px;
+        }
+        #process_div{ 
+		background-color:#292a2b; 
+		display:inline; 
+		z-index:100000;  
+		left:0px; 
+		opacity:0.3; top:0; left:0;height:100%; width:100%; z-index:999; position:fixed; _position:absolute; _left: expression_r(documentElement.scrollLeft + documentElement.clientWidth - this.offsetWidth); _top: expression_r(documentElement.scrollTop + documentElement.clientHeight - this.offsetHeight);
+		filter:Alpha(Opacity=30); 
+		opacity: 0.3; 
+	} 
+	
+	#process_div_pic{
+		position:fixed;
+		top:50%;
+		left:50%; 
+		z-index:100000000; 
+		margin:-16px 0 0 -50px; 
+		width:150px; 
+		height:32px;
+		color: #fff;
+	}
+    </style>
+</head>
+<body class="skin-blue">
+<div id="process_div" ></div>
+<div id="process_div_pic" ><img style="width:50px;height: 50px;" src="dist/img/376884043677306248.png">处理中<i class="fa fa-refresh fa-spin"></i></div>
+<div id="mapContainer" style="background-color:rgba(0,0,0,0.5)"></div>
+<div class="button-group">
+	<input type="button" class="button" value="计算未保存面积小区面积" onclick="initMysqlData();">
+	<input type="button" class="button" value="计算所有小区面积" onclick="initMongoData();">
+    <input type="button" class="button" value="保存多边形面积" onclick="saveVallageArea();">
+  </div>
+<script src="../hr/plugins/jQuery/jQuery-2.2.0.min.js"></script>
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script src="//webapi.amap.com/ui/1.0/main.js?v=1.0.11"></script>
+<script type="text/javascript">
+$(function(){
+	$("#process_div").hide();
+	$("#process_div_pic").hide();
+})
+
+var vallageCoordinatesArray = new Array();
+    function initMongoData(){
+    	$("#process_div").show();
+    	$("#process_div_pic").show();
+    	doManager("MongoDBManager", "getAllCoordinates",[], function(data, textStatus, XMLHttpRequest) {
+            if(data.result){
+            	var jsonData = JSON.parse(data.data);
+            	if(jsonData.code == 200){
+            		vallageCoordinatesArray = jsonData.vallageCoordinates;
+            		if(vallageCoordinatesArray.length > 0){
+            			var vallagePolygon;
+            			for(var i = 0; i < vallageCoordinatesArray.length; i++){
+            				var vallageCoordinates = vallageCoordinatesArray[i];
+            				var coordinates = vallageCoordinates.coordinates;
+            				vallagePolygon = new AMap.Polygon({
+                  			   path:coordinates,
+                  			 	strokeColor: "#FF33FF", //线颜色
+	                  	        strokeOpacity: 0.2, //线透明度
+	                  	        strokeWeight: 3,    //线宽
+	                  	        fillColor: "#1791fc", //填充色
+	                  	        fillOpacity: 0.35//填充透明度
+                  		 	});
+            				vallagePolygon.setMap(map);
+            				var area = vallagePolygon.getArea();
+            				vallageCoordinates["vallage_area"] = area;
+            				delete vallageCoordinates["coordinates"];
+            			}
+            		}
+            	}
+            	$("#process_div").hide();
+				 $("#process_div_pic").hide();
+            }else{
+                $$.showMessage("系统信息", "数据加载异常！");
+            }});
+    }
+    
+    function initMysqlData(){
+    	$("#process_div").show();
+    	$("#process_div_pic").show();
+    	doManager("MongoDBManager", "getCoordinatesWithoutArea",[], function(data, textStatus, XMLHttpRequest) {
+            if(data.result){
+            	var jsonData = JSON.parse(data.data);
+            	if(jsonData.code == 200){
+            		vallageCoordinatesArray = jsonData.vallageCoordinates;
+            		if(vallageCoordinatesArray.length > 0){
+            			var vallagePolygon;
+            			for(var i = 0; i < vallageCoordinatesArray.length; i++){
+            				var vallageCoordinates = vallageCoordinatesArray[i];
+            				var coordinates = vallageCoordinates.coordinates;
+            				vallagePolygon = new AMap.Polygon({
+                  			   path:coordinates,
+                  			 	strokeColor: "#FF33FF", //线颜色
+	                  	        strokeOpacity: 0.2, //线透明度
+	                  	        strokeWeight: 3,    //线宽
+	                  	        fillColor: "#1791fc", //填充色
+	                  	        fillOpacity: 0.35//填充透明度
+                  		 	});
+            				vallagePolygon.setMap(map);
+            				var area = vallagePolygon.getArea();
+            				vallageCoordinates["vallage_area"] = area;
+            				delete vallageCoordinates["coordinates"];
+            			}
+            		}
+            	}
+            	$("#process_div").hide();
+				 $("#process_div_pic").hide();
+            }else{
+                $$.showMessage("系统信息", "数据加载异常！");
+            }});
+    }
+
+    //初始化地图对象，加载地图
+    var map = new AMap.Map("mapContainer", {
+        resizeEnable : true,
+        zoom : 15,
+        doubleClickZoom : false
+    });
+    
+    function saveVallageArea(){
+    	$("#process_div").show();
+    	$("#process_div_pic").show();
+    	if(vallageCoordinatesArray.length>15000){
+    		var vallageCoordinatesArray1 =  vallageCoordinatesArray.slice([0], [15000]) ;
+    		var vallageCoordinatesArray2 =  vallageCoordinatesArray.slice([15000], [vallageCoordinatesArray.length]) ;
+    		console.log(vallageCoordinatesArray[14999]);
+    		console.log(vallageCoordinatesArray1[vallageCoordinatesArray1.length-1]);
+    		console.log(vallageCoordinatesArray[15000]);
+    		console.log(vallageCoordinatesArray2[0]);
+    		doManager("TinyAreaManager", "updateVallageAreaByCode",[vallageCoordinatesArray1], function(data, textStatus, XMLHttpRequest) {
+    	           if(data.result){
+    	        	   jsonData = JSON.parse(data.data);
+    	        	   $$.showMessage("系统信息", jsonData.message);
+    	           }else{
+    	               $$.showMessage("系统信息", "数据保存失败！");
+    	           }
+    	    },false);
+    		doManager("TinyAreaManager", "updateVallageAreaByCode",[vallageCoordinatesArray2], function(data, textStatus, XMLHttpRequest) {
+    	           if(data.result){
+    	        	   jsonData = JSON.parse(data.data);
+    	        	   $$.showMessage("系统信息", jsonData.message);
+    	           }else{
+    	               $$.showMessage("系统信息", "数据保存失败！");
+    	           }
+    	           
+    	    },false);
+    		$("#process_div").hide();
+       		$("#process_div_pic").hide();
+    	}else{
+    		doManager("TinyAreaManager", "updateVallageAreaByCode",[vallageCoordinatesArray], function(data, textStatus, XMLHttpRequest) {
+ 	           if(data.result){
+ 	        	   jsonData = JSON.parse(data.data);
+ 	        	   $$.showMessage("系统信息", jsonData.message);
+ 	           }else{
+ 	               $$.showMessage("系统信息", "数据保存失败！");
+ 	           }
+ 	          $("#process_div").hide();
+			  $("#process_div_pic").hide();
+ 	    });
+    	}
+    }
+</script>
+</body>
+</html>

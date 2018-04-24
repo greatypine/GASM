@@ -1,0 +1,211 @@
+﻿<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <script src="js/lib.js" type="text/javascript">
+        </script>
+        <link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		
+        <script type="text/javascript" charset="utf-8">
+            
+          
+			$(function(){
+					doManager("userManager", "getCurrentUserDTO", null,function(data){
+		if(data.result) {
+			var nowUserDTO = $.fromJSON(data.data);
+			$("#createUserId").val(nowUserDTO.id);
+			$$.executeSearch('functionManager', 'conditionsDiv'); 	
+		}
+	});
+             $validator = new PMSValidator($("#functionForm")[0]);
+       });
+            
+            function add_factory(){
+                location = "new_factory.html";
+            }
+            
+            function add_storage(){
+                location = "new_storage.html";
+            }
+            
+            var onSearch = function(){
+			 
+                $$.executeSearch('functionManager', 'searchDiv'); //queryid, the params div id.			
+            }
+            
+            var clearSearch = function(){
+                $("#codeField").val("");
+				   $("#nameField").val("");
+            }
+            
+       
+			
+			function doSave(){
+			
+				/** 提交时验证*/
+				$validator.clean();
+				passed = $validator.clientValidate();
+				
+				/** 提交时没通过验证*/
+				if (!passed) {
+					return;
+				}
+				Deli.confirm("确定提交吗?", function(){
+					var functionDTO = {
+						id: $("#id").val(),
+						activityName: $("#newNameField").val(),
+				        activityCode:$("#newCodeField").val(),
+						parentCode: $("#newParentCodeField").val(),
+						path: $("#newURLField").val(),
+						version:0
+					}
+					doManager("functionManager", "addFunction", functionDTO, function(data){
+						/** 保存成功*/
+						if (data.result) {
+						
+							/** 从后台返回的质量标准DTO*/
+							var returnFunction = $.fromJSON(data.data);
+							$$.showMessage('${query.ui.prompt}', '目录：    '+returnFunction.activityName+'   ,   添加成功 !   ');
+							 $("#newNameField").val("");
+							 $("#newCodeField").val("");
+							  $("#newParentCodeField").val("");
+							  $("#newURLField").val("");
+						}
+						
+						 
+					});
+				});
+			}
+        </script>
+    </head>
+    <body onload="onSearch();">
+        <div class="rightcont body_bg clear">
+            <div class="box">
+                <div class="title clear">
+                    <div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();">
+                    </div>
+                    <div class="ico2">
+                    </div>
+                    <div class="ico1">
+                    </div>
+                    <a href="#">基础管理 :</a>&nbsp;<a href="#">添加目录</a>
+                </div>
+            </div>
+            <div class="containerheader">
+                <a href="#" onclick="toggleBiz('containerbody','pic');"><img src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>查询/添加目录
+            </div>
+            <div id="containerbody">
+                <table class="bigteble">
+                    <tr>
+                        <td style="padding:5px;" bgcolor="#FFFFFF">
+                            <div style="padding:0px 0px 4px 0px">
+                                <table class="Querytable">
+                                    <tr class="Colorbar1">
+                                        <td width="20" class="Querytext">
+                                            <div>
+                                                <a href="#" onClick="toggleBiz('searchDiv','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a><strong>搜索条件</strong>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div id="searchDiv">
+                                    <form id="Form1" class="pmsForm">
+                                        <table class="bigteble">
+                                            <tr>
+                                                <td class="Querytext">
+                                                    内部号：
+                                                </td>
+                                                <td class="Queryform">
+                                                    <input name="path" id="codeField" />
+														<input type="hidden" id="id" name="id"/>
+													<input type="hidden" id="createUserId" name="createUser.id"/>
+                                                </td>
+                                             
+                                            
+                                          
+                                                <td class="Querytext">
+                                                    目录名称：
+                                                </td>
+                                                <td class="Queryform">
+                                                    <input name="activityName" id="nameField" />
+                                                </td>
+                                            </tr>
+                                            <tr class="Colorbar3">
+                                                <td colspan="4">
+                                                    <div style="padding:0px 5px 0px 0px;">
+                                                        <input align="right" role="button" class="buttonu" onClick="clearSearch();" value="清除" type="button" /><input align="right" role="button" class="buttonu" onClick="onSearch();" value="查询" type="button" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </form>
+									<input name="org.path" id="org.path" type="hidden"/>
+                                </div><!--searchCondition div-->
+                            </div>
+                            <div id="functionManagerContainer" queryid="functionManager" queryformat="simple" showsearch="false" autoload="false" searchDiv="searchDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" >
+                            </div>
+                        </td>
+                    </tr>
+					<tr><td>  <div style="padding:0px 4px 4px 4px">
+                                <table class="Querytable">
+                                    <tr class="Colorbar1">
+                                        <td width="20" class="Querytext">
+                                            <div>
+                                                <a href="#" onClick="toggleBiz('searchDiv','plusMinus1')"><img id="plusMinus11" src="../scripts/images/22.png"/></a><strong>添加目录</strong>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                                <div id="NosearchDiv">
+                                    <form id="functionForm" class="pmsForm1">
+                                        <table class="bigteble">
+                                            <tr>
+                                                <td class="Querytext">
+                                                    内部号：<span class="red">*</span>
+                                                </td>
+                                                <td class="Queryform">
+                                                    <input name="newActivityCode" id="newCodeField" validate="uniqueFunction:true,required:true"  />
+                                                </td>
+                                   
+                                                <td class="Querytext">
+                                                    目录名称：<span class="red">*</span>
+                                                </td>
+                                                <td class="Queryform">
+                                                    <input name="newActivityName" id="newNameField" validate="required:true"/>
+                                                </td>
+                                            </tr>
+											    <tr>
+                                                <td class="Querytext">
+                                                    父节点内部号：<span class="red">*</span>
+                                                </td>
+                                                <td class="Queryform">
+                                                    <input name="newParentCode" id="newParentCodeField" validate="validateParentFunction:true,required:true"/>
+                                                </td>
+                                   
+                                                <td class="Querytext">
+                   URL：
+                                                </td>
+                                                <td class="Queryform">
+                                                    <input name="newURL" id="newURLField" />
+                                                </td>
+                                            </tr>
+                                            <tr class="Colorbar3">
+                                                <td colspan="4">
+                                                    <div style="padding:0px 5px 0px 0px;">
+                                                        <input align="right" role="button" class="buttonu" onclick="doSave();"   value="添加" type="button" />
+                                                    </div>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </form>
+                                </div><!--searchCondition div-->
+                            </div>
+							</td>
+						</tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,429 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<meta name="viewport" content="initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no">
+<meta charset="UTF-8">
+<title>楼房地址坐标</title>
+
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/js/skin/layer.css" rel="stylesheet" type="text/css"/>
+    <link href="../startbootstrap/js/skin/layer.ext.css" rel="stylesheet" type="text/css"/>
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+          
+<!-- <script type="text/javascript" src="http://api.map.baidu.com/api?v=1.4"></script>
+ --><script type="text/javascript" src="https://api.go2map.com/maps/js/api_v2.0.js"></script>
+<!-- <script type="text/javascript" src="http://api.map.baidu.com/library/SearchControl/1.4/src/SearchControl_min.js"></script>
+<link rel="stylesheet" href="http://api.map.baidu.com/library/SearchControl/1.4/src/SearchControl_min.css" />
+<link href="http://api.map.baidu.com/library/TrafficControl/1.4/src/TrafficControl_min.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="http://api.map.baidu.com/library/TrafficControl/1.4/src/TrafficControl_min.js"></script> -->
+<script type="text/javascript" src="https://api.map.baidu.com/api?v=2.0&ak=GfeXovkNnUyAWh5GWGIyyZHk2SGuQ4XL&s=1"></script>
+<script type="text/javascript" src="../scripts/jquery-1.7.1.min.js"></script>
+ <script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
+ <script type="text/javascript" src="../scripts/bidLib.js"></script>
+  <script type="text/javascript" src="../scripts/common/ajaxfileupload.js"></script>
+ <script type="text/javascript" src="../scripts/common/uploadTable2.0.js"></script>
+ <script type="text/javascript" src="../scripts/common/uploadTableDIY.js"></script>
+     <script type="text/javascript" src="https://webapi.amap.com/maps?v=1.3&key=2f558b2e3e8c452ba07ad3600432fc9e&plugin=AMap.Geocoder"></script>
+<link rel="stylesheet" type="text/css" href="../startbootstrap/js/css.css" /> 
+</head>
+
+<script type="text/javascript">
+var id_flag;
+var baiduStatus=-1;
+var sougouStatus=-1;
+var gaodeStatus=-1;
+var idesgaag;
+var moee;
+var flag=false;
+var flagb=false;
+var lst_select_tiny;
+		//创建地址解析器
+		var myGeo=new BMap.Geocoder();
+		//当页面加载成功后获取小区对象
+		var win;
+		var obj;
+		$(function (){
+			document.getElementById('total_count').innerHTML=0;
+			document.getElementById('error_count').innerHTML=0;
+			document.getElementById('modified_count').innerHTML=0;
+			document.getElementById('yy').innerHTML=0+"%";
+			searchList();
+			$('#town_name').keyup(function(event){
+		        var str_name = $(this).val();
+		        var c=$("#sele").val();
+				var ght={"name":str_name,"id":c};
+		        if(!(event.keyCode >= 37 && event.keyCode <= 40) && event.keyCode != 13){
+		            $('#town-search').children().remove();
+		            if(str_name == null || str_name == "" || str_name.indexOf('\'') > -1){
+		                return;
+		            }
+		            doManager('TownManager','getTownByTown_name_Info',ght,function(data){
+		                if(data.result){
+		                   lst_select_tiny = JSON.parse(data.data);
+		                    $(lst_select_tiny).each(function(index,element){
+		                        $('#town-search').append('<option value="'+element.name+'">');
+		                    });
+		                }else{
+		                    $$.showMessage("提示",data.message);
+		                }
+		            });
+		        }
+		    });
+			
+			$('#town_name').change(function(){
+		        $(lst_select_tiny).each(function(index,element){
+		            if(element.name == $('#town_name').val()){
+		                $('#town_id').val(element.id);
+		                cc();
+		                updatecode();
+		            }
+		        });
+		    });
+		});
+		//记载页面时请求数据列表默认的方法
+		function searchList() {
+		    $$.executeSearch('houseListQuery', 'conditionsDiv');
+		}
+		//加载地址信息
+		function cc(){
+			var id=$('#town_id').val();
+			doManager("houseManager", "getHouse",id, function(data, textStatus,
+					XMLHttpRequest) {
+				if(data.result){
+					if(data.data!="null"&&data.data!=""){
+						var jso=JSON.parse(data.data);
+						if(jso.address!=null){
+							$("#address").val(jso.address);
+							getCoord(jso.address,jso.cityName);
+						}
+						$("#id").val(jso.id);
+						idesgaag=jso.id;
+					}else{
+						$("#upLoadCood")[0].reset();
+						//$$.showMessage("系统信息", "没有可以修改的地址信息");
+					}		
+				}else{
+					$$.showMessage("系统信息", "加载信息错误");
+				}
+			},false);
+		}
+		//获取百度地图坐标
+		function getCoord(address,cityName){
+				myGeo.getPoint(address, function(point){
+					if(point==null){
+						baiduStatus= 0;
+						getCoodFromSouGo(address,cityName);
+					}
+					if (point) {
+						$("#baidu_coordinate_x").val(point.lng);
+						$("#baidu_coordinate_y").val(point.lat);
+						baiduStatus=1;
+						getCoodFromSouGo(address,cityName);
+					}else{
+						baiduStatus=0;
+						getCoodFromSouGo(address,cityName);
+					}
+				}, cityName);
+		}
+		
+		//获取搜狗地图的坐标
+		
+		function getCoodFromSouGo(address,cityName){
+			 var request={
+			          address:{
+			               addr:address,
+			               city:cityName
+			            }
+			    }
+			var geo=new sogou.maps.Geocoder();
+		    geo.geocode(request,function(a){
+		    	if(a.status=='ok'){
+		    		var data = a.data;
+		    		 if (data.length > 0) {
+		    	         var geometry=data[0];
+		    	        var x= geometry.location.x;
+		    	        $("#sogou_coordinate_x").val(x);
+		    	        var y= geometry.location.y;
+		    	        $("#sogou_coordinate_y").val(y);
+		    	        sougouStatus=1;
+		    	        gaoDeMap(address,cityName);
+		    	}/* else{
+		    		sougouStatus=0;
+		    		gaoDeMap(address,cityName);
+		    	} */
+		    }else{
+		    	sougouStatus=0;
+		    	gaoDeMap(address,cityName);
+		    }
+		});
+
+		}
+		
+		//获取高德地图的坐标
+		
+		function gaoDeMap(address,cityName) {
+        var geocoder = new AMap.Geocoder({
+            city: cityName, //城市，默认：“全国”
+            radius: 1000 //范围，默认：500
+        });
+        geocoder.getLocation(address, function(status, result) {
+            if (status === 'complete' && result.info === 'OK') {
+                for (var i = 0; i < result.geocodes.length; i++) {
+                    $("#gaode_coordinate_x").val(result.geocodes[i].location.getLng());
+					$("#gaode_coordinate_y").val(result.geocodes[i].location.getLat());
+					gaodeStatus=1;
+					setTime();
+                }
+            }else{
+            	gaodeStatus=0;
+            	setTime();
+            }
+        });
+        
+    }
+		function setTime(){
+			if(flag){
+						if(baiduStatus==0&&sougouStatus==0&&gaodeStatus==0){
+							$("#baidu_coordinate_x").val(0);
+		         			$("#baidu_coordinate_y").val(0);
+		         			$("#gaode_coordinate_x").val(0);
+		         			$("#gaode_coordinate_y").val(0);
+		         			$("#sogou_coordinate_x").val(0);
+		         			$("#sogou_coordinate_y").val(0);
+		         			uperror();
+						}else{
+							flagb=false;
+						}
+						gaodeStatus=-1;
+						sougouStatus=-1;
+						baiduStatus=-1;
+						submitMethod();
+			}
+	}
+		//弹出坐标更新完成
+	    function showUserGroup(){
+	        $("#villageInfo").dialog({
+	            bgiframe: true,
+	            title: '系统信息',
+	            width: 300,
+	            //height: 500,
+	            modal: true,
+	            buttons: {
+	                "${form.ui.ok}": function () {
+	                	$("#villageInfo").dialog('close');
+	                	window.location.reload();//刷新当前页面.
+	                },
+	                "${query.ui.cancel}": function () {
+	                    $("#villageInfo").dialog('close');
+	                    window.location.reload();//刷新当前页面.
+	                }
+	            }
+	        });
+	    }
+		function submitMethod(){
+			//updatecode();
+			var modi_cou=$("#modified_count").text();
+			var errot_cou=$("#error_count").text();
+			var total_cou=$("#total_count").text();
+			if(parseInt(modi_cou)+parseInt(errot_cou)==parseInt(total_cou)){
+				town_chang_flag=true;
+				document.getElementById('yy').innerHTML=100+"%";
+				$("#mm").width(300);
+				showUserGroup();
+				return false;
+			}
+				if(!flag){flag=true;}
+				var obj = getFormSimpleData("upLoadCood");
+				doManager("houseManager", "saveHouseMapConn",obj, function(data, textStatus,
+						XMLHttpRequest) {
+					if(data.result){
+						if(data.data!="null"){
+							var jsonData=JSON.parse(data.data);
+							for ( var key in jsonData) {
+								var va = jsonData[key];
+								//$("#"+key).val(va);
+								if("sogou_coordinate_y"==key){
+									code3_sogou=jsonData[key];
+								}else if("baidu_coordinate_y"==key){
+									code1_baidu=jsonData[key];
+								}else if("gaode_coordinate_y"==key){
+									code2_gaode=jsonData[key];
+								}
+							}
+							if(code1_baidu!=null||code3_sogou!=null||code2_gaode!=null){
+								$("#upLoadCood")[0].reset();
+								if(!flagb){
+									 upcount(); 
+								 }
+								jindutiao();
+								cc();
+							}else{
+								cc();
+								$("#upLoadCood")[0].reset();
+							}
+							
+						}
+						
+					}else{
+						$$.showMessage("系统信息", "加载信息错误");
+					}
+				},false);
+			
+		
+	}
+		
+		function updatecode() {
+			var id=$('#town_id').val();
+			doManager("houseManager", "getHouseInformation",id, function(data, textStatus,
+					XMLHttpRequest) {
+				if(data.result){
+					if(data.data!="null"){
+						var jsonData = $.fromJSON(data.data);
+						var total,modi,err;
+						for ( var key in jsonData) {
+							var va = jsonData[key];
+							$("#"+key).val(va);
+							if(key=="total_count"){
+								total=va;
+								document.getElementById('total_count').innerHTML=total;
+								document.getElementById('error_count').innerHTML=0;
+								document.getElementById('modified_count').innerHTML=0;
+								document.getElementById('yy').innerHTML=0+"%";
+							}
+						}
+					}else{
+						$$.showMessage("系统信息", "加载信息错误");
+					}	
+				}else{
+					$$.showMessage("系统信息", "加载信息错误");
+				}
+			});
+		}
+		var editObj = {
+				html : '<a href="#" class="blue">编辑</a>',
+				resourceId: "",
+				func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+					var id = allColumnsDataMap.id;
+					var address = allColumnsDataMap.address;
+					layer.open({
+					      type: 2,
+					      title: '',
+					      //shadeClose: true,
+					      //shade: 0.8,
+					      maxmin: false, //开启最大化最小化按钮
+					      area: ['300px', '200px'],
+					      content: '/GASM/data_access/house_list_edit.html?_=sssss'+(new Date().getTime())+'id='+id+'&address='+address
+					    });
+				}
+			}
+		var deleteObj = {
+				html : '<a style="visibility:hidden" href="#">删除</a>',
+				resourceId : "village_List_delete",
+				func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+					var id = allColumnsDataMap.id;
+					$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+						doManager("VillageManager", "deleteVIllageByID", id + '', function(
+								data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								window.location.href = 'village_list.html';
+							} else {
+								$$.showMessage("系统信息", "删除失败!");
+							}
+						});
+					});
+				}
+			}
+		$pmspage.opArr = [ editObj ,deleteObj ];  
+		//执行更新多少条
+		function upcount(){
+			var d;
+			moee=$("#modified_count").text();
+			d=parseInt(moee)+1;
+			document.getElementById('modified_count').innerHTML=d;
+		}
+		
+		//执行错误多少条
+		function uperror(){
+			flagb=true;
+			var mod=$("#error_count").text();
+			var f=parseInt(mod)+1;
+			document.getElementById('error_count').innerHTML=f;
+		}
+		//更新进度条
+		function jindutiao(){
+			var gg;
+			 var mod=$("#error_count").text();
+			var total=$("#total_count").text();
+			f=(parseInt(mod)+parseInt(moee)+1)/parseInt(total)*300;
+			$("#mm").width(f);
+			gg=((parseInt(mod)+parseInt(moee)+1)/parseInt(total)*100).toFixed(2);
+			document.getElementById('yy').innerHTML=gg+"%";
+		}
+		
+</script>
+<style>
+	.form-con{margin: 10px 10px 20px 5px;padding:2px 3px 2px 5px }
+	.text-span{margin-left: 30px}
+	#address{margin-top: 50px}
+	h1{margin-top: 10px}
+	.display{
+    		width:100%
+    	}
+</style>
+<body >
+	<div style="display: none;">
+	<input type="hidden" id="town_id" name="town_id">
+	<form id="upLoadCood" action="" class="pmsForm">
+	<input type="hidden" id="id" name="id">
+	<span class="text-span"><font size="4" color="red">地&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;址：</font></span><input type="text" id="address" readonly="readonly" name="address" style="width:150px" class="form-con"/><br/>
+	<span class="text-span"><font size="4" color="red">百度X坐标：</font></span><input type="text" readonly="readonly" id="baidu_coordinate_x" readonly="readonly" name="baidu_coordinate_x" style="width:150px" class="form-con"/><br/>
+	<span class="text-span"><font size="4" color="red">百度Y坐标：</font></span><input type="text" readonly="readonly" id="baidu_coordinate_y" readonly="readonly" name="baidu_coordinate_y" style="width:150px" class="form-con"/><br/>
+	<span class="text-span"><font size="4" color="red">高德X坐标：</font></span><input type="text" readonly="readonly" id="gaode_coordinate_x" readonly="readonly" name="gaode_coordinate_x" style="width:150px" class="form-con"/><br/>
+	<span class="text-span"><font size="4" color="red">高德Y坐标：</font></span><input type="text" readonly="readonly" id="gaode_coordinate_y" readonly="readonly" name="gaode_coordinate_y" style="width:150px" class="form-con"/><br/>
+	<span class="text-span"><font size="4" color="red">搜狗X坐标：</font></span><input type="text" readonly="readonly" id="sogou_coordinate_x" readonly="readonly" name="sogou_coordinate_x" style="width:150px" class="form-con"/><br/>
+	<span class="text-span"><font size="4" color="red">搜狗Y坐标：</font></span><input type="text" readonly="readonly" id="sogou_coordinate_y" readonly="readonly" name="sogou_coordinate_y" style="width:150px" class="form-con"/><br/>
+	</form>
+	</div>
+	
+	<div class="panel panel-primary">
+        <div class="panel-heading">楼房坐标维护</div>
+        <div class="row" >
+        		<div class='pull-left' style="margin-left:45px; width:30%;">
+	        		<p style="font-size:16px; margin-top:25px;">街道名称:</p>
+	        		<input type="text" id="town_name" name="town_name" list="town-search" class="form-control" style="width:240px;"/>
+	        		<datalist id="town-search">
+                	</datalist>
+	        	</div>
+	        	<div class='pull-left' style="margin-left:45px; width:60%;">
+	        		<ul class="dn-list">
+	        			<li>待执行:<span id="total_count"></span>条 <span style="color: red;float: right;margin-right: 30%">提示：当执行更新操作时,请停留在当前页面</span></li>
+	        			<li>错误:<span id="error_count"></span>条</li>
+	        			<li>执行成功:<span id="modified_count"></span>条</li>
+	        			<li class="clearfix"><span style="float:left;">执行进度:</span>
+	        				<div class="progress" style="float:left;width:300px; height:15px; margin-top:7px; margin-left:5px;">
+							    <div class="progress-bar progress-bar-info" role="progressbar" aria-valuenow="60" 
+							        aria-valuemin="0" aria-valuemax="100" style="width: 0%;" id="mm">
+							    </div>
+							</div>
+							<div style="float:left; margin-left:5px;"><span id="yy"></span></div>
+							<button id="buton" class="btn btn-primary pull-right" onclick="submitMethod();">添加坐标</button>
+	        			</li>
+	        		</ul>
+	        	</div>
+	        	
+        	</div>   
+        </div>
+	<div id="centerQueryGridContainer" class="panel panel-primary" queryid="houseListQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+         
+         <div id="villageInfo" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<span>坐标更新完成</span>
+ </div>
+</body>
+</html>

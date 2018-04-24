@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.5.xsd">
+
+
+	<bean id="PropertyPlaceholderConfigurer"
+		class="com.cnpc.pms.base.springbean.PMSPropertyPlaceholderConfigurer">
+		<property name="systemPropertiesModeName" value="SYSTEM_PROPERTIES_MODE_OVERRIDE" />
+		<property name="ignoreResourceNotFound" value="true" />
+	</bean>
+
+	<!-- Hibernate SessionFactory -->
+	<bean id="lobHandler" class="org.springframework.jdbc.support.lob.DefaultLobHandler" lazy-init="true" />
+
+	<bean id="txProxyTemplate" abstract="true" class="org.springframework.transaction.interceptor.TransactionProxyFactoryBean">
+		<property name="transactionManager" ref="transactionManager" />
+		<property name="transactionAttributes">
+			<props>
+				<prop key="save*">PROPAGATION_REQUIRED</prop>
+				<prop key="update*">PROPAGATION_REQUIRED </prop> 				
+				<prop key="delete*">PROPAGATION_REQUIRED </prop>
+				<prop key="import*">PROPAGATION_REQUIRED</prop>
+				<prop key="do*">PROPAGATION_REQUIRED</prop>
+				<prop key="newTx">PROPAGATION_REQUIRES_NEW</prop>
+				<prop key="newTran*">PROPAGATION_REQUIRES_NEW</prop>
+				<!-- 语义重复 -->
+				<prop key="add*">PROPAGATION_REQUIRED </prop>
+				<prop key="change*">PROPAGATION_REQUIRED </prop>
+				<prop key="modify*">PROPAGATION_REQUIRED </prop>
+				<prop key="remove*">PROPAGATION_REQUIRED</prop>
+				<prop key="del*">PROPAGATION_REQUIRED</prop>
+				<prop key="set*">PROPAGATION_REQUIRED</prop>
+				<prop key="temporySave*">PROPAGATION_REQUIRED</prop>
+				<prop key="replace*">PROPAGATION_REQUIRED</prop>
+				<!-- 流程相关业务含义过多 -->
+				<prop key="suspend*">PROPAGATION_REQUIRED </prop>
+				<prop key="restore*">PROPAGATION_REQUIRED </prop>
+				<prop key="start*">PROPAGATION_REQUIRED</prop>
+				<prop key="stop*">PROPAGATION_REQUIRED</prop>
+				<prop key="activate*">PROPAGATION_REQUIRED</prop>
+				<prop key="rollBack*">PROPAGATION_REQUIRED</prop>
+				<prop key="submit*">PROPAGATION_REQUIRED</prop>
+				<prop key="approve*">PROPAGATION_REQUIRED</prop>
+				<prop key="end*">PROPAGATION_REQUIRED</prop>
+				<prop key="confirm*">PROPAGATION_REQUIRED</prop>
+				<!-- 业务含义不清晰 -->
+				<prop key="init*">PROPAGATION_REQUIRED</prop>
+				<prop key="sign*">PROPAGATION_REQUIRED</prop>
+				<prop key="disSign*">PROPAGATION_REQUIRED</prop>
+				<prop key="go*">PROPAGATION_REQUIRED</prop>
+				<prop key="dis*">PROPAGATION_REQUIRED</prop>
+				<prop key="afterReturning">PROPAGATION_REQUIRED</prop>
+			</props>
+		</property>
+	</bean>
+	
+	<!-- BaseManager -->
+	<bean id="basedao" class="com.cnpc.pms.base.dao.hibernate.BaseDAOHibernate">
+		<property name="sessionFactory" ref="sessionFactory" />
+	</bean>
+	<bean id="baseManager" parent="txProxyTemplate">
+		<property name="target">
+			<bean class="com.cnpc.pms.base.manager.impl.BaseManagerImpl">
+				<property name="dao" ref="basedao" />
+			</bean>
+		</property>
+	</bean>
+	
+	<!-- Message Source -->
+	<bean id="messageSource" class="com.cnpc.pms.base.springbean.PMSReloadableResourceBundleMessageSource">
+    	<property name="basename" value="/i18n/*"/>
+		<property name="cacheSeconds" value="1"/>
+	</bean>
+	
+	<!-- mail bean -->
+	<!--<bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">-->
+		<!--<property name="host" value="${smtp.host}" />-->
+		<!--<property name="port" value="${smtp.port}" />-->
+		<!--<property name="javaMailProperties">-->
+			<!--<props>-->
+				<!--<prop key="mail.smtp.auth">${smtp.auth}</prop>-->
+			<!--</props>-->
+		<!--</property>-->
+		<!--<property name="username" value="${smtp.username}" />-->
+		<!--<property name="password" value="${smtp.password}" />-->
+		<!--<property name="defaultEncoding" value="${smtp.defaultEncoding}" />-->
+		<!--<property name="protocol" value="${smtp.protocol}" />-->
+	<!--</bean>-->
+	
+	<!-- freemarker config -->
+    <bean id="freeMarkerConfigurer" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+        <property name="templateLoaderPath" value="classpath:mailTemplate" />
+        <property name="freemarkerSettings">
+            <props>
+                <prop key="template_update_delay">0</prop>
+                <prop key="default_encoding">UTF-8</prop>
+                <prop key="locale">zh_CN</prop>
+            </props>
+        </property>
+    </bean>
+	
+	<!-- cache config -->
+    <bean id="pmsCacheManager" class="com.cnpc.pms.base.cache.manager.impl.PmsCacheManagerImpl">
+    </bean>
+</beans>

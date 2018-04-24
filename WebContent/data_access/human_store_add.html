@@ -1,0 +1,888 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>增加基础员工信息</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script> 
+
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+.panel{border-radius:0; border:0; margin:0;}
+form{border:1px solid #337ab7;background-color:#fff;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	height:55px; line-height:55px; padding:5px 0;
+}
+table tr:nth-child(2n){background-color:#f2f2f2;}
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 58%;
+	height: 35px;
+	line-height: 35px;
+	border: 1px solid #e2e2e2;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;outline:none; border-radius:3px;
+}
+table td label{padding-left:10px; color:#999;}
+table te .letter{ letter-spacing:2em;}
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.form-control{margin:0; height:40px;}
+.input-group-btn button{height:40px;}
+.auto{max-height:100px; overflow-y:scroll;}
+</style>
+
+<script type="text/javascript">
+Date.prototype.format=function(fmt) {        
+    var o = {        
+    "M+" : this.getMonth()+1, //月份        
+    "d+" : this.getDate(), //日        
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
+    "H+" : this.getHours(), //小时        
+    "m+" : this.getMinutes(), //分        
+    "s+" : this.getSeconds(), //秒        
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度        
+    "S" : this.getMilliseconds() //毫秒        
+    };        
+    var week = {        
+    "0" : "\u65e5",        
+    "1" : "\u4e00",        
+    "2" : "\u4e8c",        
+    "3" : "\u4e09",        
+    "4" : "\u56db",        
+    "5" : "\u4e94",        
+    "6" : "\u516d"       
+    };        
+    if(/(y+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
+    }        
+    if(/(E+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
+    }        
+    for(var k in o){        
+        if(new RegExp("("+ k +")").test(fmt)){        
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
+        }        
+    }        
+    return fmt;        
+} 
+
+	var id = getUrlParamByKey("id");
+
+	
+	function dataCheck() {
+		var name = $("#name").val();
+		if(name==null||name.trim()==""){
+			$$.showMessage("系统信息","请填写姓名!");
+			return;
+		}
+		
+		var zw = $("#zw  option:selected").val();
+		
+		if(zw==null||zw.trim()==""){
+			$$.showMessage("系统信息","职位不能为空,请选择职位!");
+			return;
+		}
+		
+		/* if (zw != "综合管理" && zw != "国安侠" && zw!="星店店长" && zw!='副店长'&&zw!='市场专员') {
+			$$.showMessage("系统信息","职位错误 ！ 请正确填写职位!");
+			return;
+		} */
+		
+		if(zw=="副店长"){
+			var remark = $("#remark").val();
+			/* if(remark==null||remark.trim()==""){
+				$$.showMessage("系统信息","副店长请填写原职位 !");
+				return;
+			} */
+		}
+		
+		if(zw!='市场专员'&&zw!='线上服务专员'){
+			var store_name = $('#storename').val();
+			if (store_name == "" || store_name == null) {
+				$$.showMessage("系统信息","请填写门店 !");
+				return;
+			}
+			
+			var notexist=false;
+			doManager("StoreManager", "findStoreByName", store_name,
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData==null){
+								notexist=true;
+							}
+						}
+					}, false);
+			
+			if(notexist){
+				$$.showMessage("系统信息","填写的门店不存在 ，请添加门店后再录入!");
+				return ;
+			}
+		}
+		
+		var citySelect = $("#citySelect").val();
+		if(citySelect==null||citySelect==""){
+			$$.showMessage("系统信息","请选择城市!");
+			return;
+		}
+		
+		var cardnumber = $("#cardnumber").val();
+		if(cardnumber==null||cardnumber==""){
+			$("#cardnumber").focus();
+			$$.showMessage("系统信息","请填写身份证号!");
+			return;
+		}
+		if(cardnumber.length!=15&&cardnumber.length!=18){
+			$("#cardnumber").focus();
+			$$.showMessage("系统信息","身份证号格式错误!");
+			return;
+		}
+		
+		var cart_ret = isCardID(cardnumber);
+		if(cart_ret!="true"){
+			$$.showMessage("系统信息",cart_ret);
+			return;
+		}
+		
+		var comp_type = $("#comp_type  option:selected").val();
+		if(comp_type=="非海格"){
+			var authorizedtype = $("#authorizedtype  option:selected").text()
+			if(authorizedtype==null||authorizedtype==""){
+				$$.showMessage("系统信息","请选择人员类别!");
+				return;
+			}
+		}else{
+			var employee_no = $("#employee_no").val();
+			if(employee_no==null||employee_no==""){
+				$$.showMessage("系统信息","请填写员工编号!");
+				return;
+			}
+		}
+		
+		var phone = $("#phone").val();
+		if(phone==null||phone==""){
+			$("#phone").focus();
+			$$.showMessage("系统信息","请输入本人电话 !");
+			return;
+		}
+		
+		var topostdate = $("#topostdate").val();
+		if(topostdate==null||topostdate==""){
+			$("#topostdate").focus();
+			$$.showMessage("系统信息","请选择入职日期!");
+			return;
+		}
+		
+		/*
+		var obj = document.getElementsByName("isPhoneNo");
+		for (i = 0; i < obj.length; i++) {
+			if (!/^((0\d{2,3}-\d{7,8})|(1[35784]\d{9}))$/.test(obj[i].value)) {
+				alert("请输入正确的电话!");
+				return;
+			}
+		}*/
+		return true;
+	}
+	
+	//初始化快递公司 
+	function initExpressCompany() {
+		doManager("ExpressCompanyManager", "queryAllExpressName", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						var emList = jsonData.expressCompany;
+						//$("#express_company").append("<option></option>");
+						for (i = 0; i < emList.length; i++) {
+							$("#express_company").append("<option>" + emList[i].express_name + "</option>");
+						}
+					}
+				}, false);
+	}
+	
+	var array=new Array();
+	//初始化所有门店 
+	function initallstore() {
+		doManager("StoreManager", "findStoresByCurrCitys", null,
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					for(i=0;i<jsonData.length;i++){
+						array.push(jsonData[i].name);
+					}
+					var autoComplete = new AutoComplete("storename","auto",array);
+					document.getElementById("storename").onkeyup = function(event){
+						autoComplete.start(event);
+					}
+				}
+			}, false);
+	}
+	//初始化所有外包公司 
+	var outerarray=new Array();
+	function initalOuterCompany(){
+		doManager("OuterCompanyManager", "queryOutCompanys", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						for(i=0;i<jsonData.length;i++){
+							outerarray.push(jsonData[i].companyname);
+						}
+					}
+				}, false);
+	}
+	
+	
+	function defaultva(key,va,msg){
+		if(va==null||va==""){
+			document.getElementById(key).value=msg;
+		}else{
+			document.getElementById(key).value = va;
+		}
+	}
+	
+	
+	function initCareerGroup(){
+		doManager("DataHumanTypeManager", "queryAllDataHumanTypes", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						for (i = 0; i < jsonData.length; i++) {
+							$("#career_group").append("<option>" + jsonData[i].career_group + "</option>");
+						}
+					}
+				}, false);
+	}
+	
+	
+
+	$(function() {
+		initCareerGroup();
+		
+		initalOuterCompany();
+		initallstore();
+		//initExpressCompany();	
+		$("#authorizedtype").append("<option value=\"\" selected></option>");		
+		for(var i=0;i<outerarray.length;i++){
+			$("#authorizedtype").append("<option value=\""+outerarray[i]+"\">"+outerarray[i]+"</option>");	
+		}
+		
+		
+		$(".leavediv").hide();
+		$("#humanstatus").change(function(){
+			var humanstatus = $("#humanstatus  option:selected").val();
+			if(humanstatus=="2"){
+				$(".leavediv").show();
+			}else{
+				$(".leavediv").hide();
+			}
+		});
+		
+		$("#comp_type").change(function(){
+			var comp_type = $("#comp_type  option:selected").val();
+			if(comp_type=="非海格"){
+				$("#employee_no").attr("disabled",true);
+				$("#employee_no").attr("placeholder","员工号自动生成");
+				$("#employee_no").val('');
+			}else{
+				$("#employee_no").attr("disabled",false);
+				$("#employee_no").attr("placeholder","请输入员工号");
+			}
+		});
+		
+		$("#zw").change(function(event){
+			var zw = $("#zw  option:selected").val();
+			
+			if(zw!=null&&zw.trim()=="市场专员"){
+				$("#storename").css('background','#EDEDED');
+				$("#storename").attr("readonly","true");
+				$("#storename").val('');
+			}else{
+				$("#storename").css('background','');
+				$("#storename").attr("readonly","");
+			}
+			
+			if(zw!=null&&zw.trim()=="线上服务专员"){
+				$("#storename").css('background','#EDEDED');
+				$("#storename").attr("readonly","true");
+				$("#storename").val('');
+			}else{
+				$("#storename").css('background','');
+				$("#storename").attr("readonly","");
+			}
+			
+			if(zw!=null&&zw.trim()=="副店长"){
+				$("#srczw").show();
+			}else{
+				$("#remark").val("");
+				$("#srczw").hide();
+				
+			}
+			
+			
+			if(zw!=null&&(zw.trim()=="服务专员"||zw.trim()=="线上服务专员")){
+				$("#career_group").show();
+				$("#syqfont").show();
+			}else{
+				$("#career_group").hide();
+				$("#syqfont").hide();
+			}
+			
+			
+		});
+		
+		$("#career_group").hide();
+		$("#syqfont").hide();
+		
+	});
+
+	function doSave() {
+		$("#btnSave").attr("disabled","disabled");
+		if (!dataCheck()) {
+			$("#btnSave").attr("disabled",""); 
+			return;
+		}
+		var arr = ["isofficial","employee_no","relationtype","tel","relationname","nation","education","school","profession","remark","cardnumber","birthday","censusregister","marriage","phone","topostdate","name","orgname","deptlevel1","deptlevel2","deptlevel3","reporthigher","store_id","storename","zw","jobchannel","offername","citySelect","interndate","contractdatestart","contractdateend"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		//性别
+		o["sex"] = $("#sex  option:selected").val();
+		//职级
+		o["professnallevel"] = $("#professnallevel  option:selected").text();
+		//人员类别
+		o["authorizedtype"] = $("#authorizedtype  option:selected").text()+$("#iszs  option:selected").text();
+		//状态
+		o["humanstatus"] = $("#humanstatus  option:selected").val();
+		//职位
+		o["zw"] = $("#zw  option:selected").val();
+		//事业群 
+		var fwzw = $("#zw  option:selected").val();
+		if(fwzw=="服务专员"){
+			o["career_group"] = $("#career_group  option:selected").val();
+		}else{
+			o["career_group"] = "";
+		}
+		
+		if(o["humanstatus"]=="2"){
+			o["leavereason"]=$("#leavereason").val();
+			//o["leavetype"]=$("#leavetype").val();
+			o["leavetype"] = $("#leavetype  option:selected").text();
+			o["leavedate"]=$("#leavedate").val().replace(/-/g, "/");
+			o["leavercvlistdate"]=$("#leavercvlistdate").val();
+		}
+		
+		doManager("HumanresourcesManager", "saveHumanresourcesInfo", o , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				if(jsonData!=null){
+					$("#btnSave").attr("disabled",""); 
+					$$.showMessage("系统信息", data.data);
+				}else{
+					window.location.href = 'human_store_list.html';	
+				}
+				
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		});
+	}
+
+	
+	function doBack(){
+		window.location.href = 'human_store_list.html';
+	}
+	
+	
+	function check_employee_no(obj){
+		$("#employee_no").val(obj.value.toUpperCase());
+	}
+     
+	
+	
+	function isCardID(sId){
+		 var iSum=0 ;
+		 var info="" ;
+		 if(!/^\d{17}(\d|x)$/i.test(sId)) return "你输入的身份证长度或格式错误";
+		 sId=sId.replace(/x$/i,"a");
+		 sBirthday=sId.substr(6,4)+"-"+Number(sId.substr(10,2))+"-"+Number(sId.substr(12,2));
+		 var d=new Date(sBirthday.replace(/-/g,"/")) ;
+		 if(sBirthday!=(d.getFullYear()+"-"+ (d.getMonth()+1) + "-" + d.getDate()))return "身份证上的出生日期非法";
+		 for(var i = 17;i>=0;i --) iSum += (Math.pow(2,i) % 11) * parseInt(sId.charAt(17 - i),11) ;
+		 if(iSum%11!=1) return "你输入的身份证号非法";
+		 return "true";
+	}
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">员工信息采集管理 :增加基础员工信息
+        	<span class="but">
+                <input id="btnSave" name="" type="submit" onclick="doSave();" value="保存"/>
+                <input name="" type="button" onclick="doBack();" value="返回"/>
+            </span>
+        </div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						<font color="red">*</font>姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名：<input type="text" id="name" isautotab="true" value="" style="width: 30%"/>
+						来源:<select style="width: 16%" id="comp_type"><option value="非海格">非海格</option><option value="海格">海格</option></select>
+					</p>
+				</td>
+				<td>
+					<p>
+						<font color="red"  id="font_show">*</font>员工编号：<input type="text" id="employee_no" disabled="disabled" isautotab="true" value="" style="width: 40%" placeholder="员工号自动生成" onkeyup="javascript:check_employee_no(this)"/>
+					</p>
+				</td>
+
+			</tr>
+            
+            <tr>
+            	<td>
+					<p>
+						所属机构：<input type="text" id="orgname" isautotab="true" value="国安社区"/>
+					</p>
+				</td>
+                <td>
+					<p>
+						<font color="red">*</font>人员类别： <!-- <label id="isofficial"></label> --> 
+						 <select name="authorizedtype" id="authorizedtype" style="width: 20%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+                              	<!-- <option value="正式">正式</option>
+                              	<option value="淘汰">淘汰</option>
+                              	<option value="离职">离职</option>
+                              	<option value="专员">专员</option>
+                              	<option value="实习生">实习生</option>
+                              	<option value="汇思实习">汇思实习</option>
+                              	<option value="汇思正式">汇思正式</option>
+                              	<option value="天坤实习">天坤实习</option>
+                              	<option value="天坤正式">天坤正式</option>
+                              	<option value="中智正式">中智正式</option> -->
+                        </select> 
+                        
+                        <select name="iszs" id="iszs" style="width: 20%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+                              	<option value="正式">正式</option>
+                              	<option value="实习">实习</option>
+                        </select> 
+                        
+					</p>
+				</td>
+            </tr>
+            
+			<tr>
+
+				
+				<td>
+					<p>
+						一级部门：<input type="text" id="deptlevel1" isautotab="true" value="物业事业部"/>
+					</p>
+				</td>
+				<td>
+					<p>
+						职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;级：<!-- <label id="professnallevel"></label> -->
+					<select id="professnallevel" name="professnallevel" style="width: 40%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+						<option value="一级">一级</option>
+						<option value="二级">二级</option>
+						<option value="三级">三级</option>
+						<option value="四级">四级</option>
+						<option value="五级">五级</option>
+					</select>
+					</p>
+				</td>
+			</tr>
+            
+             <tr>
+            	<td>
+                	<p>
+						二级部门：<input type="text" id="deptlevel2" isautotab="true" value="门店运营中心"/>
+					</p>
+                </td>
+                <td>
+                	<p>
+						状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：
+						<select id="humanstatus" style="width: 40%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+							<!-- <option value="0">未分配门店</option> -->
+							<option value="1">在职</option>
+							<option value="2">离职</option>
+						</select>
+					</p>
+                </td>
+            </tr>
+            
+            	<tr class="leavediv">
+	            	<td>
+	                	<p>
+							离职原因：<input type="text" id="leavereason" isautotab="true" />
+						</p>
+	                </td>
+	                <td>
+	                	<p>
+							离职类型：<!-- <input type="text" id="leavetype" isautotab="true" style="width:35%;" /> -->
+							<select id="leavetype" style="width: 40%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+								<option></option>
+								<option value="主动">主动</option>
+								<option value="被动">被动</option>
+							</select>
+						</p>
+	                </td>
+	            </tr>
+	            <tr class="leavediv">
+	            	<td>
+	                	<p>
+							<span style="float:left; margin-top:13px;">离职时间：</span>&nbsp;&nbsp;<!-- <input type="text" id="leavedate" isautotab="true" /> -->
+							<input id="leavedate" revalidate="true" type="text" 
+									validate="formatDate:true" class="pmsDateField form-control"
+									readonly yearRange="-100:+0"
+									style="width: 33%; display: initial;"
+									likeOption="false" />
+						</p>
+	                </td>
+	                <td>
+		                <p>
+		                	<span style="float:left; margin-top:13px;">收单日期：</span>&nbsp;&nbsp;<!-- <input type="text" id="leavedate" isautotab="true" /> -->
+							<input id="leavercvlistdate" revalidate="true" type="text"
+									validate="formatDate:true" class="pmsDateField form-control"
+									readonly yearRange="-100:+0"
+									style="width: 33%; display: initial;"
+									likeOption="false" />
+		                </p>
+	                </td>
+	            </tr>
+            
+            <tr>
+            	<td>
+                	<p>
+						三级部门：<input type="text" id="deptlevel3" isautotab="true" />
+					</p>
+                </td>
+                <td>
+                	<p>
+						招聘渠道：<input type="text" id="jobchannel"  style="width: 40%;" />
+					</p>
+                </td>
+            </tr>
+            
+            <tr>
+            	<td>
+					<!-- <p style="float:left; padding-top:3px;">门&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;店:
+                    	<div class="input-group" style="width:70%; float:left; margin-left:10px;">
+                                    <input type="text" id="storename" class="form-control" placeholder="选择门店" readonly/>
+                                    <span class="input-group-btn">
+                                         <button type="button" class="btn btn-default" name="upload" onclick="showStoreWin(setStoreSelect)">
+                                            <img src="../scripts/images/search.png" alt="查询" style="height: 20px"/>
+                                        </button>
+                                    </span>
+                                </div>
+					</p> -->
+					
+					
+					<p style="float:left; padding-top:11px;"><font color="red">*</font>门&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;店：</p>
+                    <div class="wrap" style="width:57%; float:left; position:relative;">
+                        <input type="text" id="storename" class="auto-inp">
+                        <div class="auto hidden" id="auto">
+
+                        </div>
+                    </div>
+					
+				</td>
+                
+                <td>
+					<p>
+						推&nbsp;&nbsp;荐&nbsp;人：<input type="text" id="offername" style="width: 40%;"/>
+						<input type="hidden" id="id" />
+						<input type="hidden" id="store_id" isautotab="true" />
+					</p>
+				</td>
+
+            </tr>
+            
+			<tr>
+            	 <td>
+					<p>
+						<font color="red">*</font>职&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位：<!-- <input type="text" id="zw" isautotab="true" /> -->
+						<select id="zw" name="zw" style="width: 25%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+						<option value="国安侠">国安侠</option>
+						<option value="综合管理">综合管理</option>
+						<option value="事务管理">事务管理</option> 
+						<option value="服务专员">服务专员</option>
+						<option value="综合专员">综合专员</option>
+						<option value="副店长">副店长</option>
+						<option value="星店店长">星店店长</option>
+						<option value="市场专员">市场专员</option>
+						<option value="订单处理员">订单处理员</option>
+						<option value="配送员">配送员</option>
+						<option value="库房管理员">库房管理员</option>
+						<option value="仓库主管">仓库主管</option>
+						<option value="配送主管">配送主管</option>
+						<option value="线上服务专员">线上服务专员</option>
+					</select>
+					
+					<font id="syqfont">事业群</font>
+					<select id="career_group" name="career_group" style="width: 25%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+					</select>
+					
+					</p>
+				</td>
+				<td>
+					<p>
+						<font color="red">*</font>城&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;市：<input type="text" class="cityinput" id="citySelect" placeholder="请输入城市" style="width: 40%;" />
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+            
+            	 <td>
+                	<p>
+						汇报上级：<input type="text" id="reporthigher" isautotab="true" />
+					</p>
+                </td>
+				
+				<td>
+				
+				<p>
+						外包/实习生入职日期：<!-- <label id="entrydate"></label> -->
+						<input id="interndate" revalidate="true" type="text"
+								likeOption="false" name="interndate"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style="width: 25%; display: inline; height:40px;"
+								readonly />
+					</p>
+					
+				</td>
+			</tr>
+			
+			
+			
+			<tr>
+				<td>
+					<p>
+						<font color="red">*</font>身份证号：<input type="text" id="cardnumber" isautotab="true" style="width: 57%" onkeyup="value=value.replace(/[\W]/g,'') " onbeforepaste="clipboardData.setData('text',clipboardData.getData('text').replace(/[^\d]/g,''))"  maxlength="18" />
+					</p>
+				</td>
+
+				<td>
+					<p>
+						性&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;别：
+						 <select name="sex" id="sex" style="width: 20%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+						 	<option value=""></option>
+						 	<option value="男">男</option>
+						 	<option value="女">女</option>
+						 </select>
+					</p>
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td>
+					<p>
+						生&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;日：<input id="birthday" revalidate="true" type="text"
+								likeOption="false" name="birthday"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style="width: 25%; display: inline; height:40px;"
+								readonly />
+					</p>
+				</td>
+				<td>
+					<p>
+						民&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;族：<input type="text" id="nation" isautotab="true"  style="width: 40%;" />
+					</p>
+				</td>
+
+			</tr>
+			
+             <tr>
+            	<td>
+					<p>
+						户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;籍：<input type="text" id="censusregister" isautotab="true" />
+					</p>
+				</td>
+                <td>
+					<p>
+						学&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;历：<input type="text" id="education" isautotab="true"  style="width: 40%;" />
+					</p>
+				</td>
+            </tr>
+            
+			<tr>
+				
+				<td>
+					<p>
+						毕业院校：<input type="text" id="school" isautotab="true" />
+					</p>
+				</td>
+
+				<td>
+					<p>
+						专&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;业：<input type="text" id="profession" isautotab="true"  style="width: 40%;" />
+					</p>
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td>
+					<p>
+						婚姻状况：<input type="text" id="marriage" isautotab="true" />
+					</p>
+				</td>
+				<td>
+					<p>
+						<font color="red">*</font>联系电话：<input type="text" id="phone" isautotab="true" placeholder="输入本人电话"  style="width: 39%;"  onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11" />
+					</p>
+				</td>
+
+				
+			</tr>
+			
+			
+			<tr>
+				<td>
+					<p>
+						紧急联系人姓名：<input type="text" id="relationname" isautotab="true" style="width: 49%;" />
+					</p>
+				</td>
+				<td>
+					<p>
+						紧急联系人电话：<input type="text" id="tel" isautotab="true" style="width: 31%;" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11"/>
+					</p>
+				</td>
+				
+			</tr>
+			
+			<tr>
+            	<td>
+					<p>
+						与紧急联系人关系：<input type="text" id="relationtype" isautotab="true"  style="width: 46%;"/>
+					</p>
+				</td>
+                <td>
+				<p>
+						是否转正：<input type="text" id="isofficial" isautotab="true" style="width: 40%;"/>
+					</p>
+				</td>
+            </tr>
+            
+			<tr>
+				<td>
+					<p>
+						<font color="red">*</font>员工入职日期：<input id="topostdate" revalidate="true" type="text"
+								likeOption="false" name="topostdate"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style="width: 25%; display: inline; height:40px;"
+								readonly />
+					</p>
+				</td>
+				<td>
+					<p><!-- <label id="contractdate"></label> -->
+						合同日期：<input id="contractdatestart" revalidate="true" type="text"
+								likeOption="false" name="contractdatestart"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style="width: 25%; display: inline; height:40px;"
+								readonly />
+						至<input id="contractdateend" revalidate="true" type="text"
+								likeOption="false" name="contractdateend"
+								validate="formatDate:true" class="pmsDateField form-control"
+								yearRange="-100:+10" style="width: 25%; display: inline; height:40px;"
+								readonly />
+					</p>
+				</td>
+			</tr>
+			
+			
+			
+			
+			<tr>
+				<td><div id="srczw" style="display: none;">
+					<p>
+						<!-- <font color="red">*</font> -->原&nbsp;&nbsp;职&nbsp;&nbsp;位：<input type="text" id="remark" isautotab="true" />
+					</p></div>
+				</td>
+				
+			</tr>
+                       
+		</table>
+	</form>
+	
+</body>
+
+<script>
+	
+	
+	var test=new Vcity.CitySelector({input:'citySelect'});
+	
+</script>
+
+</html>

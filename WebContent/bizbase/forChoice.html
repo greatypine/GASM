@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Untitled Document</title>
+		<script type="text/javascript" src="js/lib.js"></script>
+		<link rel="stylesheet" type="text/css" href="css/i2/style_sheet_core.css"/>
+		<SCRIPT LANGUAGE="JavaScript">
+			var zTree1;
+			var setting;
+			var myData;
+			var zNodes = [];
+			myData = $.toJSON(
+				{
+					managerName: "purStruOrgManager",
+                	methodName: "getChild",
+                	parameters: ""
+				});
+			setting = 
+				{
+					checkable: true,
+					checkStyle: "radio",
+					async: true,
+					asyncParam: ["name", "id"],
+					asyncParamOther: ["requestString", myData],
+					 callback: 
+						{
+							click: zTreeOnClick,
+						},
+					checkType: 
+						{
+							"Y": "",
+							"N": ""
+						}
+				}
+				function zTreeOnClick(event, treeId, treeNode) {
+				if (treeNode.nodes == null || treeNode.nodes.length == 0) {
+					var data = new PMSRequestObject("purStruOrgManager", "getChildsByParentId", [treeNode.id]);
+					$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							newNodes = eval("(" + data.data + ")");
+							addNode(newNodes, treeNode);
+						}
+					});
+				}
+			}
+			function addNode(nodes, parNode) {
+				for (i = 0; i < nodes.length; i++) {
+					var newNode = nodes[i];
+					zTree1.addNodes(parNode, newNode);
+				}
+			}
+			$(document).ready(function() {
+				var url = $$.PMSDispatchActionUrl;
+				refreshTree(url);
+			});
+			function refreshTree(asyncUrl) {
+				setting.asyncUrl = asyncUrl;
+				zTree1 = $("#treeDemo").zTree(setting, zNodes);
+			}
+			
+			function getRefvalue() {
+				var refNodes = zTree1.getCheckedNodes();
+				var refId = refNodes[0].id;
+				var refValue = refNodes[0].name;
+				choice('parentId', refValue, refId);
+			}
+		</SCRIPT>
+	</head>
+	<body>
+		<ul id="treeDemo" class="tree" style="background:#e6e6e6">
+		</ul>
+		<div align="center">
+			<input type="button" class="buttonu" value="确定" onclick="getRefvalue()"/>
+		</div>
+	</body>
+</html>

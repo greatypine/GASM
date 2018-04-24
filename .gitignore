@@ -1,0 +1,10 @@
+.svn
+.classpath
+.project
+sql/
+target
+.settings
+.externalToolBuilders
+bin/
+build/
+

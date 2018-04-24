@@ -1,0 +1,221 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="author" content="Zhong Youyuan">
+		<title>新建角色</title>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		<link rel="stylesheet" href="script/datepicter/jquery.ui.all.css" />
+		<link rel="stylesheet" href="script/tree/userGroupTree.css" />
+		<script src="js/lib.js" type="text/javascript"></script>
+		<script src="js/newRole.js" type="text/javascript"></script>
+		<script language="JavaScript">
+			var $validator;
+			$(document).ready(function() {
+				$validator = new PMSValidator($("#roleAddForm")[0], 
+					{
+						bNormalDisplay: false,
+						iDisplayLength: 999
+					});
+					
+				var url = $$.PMSDispatchActionUrl;
+				var data = new PMSRequestObject("userManager","getCurrentUserDTO",null);
+				$$.ajax(url,"requestString="+encodeURIComponent(data.toJsonString()),function(data,textStatus, XMLHttpRequest){
+				var user = $.fromJSON(data.data);
+
+				if(user.usertype!='2'&&user.usertype!='21'&&user.userAttribute!='pur'){
+					$("#roleTypeStr2").val(user.userAttribute);
+				}
+				var typestr = ""+user.usertype;
+				$("#roleTypeStr").val(typestr);
+				//var selectObj = $("#roleType")[0];
+				//var dicts = $dict.getDictList("roletype");
+//				$(dicts).each(function(i,element){
+//					if(element.dictCode.indexOf(typestr)!=-1){
+//						var option = new Option(element.dictText ,element.dictCode);
+//						selectObj.add(option);
+//					}
+//				});
+				
+				//添加角色类型选项
+				/*
+					var roleAttrObj = $("#roleAttribute")[0];
+					var userandrole_dicts = $dict.getDictList("userandrole_type");
+					//如果是系统管理员则可供选择物采或者招标,否则根据自身类型
+					if(user.usertype == 2||user.usertype == 21){
+						$(userandrole_dicts).each(function(i,element){
+							var option = new Option(element.dictText ,element.dictCode);
+							roleAttrObj.add(option);
+						});
+					}else{
+						$(userandrole_dicts).each(function(i,element){
+							if(element.dictCode==user.userAttribute){
+								var option = new Option(element.dictText ,element.dictCode);
+								roleAttrObj.add(option);
+							}
+						});
+					}
+				*/
+			});
+			});
+			
+		</script>
+		<style type="text/css">
+			table {
+			    border: 0px solid #000;
+			}
+			
+			td {
+			    border: 0px solid #000;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="rightcont clear">
+			 <div class="title clear">
+              <div class="arrowleft"  style="cursor:hand;" onclick="toggleNavi();">
+				</div>
+                <div class="ico2">
+                </div>
+                <div class="ico1">
+                </div>
+				<a href="#">用户与权限 :</a>&nbsp;
+                <a href="#" onclick="javascript:history.go(-1);">角色管理</a><span>></span>
+				<a href="#">新建角色</a>
+            </div> 
+			<div class="containerheader">
+         		<a href="#" onclick="toggleBiz('containerbody','pic');"><img  src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>&nbsp;新建角色
+     	 	</div> 
+			<div class="containerbody" id="containerbody" style="padding:0px;border:none;">
+				<table class=" bigteble">
+					<tr>
+						<td>
+							<div  style="padding:5px">
+							 <form id="roleAddForm" class="pmsForm" validate="true" clientvalidate="true">
+							  <table class="bigteble" style="border:none">
+								<tr>
+									<td class="Querytext" style="width:80px;">
+										角色名称:<span class="red">*</span>
+									</td>
+									<td class="Queryform" style="width:130px;">
+										<input type="text" name="roleName" id="roleName"  validate="required: true,roleNameValid: true" size=23/>
+									</td>
+									<td class="Querytext" style="width:80px;">
+										角色编码:<span class="red">*</span>
+									</td>
+									<td  class="Queryform">
+										<input type="text" name="roleCode" id="roleCode" validate="roleCodeValid:true,required: true,isCorrectCode:true"
+										size=23 />
+									</td>
+								</tr>
+								<tr>
+								</tr>
+								<tr>
+									 <td class="Querytext" style="width:80px;">
+                                          	  复制角色:
+                                        </td>
+                                        <td class="Queryform">
+                                            <input type="text" name="oldRoleName" class="inputtext_dis" id="oldRoleName" inputType="select"
+											readonly="readonly" />
+											 <input type="text" style="display:none;" id="oldRoleId"/>
+											<input type="button" class="buttonu" value="选择" onclick="showOldRoles()"/>
+                                        </td>
+										<!--<td class="Queryform">
+	                                   	角色级别:
+	                                	</td>
+	                                <td class="Querytext">
+	                                   <select  name="roleType" id="roleType" style="width:170px" inputType="select"  validate="{required:true}" ></select>
+	                                </td>   -->
+								</tr>
+								<tr>
+									<!--
+									<td class="Queryform">
+		                               	角色类型:
+		                            </td>
+		                            <td class="Querytext">
+		                                <select id="roleAttribute"  style="width:175px;"  >
+		                                    
+		                                </select>
+		                            </td>  -->
+									<td class="Queryform">
+	                                   	停用标志:
+	                                </td>
+	                                <td>
+	                                   <input class="pmsRadio" name="radioA" data="[['0','是'],['1','否','checked']]">
+	                                </td>
+								</tr>
+								<tr>
+									<td class="Querytext">
+										备注:
+									</td>
+									<td  class="Queryform">
+										<input type="text" name="textarea" id="memo" class="memo" size=23>
+									</td>
+								</tr>
+							</table>
+						</form>
+					  </div>
+					</td>
+					</tr>
+					<tr class="Colorbar3">
+						<td align="right">
+							<div style="padding:0px 5px 0px 0px;"> 
+								<input align="right" role="button" class="buttonu" onClick="doSsave();" value="提交" type="button" />
+								<input align="right" role="button" class="buttonu" onClick="backPage();" value="返回" type="button" />
+							</div>
+						</td>
+					</tr>
+				</table>
+			</div>
+		</div>
+		
+		<div id="oldRoleInfo" style="display:none;overflow-x:hidden;">
+			<div class="containerheader">
+         		<a href="#" onclick="toggleBizBiz('ConditonMainDiv','pic');"><img  src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>&nbsp;搜索条件
+     	 	</div>
+			<div id="ConditonMainDiv"> 
+				<div class="searchCondition" id="searchConditionDiv" style="min-width:753px;overflow:auto;border:1px solid #999999;">
+					 <table class="searchTable" style="width:auto">
+	                    <tr>
+	                        <td  class="Querytext">
+	                            角色名称
+	                        </td>
+	                        <td class="Queryform">
+	                            <input type="text" name="oldRoleName2" id="oldRoleName2"/>
+	                        </td>
+	                        <td class="Querytext">
+	                           角色编码 
+	                        </td>
+	                        <td class="Queryform">
+	                            <input type="text" name="oleRoleCode" id="oleRoleCode"/>
+								<!--<input name="roleTypeStr" id="roleTypeStr" type="hidden" />
+								<!-- 角色类型-->
+							<!--	<input name="roleTypeStr2" id="roleTypeStr2" type="hidden" />
+							-->
+	                        </td>
+	                    </tr>
+	               </table>
+				</div>
+				<div class="containerheader" style="padding:0px 5px 0px 0px;" align="right">
+				   	<input class="buttonu" onClick="searchRoleQuery()" value="查询" type="button" />
+				</div>
+			</div>
+			<div id="roleConditionDiv">
+				<input name="code" id="code" codeForSearch="code" type="hidden" />
+				<input name="name" id="name" nameForSearch="name" type="hidden" />
+				<!--<input name="type" id="type" typeForSearch="roleType" type="hidden" />
+				<input name="roleAttribute" id="roleAttribute"type="hidden" />-->
+				<input name="disabledFlag" id="disabledFlag" type="hidden" value="1"/>
+			</div>
+			<div style="padding:5px 0px 0px 0px;">
+	            <div id="gridContainer" searchDiv="roleConditionDiv" queryid="roleQuery" queryformat="simple" showprint="false" 
+					showsearch="false"  showtitle="true"  showpaging="true" showcheckbox="true" checkmode="single" 
+					autoload="false">
+	            </div>
+			</div>
+        </div>
+		
+	</body>
+</html>

@@ -1,0 +1,732 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<pmsquery>
+    <query id="houseStyleQuery" header="房屋户型信息"  order="id desc" method="houseStyleManager.showHouseStyleData">
+        <column key="tiny_village_id" header="小区ID"  align="center" allowSort="true" display="false"/>
+        <column key="tiny_village_name" header="小区"  align="center" allowSort="true"/>
+        <column key="tiny_village_address" header="小区地址"  align="center" allowSort="true"/>
+        <column key="building_id" header="楼房ID"  align="center" allowSort="true" display="false"/>
+        <column key="building_name" header="楼号"  align="center" allowSort="true"/>
+        <column key="house_id" header="房屋ID"  align="center" allowSort="true" display="false"/>
+        <column key="building_house_no" header="单元"  align="center" allowSort="true"/>
+        <column key="floor_number" header="楼层"  align="center" allowSort="true"/>
+        <column key="house_no" header="房号"  align="center" allowSort="true"/>
+        <column key="house_style_id" header="户型ID"  align="center" allowSort="true" display="false"/>
+        <column key="house_area" header="面积"  align="center" allowSort="true"/>
+        <column key="house_toward" header="朝向"  align="center" allowSort="true"/>
+        <column key="house_style" header="户型"  align="center" allowSort="true"/>
+        <column key="house_pic" header="户型图"  align="center" allowSort="true"/>
+    </query>
+
+    <query id="selectStoreQuery" header="门店列表" baseclass="com.cnpc.pms.personal.entity.Store" order="id desc">
+        <column key="store_id" header="门店编号" type="java.lang.Long" operator="in" align="left" allowSort="true" display="false"/>
+        <column key="name" header="门店名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="town_id" header="门店街道" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+    </query>
+
+    <query id="selectTinyVillageQuery" header="列表" baseclass="com.cnpc.pms.personal.entity.TinyVillage" order="id desc">
+        <column key="id" header="编号" type="java.lang.Long" operator="in" align="left" allowSort="true" display="false"/>
+        <column key="name" header="名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="address" header="地址" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="tinyvillage_type" header="类型" type="java.lang.Integer" align="left" allowSearch="true" operator="eq" allowSort="true" display="false"/>
+    </query>
+
+    <query id="selectBuildingQuery" header="列表" baseclass="com.cnpc.pms.personal.entity.Building" order="id desc">
+        <column key="id" header="编号" type="java.lang.Long" operator="in" align="left" allowSort="true" display="false"/>
+        <column key="name" header="名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="tinyvillage_id" header="小区编号" type="java.lang.Long" align="left" allowSearch="true" operator="eq" allowSort="true" display="false"/>
+    </query>
+
+    <query id="selectTownQuery" header="街道列表" baseclass="com.cnpc.pms.personal.entity.Town" order="id desc">
+        <column key="id" header="编号" type="java.lang.Long" operator="in" align="left" allowSort="true" display="false"/>
+        <column key="gb_code" header="国标码" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="name" header="街道名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+    </query>
+
+    <query id="selectVillageQuery" header="社区列表" baseclass="com.cnpc.pms.personal.entity.Village" order="id desc">
+        <column key="id" header="编号" type="java.lang.Long" operator="in" align="left" allowSort="true" display="false"/>
+        <column key="gb_code" header="国标码" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="name" header="社区名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="committee_address" header="居委会地址" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+    </query>
+
+    <query id="customerQuery" header="用户列表" baseclass="com.cnpc.pms.personal.entity.Customer" order="id desc">
+        <column key="id" header="主键" type="java.lang.Long" operator="in" align="left" allowSort="true" display="false"/>
+        <column key="name" header="姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="mobilephone" header="移动电话" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="sex" header="性别" type="java.lang.Integer" dict="customer_sex" align="left" allowSearch="true" operator="in" allowSort="true" display="true"/>
+        <column key="age" header="年龄" type="java.lang.Integer" align="left" allowSearch="true" operator="in" allowSort="true" display="true"/>
+        <column key="nationality" header="民族" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="address" header="家庭住址" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="house_property" header="住房性质" type="java.lang.String" dict="house_property_resource" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="job" header="职业" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="income" header="收入" type="java.lang.String" dict="income_resource" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="work_overtime" header="加班频度" type="java.lang.String" align="left" dict="work_overtime_resource" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="other" header="其它信息" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="family_num" header="家庭人口数" type="java.lang.Integer" align="left" allowSearch="true" operator="in" allowSort="true" display="false"/>
+        <column key="preschool_num" header="学龄前人数" type="java.lang.Integer" align="left" allowSearch="true" operator="in" allowSort="true" display="false"/>
+        <column key="minor_num" header="未成年人数" type="java.lang.Integer" align="left" allowSearch="true" operator="in" allowSort="true" display="false"/>
+        <column key="pet_type" header="宠物种类" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+    </query>
+
+    <query id="expressQuery" header="快递单列表" baseclass="com.cnpc.pms.personal.entity.Express" method="expressManager.queryExpressList" order="id desc" >
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="express_date" header="快递时间" type="java.util.Date" format="yyyy-MM-dd" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="express_date_str" header="快递时间" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="express_no" header="快递单号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="express_company" header="快递公司" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="send_name" header="寄件人姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="send_tel" header="寄件人电话" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="send_address" header="寄件人地址" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="rcv_name" header="收件人姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="rcv_tel" header="收件人电话" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="rcv_address" header="收件人地址" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="obj_name" header="托寄物名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="employee_name" header="国安侠" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="employee_phone" header="国安侠电话" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="employee_no" header="国安侠编号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="store_name" header="门店" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        
+        <column key="remark" header="备注" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="do_edit" header="操作" type="java.lang.String" allowSearch="true" allowSort="true" display="true"/>
+    </query>
+    
+    <query id="selfExpressQuery" header="菜鸟驿站列表" baseclass="com.cnpc.pms.personal.entity.SelfExpress"  method="selfExpressManager.querySelfExpressList" filter="status!=1" order="id desc">
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="express_date" header="到件时间" display="false" type="java.util.Date" format="yyyy-MM-dd" allowSort="true" allowSearch="true" operator="between"/>
+        <column key="take_express_date" header="取件时间" display="false" type="java.util.Date" format="yyyy-MM-dd" allowSort="true" allowSearch="true" operator="between"/>
+        
+       	<column key="express_date_str" header="到件时间" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="take_express_date_str" header="取件时间" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        
+        <column key="express_no" header="快递单号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="express_company" header="快递公司" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="rcv_name" header="收件人姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="rcv_tel" header="收件人电话" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="rcv_address" header="收件人地址" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="obj_name" header="托寄物名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="store_name" header="门店" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        
+        <column key="remark" header="备注" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+    </query>
+    
+    
+    <query id="xxExpressQuery" header="许鲜列表" baseclass="com.cnpc.pms.personal.entity.XxExpress"  method="xxExpressManager.queryXxExpressList" filter="status!=1" order="id desc">
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="express_date" header="到店时间" display="false" type="java.util.Date" format="yyyy-MM-dd" allowSort="true" allowSearch="true" operator="between"/>
+        <column key="take_express_date" header="取货时间" display="false" type="java.util.Date" format="yyyy-MM-dd" allowSort="true" allowSearch="true" operator="between"/>
+        
+        <column key="express_date_str" header="到件时间" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="take_express_date_str" header="取件时间" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        
+        <column key="obj_name" header="品类明细" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="rcv_name" header="用户姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="rcv_tel" header="用户电话" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        
+        <column key="store_name" header="门店" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="remark" header="备注" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+    </query>
+    
+    <!-- 导入人员信息列表  -->
+    <query id="importHumanresourcesQuery" header="导入人员信息列表" baseclass="com.cnpc.pms.personal.entity.ImportHumanresources"  filter="status!=1 and importstatus=0" order="id desc">
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="name" header="姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+       	<column key="employee_no" header="员工编号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="sex" header="性别" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="birthday" header="出生年月" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="cardnumber" header="身份证号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/>
+    </query>
+    
+    
+    <!-- 分配门店人员信息列表 -->
+    <query id="humanresourcesQuery" header="人员信息列表" baseclass="com.cnpc.pms.personal.entity.Humanresources"  method="humanresourcesManager.queryhumanbaseList" filter="status!=1" order="humanstatus asc">
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="employee_no" header="员工编号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="name" header="姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="sex" header="性别" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="phone" header="手机号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="storename" header="门店" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+        <column key="zw" header="职位" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="cardnumber" header="身份证号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+    	<column key="humanstatus" header="状态" type="java.lang.Long" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+    	
+    	<column key="career_group" header="事业群" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+    	
+    	<column key="editdelete" header="操作" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+    	<column key="create_user_id" header="创建人编号" type="java.lang.Long" allowSort="false" allowSearch="true" operator="between" display="false"/>
+    	
+    </query>
+    
+    <!-- 分配门店人员信息列表 店长视角 -->
+    <query id="humanresourcesDZQuery" header="人员信息列表" baseclass="com.cnpc.pms.personal.entity.Humanresources"  method="humanresourcesManager.queryhumanbaseDZList" filter="status!=1" order="humanstatus asc">
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="employee_no" header="员工编号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="name" header="姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="sex" header="性别" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="phone" header="手机号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="storename" header="门店" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+        <column key="zw" header="职位" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="cardnumber" header="身份证号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+    	<column key="humanstatus" header="状态" type="java.lang.Long" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+    	
+    	<column key="career_group" header="事业群" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+    	
+    	
+    	<column key="editdelete" header="操作" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+    	<column key="create_user_id" header="创建人编号" type="java.lang.Long" allowSort="false" allowSearch="true" operator="between" display="false"/>
+    	
+    </query>
+    
+    
+    
+    <!-- 培训人员信息列表 -->
+    <query id="humanreteachQuery" header="人员培训信息列表" baseclass="com.cnpc.pms.personal.entity.Humanresources" method="humanresourcesManager.queryhumanList"  filter="status!=1 and humanstatus=1" order="id desc">
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        
+        <column key="onlinestartstr" header="操作" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        
+        <column key="employee_no" header="员工编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="name" header="姓名" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="citySelect" header="城市" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="false"/>
+        <column key="authorizedtype" header="编制" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <!-- <column key="sex" header="性别" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/> -->
+        <column key="phone" header="手机号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="storename" header="门店" type="java.lang.Long" align="center" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="zw" header="职位" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="true" display="true"/>
+        <column key="humanstatus" header="状态" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="true" display="true"/>
+        <!-- <column key="cardnumber" header="身份证号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/> -->
+    	<!-- <column key="humanstatus" header="状态" type="java.lang.Long" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/> -->
+    	
+    	<column key="teachmsgstr" header="岗前培训（最新）" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="offlinescount" header="岗后培训" type="java.lang.Long" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        
+        <!-- <column key="onlinestartstr" header="操作" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="offlinestartstr" header="操作" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+    	 -->
+    </query>
+
+    <query id="viewAddressDataQuery" header="地址单体画像查询" baseclass="com.cnpc.pms.personal.entity.ViewAddressData" order="id desc">
+        <column key="id" header="流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_id" header="房屋流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="address" header="家庭地址" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="house_area" header="面积（㎡）" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="house_toward" header="朝向" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="house_style" header="户型" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="is_pic" header="户型图" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="people_num" header="住户数量" type="java.lang.Integer" align="center" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+        <column key="tv_id" header="小区流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="tv_name" header="小区名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="false"/>
+        <column key="building_id" header="楼房流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="building_name" header="小区名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="false"/>
+        <column key="house_no" header="房间号" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="unit_no" header="单元号" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_type" header="房屋类型" type="java.lang.Integer" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+<!--         <column key="store_id" header="门店id" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/> -->
+    </query>
+
+    <query id="viewCustomerAddress" header="客户单体画像查询"  order="id desc" method="viewCustomerAddressManager.showCustomerAddressData">
+        <column key="id" header="流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_id" header="房屋流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_style_id" header="房屋流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="name" header="姓名" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="8%"/>
+        <column key="age" header="年龄" type="java.lang.Integer" align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="5%"/>
+        <column key="sex" header="性别" type="java.lang.Integer" dict="customer_sex" align="center" allowSearch="true" operator="in" allowSort="true" display="true" width="5%"/>
+        <column key="mobilephone" header="手机号" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="true" display="true" width="9%"/>
+        <column key="address" header="家庭地址" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"  width="13%"/>
+        <column key="house_area" header="面积（㎡）" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="7%"/>
+        <column key="house_toward" header="朝向" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+        <column key="house_style" header="户型" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="7%"/>
+        <column key="is_pic" header="户型图" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="5%"/>
+        <column key="tv_id" header="小区流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="tv_name" header="小区名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="false"/>
+        <column key="building_id" header="楼房流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="building_name" header="小区名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="false"/>
+        <column key="house_no" header="房间号" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="unit_no" header="单元号" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+    </query>
+    
+    <query id="viewCustomerAddressInfo" header="客户单体画像列表" baseclass="com.cnpc.pms.personal.entity.ViewCustomerAddress"  order="id desc">
+        <column key="id" header="流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_id" header="房屋流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_style_id" header="房屋流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="name" header="姓名" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="true" display="true" width="6%"/>
+        <column key="age" header="年龄" type="java.lang.Integer" align="center" allowSearch="true" operator="eq" allowSort="true" display="true" width="5%"/>
+        <column key="sex" header="性别" type="java.lang.Integer" dict="customer_sex" align="center" allowSearch="true" operator="in" allowSort="true" display="true" width="5%"/>
+        <column key="mobilephone" header="手机号" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="true" display="true" width="7%"/>
+        <column key="address" header="家庭地址" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"  width="13%"/>
+        <column key="house_area" header="面积（㎡）" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="6%"/>
+        <column key="house_toward" header="朝向" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+        <column key="house_style" header="户型" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="7%"/>
+        <column key="is_pic" header="户型图" type="java.lang.String" align="center" allowSearch="true" operator="in" allowSort="false" display="true" width="7%"/>
+        <column key="tv_id" header="小区流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="tv_name" header="小区名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="false"/>
+        <column key="building_id" header="楼房流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="building_name" header="楼房名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="false"/>
+        <column key="house_no" header="房间号" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="unit_no" header="单元号" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_type" header="房间类型" type="java.lang.Integer" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+    </query>
+    
+    
+    <!-- 拜访记录 -->
+    <query id="viewCustomerRelation" header="客户拜访记录列表" baseclass="com.cnpc.pms.personal.entity.ViewCustomerAddress"  order="id desc">
+        <column key="id" header="流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_id" header="房屋流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="house_style_id" header="房屋流水号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="name" header="姓名" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="15%"/>
+        <column key="age" header="年龄" type="java.lang.Integer" align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="15%"/>
+        <column key="sex" header="性别" type="java.lang.Integer" dict="customer_sex" align="center" allowSearch="true" operator="in" allowSort="true" display="true" width="15%"/>
+        <column key="mobilephone" header="手机号" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="true" display="true" width="15%"/>
+    </query>
+    
+    
+    <!-- 拜访记录new -->
+    <query id="customerRelationList" header="用户拜访记录列表" baseclass="com.cnpc.pms.personal.entity.Relation" method="relationManager.queryRelationList">
+        <column key="id" header="ID编号" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+        <column key="customer_id" header="客户ID" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="false" width="15%"/>
+        <column key="name" header="用户姓名" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="15%"/>
+        <column key="mobilephone" header="电话" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="15%"/>
+        <column key="totalcount" header="被拜访数量" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="15%"/>
+        <column key="lastdate" header="最后拜访日期" type="java.util.Date" format="yyyy-MM-dd"  align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="20%"/>
+    </query>
+    
+    
+
+    <query id="relationQuery" header="拜访记录" baseclass="com.cnpc.pms.personal.entity.Relation" method="relationManager.queryRelation">
+        <column key="id" header="流水号" align="center" allowSort="false" display="false"/>
+        <column key="customer_name" header="客户姓名" align="center" allowSort="false" display="true" width="16%"/>
+        <column key="mobilephone" header="客户电话" align="center" allowSort="false" display="true" width="17%"/>
+        <column key="employee_no" header="员工号" align="center" allowSort="false" display="true" width="16%"/>
+        <column key="employee_name" header="员工姓名" align="center" allowSort="false" display="true" width="16%"/>
+        <column key="store_id" header="门店编码" align="center" allowSort="false" display="false"/>
+        <column key="relation_type" header="拜访方式" align="center" allowSort="false" display="true" width="16%"/>
+        <column key="relation_date" header="拜访时间" align="center" allowSort="false" display="true" width="16%"/>
+    </query>
+    <query id="dataCardQuery" header="数据卡列表" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.User" method="interManager.queryDataCardList">
+        <column key="employee_no" header="国安侠号" align="center" allowSort="false" display="false"/>
+        <column key="name" header="国安侠" align="center" allowSort="false" display="true" width="14%"/>
+        <column key="customer_count" header="用户画像" align="center" allowSort="false" display="true" width="17%"/>
+        <column key="customer_edit" header="操作" align="center" allowSort="false" display="true" width="6%"/>
+        <column key="express_count" header="快递代送" align="center" allowSort="false" display="true" width="17%"/>
+        <column key="express_edit" header="操作" align="center" allowSort="false" width="6%"/>
+        <column key="relation_count" header="拜访记录" align="center" allowSort="false" display="true" width="17%"/>
+        <column key="relation_edit" header="操作" align="center" allowSort="false" display="true" width="6%"/>
+        <column key="order" header="订单" align="center" allowSort="false" display="true" width="17%"/>
+    </query>
+
+    <query id="workRecordTotalQuery" header="门店考勤列表" baseclass="com.cnpc.pms.personal.entity.WorkRecordTotal" method="workRecordTotalManager.queryWorkRecordTotalBySubmit">
+        <column key="id" header="编号" align="center" allowSort="false" display="false"/>
+        <column key="store_id" header="门店编码" align="center" allowSort="false" display="false" />
+        <column key="store_name" header="门店名称" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="work_month" header="考勤月份" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="commit_status" header="提交状态" align="center" allowSort="false" display="false"/>
+        <column key="str_commit_status" header="状态" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="str_commit_date" header="提交时间" align="center" allowSort="false" display="true" width="25%"/>
+    </query>
+    
+
+    <query id="relationsQuery" header="拜访记录" order="employee_no" method="interManager.queryRelationDataCardList">
+        <column key="employeeId" header="国安侠号" align="center" allowSort="false" display="false"/>
+        <column key="name" header="国安侠" align="center" allowSort="false" display="true" width="10%"/>
+        <column key="data_amount" header="总数" align="center" allowSort="false" display="true" width="10%"/>
+        <column key="relation_edit" header="操作" align="center" allowSort="false" display="true" width="6%"/>
+    </query>
+    
+    <query id="coutomerDataQuery" header="用户画像" order="employee_no" method="interManager.queryCustomerDataCardList">
+        <column key="employeeId" header="国安侠号" align="center" allowSort="false" display="false"/>
+        <column key="name" header="国安侠" align="center" allowSort="false" display="true" width="10%"/>
+        <column key="data_amount" header="18基础字段完成量" align="center" allowSort="false" display="true" width="10%"/>
+        <column key="customer_edit" header="操作" align="center" allowSort="false" display="true" width="6%"/>
+    </query>
+    
+    <query id="expressDataQuery" header="快递代送" order="this_mouth" method="interManager.queryExpressDataCardList">
+        <column key="employeeId" header="国安侠号" align="center" allowSort="false" display="false"/>
+        <column key="name" header="国安侠" align="center" allowSort="false" display="true" width="8%"/>
+        <column key="data_amount" header="总数" align="center" allowSort="false" display="true" width="10%"/>
+        <column key="express_edit" header="操作" align="center" allowSort="false" display="true" width="6%"/>
+    </query>
+
+    <query id="orderDataQuery" header="订单数量" order="this_mouth" method="interManager.queryOrderDataCardList">
+        <column key="employee_name" header="国安侠" align="center" allowSort="false" display="true" width="50%"/>
+        <column key="complete_count" header="总数" align="center" allowSort="false" display="true" width="50%"/>
+    </query>
+    
+
+    
+    
+    
+    <!-- 门店经理信息列表 -->
+    <query id="storekeeperQuery" header="门店经理信息列表" baseclass="com.cnpc.pms.personal.entity.StoreKeeper" method="storeKeeperManager.querystorekeeperList"  filter="status!=1" order="humanstatus asc">
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="employee_no" header="员工编号" type="java.lang.String" align="left" allowSearch="true" operator="like" display="true"/>
+        <column key="name" header="姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" display="true" width="25%"/>
+        <!-- <column key="sex" header="性别" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/> -->
+        <column key="phone" header="手机号" type="java.lang.String" align="left" allowSearch="true" operator="like" display="true" width="25%"/>
+        <column key="citySelect" header="城市" type="java.lang.String" align="left" allowSearch="true" operator="like" display="true"/>
+        <column key="storenames" header="门店" type="java.lang.String" align="left" allowSearch="true" operator="eq"  display="true"/>
+        <column key="zw" header="职位" type="java.lang.String" align="left" allowSearch="true" operator="like" display="true" width="25%"/>
+        <!-- <column key="cardnumber" header="身份证号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true"/> -->
+    	<column key="humanstatus" header="状态" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="true" width="25%"/>
+    </query>
+
+    <query id="workRecordTotalCheckQuery" header="门店考勤检查" baseclass="com.cnpc.pms.personal.entity.WorkRecordTotal" method="workRecordTotalManager.queryWorkRecordTotalByCheck">
+        <column key="store_name" header="门店名称" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="sk_name" header="门店店长" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="phone" header="店长电话" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="commit_status" header="状态" align="center" allowSort="false" display="true" width="25%"/>
+    </query>
+    
+    <!-- 城市分配 -->
+    <query id="userCityManagerQuery" header="城市权限分配" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.User" method="userManager.queryDistCityUserList" order="id desc">
+        <column key="id" header="用户管理" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false"/>
+        <column key="name" header="用户名称" allowSearch="true" type="java.lang.String" align="left" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="code" header="登录名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="true" display="true" width="33%"/>
+        <column key="citynames" header="城市" type="java.lang.String" align="left" allowSearch="true" allowSort="true" display="true" width="33%"/>
+    </query>
+    
+
+    <query id="customerAchievementsQuery" header="用户画像完成量" baseclass="com.cnpc.pms.personal.entity.Customer" method="customerManager.queryAchievements">
+        <column key="门店名称" header="门店名称" align="center" allowSort="false" display="true" width="20%"/>
+        <column key="员工编码" header="员工编码" align="center" allowSort="false" display="true" width="20%"/>
+        <column key="员工姓名" header="员工姓名" align="center" allowSort="false" display="true" width="20%"/>
+        <column key="一元个数" header="一元个数" align="center" allowSort="false" display="true" width="20%"/>
+        <column key="六元个数" header="六元个数" align="center" allowSort="false" display="true" width="20%"/>
+    </query>
+
+
+	<!-- 外包公司名称 代码维护 -->
+	<query id="outercompanyquery" header="外包公司名称代码列表" baseclass="com.cnpc.pms.personal.entity.OuterCompany" order="id desc">
+        <column key="id" header="编号ID" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false"/>
+        <column key="companyname" header="公司名称" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="30%"/>
+        <column key="companycode" header="公司编码" align="center" allowSort="false" display="true" width="30%"/>
+        <column key="companyallname" header="公司全称" align="center" allowSort="false" display="true" width="40%"/>
+    </query>
+    
+    <!-- 城市编码维护  -->
+    <query id="distCityCodeQuery" header="城市编码列表" baseclass="com.cnpc.pms.personal.entity.DistCityCode" order="id desc">
+        <column key="id" header="编号ID" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false"/>
+        <column key="cityname" header="城市名称" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="30%"/>
+        <column key="citycode" header="城市编码" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="30%"/>
+        <column key="cityno" header="城市区号" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="30%"/>
+    </query>
+    
+    <!-- APP版本设置 -->
+	<query id="queryappversionlist" header="APP版本列表" baseclass="com.cnpc.pms.personal.entity.AppVersion" order="id desc">
+        <column key="id" header="编号ID" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false"/>
+        <column key="version" header="版本号" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="10%"/>
+        <column key="file_name" header="文件名称" align="center" allowSort="false" display="true" width="20%"/>
+        <column key="isupdate" header="是否强制更新" type="java.lang.Long" align="center" allowSort="false" display="true" width="10%"/>
+        <column key="tiptype" header="类别" type="java.lang.Long" align="center" allowSort="false" display="true" width="20%"/>
+        <column key="message" header="消息" align="center" allowSort="false" display="true" width="20%"/>
+        <column key="create_time" header="创建时间" align="center" format="yyyy-MM-dd" allowSort="false" display="true" width="20%"/>
+    </query>
+    
+   <!-- 城市总监管理 -->
+	<query id="queryGeneralQuery" header="城市总监列表" baseclass="com.cnpc.pms.personal.entity.General" method="generalManager.queryGeneralList" order="id desc">
+        <column key="id" header="编号ID" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false"/>
+        <column key="name" header="姓名" type="java.lang.String" align="center" allowSort="false" display="true" width="10%"/>
+        <column key="employee_no" header="员工编号" type="java.lang.String" align="center" allowSort="false" display="true" width="10%"/>
+        <column key="code" header="拼音名" align="center" format="yyyy-MM-dd" allowSort="false" display="true" width="20%"/>
+        <column key="sex" header="性别" type="java.lang.String" align="center" allowSort="false" display="true" width="15%"/>
+        <column key="phone" header="电话" type="java.lang.String" align="center" allowSort="false" display="true" width="20%"/>
+    	<column key="citySelect" header="城市" type="java.lang.String" align="center" allowSort="false" display="true" width="25%"/>
+    </query>
+    
+    <!-- 城市编码维护selectbox  -->
+    <query id="selectBoxCityCodeQuery" header="城市编码列表" baseclass="com.cnpc.pms.personal.entity.DistCityCode" order="id desc">
+        <column key="id" header="选择" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="true" width="10%"/>
+        <column key="cityname" header="城市名称" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="40%"/>
+        <column key="citycode" header="城市编码" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="40%"/>
+    </query>
+    
+    <!-- 绩效打分审核列表  -->
+    <query id="scoreRecordTotalQuery" header="任务审核列表" baseclass="com.cnpc.pms.personal.entity.ScoreRecordTotal" method="scoreRecordTotalManager.queryScoreRecordTotalBySubmit">
+        <column key="id" header="编号" align="center" allowSort="false" display="false"/>
+        <column key="store_id" header="门店编码" align="center" allowSort="false" display="false" />
+        <column key="store_name" header="门店名称" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="work_info_id" header="任务ID" align="center" allowSort="false" display="false" width="25%"/>
+        <column key="str_work_info_id" header="任务名称" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="work_month" header="月份" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="commit_status" header="提交状态" align="center" allowSort="false" display="false"/>
+        
+        <column key="curr_appro_id_name" header="当前审批人" align="center" allowSort="false" display="false" width="25%"/>
+        <column key="curr_appro_group_name" header="审批组" align="center" allowSort="false" display="true" width="25%"/>
+        
+        <column key="str_commit_status" header="状态" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="str_commit_date" header="提交时间" align="center" allowSort="false" display="true" width="25%"/>
+    </query>
+    
+    
+    <!-- 任务发起列表  -->
+    <query id="workInfoQuery" header="任务发起列表" baseclass="com.cnpc.pms.personal.entity.WorkInfo" method="workInfoManager.queryWorkInfoList">
+        <column key="id" header="编号" align="center" allowSort="false" display="false"/>
+        <column key="store_id" header="门店ID" align="center" allowSort="false" display="false" />
+       	<column key="store_name" header="门店名称" align="center" allowSort="false" display="true" />
+        <column key="work_type" header="任务名称" align="center" allowSort="false" display="true" />
+        <column key="work_month" header="月份" align="center" allowSort="false" display="true" />
+        <column key="user_id" header="发起人ID" align="center" allowSort="false" display="false" width="25%"/>
+        <column key="user_id_name" header="发起人" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="curr_appro_id" header="当前审批人ID" align="center" allowSort="false" display="false" width="25%"/>
+        
+        <column key="curr_appro_id_name" header="当前审批人" align="center" allowSort="false" display="false" width="25%"/>
+        <column key="curr_appro_group_name" header="审批组" align="center" allowSort="false" display="true" width="25%"/>
+         
+        <column key="commit_status" header="提交状态" align="center" allowSort="false" display="false"/>
+        <column key="commit_date" header="提交时间" align="center" allowSort="false" display="true"/>
+        <column key="str_commit_status" header="状态" align="center" allowSort="false" display="true" width="25%"/>
+    </query>
+    
+    
+    <!-- 流程配置表  -->
+    <query id="flowConfigQuery" header="流程配置列表" baseclass="com.cnpc.pms.personal.entity.FlowConfig" method="flowConfigManager.queryFlowConfigList">
+        <column key="id" header="编号" align="center" allowSort="false" display="false"/>
+        <column key="work_name" header="任务名称" align="center" allowSort="false" display="true" />
+        <column key="start_usergroup_id" header="发起角色组ID" align="center" allowSort="false" display="false" />
+        <column key="start_usergroup_id_name" header="发起角色组" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="first_usergroup_id" header="第一审批角色ID" align="center" allowSort="false" display="false" width="25%"/>
+        <column key="first_usergroup_id_name" header="第一审批角色" align="center" allowSort="false" display="true" width="25%"/>
+        <column key="second_usergroup_id" header="第二审批角色ID" align="center" allowSort="false" display="false" width="25%"/>
+        <column key="second_usergroup_id_name" header="第二审批角色" align="center" allowSort="false" display="true"/>
+        <column key="third_usergroup_id" header="第三审批角色ID" align="center" allowSort="false" display="false" width="25%"/>
+        <column key="third_usergroup_id_name" header="第三审批角色" align="center" allowSort="false" display="true" width="25%"/>
+    </query>
+    
+    <!-- 系统运维管理配置角色组 -->
+    <query id="sysUserGroupOperaQuery" header="系统运维管理列表" baseclass="com.cnpc.pms.personal.entity.SysUserGroupOpera" >
+        <column key="id" header="编号" align="center" allowSort="false" display="false"/>
+        <column key="sys_usergroup_id" header="系统角色组ID" align="center" allowSort="false" display="false" />
+        <column key="sys_usergroup_name" header="系统运维角色组" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="30%"/>
+        <column key="sub_usergroup_ids" header="运维管理角色组ID" align="center" allowSort="false" display="false" />
+        <column key="sub_usergroup_names" header="运维管理角色组" align="center" allowSort="false" allowSearch="true" operator="like" display="true" width="65%"/>
+    </query>
+     <query id="selectCheckBoxUserGroupQuery" header="用户组列表" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserGroup" >
+        <column key="id" header="选择" type="java.lang.Long" operator="in" align="center" allowSort="false" display="true"  width="5%"/>
+        <column key="name" header="用户组" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="45%"/>
+        <column key="code" header="用户线编码" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="45%"/>
+    </query>
+    <query id="sysuserQuery" header="系统用户管理" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.User" method="userManager.querySysUserQueryList" order="id desc">
+        <column key="id" header="id" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false" width="2%"/>
+        <column key="name" header="用户名称" allowSearch="true" type="java.lang.String" align="left" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="code" header="登录名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="usergroupname" header="角色组名称" type="java.lang.String" align="left" allowSearch="false" display="true" width="18%"/>
+        <column key="mobilephone" header="手机号码" type="java.lang.String" align="left" allowSearch="true" allowSort="false" display="true" width="18%"/>
+        <column key="phone" header="电话" allowSearch="true" type="java.lang.String" align="left" allowSort="false" display="false" width="18%"/>
+        <column key="disabledFlag" header="是否可用" allowSearch="true" type="java.lang.String" align="left" allowSort="false" display="false" width="2%"/>
+        <column key="employeeId" header="员工号" allowSearch="true" type="java.lang.String" align="left" allowSort="false" display="false" width="2%"/>
+    </query>
+    
+    <query id="sysusersendboxQuery" header="系统用户管理" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.User" method="userManager.querySysUserSendBoxQueryList" order="id desc">
+        <column key="id" header="用户管理" type="java.lang.Long" align="left" allowSearch="true" operator="eq" display="false"/>
+        <column key="name" header="用户名称" allowSearch="true" type="java.lang.String" align="left" operator="like" allowSort="false" display="true" width="17%"/>
+        <column key="code" header="登录名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="17%"/>
+        <column key="usergroupname" header="角色组名称" type="java.lang.String" align="left" allowSearch="false" display="true" width="17%"/>
+        <column key="mobilephone" header="手机号码" type="java.lang.String" align="left" allowSearch="true" allowSort="false" display="true" width="17%"/>
+        <column key="employeeId" header="员工号" type="java.lang.String" align="left" allowSearch="true" allowSort="false" display="true" width="17%"/>
+        <column key="zc" header="门店" type="java.lang.Long" align="left" allowSearch="true" allowSort="false" display="true" width="17%"/>
+
+        
+        
+        <column key="phone" header="电话" allowSearch="true" type="java.lang.String" align="left" allowSort="false" display="false" width="20%"/>
+        <column key="disabledFlag" header="是否可用" allowSearch="true" type="java.lang.String" align="left" allowSort="false" display="false" />
+        <column key="employeeId" header="员工号" allowSearch="true" type="java.lang.String" align="left" allowSort="false" display="false" />
+    </query>
+    
+    
+    
+    <query id="userloginlogdtoQuery" header="PC访问记录列表"  dtoclass="com.cnpc.pms.personal.dto.UserLoginLogDTO" method="userLoginLogManager.getUserLoginLogList">
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="true" align="center"/>
+        <column key="userGroupName"   header="用户组名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="20%" align="center"/>
+        <column key="uv" 	        header="UV(日/月/总)" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="18%" align="center"/>
+        <column key="pv" 	        header="PV(日/月/总)" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="18%" align="center"/>
+        <column key="daqweb" 	        header="数据管理" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+        <column key="crm" 	        header="数据动态" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+        <column key="map" 	        header="数据地图" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+        <column key="service" 	        header="数据服务" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+        <column key="report" 	        header="云表单" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+    </query>
+    
+    <query id="appuserloginlogdtoQuery" header="APP访问记录列表"  dtoclass="com.cnpc.pms.personal.dto.UserLoginLogDTO" method="userLoginLogManager.getAppUserLoginLogList">
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="true" align="center"/>
+        <column key="userGroupName"   header="用户组名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="20%" align="center"/>
+        <column key="appuv" 	        header="UV(日/月/总)" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="18%" align="center"/>
+        <column key="appmap" 	        header="地图" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+        <column key="apparea" 	        header="混片" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+        <column key="appmessage" 	        header="消息" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+        <column key="appinput" 	        header="录入" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="8%" align="center"/>
+    </query>
+    
+    
+    <query id="appDownloadLogDtoQuery" header="App下载列表"  dtoclass="com.cnpc.pms.personal.dto.AppDownloadLogDTO" method="appDownLoadLogManager.getAppDownloadLogList" >
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="false" align="center"/>
+        <column key="downloadVersion"   header="版本" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="20%" align="center"/>
+        <column key="downloadtype" 	header="下载类型" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="20%" align="center"/>
+        <column key="curdays" 	header="日下载量" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="20%" align="center"/>
+        <column key="curmonths" 	        header="月下载量" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="20%" align="center"/>
+        <column key="totalcounts" 	    header="总下载量" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="20%" align="center"/>
+    </query>
+    <query id="userModulelogdtoQuery" header="功能访问统计列表"  dtoclass="com.cnpc.pms.personal.dto.UserAccessModuleLogDTO" method="userAccessModuleLogManager.getUserAccessModuleLogList">
+        <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="true" align="center"/>
+        <column key="accessSystem"  header="系统名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="20%" align="center"/>
+        <column key="userGroupName" header="用户组名称" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="false" operator="like" 	width="15%" align="center"/>
+        <column key="order_record" 	 header="订单档案" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="15%" align="center"/>
+        <column key="emp_record" header="员工档案" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="15%" align="center"/>
+        <column key="other1" 	    header="其它1" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="15%" align="center"/>
+        <column key="other2" 	    header="其它2" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="15%" align="center"/>
+        <column key="other3" 	    header="其它3" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="15%" align="center"/>
+        <column key="other4" 	    header="其它4" 	    display="true" 		type="String"			allowSearch="true" 	allowSort="true" operator="like" 	width="15%" align="center"/>
+    </query>
+    
+    
+    <!-- 外部选址人员列表  -->
+    <query id="querysiteselectionlist" header="选址人员列表" baseclass="com.cnpc.pms.personal.entity.SiteSelection" order="id desc" >
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="real_name" header="姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="mobilephone" header="手机号码" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="employee_flag" header="是否为社区员工" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="selection_flag" header="是否有选址经验" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="cards" header="名片" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="cards_back" header="名片背面图" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="false" width="18%"/>
+        <column key="reason" header="原因" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="false" width="18%"/>
+        <column key="selection_status" header="认证状态" type="java.lang.Long" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+    </query>
+    <!-- 门店需求管理列表  -->
+    <query id="querystoresrequirementlist" header="门店需求管理列表" baseclass="com.cnpc.pms.personal.entity.StoreRequirement" order="id desc">
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="store_name" header="门店名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="bonus" header="奖励金" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="requirement" header="商铺要求" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="address" header="位置要求" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="require_status" header="状态" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+    </query>
+    <query id="querystorestandardlist" header="立地标准管理列表" baseclass="com.cnpc.pms.personal.entity.StoreStandard" >
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="editbutton" header="操作" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="standardname" header="名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="rent" header="租金" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="property" header="产权" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="area" header="面积" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="type" header="户型" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="floor" header="楼高" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="electric" header="电" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="sidestation" header="室外机" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="water" header="上下水" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="blowdown" header="排污" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="firecontrol" header="消防" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="designpaper" header="图纸" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="lamphouse" header="门店灯箱" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="floorheight" header="层高" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="leasetime" header="租期" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="address" header="位置" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="network" header="网络" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="tocondition" header="谈判条件" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+    </query>
+    <!-- 门店选址信息填写列表  -->
+    <query id="querystoreaddresslist" header="门店信息列表" baseclass="com.cnpc.pms.personal.entity.StoreAddress" order="id desc">
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="store_address" header="店铺详细地址" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="total_area" header="计租面积" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="used_area" header="使用面积" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="store_rent" header="预计租金" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="renttax_flag" header="租金是否含税" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="contact_name" header="出租方联系人" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="contact_tel" header="联系方式" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="store_status" header="状态" type="java.lang.Long" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+    </query>
+    <query id="querysendmessagelist" header="消息发送列表" baseclass="com.cnpc.pms.personal.entity.SendMessage" order="id desc">
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="functionname" header="功能模块" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="mobilephone" header="电话号码" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="code" header="消息" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="create_time" header="发送时间" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+        <column key="rcvmessage" header="返回" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="18%"/>
+    </query>
+    <!-- banner管理  -->
+    <query id="querybannerinfolist" header="banner列表" baseclass="com.cnpc.pms.personal.entity.BannerInfo" order="ordernum asc">
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="function_name" header="功能模块" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="25%"/>
+        <column key="banner_url" header="图片" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="10%"/>
+        <column key="open_url" header="打开链接" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="40%"/>
+        <column key="ordernum" header="图片顺序" type="java.lang.Long" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="25%"/>
+    </query>
+    
+    
+    
+    
+    
+     <!-- 城市人员信息列表 -->
+    <query id="cityHumanresourcesQuery" header="城市人员信息列表" baseclass="com.cnpc.pms.personal.entity.CityHumanresources" method="cityHumanresourcesManager.queryCityHumanList" order="humanstatus asc">
+        <column key="id" header="编号ID" type="java.lang.Long" allowSort="true" allowSearch="true" operator="between" display="false"/>
+        <column key="employee_no" header="员工编号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="name" header="姓名" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="sex" header="性别" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="phone" header="手机号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="citycompany" header="城市公司" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+        <column key="zw" header="职位" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="cardnumber" header="身份证号" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true"/>
+    	<column key="humanstatus" header="状态" type="java.lang.Long" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+    	<column key="trytipmessage" header="试用提醒" type="java.lang.String" align="left" operator="eq" allowSort="false" display="true"/>
+    	
+    	<column key="editdelete" header="操作" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+    	<column key="create_user_id" header="创建人编号" type="java.lang.Long" allowSort="false" allowSearch="true" operator="between" display="false"/>
+    	
+    </query>
+
+    <!-- 小区信息列表 on 2017-09-11 -->
+    <query id="communityAreaQuery" header="订单区块列表" method="tinyVillageManager.findTinyvillageandplaceData" >
+        <column key="id" header="序号" type="java.lang.Long" allowSort="center" allowSearch="true"  display="false" width="5%"/>
+         <column key="village_name" header="社区名" type="java.lang.String" align="center" allowSearch="true" display="true" width="23%"/>
+        <column key="name" header="小区名" type="java.lang.String" align="center" allowSearch="true"  display="true" width="23%"/>
+        <column key="placename" header="订单区块" type="java.lang.String" align="center" allowSearch="true"  display="true" width="33%"/>
+        <column key="relevaId" header="区块id" type="java.lang.String" align="center" allowSearch="true" display="false" width="5%"/>
+    </query>
+    
+    <query id="AddressRelevanceDataQuery" header="订单区块列表" method="addressRelevanceManager.showOrderAddressRelevanceData" >
+        <column key="id" header="序号" type="java.lang.Long" allowSort="center" allowSearch="true"  display="false" width="5%"/>
+        <column key="placename" header="订单区块" type="java.lang.String" align="center" allowSearch="true"  display="true" width="30%"/>
+        <column key="tinyvillage_name" header="小区名" type="java.lang.String" align="center" allowSearch="true"  display="true" width="22%"/>
+        <column key="village_name" header="社区名" type="java.lang.String" align="center" allowSearch="true" display="true" width="22%"/>
+    	<column key="tinyId" header="小区id" type="java.lang.Long" align="center" allowSearch="true" display="false" width="5%"/>
+    	<column key="publicarea" header="是否公共区块" type="java.lang.Integer" align="center" allowSearch="true" display="true" width="10%"/>
+    </query>
+
+
+    <!-- 小区片区选择框 on 2017-09-11 -->
+    <query id="communityAreaChecBoxQuery" header="小区片区列表" baseclass="com.cnpc.pms.communityArea.entity.ComnunityArea"  order="community_name asc">
+        <column key="community_name" header="小区名称" type="java.lang.String" align="left" allowSearch="true" operator="like" display="true" width="25%"/>
+        <column key="address_relevanceName" header="片区名称" type="java.lang.String" align="left" allowSearch="true" operator="like" display="true" width="55%"/>
+    </query>
+
+
+    <!-- 片区信息列表 on 2017-09-11 -->
+    <query id="addressRelevanceQuery" header="订单区块列表" method="addressRelevanceManager.showAddressRelevanceData" order="city_name asc">
+        <column key="id" header="选择" type="java.lang.Long" allowSort="center" allowSearch="true"  display="true" width="5%"/>
+        <column key="placename" header="订单区块" type="java.lang.String" align="center" allowSearch="true"  display="true" width="90%"/>
+        <!-- <column key="county_name" header="区名称" type="java.lang.String" align="center" allowSearch="true"  display="true" width="25%"/>
+        <column key="city_name" header="城市名称" type="java.lang.String" align="center" allowSearch="true"  display="true" width="25%"/> -->
+    </query>
+    
+    
+    
+    
+    
+    
+    <!-- 门店管理系统  工单管理  -->
+    <query id="querystoreorderlist" header="工单列表" baseclass="com.cnpc.pms.personal.entity.StoreOrderInfo" order="id desc">
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="worder_sn" header="工单编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="30%"/>
+        <column key="worder_type" header="工单类型" type="java.lang.Integer" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+        <column key="wcontent" header="工单内容" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="15%"/>
+        <column key="employee_name" header="员工姓名" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="10%"/>
+        <column key="employee_no" header="员工编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="10%"/>
+        <column key="worder_status" header="工单状态" type="java.lang.Integer" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+        <column key="confirm_date" header="确认时间" type="java.util.Date" format="yyyy-MM-dd" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+        <column key="sign_date" header="完成时间" type="java.util.Date" format="yyyy-MM-dd" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+        <column key="phone" header="用户电话" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="15%"/>
+    </query>
+    
+    
+    
+    
+    
+    
+</pmsquery>

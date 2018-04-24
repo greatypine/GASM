@@ -1,0 +1,12 @@
+<script>
+	rowindex+=1;
+	var flag = false;	
+	if(r[0] == "set") {
+		var x = createBy("com.cnpc.pms.budget.entity.BudgetProject",{}); 
+		x.code = r[1];
+ 		x.projectName = r[2];
+		save(x);
+		flag = true;
+	}
+	flag;
+</script>

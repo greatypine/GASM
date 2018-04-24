@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="author" content="Zhao Binbin">
+		<title>Visit Failed Page</title>
+		<script type="text/javascript" src="../scripts/bidLib.js"></script>
+		<script>
+			function init() {
+				var furl = getUrlParamByKey("furl");
+				if (furl.indexOf("projectForecasetViewF.html") != -1) {
+					document.getElementById("errorText").innerText = "提示：计划未下达";
+					document.getElementById("errorTitle").innerText = "计划下达";
+				} else if (furl.indexOf("expenseCodeEnter.html") != -1) {
+					document.getElementById("errorText").innerText = "提示：未录入经费编号";
+					document.getElementById("errorTitle").innerText = "经费编号";
+				} else if (furl.indexOf("projectOpen.html") != -1) {
+					document.getElementById("errorText").innerText = "提示：未提交开题审查信息";
+					document.getElementById("errorTitle").innerText = "开题审查";
+				} else if (furl.indexOf("projectInfoApprovalView.html") != -1) {
+					document.getElementById("errorText").innerText = "提示：未进行任务书审核";
+					document.getElementById("errorTitle").innerText = "审核任务书";
+				} else if (furl.indexOf("projectInfoEnter.html") != -1) {
+					document.getElementById("errorText").innerText = "提示：没有签订任务书信息";
+					document.getElementById("errorTitle").innerText = "签订任务书";
+				} else if (furl.indexOf("projectFile.html") != -1) {
+					document.getElementById("errorText").innerText = "提示：未进行归档";
+					document.getElementById("errorTitle").innerText = "归档";
+				} else {
+					//alert(furl);
+				}
+			}
+		</script>
+	</head>
+	<body onload="init();">
+		<div class="rightcont clear">
+            <div class="box">
+                <div id="errorTitle" class="containerheader">无权访问</div>
+                <div class="containerbody" style="padding:5px 10px;">
+                    <form class="pmsForm" id="projectForm" name="projectForm">
+                        <table cellpadding="0" cellspacing="0" class="layout" width="90%">
+                            <tr>
+                                <td align="left" style="color:purple">
+                                    <strong id="errorText">无权访问</strong>
+                                </td>
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+        </div>
+	</body>
+</html>

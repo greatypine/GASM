@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible" content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <title>用户画像统计下载</title>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+              type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <link href="../scripts/jedate/skin/jedate.css" rel="stylesheet" type="text/css">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+        <script type="text/javascript" src="../scripts/auto.js"></script>
+            
+
+
+    </head>
+    <style type="text/css">
+        td{
+            padding-top: 10px;
+        }
+    </style>
+    <script type="text/javascript">
+
+        $(function () {
+            jeDate({
+                dateCell:"#work_month",
+                format:"YYYY-MM",
+                isTime:false,
+                isinitVal:true,
+                maxDate: new Date().format('yyyy-MM-dd hh:mm:ss'),
+                zIndex:2000
+            });
+        });
+
+        
+        function downloadUserHouseCount(){
+        	var path = getRootPath();
+            window.open(path + "/downloadExcel.action?fileName=userhouse_count");
+        	/* var work_month = $('#work_month').val();
+            if(work_month == '' || work_month == null){
+                $$.showMessage('提示','请选择下载月份！');
+                return;
+            }
+            
+        	var path = getRootPath();
+            window.open(path + "/downloadExcel.action?fileName=userhouse_count&month="+work_month);
+        	 */
+        }
+        
+        function downloadRelationTypeCount(){k
+        	alert("开发中...");
+        }
+        
+        
+    </script>
+    <body style="height: 100%;">
+	    <div class="panel panel-primary">
+        <div class="panel-heading">
+           绩效下载
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm">
+                        <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                            <tr>
+                               <!--  <td align="right" style="width: 10%">下载月份：</td>
+                                <td style="width: 40%">
+                                    <input type="text" id="work_month" name="work_month" class="wicon form-control" maxlength="20" likeOption="false"  />
+                                </td>
+                                <td align="right" ></td>
+                                <td >
+
+                                </td> -->
+                            </tr>
+                        </table>
+                    </form>
+                </div>
+            </div>
+            <div class="panel-footer" style="text-align: left">
+                <button class="btn btn-primary" onclick="downloadUserHouseCount()">单体画像统计信息下载</button>
+            	<button class="btn btn-primary" onclick="downloadRelationTypeCount()">拜访记录分类统计信息下载</button>
+            </div>
+            
+        </div>
+
+    </body>
+
+
+</html>

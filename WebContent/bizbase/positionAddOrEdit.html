@@ -1,0 +1,227 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+    	<meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta name="author" content="Kang GuoLong">
+        <title>岗位维护</title>
+        <link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+        <link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+        <link rel="stylesheet" href="script/datepicter/jquery.ui.all.css" />
+        <script src="js/lib.js" type="text/javascript">
+        </script>
+        <script language="JavaScript">
+            function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+            
+            var request = getRequestParams();
+            var positionId = request['positionId'];
+            $(document).ready(function(){
+                if (positionId != null) {
+                    doManager("cnpcPositionManager", "getPositionById", [positionId], function(datas, textStatus, XMLHttpRequest){
+                        var cnpcPosition = $.fromJSON(datas.data);
+                        $("#positionName").val(cnpcPosition.name);
+                        $("#positionCode").val(cnpcPosition.code);
+						$("#positionCode").attr("readOnly", "true");
+						$("#positionCode").attr("class", "inputtext_dis");
+						$("#positionName").removeAttr('validate');
+					 	$("#positionName").attr('validate','{required:true,maxlength:40,positionNameValidate2:true}');
+                    });
+                }else{
+					 $("#positionCode").removeAttr('validate');
+					 $("#positionCode").attr('validate','{required:true,maxlength:40,isCorrectCode:true,positionCodeValidate:true}');
+					 $("#positionName").removeAttr('validate');
+					 $("#positionName").attr('validate','{required:true,maxlength:40,positionNameValidate:true}');
+				}
+            });
+			
+			/**
+             * 检测岗位编码是否已存在
+             */
+            function checkUserAccount(){
+                var positionCode = $("#positionCode").val();
+                if (validateExists("package com.cnpc.pms.bizbase.rbac.position.entity.CnpcPosition", "code", positionCode)) {
+                    return true;
+                }
+                return false;
+            }
+			/**
+             * 验证岗位编码是否重复
+             * @param {Object} value
+             * @param {Object} element
+             */
+            $.validator.addMethod("positionCodeValidate", function(value, element){
+                var flag;
+                if (checkUserAccount()) {
+                    flag = false;
+                }
+                else {
+                    flag = true;
+                }
+                return flag;
+            }, "岗位编码已存在");
+            /**
+             * 检测岗位名称是否已存在
+             */
+            function checkPositionName(){
+                var positionName = $("#positionName").val();
+                if (validateExists("package com.cnpc.pms.bizbase.rbac.position.entity.CnpcPosition", "name", positionName)) {
+                    return true;
+                }
+                return false;
+            }
+			/**
+             * 验证岗位名称是否重复
+             * @param {Object} value
+             * @param {Object} element
+             */
+            $.validator.addMethod("positionNameValidate", function(value, element){
+                var flag;
+                if (checkPositionName()) {
+                    flag = false;
+                }
+                else {
+                    flag = true;
+                }
+                return flag;
+            }, "岗位名称已存在");
+			
+			
+			/**
+             * 编辑时检测岗位名称是否已存在
+             */
+            function checkPositionName2(){
+                var positionName = $("#positionName").val();
+                if (validateExistsByEdit("package com.cnpc.pms.bizbase.rbac.position.entity.CnpcPosition", "name", positionName)) {
+                    return true;
+                }
+                return false;
+            }
+			/**
+             * 编辑时验证岗位名称是否重复
+             * @param {Object} value
+             * @param {Object} element
+             */
+            $.validator.addMethod("positionNameValidate2", function(value, element){
+                var flag;
+                if (checkPositionName2()) {
+                    flag = false;
+                }
+                else {
+                    flag = true;
+                }
+                return flag;
+            }, "岗位名称已存在");
+			
+            function savePosition(){
+				 $validator = new PMSValidator($("#positionAddForm")[0], {
+                    bNormalDisplay: false,
+                    iDisplayLength: 999
+                });
+                var passed = $validator.clientValidate($("#positionAddForm")[0]);
+                if (!passed) {
+					return false;
+				}
+				else {
+					var positionObj = {
+						id: positionId,
+						name: $("#positionName").val(),
+						code: $("#positionCode").val()
+					}
+					doManager("cnpcPositionManager", "saveCnpcPosition", [positionObj], function(datas, textStatus, XMLHttpRequest){
+						if (datas.result) {
+							window.location = 'positionManagement.html?activeTabIndex=1';
+						}
+					}, true, {
+						showWaiting: true
+					});
+				}
+            }
+        </script>
+        <style type="text/css">
+            table {
+                border: 0px solid #000;
+            }
+            
+            td {
+                border: 0px solid #000;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="rightcont clear">
+            <div class="title clear">
+                <div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();">
+                </div>
+                <div class="ico1">
+                </div>
+                <div class="ico2">
+                </div>
+                <a href="#">用户与权限 :</a>&nbsp;<a href="#">岗位维护</a>
+            </div>
+            <div class="containerheader">
+                <a href="#" onclick="toggleBiz('containerbody','pic');"><img src="../scripts/images/22.png" align="absmiddle" id="pic" /></a>&nbsp;岗位维护
+            </div>
+            <div class="containerbody" id="containerbody" style="padding:0px;border:none;">
+                <table class=" bigteble">
+                    <tr>
+                        <td>
+                            <div style="padding:5px">
+                                <form id="positionAddForm" class="pmsForm" validate="true" clientvalidate="true">
+                                    <table class="bigteble" style="border:none">
+                                        <tr>
+                                            <td class="Querytext">
+                                            岗位名称:
+                                            <font color="red">
+                                                *
+                                            </font>
+                                            </td>
+                                            <td class="Queryform">
+                                                <input type="text" name="positionName" id="positionName" validate="{required:true,maxlength:40}" size=23/>
+                                            </td>
+                                            <td class="Querytext" style="width:80px;">
+                                            岗位编码:
+                                            <font color="red">
+                                                *
+                                            </font>
+                                            </td>
+                                            <td class="Queryform">
+                                                <input type="text" name="positionCode" id="positionCode" validate="{required:true,maxlength:40,isCorrectCode:true}" size=23 />
+                                            </td>
+                                        </tr>
+                                        <!--tr>
+                                            <td class="Querytext">
+                                                岗位说明:
+                                            </td>
+                                            <td class="Queryform">
+                                                <input type="text" name="positionNote" id="positionNote" class="textarea" size=23>
+                                            </td>
+                                        </tr-->
+                                    </table>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr class="Colorbar3">
+                        <td align="right">
+                            <div style="padding:0px 5px 0px 0px;">
+                                <input align="right" role="button" class="buttonu" onClick="savePosition();" value="提交" type="button" />
+								<input align="right" role="button" class="buttonu" onClick="javascript:window.location = 'positionManagement.html?activeTabIndex=1'" value="返回" type="button" />
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </body>
+</html>

@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>楼房信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+   <style type="text/css">
+    	.display{
+    		width:100%
+    	}
+    </style>
+</head>
+<script type="text/javascript">
+var win;
+$(function () {
+    //页面加载成功后需要获取数据
+    searchList();
+});
+//记载页面时请求数据列表默认的方法
+function searchList() {
+    $$.executeSearch('buildingQueryData', 'conditionsDiv');
+    $(".operateHeader").width("7%");
+    var selectObj = $(".panel-footer").find('select')[0];
+    $(selectObj).change(function(){
+    	$(".checkboxHeader").find('input[type="checkbox"]').attr("checked",false);
+    });
+    $("#cstmz_actv").remove();
+}
+function doClean() {
+    document.service_qa.reset();
+    searchList();
+}
+function addVillage(){
+	window.location.href = 'add_building.html';
+}
+
+  var editObj = {
+		html : '<a href="#" class="blue">修改</a>',
+		resourceId: "building_edit",
+		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+			var id = allColumnsDataMap.id;
+			window.location.href = "building_edit.html?id="+id;
+		}
+	}
+ var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "village_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("buildingManager", "findHouseById", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							if(data.data==1){
+								alert("该楼房下存在房屋,请去房屋信息页面删除房屋后在删除该楼房!");
+							}else if(data.data==0){
+								delect(id);
+							}
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		} 
+$pmspage.opArr = [ editObj,deleteObj];  
+  
+  function delect(id){
+		doManager("buildingManager", "deleteBuildingById", id + '', function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				alert("删除成功");
+				window.location.href = 'building_list_data.html';
+			} else {
+				$$.showMessage("系统信息", "删除失败!");
+			}
+		});
+	}
+  
+  
+  function deleteList(){
+		var ems;
+		var objs = $$.getSelectedObj("buildingQueryData");
+		if(objs!=null&&objs.length>0){
+			var ids="";
+			for(var i=0;i<objs.length;i++){
+				ems=objs[i];
+				ids+=ems[0]+",";
+			}
+			ids=ids.substring(0,ids.length-1);
+			
+			$("#villagebyty").dialog({
+				closeOnEscape:false,
+				 open:function(event,ui){$(".ui-icon-closethick").hide()},
+		        bgiframe: true,
+		        title: '提示信息',
+		        width: 300,
+		        //height: 500,
+		        modal: true,
+		        buttons: {
+		            "${form.ui.ok}": function () {
+		            	$("#but1").attr("disabled",true);
+		           	 	$("#but1").html("正在删除...");
+		            	$("#villagebyty").dialog('close');
+		            	//调用查找方法
+						 doManager("buildingManager", "findHouseByBuild", ids, function(
+								data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								if(data.data!='null'){
+									 var arr = eval('('+data.data+')');
+						        	 $('ul').html("");
+						        	 if (arr!=null&&arr.length>0){
+						 				for(var i=0;i<arr.length;i++){
+						 						$("#village").append("<li>小区："+arr[i].tiny_village_name+",楼号："+arr[i].name+"</li>");
+						 					
+						 				}
+						 				showUserGroup();
+						 			}
+								}else if(data.data=='null'){
+									delectList(ids);
+								}
+							} else {
+								$$.showMessage("系统信息", "删除失败!");
+								$("#but1").attr("disabled",false);
+								$("#but1").html("批量删除");
+							}
+						});
+		            	
+		            },
+		            "${query.ui.cancel}": function () {
+		            	$("#but1").attr("disabled",false);
+		            	$("#but1").html("批量删除");
+		                $("#villagebyty").dialog('close');
+		                
+		            }
+		        }
+		    });
+		}else{
+			$$.showMessage("系统信息", "请选择数据!");
+			$("#but1").attr("disabled",false);
+			$("#but1").html("批量删除");
+		}
+	}
+	function delectList(ids){
+		doManager("buildingManager", "deletemouthBuilding", ids, function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				confirm( "删除成功!");
+				window.location.href = 'building_list_data.html';
+			} else {
+				$$.showMessage("系统信息", "删除失败!");
+				$("#but1").attr("disabled",false);
+				$("#but1").html("批量删除");
+			}
+		});
+	}
+	function showUserGroup() {
+	    $("#villageInfo").dialog({
+	    	closeOnEscape:false,
+			 open:function(event,ui){$(".ui-icon-closethick").hide()},
+	        bgiframe: true,
+	        title: '提示信息',
+	        width: 300,
+	        //height: 500,
+	        modal: true,
+	        buttons: {
+	            "${form.ui.ok}": function () {
+	            	$("#but1").attr("disabled",false);
+	            	$("#but1").html("批量删除");
+	            	$("#villageInfo").dialog('close');
+	            },
+	            "${query.ui.cancel}": function () {
+	            	$("#but1").attr("disabled",false);
+	            	$("#but1").html("批量删除");
+	                $("#villageInfo").dialog('close');
+	                
+	            }
+	        }
+	    });
+	}
+  
+  
+  
+  
+  
+</script>
+<body style="height: 100%">
+	<div class="panel panel-default" style="margin: 10px">
+	    <div class="panel-heading">
+	        <h4 class="panel-title">
+	           地址信息:楼房信息
+	        </h4>
+	    </div>
+	</div>
+	    <div class="panel panel-primary">
+        <div class="panel-heading">楼房信息查询</div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                        <td>街道名称:</td>
+                            <td>
+                                <input id="town_name" name="town_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td>社区名称:</td>
+                            <td>
+                                <input id="village_name" name="village_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td>小区名称:</td>
+                            <td>
+                                <input id="tiny_village_name" name="tiny_village_name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td>楼房名称:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:60%"  class="form-control"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        
+        
+        <div class="clearfix" style="padding: 10px 0 15px 0;">
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-success" onclick="doClean();">重置</button>
+          </div>
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-warning" onclick="addVillage()">添加</button>
+          </div>
+          <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-danger"  onclick="searchList()">查询</button>
+          </div>
+           <div class="col-sm-1 pull-right">
+            <button class="btn btn-block btn-info"  id="but1"  onclick="deleteList()">批量删除</button>
+          </div>
+        </div>
+        
+        
+     <!--    <div class="panel-footer" style="text-align: right">
+        	<button class="btn btn-primary" id="but1" onclick="deleteList()">批量删除</button>
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="addVillage()">添加</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+        </div> -->
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="buildingQueryData" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="false"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="true" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+         
+         <div id="villageInfo" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<ul class="vill" id="village">
+ 		</ul>
+ 		<span>该楼房下存在房屋,请去房屋信息页面删除房屋后在删除该楼房!</span>
+ </div>
+      <div id="villagebyty" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		<ul class="villbb" id="villagebb">
+ 		</ul>
+ 		<span>确认删除？</span>
+ </div>    
+</body>
+</html>

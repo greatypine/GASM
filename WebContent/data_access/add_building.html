@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<link
+	href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css"
+	rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link
+	href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css"
+	rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script>
+<script type="text/javascript">
+var obj;
+var lst_select_tiny;
+var lst_select_village;
+var lst_select_tinyvillage;
+var pro_id;
+$(function(){
+	doManager("ProvinceManager", "getProvince",obj, function(data, textStatus,
+			XMLHttpRequest) {
+		if (data.result) {
+			if(data.data!="null"){
+				var jso=JSON.parse(data.data);
+				 $('#province_name').append('<option value="">'+"请选择"+'</option>');
+				 $(jso).each(function(index,element){
+					 if(element.province_id==pro_id){
+						 $('#province_name').append('<option selected="selected" value="'+element.province_id+'">'+element.province_name+'</option>');
+					 }	
+					 $('#province_name').append('<option value="'+element.province_id+'">'+element.province_name+'</option>');
+		            });	
+				
+			}else{
+				$$.showMessage("系统信息", "信息加载异常");
+				return false;
+			}
+		} else {
+			$$.showMessage("系统信息", "信息加载异常");
+			return false;
+		}
+	});
+	//街道变化
+	$('#town_name').keyup(function(event){
+		 $('#town-search').children().remove();
+		document.getElementById("tiny_village_name").value="";
+		document.getElementById("tinyvillage_id").value="";
+		document.getElementById("village_name").value="";
+		document.getElementById("village_id").value="";
+		document.getElementById("town_id").value="";
+		 $('#village-search').children().remove();
+		var c=$("#province_name").val();
+		var str_name=$("#town_name").val();
+		var ght={"name":str_name,"id":c};
+		doManager('TownManager','getTownByTown_name_Info',ght,function(data){
+            if(data.result){
+               lst_select_tiny = JSON.parse(data.data);
+                $(lst_select_tiny).each(function(index,element){
+                    $('#town-search').append('<option value="'+element.name+'">');
+                });
+            }else{
+                $$.showMessage("提示",data.message);
+            }
+        });
+	})
+	//社区变化
+	$('#village_name').keyup(function(event){
+		$('#village-search').children().remove();
+		$('#tinyvillage-search').children().remove();
+		document.getElementById("tiny_village_name").value="";
+		document.getElementById("tinyvillage_id").value="";
+		document.getElementById("village_id").value="";
+		var b=$("#town_id").val();
+		var str_name=$("#village_name").val();
+		var ght={"name":str_name,"town_id":b};
+		doManager('VillageManager','getVillageListByTown_idAndVillage_name',ght,function(data){
+            if(data.result){
+            	lst_select_village = JSON.parse(data.data);
+                $(lst_select_village).each(function(index,element){
+                    $('#village-search').append('<option value="'+element.name+'">');
+                });
+            }else{
+                $$.showMessage("提示",data.message);
+            }
+        });
+	})
+	
+	$('#town_name').change(function(){
+        $(lst_select_tiny).each(function(index,element){
+            if(element.name == $('#town_name').val()){
+                $('#town_id').val(element.id);
+               // $('#gb_code').val(element.gb_code);
+               // building_option();
+            }
+        });
+	})
+	$('#village_name').change(function(){
+        $(lst_select_village).each(function(index,element){
+            if(element.name == $('#village_name').val()){
+                $('#village_id').val(element.id);
+            }
+        });
+	})
+	//小区变化
+	$('#tiny_village_name').keyup(function(event){
+		document.getElementById("tinyvillage_id").value="";
+		$('#tinyvillage-search').children().remove();
+		var b=$("#village_id").val();
+		var c=$("#town_id").val();
+		if(b==''&&c==''){
+			return ;
+		}
+		var str_name=$("#tiny_village_name").val();
+		var ght={"name":str_name,"village_id":b,"town_id":c};
+		doManager('tinyVillageManager','findTinyVillageByvillage_idOrtown_id',ght,function(data){
+            if(data.result){
+            	lst_select_tinyvillage = JSON.parse(data.data);
+                $(lst_select_tinyvillage).each(function(index,element){
+                    $('#tinyvillage-search').append('<option value="'+element.name+'">');
+                });
+            }else{
+                $$.showMessage("提示",data.message);
+            }
+        });
+	})
+	$('#tiny_village_name').change(function(){
+        $(lst_select_tinyvillage).each(function(index,element){
+            if(element.name == $('#tiny_village_name').val()){
+                $('#tinyvillage_id').val(element.id);
+            }
+        });
+	})
+})
+
+function datacheck(){
+	var town_name=$("#town_name").val();
+	var town_id=$("#town_id").val();
+	var village_name=$("#village_name").val();
+	var village_id=$("#village_id").val();
+	var tiny_village_name=$("#tiny_village_name").val();
+	var tinyvillage_id=$("#tinyvillage_id").val();
+	var name=$("#name").val();
+	
+	if(town_name == "" || town_name == null){
+		alert("请输入街道名称！");
+		return ;
+	}
+	if(town_id == "" || town_id == null){
+		alert("请输入正确的街道名称!");
+		return;
+	}
+	if(village_name == "" || village_name == null){
+		alert("请输入社区名称!");
+		return;
+	}
+	if(village_id == "" || village_id == null){
+		alert("请输入正确的社区名称!");
+		return;
+	}
+	if(tiny_village_name == "" || tiny_village_name == null){
+		alert("请输入小区名称！");
+		return ;
+	}
+	if(tinyvillage_id == "" || tinyvillage_id == null){
+		alert("请输入正确的小区名称！");
+		return ;
+	}
+	if(name == "" || name == null){
+		alert("请输入楼号！");
+		return ;
+	}
+	
+	checkBuilding();
+}
+//验证是否存在
+function checkBuilding(){
+	var tinyvillage_id= $("#tinyvillage_id").val();
+	var name= $("#name").val();
+	var r={"tinyvillage_id":tinyvillage_id,"name":name}
+	doManager("buildingManager", "getBuildingByTinyvillageAndName",r , function(data,
+			textStatus, XMLHttpRequest) {
+		if (data.result) {
+			if(data.data!="null"){
+				alert("楼房已存在!");
+				return false;
+			}else{
+				doSave();
+			}
+		} else {
+			$$.showMessage("系统信息", "信息加载异常");
+			return false;
+		}
+	},false);
+}
+
+function doSave(){
+	var arr = [ "name", ,"town_id","village_id","tinyvillage_id","building_unit_no","house_no","building_house_no" ];
+	var o = {};
+	for ( var i in arr) {
+		var v = arr[i];
+		var va = $("#" + v).val();
+		o[v] = va;
+	}
+	var building_unit_no=$("#building_unit_no").val();
+	var house_no=$("#house_no").val();
+	var building_house_no=$("#building_house_no").val();
+	if(building_unit_no==""||building_unit_no==''){
+		o['building_unit_no']=1;
+	}
+	if(house_no==""||house_no==''){
+		o['house_no']=1;
+	}
+	if(building_house_no==""||building_house_no==''){
+		o['building_house_no']=101;
+	}
+	doManager("buildingManager", "saveOrUpdateBuilding", o, function(data,
+			textStatus, XMLHttpRequest) {
+		if (data.result) {
+			var jsonData = $.fromJSON(data.data);
+			alert("添加成功！");
+			window.location.href = 'building_list_data.html';
+		} else {
+			$$.showMessage("系统信息", "添加失败!");
+		}
+	});
+	
+}
+
+
+
+</script> 
+</head>
+<style type="text/css">
+	p{
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	table input,table select{border:1px solid #ccc; border-radius:3px; line-height: 30px; height: 30px; width:160px;}
+	.panel-heading .but{float:right; text-align: center;}
+	.but input {
+		background-color: transparent;
+		border: 1px solid #fff;
+		border-radius: 3px;
+		padding: 0 13px;
+		margin-right: 30px;}
+		.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+	table td{padding: 10px 0;}
+	.table_margin{min-width: 85px; display: inline-block; text-align: right;}
+</style>
+<body>
+	<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">楼房信息添加
+    	<span id="btnSave" onclick="datacheck();" disabled="false"> 保存</span>
+    	<span id="btnBack" onclick="javascript:history.go(-1);" disabled="false"> 返回</span>
+    
+        <!-- <span class="but">
+			<input name="" type="submit" onclick="datacheck();" value="保存">
+			<input name="" type="button" onclick="javascript:history.go(-1);" value="返回">
+		</span> -->
+    </div>
+    <div class="panel-body" id="temp1">
+	<form action="" method="post" class="pmsForm">
+	<input type="hidden" name="town_id" id="town_id"/>
+	<input type="hidden" name="village_id" id="village_id"/>
+	<input type="hidden" name="tinyvillage_id" id="tinyvillage_id"/>
+	<input type="hidden" name="id" id="id"/>
+	<table width="100%">
+		<tr>
+			<td width="25%">
+				<span class="table_margin">街道名称：</span><span style="color: red">*</span>
+				<input type="text" name="town_name" id="town_name" onkeyup="value=value.replace(/(^\s*)|(\s*$)/g,'').replace(/\'/g,'')" list="town-search"/>
+				<datalist id="town-search"></datalist>
+			</td>
+			<td width="25%">
+				<span class="table_margin">社区名称：</span><span style="color: red">*</span>
+				<input type="text" name="village_name" id="village_name" onkeyup="value=value.replace(/(^\s*)|(\s*$)/g,'').replace(/\'/g,'')" list="village-search"/>
+				<datalist id="village-search"></datalist>
+			</td>
+			<td width="25%">
+				<span class="table_margin">小区名称：</span><span style="color: red">*</span>
+				<input type="text" name="tiny_village_name" id="tiny_village_name" onkeyup="value=value.replace(/(^\s*)|(\s*$)/g,'').replace(/\'/g,'')" list="tinyvillage-search"/>
+				<datalist id="tinyvillage-search"></datalist>
+			</td>
+			<td width="25%">
+				<span class="table_margin">楼&nbsp;&nbsp;&nbsp;&nbsp;号：</span><span style="color: red">*</span>
+				<input type="text" name="name" id="name" onkeyup="value=value.replace(/(^\s*)|(\s*$)/g,'')"/>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<span class="table_margin">单&nbsp;&nbsp;&nbsp;&nbsp;元：</span>
+				<input type="text" name="building_unit_no" id="building_unit_no" placeholder="1" onkeyup="value=value.replace(/(^\s*)|(\s*$)/g,'')"/>
+			</td>
+			<td>
+				<span class="table_margin">楼&nbsp;&nbsp;&nbsp;&nbsp;层：</span>
+				<input type="text"  name="house_no" id="house_no" placeholder="1"  onkeyup="value=value.replace(/(^\s*)|(\s*$)/g,'')"/>
+			</td>
+			<td>
+				<span class="table_margin">房&nbsp;间&nbsp;号：</span>
+				<input type="text" name="building_house_no" id="building_house_no"  placeholder="101" onkeyup="value=value.replace(/(^\s*)|(\s*$)/g,'')"/>
+			</td>
+		</tr>
+	</table>
+	</form>
+</div>
+</body>
+</html>

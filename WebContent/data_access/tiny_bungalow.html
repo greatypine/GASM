@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+ <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title></title>
+   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+ 
+  <!-- Bootstrap 3.3.6 -->
+   <!-- Font Awesome -->
+  <link rel="stylesheet" href="../custom_css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="../custom_css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="../custom_css/AdminLTE.min.css">
+ <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+ <script type="text/javascript" src="../scripts/bidLib.js"></script>
+
+  <style>
+    body{background-color: #f1f1f1;}
+    .lf_xinxi img{max-height: 100px;}
+    .col-lg-3{margin-top: 10px;float: left;width: 25%;}
+    .lf_add .fa{font-size: 30px; margin-top: 50px;}
+    .lf_add a{color: #333; display: inline-block;}
+  </style>
+<script type="text/javascript">
+var tinyid=getUrlParamByKey("id");
+var addid=getUrlParamByKey("addid");
+var tinyname=decodeURIComponent(getUrlParamByKey("name"));
+var tinyaddress=decodeURIComponent(getUrlParamByKey("address"));
+var bungalowArray=null;
+	$(function(){
+		$("#tinyname").text(decodeURIComponent(tinyname));
+		  $("#tinyaddress").text(decodeURIComponent(tinyaddress));
+		//根据小区id获取小区下的所有楼房    3758
+		  doManager("HouseManager", "findHouseDataBytinyvillageIdandhouseType",tinyid , function(data,
+	  			textStatus, XMLHttpRequest) {
+	  		if (data.result) {
+	  			if(data.data!="null"){
+	  				bungalowArray=new Array();
+	  				var arr = eval('('+data.data+')');
+	  				for(var i=0;i<arr.length;i++){
+	  					var obj=new Object(); 
+	  					obj.id=arr[i].id;
+	  					obj.house_no=arr[i].house_no;
+	  					bungalowArray[i]=obj;
+	  				}
+	  				showBuilding(bungalowArray);
+	  			}
+	  		} else {
+	  			$$.showMessage("系统信息", "信息加载异常");
+	  		}
+	  	},false);
+		
+		
+	})
+//当点添加时调用此方法(首先调用一个弹框让输入房间号)
+  		function addBuilding(building){
+	  $("#villagebyty").dialog({
+			 closeOnEscape:false,
+			 open:function(event,ui){$(".ui-icon-closethick").hide()},
+		        bgiframe: true,
+		        title: '添加房间号',
+		        width: 300,
+		        //height:100,
+		        modal: true,
+		        buttons: {
+		            /* "${form.ui.ok}": function () {
+		            	 $("#villagebyty").dialog('close');
+		            }, */
+		            "${query.ui.cancel}": function () {
+		            	
+		                $("#villagebyty").dialog('close');
+		                
+		            }
+		        }
+		    }); 
+  			
+  		}
+  		function showBuilding(bungalowArray){
+  			if(bungalowArray!=null){
+  				var $div_parent = $('#building');
+  				//var $div_ul=$div_parent.find("div");
+  				var $div_last=$div_parent.find("div:last");//最后一个div
+  				var addcontent='';
+  				for(var j=0;j<bungalowArray.length;j++){
+  					addcontent+='<div class="col-lg-3"><input type="hidden" name="id" id="id" value="'+bungalowArray[j].id+'"/><p><img src="../data_access/imgmouse_files/tiny_bungalow.jpg"  ></p>'+
+    	              '<p style="font-size: 16px;">'+bungalowArray[j].house_no+'</p>'+
+      	              '<p><a class="margin-r-5" onclick="updateBuilding(this);">修改</a> <a onclick="deletebuilding(this);">删除</a></p>'+
+      	            '</div>';
+  				}
+  				$div_last.before(addcontent);
+  			}
+  		}
+  	  //删除
+  	  function deletebuilding(_this){
+  		  /* 
+  		  console.log(delid); */
+  		 // $(_this).parent().parent()[0].remove();
+  		   $$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+  			 var delid=$(_this).parent().parent().children().first().val();
+  			   doManager("houseManager", "findHouseCustomerOrHouseStyle", delid + '', function(
+  						data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						if(data.data==1){
+  							$$.showMessage("系统信息","该房屋信息关联用户画像,请移除后再删除!");
+  						}else if(data.data==0){
+  							delect(delid,_this);
+  						}
+  					} else {	
+  						$$.showMessage("系统信息", "删除失败!");
+  					}
+  				});
+  		  })  
+  	  }
+  	  
+  	  function delect(id,_this){
+  		  doManager("houseManager", "deleteHouseById", id + '', function(
+  	  			data, textStatus, XMLHttpRequest) {
+  	  		if (data.result) {
+  	  			alert("删除成功");
+  				if(bungalowArray!=null&&bungalowArray.length>0){
+  					for(var h=0;h<bungalowArray.length;h++){
+  						if(bungalowArray[h].id==id){
+  							bungalowArray.splice(h,1);
+  						}
+  					}
+  				}
+  				$(_this).parent().parent()[0].remove();
+  	  		} else {
+  	  			$$.showMessage("系统信息", "删除失败!");
+  	  		}
+  	  	});
+  		}
+  	  //添加时验证是否有值
+  	  function datacheck(){
+  		  var name=$("#villagebyty input[name='house_no']").val().replace(/\ +/g,"").replace(/[\r\n]/g,"");
+  		  if(name == "" || name == null){
+  			  $$.showMessage("系统信息", "请输入房间号！");
+  				return ;
+  			}
+  		  checkBuilding();
+  	  }
+  	//验证是否存在
+  	  function checkBuilding(){
+  	  	var house_no= $("#villagebyty input[name='house_no']").val();
+  	  	var r={}
+  	  	r["tinyvillage_id"]=tinyid;
+  	  	r["house_no"]=house_no;
+  	  	doManager("houseManager", "queryfindbungalowhouse",r , function(data,
+  	  			textStatus, XMLHttpRequest) {
+  	  		if (data.result) {
+  	  			if(data.data!="null"){
+  	  				$$.showMessage("系统信息", "房间已存在!");
+  	  				return false;
+  	  			}else{
+  	  				doSave();
+  	  			}
+  	  		} else {
+  	  			$$.showMessage("系统信息", "信息加载异常");
+  	  			return false;
+  	  		}
+  	  	},false);
+  	  }
+  	  function doSave(){
+  			var arr={};
+  			arr["tinyvillage_id"]=tinyid;
+  			arr["house_no"]=$("#villagebyty input[name='house_no']").val();
+  			//arr["type"]=0;
+  			doManager("houseManager", "insertHouse", arr, function(data,
+  					textStatus, XMLHttpRequest) {
+  				if (data.result) {
+  					var jsonData = $.fromJSON(data.data);
+  					alert("添加成功！");
+  	  				window.location.href = 'tiny_bungalow.html?id='+tinyid+'&addid='+addid+'&name='+tinyname+'&address='+tinyaddress;
+  				} else {
+  					$$.showMessage("系统信息", "添加失败!");
+  				}
+  			});
+  		}
+  	 //修改楼房的时候调用此方法
+  	  function updateBuilding(_this){
+  		var updid=$(_this).parent().parent().children().first().val();
+  		 $("#updatevillage input[name='id']").val(updid);
+  		 var lable=$(_this).parent().parent().children().eq(2).text();
+  		 $("#updatevillage input[name='house_no']").val(lable);
+  		  $("#updatevillage").dialog({
+  				 closeOnEscape:false,
+  				 open:function(event,ui){$(".ui-icon-closethick").hide()},
+  			        bgiframe: true,
+  			        title: '修改房间号',
+  			        width: 300,
+  			        //height:100,
+  			        modal: true,
+  			        buttons: {
+  			            "${query.ui.cancel}": function () {
+  			                $("#updatevillage").dialog('close');
+  			                
+  			            }
+  			        }
+  			    }); 
+  	  }
+  	  //修改楼房验证值调用此方法
+  	  function dataupdatecheck(){
+  		  var name=$("#updatevillage input[name='house_no']").val().replace(/\ +/g,"").replace(/[\r\n]/g,"");
+  		  if(name == "" || name == null){
+  			  $$.showMessage("系统信息", "请输入楼号！");
+  				return ;
+  			}
+  		  checkupdateBuilding();
+  	  }
+  	  //修改的验证方法
+  	  //验证是否存在
+  	function checkupdateBuilding(){
+  		 var house_no=$("#updatevillage input[name='house_no']").val();
+  		 var id=$("#updatevillage input[name='id']").val();
+  		var house={"id":id,"house_no":house_no,"tinyvillage_id":tinyid}
+  		doManager("houseManager", "updateHouseVersion", house, function(
+  				data, textStatus, XMLHttpRequest) {
+  			if (data.result) {
+  				if(data.data!="null"){
+  					$$.showMessage("系统信息", "该房间已存在！");
+  					return;
+  				}else{
+  					doUpdate(house);
+  			} }else {
+  				$$.showMessage("系统信息", "数据加载失败!");
+  			}
+  		},false);
+  	}
+  	function doUpdate(house){
+  		doManager("houseManager", "updateHouseBungalow", house, function(
+  				data, textStatus, XMLHttpRequest) {
+  			if (data.result) {
+  				confirm( "修改成功!");
+  				window.location.href = 'tiny_bungalow.html?id='+tinyid+'&addid='+addid+'&name='+tinyname+'&address='+tinyaddress;
+  			} else {
+  				$$.showMessage("系统信息", "修改失败!");
+  			}
+  		});
+  	}
+  	
+  	function doback(){
+  		if(addid==1){
+  			window.location.href="tinyVillage_add.html?id="+tinyid;
+  		}else{
+  			window.location.href="tinyvillage_list_edit.html?id="+tinyid;
+  		}
+  	}
+  	
+</script>
+</head>
+<body class="hold-transition skin-blue sidebar-mini">
+<!-- Site wrapper -->
+<div class="wrapper">
+
+  <!-- Content Wrapper. Contains page content -->
+  <div class="content-wrapper">
+    <div class="container">
+      <!-- Main content -->
+      <section class="content-header">
+        <div class="box box-default">
+          <div class="box-header with-border text-light-blue"><b>小区信息</b></div>
+          <!-- /.box-header -->
+          <div class="box-body lf_xinxi">
+            <div class="col-lg-8">
+              <p>小区名称：<span id="tinyname"></span><!-- <span style="display: inline-block; width: 100px; margin-left: 20px;"><button type="button" class="btn btn-block btn-default btn-sm">小区地图</button></span> --></p>
+              <p>小区地址：<span id="tinyaddress"></span></p>
+            </div>
+            <div class="col-lg-4 text-right">
+              <!-- <img src="dist/img/avatar5.png"> -->
+            </div>
+          </div>
+          <!-- /.box-body -->
+        </div>
+        <!-- /.box -->
+
+      </section>
+      <section class="content-header">
+        <div class="box box-default">
+          <div class="box-header with-border text-light-blue"><strong>平房信息</strong><span class="col-lg-1 pull-right"><button type="button" onclick="doback();" class="btn btn-block btn-primary btn-sm">返回</button></span></div>
+          <div class="box-body no-padding text-center" id="building">
+            <div class="col-lg-3 lf_add" onclick="addBuilding();" style="cursor:pointer;">
+              <i class="fa fa-plus"></i>
+              <p>增加平房房间号<br/>(添加一个房间)</p></a>
+            </div>
+          </div>
+
+        </div>
+      </section>
+      <!-- /.content -->
+
+
+    </div>
+  </div>
+  <!-- /.content-wrapper -->
+<div id="villagebyty" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 		房间号：<input placeholder="例：101号" type="text" name="house_no" onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" id="house_no"/><button style="margin-left:3px;" onclick="datacheck();">保存</button>
+ </div>
+ 
+ <div id="updatevillage" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+ 			<input type="hidden" name="id" id="id"/>
+ 		房间号：<input placeholder="例：101号" type="text" name="house_no" onkeyup="value=this.value.replace(/(^\s+)|(\s+$)/g,'')" id="house_no"/><button style="margin-left:3px;" onclick="dataupdatecheck();">保存</button>
+ </div>
+
+</div>
+<!-- ./wrapper -->
+
+</body>
+</html>

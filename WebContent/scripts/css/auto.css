@@ -1,0 +1,41 @@
+div,p,h1,h2,h3,h4,h5,h6,ul,li,span,input{
+	box-sizing: border-box;
+	font: 14px/20px "microsoft yahei";
+}
+div.wrap{
+	width: 240px;
+	margin: 0 auto;
+}
+.auto-inp{
+	width: 95%;
+	height: 36px;
+	padding-left: .5em;
+	border-radius: 2px;
+	border: 1px solid #dedede;
+	color: #666;
+	outline: none;
+}
+.auto{
+	width: 94%;
+	border: 1px solid #dedede;
+	border-top: none;
+	position: absolute;
+}
+.auto_out{
+	height: 36px;
+	line-height: 36px;
+	padding-left: .5em;
+	color: #000;
+	background: #fff;
+	overflow: hidden;
+	white-space: nowrap;
+	-o-text-overflow: ellipsis;
+	text-overflow: ellipsis;
+}
+.auto_out.on{
+	background: #eee;
+	cursor: pointer;
+}
+.hidden{
+	display: none;
+}

@@ -1,0 +1,9 @@
+ body {
+	font-family: Verdana, Geneva, Arial, sans-serif;
+	margin: 0px
+}
+
+#content {
+	position: absolute;
+	visibility: visible
+}

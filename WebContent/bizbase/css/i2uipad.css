@@ -1,0 +1,33 @@
+/////////////////////////////////////////////////////////////////////////////
+// (c) Copyright 2000 - 2009, i2 Technologies, Inc. (formerly Intellection)//
+// ALL RIGHTS RESERVED.                                                    //
+//                                                                         //
+// This UNPUBLISHED PROPRIETARY software is  subject to the full copyright //
+// notice in the COPYRIGHT file in this directory.                         //
+/////////////////////////////////////////////////////////////////////////////
+
+/* Not really a style sheet file but named as such */
+/* in order to indicate its purposes.              */
+/* Layers in Netscape 4.x do not by definition     */
+/* permit a class attribute.  If specified, the    */
+/* specified background color is applied but in    */
+/* such a manner that reseting the bgColor of a    */
+/* layer will not apply to its contents.  This     */
+/* produces some poor rendering of selected pad    */
+/* items.  Therefore all color information must    */
+/* be specified in javascript variables in order   */
+/* for Netscape 4.x to work properly.              */
+/* These values should be kept in sync with        */
+/* entries in the style sheet of like names.       */
+
+i2uiPadBorderBgcolor                 = "#999999";
+i2uiSolutionPadTitleBgcolor          = "#f2f2f2";
+i2uiSolutionPadContent0Bgcolor       = "#ffffff";
+i2uiSolutionPadContent1Bgcolor       = "#ffffff";
+i2uiSolutionPadHighlightedBgcolor    = "#e6e6e6";
+i2uiApplicationPadTitleBgcolor       = "#d1d6f0";
+i2uiApplicationPadContent0Bgcolor    = "#e4e6f5";
+i2uiApplicationPadContent1Bgcolor    = "#f7f8fd";
+i2uiApplicationPadHighlightedBgcolor = "#fff274";
+i2uiPadItemHeight                    = 16;
+i2uiPadTitleHeight                   = 23;

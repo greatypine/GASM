@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>认证列表列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+</head>
+<script>
+    var win;
+    var array=new Array();
+	//初始化所有门店 
+	
+    $(function () {
+    	//doClean();
+        //页面加载成功后需要获取数据
+        searchList();
+        
+        
+        
+        $("#selectionstatusdiv").change(function(){
+        	var ss = $("#selectionstatusdiv option:selected").val();
+        	if(ss==2){
+        		$("#reasontr").show();
+        	}else{
+        		$("#reasontr").hide();
+        	}
+        });
+    });
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('querysiteselectionlist', 'conditionsDiv');
+    }
+
+    
+    function doClean() {
+        document.service_qa.reset();
+    }
+    
+    
+    //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str === "" || str == "undefined" || typeof(str) == "undefined";
+    }
+
+    function doAdd(){
+    	window.location.href="app_version_add.html";
+    }
+
+    
+  //列表中 列的处理
+    var COLUMNS = {
+            "employee_flag": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(typeof(value)=='string'&&value=='0'){
+                	ret="否";
+                }
+                if(typeof(value)=='string'&&value=='1'){
+                	ret="是";
+                }
+                return ret;
+            },
+            "selection_flag": function(aData, iColumn, sColumnName, map){
+               var value = map[sColumnName];
+               var ret = "";
+               if(typeof(value)=='string'&&value=='0'){
+               	ret="否";
+               }
+               if(typeof(value)=='string'&&value=='1'){
+               	ret="是";
+               }
+               return ret;
+            },
+            "selection_status": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var reason = map["reason"];
+                var ret = "";
+                if(typeof(value)=='number'&&value=='0'){
+                	ret="<font color='red'>待认证</font>";
+                }
+                if(typeof(value)=='number'&&value=='1'){
+                	ret="<font color='green'>通过</font>";
+                }
+                if(typeof(value)=='number'&&value=='2'){
+                	ret="<font color='grey' style='cursor:pointer;' onclick='javascript:showreason(\""+reason+"\")'>未通过</font>";
+                }
+                if(typeof(value)=='number'&&value=='3'){
+                	ret="<font color='red'>认证中</font>";
+                }
+                return ret;
+             },
+             "cards": function(aData, iColumn, sColumnName, map){
+                 var value = map["cards"];
+                 var value_back = map["cards_back"];
+                 var ret = "";
+                 if(value!=null&&value!=""&&value.trim().length>0){
+                	 ret += "<a href=\"javascript:showcardinfo('"+value+"')\">查看正面<a> &nbsp;&nbsp;";
+                 }
+				 if(value_back!=null&&value_back!=""&&value_back.trim().length>0){
+					 ret += "<a href=\"javascript:showcardinfo('"+value_back+"')\">查看反面<a>";
+                 }
+                 return ret;
+              }
+        }
+    
+    function showreason(reason){
+    	$$.showMessage("原因", "<font color='red'>"+reason+"</font>");
+  }
+    
+    var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "appversion_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("XxExpressManager", "deleteXxExpress", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'xx_express_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		}
+    var editObj = {
+			html : '<a href="">操作</a>',
+			resourceId : "siteselection_List_update",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				//window.location.href = "app_version_edit.html?id="+id;
+				var selectionstatus = allColumnsDataMap.selection_status;
+				if(selectionstatus.indexOf("认证中")>-1){
+					updateSiteSelection(id);
+				}else{
+					$$.showMessage("系统信息", "状态不可操作!");
+				}
+				
+			}
+		}
+    var publishObj = {
+			html : '<a href="#">查看 </a>',
+			resourceId : "appversion_List_detail",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "app_version_detail.html?id="+id;
+			}
+		}
+    $pmspage.opArr = [ editObj /*, publishObj   , deleteObj*/ ];
+    
+  
+	  function showcardinfo(file_name){
+		  
+		  var rootPath = "https://imagedata.guoanshequ.com/file_manager/upload_folder/siteselection/";
+		  $("#showcard").attr("src",rootPath+file_name);
+		  
+		  var imgdiv = $("#showcarddiv");
+		  imgdiv.dialog({
+	            bgiframe : true,
+	            title : "名片查看",
+	            width : 680,
+	            height: 500,
+	            buttons : {
+	                "确定" : function() {
+	                	 $(this).dialog("close");
+	                },
+	                "取消" : function() {
+	                    $(this).dialog("close");
+	                }
+	            },
+	            modal : false
+	        });
+	  }
+    
+  
+  
+    function updateSiteSelection(id){
+        var div = $("#updateSiteSelection");
+        div.dialog({
+            bgiframe : true,
+            title : "认证用户",
+            width : 380,
+            buttons : {
+                "确定" : function() {
+                   
+                	var ss = $("#selectionstatusdiv option:selected").val();
+                	
+                	if(ss=="1"){
+                		doUpdate(1,id);
+                		$(this).dialog("close");
+                	}else if(ss=="2"){
+                		doUpdate(2,id);
+                		$(this).dialog("close");
+                	}else{
+                		$$.showMessage("系统信息", "请选择状态!");
+                	}
+                	
+                },
+                "取消" : function() {
+                    $(this).dialog("close");
+                }
+            },
+            modal : false
+        });
+    }
+    function doUpdate(status,id){
+    	var reason = $("#reason").val();
+    	var obj = Object();
+    	obj.selection_status=status;
+    	obj.reason = reason;
+    	obj.id=id;
+    	doManager("siteSelectionManager", "updateSiteSelection", obj, function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				searchList();
+			} else {
+				$$.showMessage("系统信息", "修改失败!");
+			}
+		});
+    }
+    
+</script>
+<style type="text/css">
+    .but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+</style>
+<body style="height: 100%">
+<div class="panel panel-default" style="margin: 10px">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+             门店选址管理:认证列表
+        </h4>
+    </div>
+</div>
+<div class="rightcont clear">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <label id="imp_base_div">-</label>&nbsp;认证列表查询
+        </div>
+        <div class="panel-body" id="imp_data_div">
+            <div id="conditionsDiv" style="margin-top: 0px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">姓名:</td>
+                            <td width="30%">
+                                <input id="real_name" name="real_name" type="text" style="width:80%" class="form-control"/>
+                            </td>
+                            
+                             <td width="5%">手机号码:</td>
+                            <td width="30%">
+                                <input id="mobilephone" name="mobilephone" type="text" style="width:80%" class="form-control"/>
+                            </td>
+                            
+                             <td width="5%">状态:</td>
+                            <td>
+                                <select id="selection_status" name="selection_status" style="width:40%;" class="form-control">
+                                	<option value="">全部</option>
+                                	<option value="0">待认证</option>
+                                	<option value="1">通过</option>
+                                	<option value="2">未通过</option>
+                                	<option value="3">认证中</option>
+                                </select>
+                            </td>
+                            
+                        </tr>
+                       
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+            <!-- <button class="btn btn-primary" onclick="doAdd();">新增</button> -->
+        </div>
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="querysiteselectionlist" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+
+
+
+
+
+
+	<div id="updateSiteSelection" class="panel panel-primary" style="display: none;">
+            <div class="panel-body">
+                <table  cellpadding="1" cellspacing="1" style="min-width: 100%; width: auto">
+                	<tr>
+                		<td align="center" >认证选择<label style="color:red;">*</label>：</td>
+                        <td align="left" width="219px;">
+                           	<select id="selectionstatusdiv" style="width: 100%;display:inline-block;padding:0;margin-right: 20px;" class="form-control">
+                           		<option value="">请选择</option>
+                           		<option value="1">通过</option>
+                           		<option value="2">未通过</option>
+                           	</select>
+                        </td>
+                	</tr>
+                	<tr id="reasontr" style="display: none;">
+                		<td align="center" >原因：</td>
+                        <td align="left" width="219px;" >
+                           	<input type="text" id="reason" value="" class="form-control" style="margin-top: 5px;width:100%;"/>
+                        </td>
+                	</tr>
+                	
+                </table>
+            </div>
+        </div>
+        
+        
+        
+        <div id="showcarddiv" class="panel panel-primary" style="display: none;">
+        	<img id="showcard" src="" style="width: 600px;height: 380px;">
+        </div>
+        
+        
+</div>
+</body>
+
+</html>

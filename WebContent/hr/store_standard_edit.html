@@ -1,0 +1,394 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>立店标准编辑</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript" src="../scripts/auto.js"></script> 
+
+<!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+.panel{border-radius:0; border:0; margin:0;}
+form{border:1px solid #337ab7;background-color:#fff;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+
+table td {
+	width: 50%;
+	height:55px; line-height:55px; padding:5px 0;
+}
+table tr:nth-child(2n){background-color:#f2f2f2;}
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 58%;
+	height: 35px;
+	line-height: 35px;
+	border: 1px solid #e2e2e2;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;outline:none; border-radius:3px;
+}
+table td label{padding-left:10px; color:#999;}
+table te .letter{ letter-spacing:2em;}
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.form-control{margin:0; height:40px;}
+.input-group-btn button{height:40px;}
+</style>
+
+<script type="text/javascript">
+	
+	var id = getUrlParamByKey("id");
+
+	$(function(){
+		doManager("StoreStandardManager", "queryStoreStandardById", id,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						
+						for (var key in jsonData) {
+							var va = jsonData[key];
+							var ele = document.getElementById(key);
+							if (ele != null && ele != undefined) {
+								var arrinput = ["id","standardname","rent","property","area","type","floor","electric","sidestation","water","blowdown","firecontrol","designpaper","lamphouse","floorheight","leasetime","address","network","tocondition"];
+								for (var i in arrinput) {
+									var v = arrinput[i];
+									if(key==v){
+										 document.getElementById(key).value = va;
+									}
+								}
+								
+								
+							
+							}
+						}
+						
+					}
+		}, false);
+		
+		
+	});
+	
+	
+	function doBack(){
+		window.location.href = 'store_standard_list.html';
+	}
+	
+	function dataCheck() {
+		var arrinput = ["standardname","rent","property","area","type","floor","electric","sidestation","water","blowdown","firecontrol","designpaper","lamphouse","floorheight","leasetime","address","network","tocondition"];
+		for (var i in arrinput) {
+			var v = arrinput[i];
+			var objVal=$("#"+v).val();
+			if(objVal==null||objVal.trim()==""){
+				$$.showMessage("系统信息", "存在空的选项!");
+				return;
+			}
+		}
+		return true;
+	}
+	
+	
+	function doSave(){
+		if (!dataCheck()) {
+			return;
+		}
+		
+		
+		var arr = ["id","standardname","rent","property","area","type","floor","electric","sidestation","water","blowdown","firecontrol","designpaper","lamphouse","floorheight","leasetime","address","network","tocondition"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		
+		
+		//直接保存 
+		doManager("StoreStandardManager", "updateStoreStandard", o,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						if(jsonData!=null){
+							window.location.href = 'store_standard_list.html';
+						}
+					}
+		}, false);
+		
+		
+		/* if(store_name.trim()==storename){
+			//门店名称未发生变化 直接保存 
+			doManager("StoreRequirementManager", "saveStoreRequirementExtend", o,
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData!=null){
+								window.location.href = 'store_requirement_list.html';
+							}
+						}
+					}, false);
+		}else{
+			var isflag=false;
+			doManager("StoreRequirementManager", "saveStoreRequirement", obj,
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var jsonData = $.fromJSON(data.data);
+							if(jsonData==null){
+								isflag=true;
+							}else{
+								window.location.href = 'store_requirement_list.html';
+							}
+						}
+					}, false);
+			
+			if(isflag){
+				$$.showMessage("系统信息", "存在相同的店铺名称，请重新填写 ！");
+				return ;
+			} 
+		} */
+		
+	}
+	
+    
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">选址管理 :立店标准明细
+        	<span class="but">
+        		<input name="" type="button" onclick="doSave();" value="保存"/>
+                <input name="" type="button" onclick="doBack();" value="返回"/>
+            </span>
+        </div>
+	</div>
+	<form class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+		<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>名&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;称：<input type="text" id="standardname" value="" placeholder="立地标准名称，供新增店铺需求时选择"/>
+					</p>
+				</td>
+				
+			</tr>
+			
+			
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>租&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;金：<input type="text" id="rent" value=""/>
+					</p>
+				</td>
+				
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>产&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;权：<input type="text" id="property" value=""/>
+					</p>
+				</td>
+				
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>面&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;积：<input type="text" id="area" value=""/>
+					</p>
+				</td>
+				
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p style="float: left;"><font color="red">*</font>户&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型：&nbsp;&nbsp;</p>
+					<p style="float: none;">
+						<textarea class="form-control" id="type" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" ></textarea>
+					</p>
+				</td>
+				
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>楼&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;层：<input type="text" id="floor" value=""/>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2">
+					<p style="float: left;"><font color="red">*</font>&nbsp;&nbsp;&nbsp;&nbsp;电&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;：&nbsp;&nbsp;</p>
+					<p style="float: none;">
+						<textarea class="form-control" id="electric" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" ></textarea>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>室&nbsp;外&nbsp;机：<input type="text" id="sidestation" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p style="float: left;"><font color="red">*</font>上&nbsp;下&nbsp;水：&nbsp;&nbsp;</p>
+					<p style="float: none;">
+						<textarea class="form-control" id="water" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" ></textarea>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2">
+					<p style="float: left;"><font color="red">*</font>排&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;污：&nbsp;&nbsp;</p>
+					<p style="float: none;">
+						<textarea class="form-control" id="blowdown" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" ></textarea>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>消&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;防：<input type="text" id="firecontrol" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>图&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;纸：<input type="text" id="designpaper" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>门头灯箱：<input type="text" id="lamphouse" value=""/>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>层&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;高：<input type="text" id="floorheight" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>租&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;期：<input type="text" id="leasetime" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>位&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;置：<input type="text" id="address" value=""/>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>网&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;络：<input type="text" id="network" value=""/>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2"  style="vertical-align: top;">
+					<p style="float: left;"><font color="red">*</font>谈判条件：&nbsp;&nbsp;</p>
+					<p style="float: none;">
+						<textarea class="form-control" id="tocondition" maxlength="1000" style="display: inline-block;width:59%;height:100px;resize:none;" ></textarea>
+					</p>
+				</td>
+			</tr>
+			
+			
+			
+			
+             <input type="hidden" id="id" value=""/>
+                       
+		</table>
+	</form>
+	
+	
+</body>
+
+
+</html>

@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmsquery>
+    <query id="villageQuery" header="社区信息"  order="id desc" method="villageManager.showVillageData">
+    	<column key="id" header="社区编号"  align="center" display="false" allowSort="false"/>
+        <column key="name" header="社区名" width="15%" align="center" allowSort="false"/>
+        <column key="gb_code" header="国标码" width="15%" align="center" allowSort="false"/>
+        <column key="household_number" header="户数" width="10%"  align="center" allowSort="false" />        
+        <column key="resident_population_number" width="10%" header="常住人口"  align="center" allowSort="false"/>
+        <!-- <column key="province_name" header="省"  align="center" allowSort="false"/>
+        <column key="city_name" header="市"  align="center" allowSort="false" />
+        <column key="county_name" header="区(县)"  align="center" allowSort="false"/> -->
+        <column key="town_name" header="街道" width="15%" align="center" allowSort="false" />
+        <column key="committee_address" header="地址" width="18%" align="center" allowSort="false" />
+    </query>
+    
+    <query id="townQuery" header="街道信息"  order="id desc" method="townManager.showTownData">
+    	<column key="id" header="街道编号"  align="center" display="false" allowSort="false"/>
+        <column key="name" header="街道名称"  align="center" allowSort="false"/>
+        <column key="gb_code" header="国标码"  align="center" allowSort="false"/>
+        <column key="province_name" header="省"  align="center" allowSort="false"/>
+        <column key="city_name" header="市"  align="center" allowSort="false" />
+        <column key="county_name" header="区(县)" align="center" allowSort="false"/>
+    </query>
+    
+    <query id="officeQuery" header="写字楼信息"  order="office_id desc" method="officeManager.getOfficeList">
+        <!-- <column key="province_name" header="省"  align="center" allowSort="false"/> -->
+        <column key="town_name" header="街道名"  align="center" allowSort="false"/>
+        <column key="whold_address" header="地址"  align="center" allowSort="false"/>
+        <column key="office_name" header="写字楼名称"  align="center" allowSort="false"/>
+        <column key="office_type" header="类型"  align="center" allowSort="false" />
+        <column key="office_area" header="面积(平方米)"  align="center" allowSort="false"/>
+        <column key="office_floor_of_company" header="公司楼层"  align="center" allowSort="false"/>
+        <column key="office_company" header="入驻公司名"  align="center" allowSort="false"/>  
+        <!-- <column key="user_name" header="国安侠姓名"  align="center" allowSort="false"/>
+        <column key="store_name" header="门店名"  align="center" allowSort="false"/> -->
+        <column key="office_id" header="编号"  align="center" display="true" allowSort="false"/>
+        <!-- <column key="is_check" header="是否校验"  align="center" allowSort="false" />   -->     
+    </query>
+    
+    <query id="businessQuery" header="商业信息"  order="id desc" method="businessInfoManager.getBussinessInfoList">
+    	<column key="id" header="编号" width="7%" align="center" allowSort="false"/>
+        <column key="province_name" header="省"  align="center" allowSort="false" display="false"/> 
+        <column key="town_name" header="街道名称" width="10%" align="center" allowSort="false"/>
+        <column key="village_name" header="社区名称" width="10%" align="center" allowSort="false"/>
+        <column key="business_name" header="商家名称" width="10%" align="center" allowSort="false"/>
+        <column key="two_level_index" header="二级指标" width="10%" align="center" allowSort="false" />
+        <column key="three_level_index" header="三级指标" width="14%" align="center" allowSort="false"/>
+        <column key="four_level_index" header="四级指标" width="14%" align="center" allowSort="false"/>
+        <column key="five_level_index" header="五级指标" width="14%" align="center" allowSort="false"/>
+        <column key="shop_area" header="经营规模（平方米）"  display="false"  align="center" allowSort="false"/>
+        <column key="store_name" header="门店名称"  align="center" allowSort="false" display="false"/>
+        <column key="employee_name" header="国安侠"  align="center" allowSort="false" display="false"/> 
+    </query>
+    
+    <query id="storeyyeeQuery" header="门店信息" method="storeManager.getStoreList" order="store_id desc">
+        <column key="store_id" header="编号"  align="center" display="false" allowSort="false"/>
+        <column key="storeno" header="门店编号" width="10%" align="center" allowSort="false"/>
+    	<column key="name" header="门店名称" width="15%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+        <column key="town_name" header="所属街道" width="20%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+    	<column key="city_name" header="所属城市" width="10%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+    	<column key="ordnumber" header="开店顺序" width="10%" allowSearch="true" operator="like"  align="center" allowSort="false"/>       
+   		<column key="auditor_status" header="审批状态" display="false" width="0%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+   		<column key="estate" header="状态"  width="7%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+   		<column key="storetypename" header="门店类型" width="15%" align="center" allowSort="false"/>
+   		<column key="create_time" header="创建时间" width="13%" align="center" type="String" allowSort="false"/>
+   		<column key="caozuo" header="操作" width="6%" align="center" allowSort="false"/>
+    </query>
+    
+    <query id="storeDocuQuery" header="未完善详情门店信息" method="storeManager.findStoreNot" order="store_id desc">
+        <column key="store_id" header="编号"  align="center" display="false" allowSort="false"/>
+    	<column key="name" header="门店名称" width="20%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+        <column key="town_name" header="所属街道" width="25%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+    	<column key="city_name" header="所属城市" width="20%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+   		<column key="storetypename" header="门店类型" width="20%" align="center" allowSort="false"/>
+   		<column key="caozuos" header="操作" width="15%" align="center" allowSort="false"/>
+    </query>
+    
+    <query id="userAdviceQuery" header="客户意见列表" method="userAdviceManager.getUserAdviceDataList" order="id desc">
+        <column key="id" header="编号"  align="center" display="false" allowSort="false"/>
+        <column key="name" header="姓名" width="20%" align="center" allowSort="false"/>
+    	<column key="reg_num" header="年龄" width="20%" allowSearch="true"  align="center" allowSort="false"/>
+        <column key="mobilephone" header="电话" width="30%" allowSearch="true" operator="like"  align="center" allowSort="false"/>
+    	<column key="sex" header="性别" width="10%" allowSearch="true" operator="like"  align="center" allowSort="false"/>       
+   		<column key="request" header="咨询的问题" width="20%" align="center" allowSort="false"/>
+    </query>
+    
+    <query id="storeDailyQuery" header="门店经营指数" method="dailyReportManager.queryDailyReportDate" order="id desc">
+        <column key="id" header="编号"  align="center" display="false" allowSort="false"/>
+        <column key="name" header="门店名称" width="13%" align="center" allowSort="false"/>
+    	<column key="enter_num" header="进店客数" width="7%" align="center" allowSort="false"/>
+    	<column key="test_num" header="体验人数" width="7%" align="center" allowSort="false"/>
+    	<column key="reg_num" header="店内APP注册" width="9%" align="center" allowSort="false"/>
+    	<column key="purchase_num" header="店内下单数" width="9%" align="center" allowSort="false"/>
+    	<column key="life_test" header="生活宝体验人数" width="11%" align="center" allowSort="false"/>
+    	<column key="life_card" header="办卡人数" width="8%" align="center" allowSort="false"/>
+    	<column key="health_request" header="健康屋" width="8%" align="center" allowSort="false"/>
+    	<column key="report_date" header="日期" width="10%" type="java.lang.Date" align="center" allowSort="false"/>
+    	<column key="city_name" header="城市" width="5%" align="center" allowSort="false"/>
+    </query>
+    <query id="selectCheckBoxStoreQuery" header="门店列表" baseclass="com.cnpc.pms.personal.entity.Store" order="sort desc">
+        <column key="store_id" header="选择" type="java.lang.Long" operator="in" align="center" allowSort="false" display="true"  width="5%"/>
+        <column key="name" header="门店名称" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="90%"/>
+        <column key="address" header="地址" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="false"/>
+  		<column key="cityName" header="城市" type="java.lang.String" align="left" allowSearch="true" operator="like" allowSort="false" display="false"/>
+  		<column key="flag" header="是否废除" type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="false"/>
+    </query>
+    
+    <query id="storekeepersubQuery" header="门店信息"  order="store_id desc" method="storeManager.getStoreListBySid">
+    	<column key="store_id" header="编号"  align="center" display="false" allowSort="false"/>
+        <column key="name" header="门店名称"  align="center" allowSort="false"/>
+        <column key="address" header="详细地址"  align="center" allowSort="false" />
+    </query>
+    
+     <!-- 单选框选择相关负责人 -->
+	<query id="selectRadioBoxCustomerQuery" header="用户列表" baseclass="com.cnpc.pms.personal.entity.Customer" order="sort desc">
+        <column key="id" header="选择" type="java.lang.Long" operator="in" align="center" allowSort="false" display="true"  width="5%"/>
+        <column key="name" header="负责人" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="30%"/>
+        <column key="mobilephone" header="电话" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="30%"/>
+  		<column key="trade" header="职务" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="30%"/>
+    </query>
+    
+    <!-- 单选框选择相关负责人 -->
+	<query id="approvalQuery" header="审核列表" order="id desc" method="approvalManager.getApprovalList">
+        <column key="id" header="编号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="10%"/>
+        <column key="type_id" header="业务编号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="store_id" header="门店编号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="store_name" header="门店名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="str_month" header="日期" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="state_type" header="状态" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+  		<column key="name" header="所属业务" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+    </query>
+    <!-- 单选框选择相关街道 -->
+	<query id="selectCheckBoxCountyQuery" header="区域列表" method="countyManager.getCountyListBycityName">
+        <column key="id" header="选择" type="java.lang.Long" operator="in" align="center" allowSort="false" display="true"  width="5%"/>
+        <column key="name" header="区域名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="30%"/>
+    </query>
+    
+     <!-- 多选框选择相关区域 -->
+	<query id="selectCheckBoxTownQuery" header="街道列表" method="townManager.getTownListBycityName">
+        <column key="id" header="选择" type="java.lang.Long" operator="in" align="center" allowSort="false" display="true"  width="5%"/>
+        <column key="name" header="街道名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="30%"/>
+    </query>
+    
+    <query id="selectPlatStoreQuery" header="平台门店列表" method="storeManager.getPlatformStore" order="platformid">
+        <column key="platformid" header="选择" type="String" align="center" allowSort="false" display="true"  width="5%"/>
+        <column key="name" header="平台门店名称" type="String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="45%"/>
+        <column key="code" header="门店编号" type="String" align="center" allowSearch="true" operator="eq" allowSort="false" display="true" width="45%"/>
+    </query>
+    
+    <query id="selectPlatStorenotfindQuery" header="平台门店列表" method="storeManager.getNotFindPlatformStore" order="platformid">
+        <column key="platformid" header="选择" type="String" align="center" allowSort="false" display="true"  width="5%"/>
+        <column key="name" header="平台门店名称" type="String" align="left" allowSearch="true" operator="like" allowSort="false" display="true" width="90%"/>
+    </query>
+    
+     <query id="selectquarybuilding" header="楼房信息列表" method="buildingManager.queryBuildingData" >
+        <column key="id" header="选择" type="java.lang.Long" operator="in" align="center" allowSort="false" display="true"  width="5%"/>
+        <column key="name" header="楼房名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="90%"/>
+    </query> 
+    <query id="buildingQueryData" header="楼房信息"  order="id desc" method="buildingManager.queryBuilding">
+        <column key="id" header="" display="false" allowSearch="true" allowSort="true" align="center" width="10%"/>
+        <column key="town_name" header="街道名称" display="true" allowSearch="true" allowSort="true" align="center" width="20%"/>
+        <column key="village_name" header="社区名称" display="true" allowSearch="true" allowSort="true" align="center" width="20%"/>
+        <column key="tiny_village_name" header="小区名称"  align="center" allowSort="true" width="20%"/>
+        <column key="name" header="楼号"  align="center" allowSort="true"  width="20%"/>
+    </query>
+</pmsquery>

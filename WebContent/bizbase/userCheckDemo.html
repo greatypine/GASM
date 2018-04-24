@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" 
+
+"http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <meta http-equiv="Cache-Control" Content="no-cache"/>
+        <meta http-equiv="Pragma" Content="no-cache"/>
+        <meta http-equiv="Expires" Content="0"/>
+        <title>人员选择demo</title>
+        <link rel="stylesheet" 
+
+href="../scripts/lib/jquery/ztree/zTreeStyle/zTreeStyle.css" type="text/css">
+        <script type="text/javascript" src="./js/lib/bidLib.js">
+        </script>
+        <script type="text/javascript" src="../scripts/lib-main.js">
+        </script>
+        <script type="text/javascript" src="../scripts/lib-uploadTable.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/pms.js">
+        </script>
+        <script type="text/javascript" src="../scripts/common/pmsCommon.js">
+        </script>
+        <script type="text/javascript" 
+
+src="../scripts/lib/jquery/ztree/jquery-ztree-2.4.js">
+        </script>
+        <script src="../bizbase/js/userDialog.js" type="text/javascript">
+        </script>
+		<!--此处引入js，人员选择需要以图片形式展示一定要引入-->
+		 <script src="../scripts/userCheck.js" 
+
+type="text/javascript">
+        </script>
+        <script>
+        	$(function(){
+				/**
+				 * 初始化已经选择的数据，此处传递假数据
+				 */
+				//initUser("108560,99999,39492","李洋,系统管理员,李长山","liyang,adminxpwh,lcs");
+			});
+			function save(){
+			/**
+			 * 业务处保存时，调用该方法取得数据,结果集是json
+			 */
+				alert(getSelectObjJson());
+			}
+			function testExpertUser(json){
+				var userId = $.fromJSON(json).ids;
+				doManager("expertUserManager", "excuteExpertUser", userId+"", function(data, textStatus, XMLHttpRequest){
+                    if (data.result == true) {
+                        var expertUserDto = $.fromJSON(data.data);
+						alert(expertUserDto.userName);
+                    }
+                    else {
+                        $$.showMessage("${system.info}", "获取专家信息出错!");
+                    }
+                },false);
+			}
+			function clickCancelButton(){
+				initUser("108560,99999,39492","李洋,系统管理员,李长山","liyang,adminxpwh,lcs","true");
+			}
+        </script>
+    </head>
+    <body style="margin: 0px;padding: 0px">
+        <div class="box">
+            <div class="containerbody">
+                <form class="pmsForm" id="projectForm" name="projectForm">
+                    <input type="hidden" name="id" id="id" value="0" />
+                    <table cellpadding="0" cellspacing="0" class="layout" 
+
+width="90%">
+                        <tr>
+                            <td align="right">
+                                人员:
+                            </td>
+                            <td align="left">
+                                <div id="selectDiv" class="inputtext_dis" 
+
+style="width:80%;height:60px;overflow:auto;">
+                                </div>
+                            </td>
+                        </tr>
+						<tr>
+							<td>
+								<button 
+
+class="buttonu" onclick="checkUser(1,doSelect)">
+                                    选择
+                                </button>
+								<button 
+
+class="buttonu" onclick="checkUser(1,doSelect,'','','false')">
+                                    选择(不出现组织机构选择按钮)
+                                </button>
+								<button 
+
+class="buttonu" onclick="clickCancelButton()">
+                                    去掉取消按钮
+                                </button>
+								<button 
+
+class="buttonu" onclick="checkExpertUser(0,testExpertUser)">
+                                    专家选择
+                                </button>
+								<button 
+
+class="buttonu" onclick="save()">
+                                    保存
+                                </button>
+							</td>
+						</tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+    </body>
+</html>

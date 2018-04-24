@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>社区信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <style type="text/css">
+        .display {
+            width: 100%
+        }
+    </style>
+</head>
+<script type="text/javascript">
+    var win;
+
+    var buildingArrays = null;
+    var nameArrays = null;
+    $(function () {
+        buildingArrays = parent.array_ids['building'];
+        nameArrays = parent.array_names['building'];
+        if(buildingArrays == null || typeof(buildingArrays) == 'undefined'){
+            buildingArrays = [];
+            nameArrays = [];
+        }
+        setVillageIds();
+        //页面加载成功后需要获取数据
+        searchList();
+    });
+
+    function setVillageIds(){
+        var ids = parent.array_ids['tin_village'];
+        var str_id = "";
+        $(ids).each(function(index,id){
+            if(index == 0){
+                str_id = id;
+            }else{
+                str_id = str_id + "," + id;
+            }
+        });
+        $('#tin_id').val(str_id);
+    }
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('buildingSliceQuery', 'conditionsDiv');
+    }
+    function doClean() {
+        document.service_qa.reset();
+        searchList();
+    }
+
+    var COLUMNS = {
+        "id": function (aData, iColumn, sColumnName, map) {
+            var value = map.id;
+            var flag = isChecked(value);
+            return "<input type='checkbox' onclick='selectCheck(this)' name='"+ map.name+"' value='" + value + "' " + (flag?"checked":"") + " />";
+        }
+    }
+
+    function isChecked(id){
+        return buildingArrays.indexOf(id) != -1;
+    }
+
+    function selectCheck(_this){
+        var value = parseInt($(_this).val());
+        var name = $(_this).attr('name');
+        var index = buildingArrays.indexOf(value);
+        if(index == -1){
+            buildingArrays.push(value);
+            nameArrays.push(name);
+        }else{
+            buildingArrays.splice(index,1);
+            nameArrays.splice(index,1);
+        }
+    }
+
+    function doSubmit(){
+        var json = {
+            "ids":buildingArrays,
+            "names":nameArrays
+        };
+        parent.win.callBack(json);
+        parent.win.hide();
+    }
+
+</script>
+<body>
+<div id="bodyDiv">
+    <div id="userGroupInfo" class="panel panel-primary">
+        <div class="panel-heading">
+            搜索条件
+        </div>
+        <div id="conditionsDiv" class="panel-body">
+            <table class="bigteble">
+                <tr>
+                    <td align="left" width="10%" class="basetext">
+                        社区名称:
+                    </td>
+                    <td class="baseform" align="left" width="24%">
+                        <input type="hidden" name="tin_id" id="tin_id"/>
+                        <input type="text" name="village_name" id="village_name" class="form-control" style="width: 70%"/>
+                    </td>
+                    <td align="left" width="10%" class="basetext">
+                        小区名称:
+                    </td>
+                    <td class="baseform" align="left" width="23%">
+                        <input type="text" name="tin_name" id="tin_name" class="form-control" style="width: 70%"/>
+                    </td>
+                    <td align="left" width="10%" class="basetext">
+                        小区名称:
+                    </td>
+                    <td class="baseform" align="left" width="23%">
+                        <input type="text" name="name" id="name" class="form-control" style="width: 70%"/>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div class="panel-footer" align="right">
+            <input class="btn btn-primary" onClick="searchList()" value="查询" type="button"/>
+        </div>
+    </div>
+    <div id="gridContainer" searchDiv="conditionsDiv" queryid="buildingSliceQuery" queryformat="simple"
+         class="panel panel-primary" showprint="false" showsearch="false" showtitle="true"
+         showpaging="true" showcheckbox="false" fnRender="renderColumns"
+         checkmode="single" autoload="false" showno="false">
+    </div>
+</div>
+</body>
+</html>

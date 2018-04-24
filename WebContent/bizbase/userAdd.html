@@ -1,0 +1,780 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link type="text/css" href="../scripts/css/style_sheet_core.css" rel="stylesheet">
+    <link type="text/css" href="../scripts/css/common-app.css" rel="stylesheet">
+    <link type="text/css" href="../forecast/css/datepicter/jquery.ui.all.css" rel="stylesheet">
+    <script type="text/javascript" src="js/lib.js"></script>
+    <script type="text/javascript" src="js/common-validation-bizbase.js"></script>
+    <script src="js/refDialog.js" type="text/javascript"></script>
+    <script src="js/localComOrgTree4Exp.js" type="text/javascript"></script>
+    <script language="javascript" src="js/bizbaseQuery.js"></script>
+    <script type="text/javascript" src="../scripts/lib-uploadTable.js"></script>
+    <script language="JavaScript" type="text/javascript">
+        function getRequestParams() {
+            var url = window.location.search;
+            var theRequest = new Object();
+            if (url.indexOf('?') != -1) {
+                var str = url.substr(1);
+                var strs = str.split('&');
+                for (var i = 0; i < strs.length; i++) {
+                    theRequest[strs[i].split('=')[0]] = decodeURI(strs[i].split('=')[1]);
+                }
+            }
+            return theRequest;
+        }
+
+        var request = getRequestParams();
+        var id = request['orgId'];
+        var ugId = request['userGroupId'];
+        var ugName = request['userGroupName'];
+        var type = request['type'];
+        //记录通过换角色组而换组织机构的ID
+        var tempOrgId = id;
+        function doSubmit() {
+            $validator = new PMSValidator($("#yonghuadd")[0], {
+                bNormalDisplay: false,
+                iDisplayLength: 999
+            });
+            var passed = $validator.clientValidate($("#yonghuadd")[0]);
+            if (!passed) {
+                return false;
+            }
+            else {
+                save();
+            }
+        }
+
+        function reset() {
+            var inputs = $("td").find("input");
+            for (var i = 0; i < inputs.size(); i++) {
+                if (inputs[i].type != "button")
+                    inputs[i].value = "";
+            }
+        }
+
+        function save() {
+            //choosePortalType();
+//				if($("#portalType").val() == "00"){
+//					$$.showMessage("${system.info}","请至少选择一个门户类型!");
+//					return false;
+//				}
+            var userObject = {
+                name: $("#userName").val(),
+                //  usertype: $("#usertype").val(),
+                mobilephone: $("#mobilephone").val(),
+                phone: $("#phone").val(),
+                email: $("#email").val(),
+                fax: $("#fax").val(),
+                // innerpassword: $("#innerpassword").val(),
+                pwdparam: $("#pwdparam").val(),
+                sex: getRadioVal("sex"),
+                disabledFlag: getRadioVal("radioA"),
+                //portalType: $("#portalType").val(),
+                //portalManageType: $("#portalManagerTypes").val(),
+                code: document.getElementById("userAccount").value.toLowerCase(),
+                password: $("#pwd").val(),
+                userGroupId: $("#userGroupId").val(),
+                pk_org: $("#orgId").val(),
+                //  exp_id: $("#expid").val(),
+//                pk_position: $("#position").val(),
+                employeeId: $("#employeeId").val(),
+                jobType: $("#jobType").val(),
+                orderNo: $("#orderNo").val(),
+                store_id:$("#store_id").val(),
+                zw: $("#zw").val(),
+                zc: $("#zc").val(),
+                startLogDate: $("#startLogDate").val(),
+                endLogDate: $("#endLogDate").val(),
+                attachmentInfosDIY: fileUploadTablesDIY[0].getValues()
+            };
+            addUser(userObject);
+        }
+
+        function addUser(userObject) {
+            doManager("userManager", "addNewUser", userObject, function (data, textStatus, XMLHttpRequest) {
+                if (data.result) {
+                    if (type == 'userGroupQuery') {
+//							window.location = "userGroupQuery.html";
+                        window.location.reload();
+                    } else {
+                        var returnObj = $.fromJSON(data.data);
+                        window.location = "userManagement.html?userGroupId=" + $("#userGroupId").val() + "&orgId=" + $("#orgId").val();
+//							window.location.reload();
+                    }
+                } else {
+                    $$.showMessage("${system.info}", data.message);
+                }
+            }, true, {
+                showWaiting: true
+            });
+        }
+        //            function show(){
+        //                $("#expInfo").show();
+        //            }
+        //
+        //            function hidded(){
+        //                $("#expInfo").hide();
+        //                $("#exp").val("");
+        //                $("#expid").val("");
+        //            }
+
+
+        /**
+         * 检测登录帐号是否已存在
+         */
+        function checkUserAccount() {
+            var nowUserAccount = document.getElementById("userAccount").value.toLowerCase();
+            if (validateExists("com.cnpc.pms.bizbase.rbac.usermanage.entity.User", "code", nowUserAccount)) {
+                return true;
+            }
+            return false;
+        }
+
+        /**
+         * 验证用户编码是否重复
+         * @param {Object} value
+         * @param {Object} element
+         */
+        $.validator.addMethod("userCodeValid", function (value, element) {
+            var flag;
+            if (checkUserAccount()) {
+                flag = false;
+            }
+            else {
+                flag = true;
+            }
+            return flag;
+        }, "登录用户编码已存在");
+        var onSearch = function () {
+            $validator.clean();
+            var passed = $validator.clientValidate();
+            var rev = $validator.clientRevalidate();
+            if (rev != true) {
+                passed = rev;
+            }
+            if (!passed) {
+                return;
+            }
+            if ($('#workUnit1').val() == '') {
+                $('#workUnit').val('');
+            }
+            if ($('#recommendOrgId1').val() == '') {
+                $('#recommendOrgId').val('');
+            }
+            $$.executeSearch('expExpertInfomannagerQuery', 'extModifyDiv'); //queryid, the params div id.
+        }
+
+
+        $(function () {
+            $("#disabledFlag").val("1");
+//				doManager("userManager", "getCurrentUserDTO", [], function(datas, textStatus, XMLHttpRequest) {
+            //var currentUser = $.fromJSON(datas.data);
+//					if(currentUser.usertype != 2){
+//						$("#orgEntity\\.path").val(currentUser.orgPath+"%");
+//						$("#portalManageText").hide();
+//						$("#portalMangeTable").hide();
+//					}
+            //添加用户级别选项
+            //	var typestr = currentUser.usertype+"";
+            //var selectObj = $("#usertype")[0];
+            //var dicts = $dict.getDictList("user_type");
+//					$(dicts).each(function(i,element){
+//						if(element.dictCode!='2'&&element.dictCode.indexOf(typestr)!=-1){
+//							var option = new Option(element.dictText ,element.dictCode);
+//							selectObj.add(option);
+//						}
+//					});
+            //添加用户类型选项
+            //var userAttrObj = $("#userAttribute")[0];
+//					var userandrole_dicts = $dict.getDictList("userandrole_type");
+            //如果是系统管理员则可供选择物采或者招标,否则根据自身类型
+//					if(currentUser.usertype == 2||currentUser.usertype == 21){
+//						$(userandrole_dicts).each(function(i,element){
+//							var option = new Option(element.dictText ,element.dictCode);
+//							userAttrObj.add(option);
+//						});
+//					}else{
+//						$(userandrole_dicts).each(function(i,element){
+//							if(element.dictCode==currentUser.userAttribute){
+//								var option = new Option(element.dictText ,element.dictCode);
+//								userAttrObj.add(option);
+//							}
+//						});
+//					}
+//				},false);
+//            var selectObj = $("#position")[0];
+            var orgId = request['orgId'];
+            var url = $$.PMSDispatchActionUrl;
+            var orgData = new PMSRequestObject("purStruOrgManager", "getDirectoryById", [orgId]);
+            $$.ajax(url, "requestString=" + encodeURIComponent(orgData.toJsonString()), function (datas, textStatus, XMLHttpRequest) {
+                $("#info").html("组织机构信息:(" + datas.data + ")");
+            });
+//            var data = new PMSRequestObject("positionManager", "getPositionsByOrgId", [orgId]);
+//            $$.ajax($$.PMSDispatchActionUrl, "requestString=" + data.toJsonString(), function (data, textStatus, XMLHttpRequest) {
+//                if (data.result) {
+//                    var info = $.fromJSON(data.data);
+//                    $.each(info, function (i, n) {
+//                        var option = new Option(n.cnpcPosName, n.cnpcPosId);
+//                        selectObj.add(option);
+//                    });
+//                }
+//            });
+            $("#orgId").val(id);
+            $("#orgIdFormer").val(orgId);
+            $("#userGroupId").val(ugId);
+            $("#userGroup").val(ugName);
+        });
+        //弹出角色组选择框
+        function showUserGroup() {
+            $$.executeSearch('userGroupQueryPage', 'orgDiv');
+            doEditCssType();
+            $("#userGroupInfo").dialog(
+                    {
+                        bgiframe: true,
+                        title: '角色组选择',
+                        width: 805,
+                        height: 720,
+                        modal: true,
+                        buttons: {
+                            "${form.ui.ok}": function () {
+                                var selects = $$.getSelectedObj("userGroupQueryPage");
+                                if (selects.length > 0) {
+                                    var ugInfo =
+                                    {
+                                        ugId: selects[0][0],
+                                        ugName: selects[0][2],
+                                        orgId: selects[0][8]
+                                    };
+                                    $("#userGroup").val(ugInfo.ugName);
+                                    $("#userGroupId").val(ugInfo.ugId);
+                                    $("#orgId").val(ugInfo.orgId);
+                                    $("#userGroupInfo").dialog('close');
+                                    if (ugInfo.orgId != tempOrgId) {
+                                        tempOrgId = ugInfo.orgId;
+//                                        var selectObj = $("#position")[0];
+//                                        selectObj.options.length = 0;
+//                                        var data = new PMSRequestObject("positionManager", "getPositionsByOrgId", [ugInfo.orgId]);
+//                                        $$.ajax($$.PMSDispatchActionUrl, "requestString=" + data.toJsonString(), function (data, textStatus, XMLHttpRequest) {
+//                                            if (data.result) {
+//                                                var info = $.fromJSON(data.data);
+//                                                $.each(info, function (i, n) {
+//                                                    var option = new Option(n.cnpcPosName, n.cnpcPosId);
+//                                                    selectObj.add(option);
+//                                                });
+//                                            }
+//                                        });
+                                    }
+                                }
+                            },
+                            "${query.ui.cancel}": function () {
+                                $("#userGroupInfo").dialog('close');
+                            }
+                        }
+                    });
+        }
+
+        /**
+         * 解决列表Css样式不一致的问题.
+         */
+        function doEditCssType() {
+            var table = $('.display');
+            table.each(function () {
+                var th1 = $(this).find('th:first');
+                if (th1.find("input[type=checkbox]").length > 0) {
+                    th1.css('width', '1%');
+                }
+                $(this).find('th').each(function () {
+                    $(this).css('border', '1px solid #999999').css('background', '#D1D6F0');
+                    ;
+                });
+            });
+        }
+
+        function searchUserGroup() {
+            $("#orgDiv").find("input[name=code]").val($("#userGroupCode").val());
+            $("#orgDiv").find("input[name=name]").val($("#userGroupName").val());
+            $("#orgDiv").find("input[name=orgName]").val($("#orgEntity\\.path").val());
+            $$.executeSearch('userGroupQueryPage', 'orgDiv');
+        }
+
+
+        function toggleBizBiz(targetid, imgId) {
+            var target = $("#" + targetid);
+            if (target.is(":visible")) {
+                target.hide();
+                $("#" + imgId).attr("src", "../scripts/images/33.png");//变成加号
+            }else {
+                target.show();
+                $("#" + imgId).attr("src", "../scripts/images/22.png");//变成减号
+            }
+        }
+
+        var win;
+
+        /**
+         * 选择城市,创建一个城市列表并显示
+         * @param {Object} callback
+         *
+         */
+        function showStoreWin(callback){
+            win = new checkWin(callback);
+            win.show();
+        }
+
+        function setStoreSelect(json){
+            $("#store_id").val(json.id);
+            $("#store_name").val(json.name);
+        }
+
+        /**
+         *
+         * @param {Object} callback 	回调函数
+         * 健康屋门店callback
+         * 返回值json
+         */
+        var checkWin = function(callback){
+            this.win = $("<div style='overflow-y: hidden'></div>");
+            var _this = this;
+            var initWin = function(){
+                _this.win.html('<iframe name="selectWin" frameborder="0" width="100%" height="100%" src="../data_access/select_view/select_store.html" scrolling="no"></iframe>');
+                _this.win.dialog({
+                    bgiframe: true,
+                    title:"选择门店",
+                    autoOpen:false,
+                    width:_this.width,
+                    height:_this.height,
+                    buttons : {
+                        "确定": function(){
+                            window.frames["selectWin"].doSubmit();
+                            _this.win.remove();
+                        },
+                        "取消":function(){
+                            _this.hide();
+                            _this.win.remove();
+                        }
+                    },
+                    modal:true
+                });
+            };
+            this.width = 900;
+            this.height = 730;
+            this.callBack = function(json){
+                if (callback && typeof(callback) == 'function') {
+                    callback(json);
+                }
+            };
+
+            this.show = function(){
+                _this.win.dialog("open");
+            };
+
+            this.hide = function(){
+                if(_this.onSubmitHandler){
+                    _this.onSubmitHandler();
+                }
+                _this.win.dialog("close");
+            };
+            initWin();
+        }
+    </script>
+    <style type="text/css">
+        td {
+            padding-top: 5px;
+        }
+    </style>
+</head>
+<body>
+<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">
+        <a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+        新建用户<br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;<span id="info"></span>
+    </div>
+    <div class="panel-body" id="temp1">
+        <form id="yonghuadd" class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+            <table class="layout" cellpadding="0" cellspacing="0" border="0" style="width: 100%">
+                <tr>
+                    <td align="right" width="20%">
+                        用户名称:
+                        <label style="color: red">
+                            *
+                       </label>
+                    </td>
+                    <td width="25%">
+                        <input type="text" name="userName" id="userName" validate="{required:true,maxlength:16}" size="23" class="form-control" style="width: 80%"/>
+                    </td>
+                    <td align="right" width="20%">
+                        角色组:
+                        <label style="color: red">
+                            *
+                       </label>
+                    </td>
+                    <td width="35%">
+                        <div class="input-group" style="width:80%;">
+                            <input type="text" name="userGroup" class="form-control" id="userGroup" inputType="select"
+                                   readonly="readonly" validate="{required:true}"/>
+                            <span class="input-group-btn">
+                                <button class="btn btn-default" type="button" onClick="showUserGroup();"><img src="../scripts/images/search.png" alt="选择" style="height: 20px"/></button>
+                            </span>
+                        </div>
+                        <input type="text" style="display:none;"  id="userGroupId"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        登录账号：
+                        <label style="color: red">
+                            *
+                       </label>
+                    </td>
+                    <td>
+                        <input type="text" name="userAccount" id="userAccount" class="form-control" style="width: 80%"
+                               validate="{required:true,userCodeValid:true,maxlength:40,isCorrectCode:true}" size="23"/>
+                    </td>
+                    <td align="right">
+                        登录密码：
+                        <label style="color: red">
+                            *
+                       </label>
+                    </td>
+                    <td>
+                        <input type="text" name="pwd" id="pwd" validate="{required:true,maxlength:40}" size="23" class="form-control" style="width: 80%"/>
+                    </td>
+                </tr>
+                <!--      <tr>
+                      <td align="right">
+                            用户级别：
+                        </td>
+                        <td>
+                            <select id="usertype"  style="width:175px;"  >
+
+                            </select>
+                        </td>
+                        <td align="right">
+          用户所属：
+                        </td>
+                        <td>
+                            <select id="userAttribute"  style="width:175px;" >
+
+                            </select>
+                        </td>
+                    </tr>-->
+                <tr>
+                    <!--<td align="right">-->
+                        <!--岗位：-->
+                        <!--<label style="color: red">-->
+                            <!--*-->
+                       <!--</label>-->
+                    <!--</td>-->
+                    <!--<td>-->
+                        <!--<select id="position" name="positon" validate="{required:true}" style="width:80%;" class="form-control"-->
+                                <!--inputType="select">-->
+                        <!--</select>-->
+                    <!--</td>-->
+
+                    <td align="right">
+                        邮箱：
+                    </td>
+                    <td>
+                        <input type="text" name="email" id="email" validate="{email:true,maxlength:60}"
+                              class="form-control" style="width:80%;" size="23"/>
+                    </td>
+                    <!--	<td align="right">
+                            专家用户：
+                        </td>
+                        <td>
+                            <input id="yes" type="radio" name="isExp" onclick="show();"/>是<input id="no" type="radio" name="isExp" checked="checked" onclick="hidded()"/>否
+                            <div id="expInfo" style="display:none;">
+                                <input type="text" name="exp" id="exp" class="inputtext_dis" readonly="readonly" /><input type="hidden" name="expid" id="expid" readonly="readonly" /><input type="button" class="buttonu" value="搜索" onclick="showList()"/>
+                            </div>
+                        </td>
+                        -->
+                    <td align="right">
+                        排序：
+                    </td>
+                    <td>
+                        <input type="text" name="orderNo" id="orderNo" size="23" validate="maxlength:400" class="form-control" style="width:80%;"/>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        电话：
+                    </td>
+                    <td>
+                        <input type="text" name="phone" id="phone" size="23" validate="{isTel:true}" class="form-control" style="width:80%;"/>
+                    </td>
+                    <td align="right">
+                        门店：
+                    </td>
+                    <td >
+                        <input type="hidden" id="store_id" name="store_id"/>
+                        <div class="input-group" style="width:80%;">
+                            <input type="text" id="store_name" name="store_name" class="form-control" placeholder="选择门店" readonly/>
+                            <span class="input-group-btn">
+                                 <button type="button" class="btn btn-default" name="upload" onclick="showStoreWin(setStoreSelect)">
+                                    <img src="../scripts/images/search.png" alt="查询" style="height: 20px"/>
+                                </button>
+                            </span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">
+                        手机号码：
+                    </td>
+                    <td>
+                        <input type="text" name="mobilephone" id="mobilephone" size="23" validate="{isMobile:true}" class="form-control" style="width:80%;"/>
+                    </td>
+                    <td align="right">
+                        员工号：
+                    </td>
+                    <td>
+                        <input type="text" name="employeeId" id="employeeId" size="23" validate="maxlength:60" class="form-control" style="width:80%;"/>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td align="right">
+                        职务：
+                    </td>
+                    <td>
+                        <input type="text" name="zw" id="zw" size="23" class="form-control" style="width:80%;"/>
+                    </td>
+                    <td align="right">
+                        职称：
+                    </td>
+                    <td>
+                        <input type="text" name="zc" id="zc" size="23" class="form-control" style="width:80%;"/>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td align="right">
+                        性别：
+                    </td>
+                    <td>
+                        <input class="pmsRadio" name="sex" data="[['0','男','checked'],['1','女']]"/>
+                    </td>
+                    <td align="right">
+                        是否停用：
+                    </td>
+                    <td>
+                        <input class="pmsRadio" name="radioA" data="[['0','是'],['1','否','checked']]">
+                    </td>
+                    <!-- <td align="right">
+                         ERP用户编码：
+                     </td>
+                      <td>
+                         <input type="text" name="erpcode" id="innerpassword" size="23"/>
+                     </td>
+                 </tr>
+                 <tr>
+                     <td align="right">
+                         门户类型：
+                     </td>
+                     <td>
+                         <input type="checkbox" name="portalTypeCheck" value="1" onclick="checkPortalManagerType();"/>招标门户&nbsp;
+                         <input type="checkbox" name="portalTypeCheck" value="2" checked="checked" onclick="checkPortalManagerType();" />物采门户
+                     </td>
+                     <td align="right"  id="portalManageText">
+                         门户管理权限：
+                     </td>
+                     <td>
+                         <table id="portalMangeTable">
+                             <tr>
+                                 <td>
+                         <input type="checkbox" name="portalManageTypeCheck" value="1" onclick="checkPortalType();"/>物采信息发布&nbsp;
+                         <input type="checkbox" name="portalManageTypeCheck" value="1" onclick="checkPortalType();"/>物采信息审核&nbsp;
+                                 </td>
+                             </tr>
+                             <tr>
+                                 <td>
+                         <input type="checkbox" name="portalManageTypeCheck" value="1" onclick="checkPortalType();"/>招标信息发布&nbsp;
+                         <input type="checkbox" name="portalManageTypeCheck" value="1" onclick="checkPortalType();"/>招标信息审核
+                                 </td>
+                                 -->
+                </tr>
+
+
+
+                <tr>
+                    <td align="right">UKey：</td>
+                    <td>
+                        <input type="text" name="usbkeysn" id="pwdparam" size="23" class="form-control" style="width:80%;"/>
+                    </td>
+                    <td align="right">用工类型：</td>
+                    <td>
+                        <select id="jobType" name="jobType" class="pmsSelect form-control" src="USER_JOBTYPE"
+                                style="width:80%;" showblank="true">
+                        </select>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="right">开始填报日志时间：</td>
+                    <td><input id="startLogDate" name="startLogDate" type="text" bidFormat="dateYMD" readonly
+                               class="pmsDateField form-control" style="width:78%;display: inline"/></td>
+                    <td align="right">结束填报日志时间：</td>
+                    <td><input id="endLogDate" name="endLogDate" bidFormat="dateYMD" type="text" readonly
+                               class="pmsDateField form-control" style="width:78%;display: inline"/></td>
+                </tr>
+            </table>
+            <div class="uploadDIYTable" defaultsDIY="{showHeader:true,items:[{title:'电子签名',required:false}]}" style="width:100%;padding-top: 10px">
+            </div>
+        </form>
+    </div>
+    <div class="panel-footer" align="right">
+        <button class="btn btn-primary" onclick="doSubmit();">
+            提交
+        </button>
+        &nbsp &nbsp
+        <button class="btn btn-primary" onclick="javascript:history.go(-1);">
+            返回
+        </button>
+    </div>
+    <input type="text" style="display:none;" id="orgId"/>
+    <div id="userGroupInfo" style="display:none;overflow-x:hidden;" class="panel panel-primary">
+        <div class="panel-heading">
+            <a href="#" onclick="toggleBizBiz('ConditonMainDiv','pic');"><img src="../scripts/images/22.png" align="absmiddle" id="pic"/></a>&nbsp;搜索条件
+        </div>
+        <div id="ConditonMainDiv">
+            <div class="searchCondition" id="searchConditionDiv"
+                 style="min-width:753px;overflow:auto;border:1px solid #999999;">
+                <table class="bigteble" style="width:auto;border:none;">
+                    <tr>
+                        <td width="10%" align="left" width="10%" class="basetext">
+                            角色组名称:
+                        </td>
+                        <td class="baseform" align="left" width="40%">
+                            <input type="text" name="userGroupName" id="userGroupName" class="form-control" style="width: 90%"/>
+                        </td>
+                        <td class="basetext" align="left" width="10%">
+                            角色组编码:
+                        </td>
+                        <td class="baseform" align="left" width="40%">
+                            <input type="text" name="userGroupCode" id="userGroupCode" class="form-control" style="width: 90%"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="basetext" align="left">
+                            组织机构:
+                        </td>
+                        <td class="baseform">
+                            <div class=" form-group input-group" style="width:90%;">
+                                <input type="text" name="orgEntity.name" id="orgName" class="form-control" readonly/>
+                                <span class="input-group-btn">
+                                    <button class="btn btn-default" type="button" onClick="getTenderInterface({inputName:'orgName',inputId:'orgEntity\\.path'})">
+                                        <img src="../scripts/images/search.png" alt="选择" style="height: 20px"/>
+                                    </button>
+                                </span>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div class="panel-footer"  align="right">
+                <input class="btn btn-primary" onClick="searchUserGroup()" value="查询" type="button"/>
+            </div>
+        </div>
+        <div id="orgDiv">
+            <input name="code" id="code" codeForSearch="code" type="hidden"/>
+            <input name="name" id="name" nameForSearch="name" type="hidden"/>
+            <input name="disabledFlag" id="disabledFlag" type="hidden"/>
+            <input name="orgEntity.path" id="orgEntity.path" type="hidden"/>
+            <input name="groupType" id="groupType" type="hidden" value='0'/>
+        </div>
+        <div style="padding:5px 0px 0px 0px;">
+            <div id="gridContainer" searchDiv="orgDiv" queryid="userGroupQueryPage" queryformat="simple" class="panel panel-primary"
+                 showprint="false" showsearch="false" showtitle="true" showpaging="true" showcheckbox="true"
+                 checkmode="single" autoload="false" showno="false">
+            </div>
+        </div>
+    </div>
+    <div id="selfManager" style="display:none;overflow-x:hidden;">
+        <div class="containerheader">
+            <a href="#" onclick="toggleBizBiz('extModifyMainDiv','pictureId');"><img src="../scripts/images/22.png"
+                                                                                     align="absmiddle" id="pictureId"/></a>&nbsp;搜索条件
+        </div>
+        <div id="extModifyMainDiv">
+            <div class="searchCondition" id="extModifyDiv" style="overflow:auto;border:1px solid #999999;">
+                <form id="Form1" class="pmsForm" validate="true" clientvalidate="true">
+                    <table class="" style="width:auto">
+                        <tr height="25px">
+                            <td width="15%" align="right">
+                                专家编号:
+                            </td>
+                            <td width="37%">
+                                <input type="text" name="code"/>
+                            </td>
+                            <td width="12%" align="right">
+                                专家姓名:
+                            </td>
+                            <td width="36%">
+                                <input type="text" name="name"/>
+                            </td>
+                        </tr>
+                        <tr height="25px">
+                            <td align="right">
+                                工作单位:
+                            </td>
+                            <td width="37%">
+                                <input type="hidden" id="workUnit" name="workUnit" class="inputtext"/><input type="text"
+                                                                                                             name="workUnit1"
+                                                                                                             id="workUnit1"
+                                                                                                             readonly="readonly"/><input
+                                    id="button1" class="buttonu" type="button"
+                                    onClick="searchUnitExp('workUnit1','workUnit',2)" value="搜索"/>
+                            </td>
+                            <td align="right">
+                                推荐单位:
+                            </td>
+                            <td>
+                                <input type="hidden" name="recommendOrgId" id="recommendOrgId" class="inputtext"/><input
+                                    type="text" name="recommendOrgName" id="recommendOrgId1" readonly="readonly"/><input
+                                    id="button2" class="buttonu" type="button"
+                                    onClick="searchUnitExp('recommendOrgId1','recommendOrgId',1)" value="选择"/>
+                            </td>
+                        </tr>
+                        <tr height="25px">
+                            <td width="12%" align="right">
+                                外部单位:
+                            </td>
+                            <td>
+                                <input type="text" name="outerUnit" id="outerUnit"/>
+                            </td>
+                            <td align="right" style="white-space:nowrap;">
+                                专家创建日期:
+                            </td>
+                            <td style="white-space:nowrap;">
+                                <input id="s1" revalidate="true" type="text" name="createDate"
+                                       validate="formatDate:true" class="pmsDateField" yearRange="-100:+0"
+                                       style="width:75px;" readonly/> 至<input id="s2" revalidate="true" type="text"
+                                                                              name="createDate" class="pmsDateField"
+                                                                              yearRange="-100:+0"
+                                                                              validate="formatDate:true"
+                                                                              style="width:75px;" readonly/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+            <div class="containerheader" style="padding:0px 5px 0px 0px;" align="right">
+                <input align="right" role="button" class="buttonu" onClick="onSearch()" value="查询" type="button"/>
+                <input type="button" class="buttonu" value="重置" onClick="setNullExpManager()"/>
+            </div>
+        </div>
+
+    </div>
+    <input type="hidden" id="portalType"/>
+    <input type="hidden" id="portalManagerTypes"/>
+    <input type="hidden" id="orgIdFormer"/>
+</div>
+</body>
+</html>

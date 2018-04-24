@@ -1,0 +1,63 @@
+@charset "utf-8";
+/* CSS Document 
+   Author:xuanliwei@163.com
+*/
+html, body, div, span, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, code,
+del, dfn, em, img, q, dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td {
+	margin: 0px;
+	padding:0px;
+	border: 0;
+	font-weight: inherit;
+	font-style: inherit;
+	vertical-align: baseline;
+	text-decoration:none;
+	font-size:100%;
+
+}
+html{ overflow:auto;}
+body {
+	font-family:"宋体",Arial Helvetica, sans-serif;
+	font-size:12px;
+	color:#333333;
+	background:#E7EEF8  url(../images/main_bottom_bg.jpg) bottom right no-repeat;	
+}
+
+/*left css*/
+.left_menu{ background:#E4E6F5; width:158px; height:100%; color:#333333; border:1px solid #999999; border-top:none;  }
+.left_border{ background:url(../images/left_border.jpg) repeat-y; width:5px; height:100%; position:absolute; top:0px; left:0px;}
+.menu_tit{ background:url(../images/menu_nomarl.jpg) no-repeat; height:78px; width:180px;}
+ul.menu_list{ padding:0px; 
+margin:0px;}
+ul.menu_list li{ background:url(../images/menu_li_bg.jpg) no-repeat bottom;  }
+ul.menu_list li a{ display:block; height:27px; line-height:27px; background:url(../images/fast_ioce.gif) no-repeat 25px 7px; padding-left:40px; color:#333333;}
+ul.menu_list li a:hover{ background:url(../images/menu_hover.gif) no-repeat 11px 0px; color:#333333; font-weight:bold;}
+ul.menu_list li a.hover{ background:url(../images/menu_hover.gif) no-repeat 11px 0px;color:#333333; font-weight:bold}
+/*panle_tree*/
+.panle_tree{ height:100%;}
+dl#panle{}
+dl#panle dt{ background: url(../images/normal_panle.gif) no-repeat; width:125px; height:22px; line-height:22px; padding-left:33px; cursor:pointer; font-weight:bold; color:#333333; border-bottom:1px solid #999999; border-top:1px solid #999999}
+dl#panle dt.select_panle{ background:url(../images/select_panle.gif) no-repeat; width:125px; height:22px; line-height:22px; padding-left:33px; cursor:pointer; font-weight:bold; color:#333333;}
+dl#panle dd{ overflow:auto; display:none; }
+ul.tree{margin:0px; padding-top:5px; padding-left:0px;overflow:auto;}
+ul.tree li{ zoom:1; padding:0px 0px 5px 0px; list-style:none;}
+ul.tree li h1{background:url(../images/close_file.gif) no-repeat 5px center; padding-left:25px; font-weight:normal; cursor:pointer;}
+ul.tree li h1.open{background:url(../images/open_file.gif) no-repeat 5px center; padding-left:25px; font-weight:normal; cursor:pointer;}
+ul.tree li a{display:block;  height:22px; line-height:22px;padding-left:8px; color:#505050;    }
+ul.tree li a:hover{ color:#000000; }
+ul.tree li  a span{ background:url(../images/ziico.gif) no-repeat 0px 8px;float:left; display:inline-block; zoom:1; width:6px
+; height:20px; padding-right:4px; }
+
+ul.tree li p{ display:none; padding-top:3px; }
+ul.tree li p a{ display:block;   height:22px; line-height:22px;  padding-left:15px; color:#333333;   }
+ul.tree li p a:hover{ color:#000000; }
+ul.tree li  a.hover{ background:#FFF6A6; color:#000000; }
+/*nav*/
+.leftarrow{ background: url(../images/leftarrow.jpg) no-repeat; width:7px; height:59px; position:absolute; top:50%; margin-top:-30px; cursor:pointer;}
+.leftarrow_open{ background: url(../images/leftarrow_open.jpg) no-repeat; width:7px; height:59px; position:absolute; top:50%; margin-top:-30px;cursor:pointer;}
+
+
+

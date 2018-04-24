@@ -1,0 +1,587 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>培训信息修改</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+}
+p{margin:0;}
+.express_img {
+	width: 100%;
+	height: 200px;
+	background-color: #fff;
+	position: fixed;
+	top: 0;
+	left: 0;
+	overflow: hidden;
+}
+
+.express_img img {
+	height: 100%;
+}
+
+.express_con {
+	font-size: 16px;
+	border: 1px solid #337ab7;
+	padding-top: 240px;
+}
+
+.express_con_tit {
+	width: 98%;
+	height: 40px;
+	line-height: 40px;
+	color: #fff;
+	background-color: #337ab7;
+	padding-left: 2%;
+	position: fixed;
+	top: 200px;
+	left: 0;
+}
+
+.express_con_tit a {
+	float: right;
+	display: inline-block;
+	color: #fff;
+	margin-right: 30px;
+}
+table{padding:15px 0 0 0;}
+.w33 td{width: 33%; height:35px; line-height:35px;}
+.w50{padding:10px 0 8px 0;}
+.w50 td{height:30px; line-height:30px;}
+/* table td {
+	height:35px; line-height:35px; padding:5px 0;
+} */
+
+table td p {
+	padding-left: 30px;
+}
+
+table td input,table td select {
+	width: 50%;
+	height: 30px;
+	line-height: 30px;
+	border: 1px solid #dad9d7;
+	margin-top: 5px;
+	margin-left:10px;
+	padding-left:5px;
+}
+
+.other {
+	width: 76%;
+}
+
+.but {
+	float: right;
+	text-align: center;
+}
+.but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+.panel_width{width:49%; float:left;}
+.panel_width:nth-child(2n){margin-right:2%;}
+.panel-footer1{padding:10px 15px;}
+</style>
+
+<script type="text/javascript">
+Date.prototype.format=function(fmt) {        
+    var o = {        
+    "M+" : this.getMonth()+1, //月份        
+    "d+" : this.getDate(), //日        
+    "h+" : this.getHours()%12 == 0 ? 12 : this.getHours()%12, //小时        
+    "H+" : this.getHours(), //小时        
+    "m+" : this.getMinutes(), //分        
+    "s+" : this.getSeconds(), //秒        
+    "q+" : Math.floor((this.getMonth()+3)/3), //季度        
+    "S" : this.getMilliseconds() //毫秒        
+    };        
+    var week = {        
+    "0" : "\u65e5",        
+    "1" : "\u4e00",        
+    "2" : "\u4e8c",        
+    "3" : "\u4e09",        
+    "4" : "\u56db",        
+    "5" : "\u4e94",        
+    "6" : "\u516d"       
+    };        
+    if(/(y+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, (this.getFullYear()+"").substr(4 - RegExp.$1.length));        
+    }        
+    if(/(E+)/.test(fmt)){        
+        fmt=fmt.replace(RegExp.$1, ((RegExp.$1.length>1) ? (RegExp.$1.length>2 ? "\u661f\u671f" : "\u5468") : "")+week[this.getDay()+""]);        
+    }        
+    for(var k in o){        
+        if(new RegExp("("+ k +")").test(fmt)){        
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length==1) ? (o[k]) : (("00"+ o[k]).substr((""+ o[k]).length)));        
+        }        
+    }        
+    return fmt;        
+} 
+
+	var id = getUrlParamByKey("id");
+
+	
+	function dataCheck() {
+		var store_id = $('#store_id').val();
+		if (store_id == "" || store_id == null) {
+			alert("请选择门店!");
+			return;
+		}
+		/*
+		var obj = document.getElementsByName("isPhoneNo");
+		for (i = 0; i < obj.length; i++) {
+			if (!/^((0\d{2,3}-\d{7,8})|(1[35784]\d{9}))$/.test(obj[i].value)) {
+				alert("请输入正确的电话!");
+				return;
+			}
+		}*/
+		return true;
+	}
+	
+	
+	function defaultva(key,va,msg){
+		if(va==null||va==""){
+			document.getElementById(key).value=msg;
+		}else{
+			document.getElementById(key).value = va;
+		}
+	}
+	
+	
+	function initTeachInfo(){
+		doManager("HumanresourcesManager", "queryHumanenTeachById", id , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				/* for (var key in jsonData) {
+					var va = jsonData[key];
+					var ele = document.getElementById(key);
+					if (ele != null && ele != undefined) {
+						if(key=="name"||key=="employee_no"||key=="zw"||key=="storename"||key=="phone"){
+							document.getElementById(key).innerHTML = va;	
+						}
+					}
+				} */
+				//循环子表数据  
+				if(jsonData.humanenteachs!=null&&jsonData.humanenteachs.length>0){
+					var ret = "";
+					for(var o in jsonData.humanenteachs){
+						var va = jsonData.humanenteachs[o];
+						
+						if(va.startdate!=""&&va.startdate!=null){
+							var d=	new Date();
+			                d.setTime(va.startdate);
+			                var s=d.format('yyyy-MM-dd');
+						}
+						
+						var row = "<table cellpadding=\"0\" cellspacing=\"0\" border=\"0\" width=\"100%\" class=\"w50\">"+
+						"<tr><td><strong>"+va.content+"</strong></td><td></td><td></td></tr>"+
+						"<tr>"+
+						"	<td>"+
+						"		<p></p>"+
+						"		<p>"+
+						"			开始时间:<label id=\"startdate\">"+s+"</label>"+
+						"		</p>"+
+						"	</td>"+
+						"	<td>"+
+						"		<p>"+
+						"			成绩:<label id=\"score\">"+va.score+"</label>"+
+						"		</p>"+
+						"	</td>"+
+						"</tr>"+
+						"<tr>"+
+						"	<td>"+
+						"		<p>"+
+						"			时长:<label id=\"teachdate\">"+va.teachdate+"</label>"+
+						"		</p>"+
+						"	</td>"+
+						"</tr>"+
+					    "</table>";
+						
+						ret += row;
+						
+					}
+					
+					$(".pmsFormSub").html(ret);
+					//$form.initFormStyle();
+				}
+			}
+		});
+		
+	}
+	
+	//初始化所有外包公司 
+	var outerarray=new Array();
+	function initalOuterCompany(){
+		doManager("OuterCompanyManager", "queryOutCompanys", null,
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						for(i=0;i<jsonData.length;i++){
+							outerarray.push(jsonData[i].companyname);
+						}
+					}
+				}, false);
+	}
+	
+	
+	
+
+	$(function() {
+		initalOuterCompany();
+		initTeachInfo();
+		//initExpressCompany();	
+		doManager("HumanresourcesManager", "queryHumanresourceById", id , function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				//alert(data.data);
+				for (var key in jsonData) {
+					var va = jsonData[key];
+					var ele = document.getElementById(key);
+					
+					if (ele != null && ele != undefined) {
+						if(key=="id"){
+							document.getElementById(key).value = va;	
+						}else{
+							if(key=="authorizedtype"){
+								
+								if(va!=null&&va.length>0){
+									$("#authorizedtype").append("<option value=\"\" selected></option>");
+									for(var i=0;i<outerarray.length;i++){
+										if(va.indexOf(outerarray[i])>=0){
+											$("#authorizedtype").append("<option value=\""+outerarray[i]+"\" selected>"+outerarray[i]+"</option>");
+										}else{
+											$("#authorizedtype").append("<option value=\""+outerarray[i]+"\">"+outerarray[i]+"</option>");	
+										}
+									}
+									
+									//var ret = va.substring(va.length,2);
+									if(va.indexOf("实习")>=0){
+										$("#iszs").attr("value","实习");
+										$("#iszs option[text='实习']").attr("selected", true);
+									}else{
+										$("#iszs").attr("value","正式");
+										$("#iszs option[text='正式']").attr("selected", true);
+									}
+								}else{
+									$("#authorizedtype").append("<option value=\"\" selected></option>");
+									for(var i=0;i<outerarray.length;i++){
+										$("#authorizedtype").append("<option value=\""+outerarray[i]+"\">"+outerarray[i]+"</option>");	
+									}
+								}
+								
+								
+							}else{
+								if(key=="humanstatus"){
+									if(va=="1"){
+										document.getElementById(key).innerHTML="在职";
+									}else{
+										document.getElementById(key).innerHTML="离职"
+									}
+								}else{
+									document.getElementById(key).innerHTML = va;
+								}
+							}
+						}
+						
+					}
+				}
+				
+			}
+		});
+		
+		
+	});
+
+	function doSave() {
+		var arr = ["id","authorizedtype"];
+		var o = {};
+		for ( var i in arr) {
+			var v = arr[i];
+			var va = $("#" + v).val();
+			o[v] = va;
+		}
+		
+		o["authorizedtype"] = $("#authorizedtype  option:selected").text()+$("#iszs  option:selected").text();
+
+		//o["express_company"] = $("#express_company  option:selected").text();
+		doManager("HumanresourcesManager", "updateAuthorizedtype", o, function(data,
+				textStatus, XMLHttpRequest) {
+			if (data.result) {
+				var jsonData = $.fromJSON(data.data);
+				alert("保存成功！ ");
+				window.location.href = 'human_teach_list.html';
+			} else {
+				$$.showMessage("系统信息", "保存失败!");
+			}
+		}); 
+	}
+	
+	function doBack(){
+		window.location.href = 'human_teach_list.html';
+	}
+	
+	
+	function doEditBefore(){
+		window.location.href="human_stteach_edit.html?id="+id;
+	}
+	
+	function doEditAfter(){
+		window.location.href="human_enteach_edit.html?id="+id;
+	}
+</script>
+
+</head>
+
+<body>
+	<div class="panel panel-primary">
+		<div class="panel-heading">员工基本信息</div>
+		
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w33">
+			<tr>
+				<td>
+					<p>
+						姓&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;名:<label id="name"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						员工编号:<label id="employee_no"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						岗&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;位:<label id="zw"></label>
+					</p>
+				</td>
+
+			</tr>
+			<tr>
+
+				<td>
+					<p>
+						门&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;店:<label id="storename"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						手&nbsp;&nbsp;机&nbsp;号:<label id="phone"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态:<label id="humanstatus"></label>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>
+						<span style="display:inline-block;">人员类别:</span>
+						<!-- <select name="authorizedtype" id="authorizedtype" style="width: 40%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+                                	<option value=""></option>
+                                	<option value="正式">正式</option>
+                                	<option value="淘汰">淘汰</option>
+                                	<option value="离职">离职</option>
+                                	<option value="专员">专员</option>
+                                	<option value="实习生">实习生</option>
+                                	<option value="汇思实习">汇思实习</option>
+                                	<option value="汇思正式">汇思正式</option>
+                                	<option value="天坤实习">天坤实习</option>
+                                	<option value="天坤正式">天坤正式</option>
+                                	<option value="中智正式">中智正式</option>
+                        </select> -->
+                        <select name="authorizedtype" id="authorizedtype" style="width: 20%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+                              	<!-- <option value="正式">正式</option>
+                              	<option value="淘汰">淘汰</option>
+                              	<option value="离职">离职</option>
+                              	<option value="专员">专员</option>
+                              	<option value="实习生">实习生</option>
+                              	<option value="汇思实习">汇思实习</option>
+                              	<option value="汇思正式">汇思正式</option>
+                              	<option value="天坤实习">天坤实习</option>
+                              	<option value="天坤正式">天坤正式</option>
+                              	<option value="中智正式">中智正式</option> -->
+                        </select> 
+                        
+                        <select name="iszs" id="iszs" style="width: 20%;display:inline-block;height:30px;padding:0;margin-top:10px;" class="form-control">
+                              	<option value="正式">正式</option>
+                              	<option value="实习">实习</option>
+                        </select> 
+                        <input type="hidden" id="id" name="id" value=""/>
+					</p>
+				</td>
+				<td>
+					<p>
+						入职日期：<label id="topostdate"></label>
+					</p>
+				</td>
+			</tr>
+            <tr>
+            	<td colspan="3">
+                	<div class="panel-footer1" style="text-align: right">
+                    	<button class="btn btn-primary" onclick="doSave();">保存</button>
+                        <button class="btn btn-primary" onclick="doBack();">返回</button>
+                    </div>
+                </td>
+            </tr>
+		</table>
+		
+		
+	</div>
+	
+	
+	
+	<div class="panel panel-primary panel_width">
+		<div class="panel-heading">岗前培训记录
+			<span class="but">
+                <input name="" type="button" onclick="doEditBefore();" value="编辑"/>
+            </span>
+		</div>
+		<form class="pmsForm">
+		
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50">
+			<tr><td colspan="3"><p><strong>理论见习培训</strong></p></td></tr>
+			<tr>
+				<td>
+					<p>
+						开始时间:<label id="theorystartdate"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						结束时间:<label id="theoryenddate"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						见习门店:<label id="theorystorename"></label>
+					</p>
+				</td>
+			</tr>
+		</table>
+		
+		
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50">
+		<tr><td colspan="3"><p><strong>岗前线上培训</strong></p></td></tr>
+			<tr>
+				<td>
+					<p>
+						开始时间:<label id="onlinestartdate"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						成&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;绩:<label id="onlinescore"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间:<label id="onlinedate"></label>
+					</p>
+				</td>
+			</tr>
+		</table>
+		
+		
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50">
+		<tr><td colspan="3"><p><strong>岗前线下培训</strong></p></td></tr>
+			<tr>
+				<td>
+					<p>
+						开始时间:<label id="offlinestartdate"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						成&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;绩:<label id="offlinescore"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						时&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;间:<label id="offlinedate"></label>
+					</p>
+				</td>
+			</tr>
+		</table>
+		
+		
+		<table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50">
+		<tr><td colspan="3"><p><strong>实操见习培训</strong></p></td></tr>
+			<tr>
+				<td>
+					<p>
+						开始时间:<label id="realitystartdate"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						结束时间:<label id="realityenddate"></label>
+					</p>
+				</td>
+
+			</tr>
+			<tr>
+
+				<td>
+					<p>
+						见习门店:<label id="realitystorename"></label>
+					</p>
+				</td>
+				<td>
+					<p>成&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;绩:<label id="realityscore"></label>
+					</p>
+				</td>
+			</tr>
+		</table>
+		
+		
+		</form>
+	</div>
+	
+    
+    <div class="panel panel-primary panel_width">
+		<div class="panel-heading">岗后培训记录
+			<span class="but">
+                <input name="" type="button" onclick="doEditAfter();" value="编辑"/>
+            </span>
+		</div>
+		<form class="pmsFormSub">
+		&nbsp;&nbsp;无
+		<br><br>
+		<!-- <table cellpadding="0" cellspacing="0" border="0" width="100%" class="w50">
+		<tr><td><strong>内容:</strong></td><td></td><td></td></tr>
+			<tr>
+				<td>
+					<p></p>
+					<p>
+						开始时间:<label id="startdate"></label>
+					</p>
+				</td>
+				<td>
+					<p>
+						成绩:<label id="score"></label>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td>
+					<p>
+						时间:<label id="teachdate"></label>
+					</p>
+				</td>
+			</tr>
+		</table> -->
+		
+		</form>
+	</div>
+	
+	
+</body>
+</html>

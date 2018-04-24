@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>选择客户</title>
+    <script type="text/javascript" src="../../scripts/bidLib.js"></script>
+    <script type="text/javascript" src="../../scripts/ajaxfileupload.js"></script>
+    <link href="../../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <link href="./menu.css" rel="stylesheet"type="text/css">
+    <script type="text/javascript">
+
+        var tv_id = getUrlParamByKey('tv_id');
+        var fname = decodeURI(getUrlParamByKey('fname'));
+
+        $(function(){
+            var url = getRootPath()+ "/fileUpload.action?img_type=1&file_name=house_type_image";
+            var elementsId = ['house_pic'];
+            $('#house_pic').change(function(){
+                $.ajaxFileUpload({
+                    url: url,
+                    type: 'post',
+                    secureuri: false, //一般设置为false
+                    data:{
+                        fname:fname
+                    },
+                    fileElementId: elementsId, // 上传文件的id、name属性名
+                    dataType: 'JSON', //返回值类型，一般设置为json、application/json
+                    success: function(data, status){
+                        var res = JSON.parse(data)
+                        if(res.result){
+                            var pmsFile = JSON.parse(res.data);
+                            $('#pic_name').val(pmsFile.name);
+                            doSubmit();
+                        }else{
+                            $$.showMessage('提示',res.message);
+                        }
+                    },
+                    error: function(data, status, e){
+                        $$.showMessage("提示",e);
+                    }
+                });
+            });
+
+            if(tv_id == null || tv_id == ''){
+                return;
+            }
+            var obj = {
+                tv_id:tv_id
+            }
+            doManager('HouseStyleManager','getTinyVillageHousePic',obj,function(data, textStatus, XMLHttpRequest){
+                if(data.result){
+                    $('.sys_spec_img').children().remove();
+                    var lst_house_pic = JSON.parse(data.data);
+                    $(lst_house_pic).each(function (index,element) {
+                        $('.sys_spec_img').append('<li data-aid="'+(index + 1)+'">' +
+                                '<a href="javascript:;"><img src="'+element['path']+'" style="width:180px;height:135px"  /></a>' +
+                                '<span style="font-size: 3px">'+element['name']+'</span><i></i></li>');
+
+                    });
+                    $(".sys_item_spec .sys_item_specpara").each(function(){
+                        var i=$(this);
+                        var p=i.find("ul>li");
+                        p.click(function(){
+                            if($(this).hasClass("selected")){
+                                $(this).removeClass("selected");
+                                i.removeAttr("data-attrval");
+                                $('#pic_name').val("");
+                            }else{
+                                $(this).addClass("selected").siblings("li").removeClass("selected");
+                                i.attr("data-attrval",$(this).attr("data-aid"));
+                                $('#pic_name').val($(this).find("span").html());
+                            }
+                        });
+                    });
+                }else{
+                    $$.showMessage('提示',data.message);
+                }
+            });
+        });
+
+
+        function doSubmit(){
+            var json;
+            var pic_name = $('#pic_name').val();
+            if(pic_name == '' || pic_name == null){
+                $$.showMessage('提示','请选择户型图');
+            }else{
+                json = {pic_name:pic_name};
+            }
+            parent.win.callBack(json);
+            parent.win.hide();
+        }
+
+
+    </script>
+    <style type="text/css">
+        html,body{
+            height: 100%;
+        }
+
+        .image_cell{
+            display:inline;
+            line-height:128px;
+            height:auto;
+            word-break: break-all;
+            word-wrap : break-word;
+            margin: 10px;
+        }
+
+        .image_current{
+            height: 128px;
+            width: 128px;
+        }
+    </style>
+</head>
+<body>
+    <div id="bodyDiv">
+        <div class="panel panel-primary">
+            <div class="panel-heading">
+                选择已有户型图
+                <input type="hidden" id="pic_name" name="pic_name">
+            </div>
+            <div class="panel-body">
+                <div class="sys_item_spec" style="overflow: auto">
+                    <dl class="clearfix iteminfo_parameter sys_item_specpara" data-sid="1">
+                        <dd>
+                            <ul class="sys_spec_img">
+
+                            </ul>
+                        </dd>
+                    </dl>
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-primary">
+            <div class="panel-heading">上传户型图</div>
+            <div class="panel-body">
+                <input type="file" id="house_pic" name="house_pic" class="form-control">
+            </div>
+        </div>
+    </div>
+</body>
+</html>

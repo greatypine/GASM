@@ -1,0 +1,65 @@
+td{
+	white-space:nowrap;/*请注意这个属性是单元格不折行的属性*/
+}
+.padding4px{
+	padding: 4px;	
+}
+.padding2px{
+	padding: 2px;	
+}
+.padding0px{
+	padding: 0px;	
+}
+.inputtextDate{
+	width:70px;
+	border: 1px solid #999;
+}
+.textIndent{
+	text-indent: 4px;
+}
+td.successLabel
+{
+text-align:left;
+height:26px;
+padding-left:80px;
+verticalAlign:middle;
+}
+/*
+table
+{
+	padding:0px;
+	margin:0px;
+	table-layout:auto;
+}
+
+table.display {
+	border: 1px solid #000;
+	margin: 0 auto;
+	clear: both;
+	table-layout:auto;
+}*/
+
+
+.mainNavg ul li{ float:left;  background:url(../image/tab_left_on4.gif) no-repeat; padding-left:10px; height:24px; line-height:24px; cursor:pointer;}
+.mainNavg ul li a{ background:url(../image/tab_right_on4.gif) no-repeat right; float:left; height:24px; padding-right:15px; }
+.mainNavg ul li.select{ background:url(../image/tab_left4.gif) no-repeat; }
+.mainNavg ul li.select a{ background:url(../image/tab_right4.gif) no-repeat right;}
+
+/*高亮按钮样式*/
+
+}
+html{
+    scrollbar-shadow-color: #FFFFFF;
+    scrollbar-highlight-color: #FFFFFF;
+    scrollbar-arrow-color: #656363;
+    scrollbar-face-color: #d1d6f0;
+    scrollbar-track-color: #FFFFFF;
+    scrollbar-3dlight-color: #59ADBB;
+    scrollbar-darkshadow-color: #59ADBB;
+}
+.tdnormal{
+	white-space:normal;
+}
+.rightcont {
+    min-width: 700px; 
+}

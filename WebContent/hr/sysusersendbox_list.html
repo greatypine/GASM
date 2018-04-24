@@ -1,0 +1,268 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <title>系统用户模拟登录</title>
+        <meta name="author" content="Wang Shicheng">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+        <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+        <link href="../scripts/css/auto.css" rel="stylesheet">
+        <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+       <!--  <script type="text/javascript" src="./js/userActivityTree.js"></script> -->
+       <!--  <script type="text/javascript" src="./js/bizbaseQuery.js"></script> -->
+        
+        <script type="text/javascript" src="../scripts/auto.js"></script>
+        
+        
+        <script type="text/javascript" charset="utf-8">
+            var userpath = "";
+            var array=new Array();//存放门店 
+            $(document).ready(function(){
+//                var query1 = document.getElementById("userContainer")
+//                query1.style.display = "none";
+//                var query2 = document.getElementById("userContainer2")
+//                query2.style.display = "none";
+                $validator2 = $("#searchForm").data("PMSValidator");
+                doSearch();
+                initcurruser();
+                initallstore();
+            });
+            
+            
+          //初始化所有门店 
+        	function initallstore() {
+        		doManager("StoreManager", "findStoreAll", null,
+        			function(data, textStatus, XMLHttpRequest) {
+        				if (data.result) {
+        					var jsonData = $.fromJSON(data.data);
+        					for(i=0;i<jsonData.length;i++){
+        						array.push(jsonData[i].name);
+        					}
+        				}
+        			}, false);
+        	}
+          
+          
+          
+        	 var curr_user;
+        	 function initcurruser(){
+        			doManager("UserManager", "getCurrentUserDTO",null,
+        	   				function(data, textStatus, XMLHttpRequest) {
+        	   					if (data.result) {
+        	   						 curr_user = JSON.parse(data.data);
+        	   					}
+        	   	},false);
+        	 	}
+        	 
+            
+            var COLUMNS = {
+                    "usergroupname": function(aData, iColumn, sColumnName, map){
+                        var value = map[sColumnName];
+                        return value;
+                    }
+                    
+                }
+            
+            
+            
+            
+            
+            
+            var editObj = {
+                html: '<a href="#" class="blue">登录系统</a>',
+                func: function(queryid, data, nTr, allColumns, allColumnsDataMap){
+                    var val =allColumnsDataMap.id;
+                    //window.location="sysuserquery_edit.html?id="+val;
+                    var grp_name =allColumnsDataMap.usergroupname;
+                   
+                    var sendboxid=curr_user.id;
+                    
+                    if(grp_name=="管理员"){
+                    	alert("禁止登录管理员账号!");
+                    	return;
+                    }
+                    if(grp_name.indexOf("沙箱")>-1){
+                    	alert("禁止登录沙箱账号!");
+                    	return;
+                    }
+                    //取当前用户的用户名 密码 
+                    
+                    var reObj = new PMSRequestObject("userManager", "isValidUserBox", [ val,sendboxid ]);
+                    
+                    var callback = function callback(data, textStatus, XMLHttpRequest) {
+            			//检查用户的口令是否是初始口令,如果是,则提示用户需要修改口令.
+            			//window.open(getRootPath() + "/crm/loginplatform.html");
+		            	//window.parent.location=getRootPath() + "/crm/loginplatform.html";
+            		};
+            		
+                    var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
+            			alert("登录信息错误，请确认输入或联系管理员!");
+            			return false;
+            		}
+                    var url = "../login.do";
+                    $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
+                    
+                   /*  doManager("userManager", "isValidUserBox",[val], function(data,
+            				textStatus, XMLHttpRequest) {
+            			if (data.result) {
+            				var jsonDatas = $.fromJSON(data.data);
+            				window.parent.location=getRootPath() + "/crm/loginplatform.html";
+            			}else{
+            				$$.showMessage("系统信息", "获取失败!");
+            			}
+            		},false); */
+                    
+                    
+                    
+                    
+                }
+            }
+           
+            
+            $pmspage.opArr = [ editObj/* ,viewObj, aclObj */];
+            
+            function doClean(){
+                $("#name").val('');
+                $("#usergroupname").val('');
+                $("#mobilephone").val('');
+                $("#employeeId").val('');
+                $("#storename").val('');
+                $("#disabledFlag").attr('checked', true);
+                $("#disAbledflag").val("1");
+            }
+            
+            
+            function doAdd(){
+            	//window.location.href="sysuserquery_add.html";
+            }
+        </script>
+    </head>
+    <!-- Body -->
+    
+    <style type="text/css">
+	.auto{max-height:100px;width:80%; overflow-y:scroll;}
+	</style>
+
+
+    <body>
+        <div class="rightcont clear">
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <h4 class="panel-title">
+                        用户与权限:用户查询
+                    </h4>
+                </div>
+            </div>
+            <div class="panel panel-primary">
+                <div class="panel-heading">
+                    <a href="#" onclick="toggleDiv('conditionsDiv','pic2');"><img src="../scripts/images/22.png" align="absmiddle" id="pic2"/></a>&nbsp;&nbsp;搜索条件
+                </div>
+                <div class="panel-body" id="userSearchConditionsDiv">
+
+                    <form id="searchForm" class="pmsForm" validate="true" clienvalidate="true">
+                        <table style="min-width:100%;width:auto" border="0" cellspacing="0" cellpadding="0">
+                            <tr>
+                                <td class="basetext" width="33%">
+                                    用户名称:
+                                    <input type="text" id="name" name="name" class="form-control" style="width: 80%" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                                </td>
+                                <td class="basetext" width="33%">
+                                    角色组:
+                                    <input type="text" id="usergroupname" name="usergroupname" class="form-control" style="width: 80%" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                                </td>
+                          
+                                <td class="basetext" width="33%">
+                                    员工号:
+                                    <input type="text" id= "employeeId" name="employeeId" class="form-control" style="width: 80%"/>
+                                </td> 
+                                
+                            </tr>
+                            <tr>
+                            
+                                <td class="basetext">
+                                    员工电话:
+                                    <input type="text" id= "mobilephone" name="mobilephone" class="form-control" style="width: 80%" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                                </td>
+                                
+                                <td class="basetext" >
+                                门店：<div class="input-group" style="width:100%;">
+                                <input type="text" id="storename" name="storename" class="auto-inp form-control" style="width: 80%" likeOption="false">
+				                        <div class="auto hidden" id="auto">
+				                            <div class="auto_out">1</div>
+				                            <div class="auto_out">2</div>
+				                        </div>
+				                        
+				                       </div> 
+                                    <!-- <input type="radio" id="enableFlag" name="disabledFlag" style="display: none;"  value="0" onclick="setDisabledFlag();"/>
+                                    <input type="radio" id="disabledFlag" name="disabledFlag" style="display: none;" value="1" onclick="setDisabledFlag();" checked="checked"/>
+                                    <input type="hidden" name="disAbledflag" id="disAbledflag"  value="1" likeOption="false" /> --> 
+                                </td>
+                            </tr>
+                            
+                            
+                            
+                            
+                            
+                            
+                            
+                            <tr>
+                                
+                            </tr>
+
+                        </table>
+                    </form>
+
+                </div>
+                <div class="panel-footer" style="text-align: right">
+                	<input class="btn btn-primary" type="button" value="查询" onclick="doSearch();"/>
+                    <input class="btn btn-primary" type="button" value="重置" onclick="doClean();"/>
+                   <!--  <input class="btn btn-primary" type="button" value="新增" onclick="doAdd();"/> -->
+                </div>
+            </div>
+
+            <!--<div id="userContainer"  class="panel panel-primary" queryid="userQueryPage" queryformat="simple" showsearch="false" fnRender="showDiffUser" autoload="false" searchDiv="conditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" operators=$pmspage.opArr>-->
+            <!--</div>-->
+            <div id="userContainer2"  class="panel panel-primary" fnRender="renderColumns" queryid="sysusersendboxQuery" queryformat="simple" showsearch="false" fnRender="showDiffUser2" autoload="false" searchDiv="userSearchConditionsDiv" showdisplay="false" showtitle="true" showprint="false" showpaging="true" showcheckbox="false" operators=$pmspage.opArr>
+            <!--</div>-->
+        </div>
+        </div>
+    </body>
+    <script>
+    var autoComplete = new AutoComplete("storename","auto",array);
+	document.getElementById("storename").onkeyup = function(event){
+		autoComplete.start(event);
+	}
+    </script>
+</html>
+<script language="javascript">
+    
+    function doSearch(){
+    	$$.executeSearch('sysusersendboxQuery', 'userSearchConditionsDiv');
+       /*  var $validator = new PMSValidator($("#searchForm")[0], {
+            bNormalDisplay: true,
+            iDisplayLength: 5
+        });
+        $validator.clean();
+        var result = $validator.clientValidate();
+        if (result == false) {
+            return;
+        }
+        $validator2.clean();
+        var passed = $validator2.clientValidate();
+        var rev = $validator2.clientRevalidate();
+        if (passed && rev) {
+            //判断是否点击了功能菜单树
+            var _value = $("#activity_Code").val()
+
+            $$.executeSearch('sysusersendboxQuery', 'userSearchConditionsDiv');
+        } */
+        //$(".display").css("width","100%");
+    }
+    
+    function setDisabledFlag(){
+        $("#disAbledflag").val($(":radio[name=disabledFlag][checked]").val());
+    }
+</script>

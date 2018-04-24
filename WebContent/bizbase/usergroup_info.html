@@ -1,0 +1,233 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<title>内部角色组查询</title>
+		<meta name="author" content="Wang Shicheng">
+		<meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+		<meta http-equiv="Cache-Control" Content="no-cache"/>
+		<meta http-equiv="Pragma" Content="no-cache"/>
+		<meta http-equiv="Expires" Content="0"/>
+		<script type="text/javascript" src="../scripts/lib-mian.js"></script>
+		<link rel="stylesheet" type="text/css" href="../scripts/css/style_sheet_core.css"/>
+		<link type="text/css" rel="stylesheet" href="../scripts/css/common-app.css" />
+		<script src="js/lib.js" type="text/javascript"></script>
+		<link rel="stylesheet" href="../script/tree/jquery.treeview.css" />
+		<script language="javascript" src="js/userGroupSearch.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			function getRequestParams(){
+                var url = window.location.search;
+                var theRequest = new Object();
+                if (url.indexOf('?') != -1) {
+                    var str = url.substr(1);
+                    var strs = str.split('&');
+                    for (var i = 0; i < strs.length; i++) {
+                        theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+                    }
+                }
+                return theRequest;
+            }
+            var request = getRequestParams();
+			$(document).ready(function(){ 
+				var query = document.getElementById("userGroupContainer");
+				$$.executeSearch('userGroupQueryPage', 'conditionsDiv'); 
+				query.style.display="block";
+				$validator2 = $("#searchForm").data("PMSValidator");
+				var s1 = $("#s1")[0];
+				var s2 = $("#s2")[0];
+				$validator2.addDateCompareRule({
+					dateFrom: s1,
+					dateTo: s2,
+					msg: "开始时间应小于截止时间"
+				});
+			});
+			var type = "usergroup_info";
+			var viewObj  = 
+				{
+					html: '<a href="#" class="blue">查看权限</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						
+						doManager("userGroupManager", "getUserGroupDTO", allColumnsDataMap.id, function(datas) {
+							if (datas.result) {
+								
+								var userGroup = $.fromJSON(datas.data);
+								var hasPrivilege = userGroup.hasPrivilege;
+								
+								//$msg.alert(hasPrivilege);
+								
+								var priId;
+								if(hasPrivilege == "true"){
+									priId = userGroup.privilegeId;
+								}else{
+									priId = "000000000000000";
+								}
+								var type = "userGroupDetail";
+								window.location = "userGroupInformation_view.html?userGroupId=" + allColumnsDataMap.id
+													+"&type="+ type 
+													+"&priId="+ priId;
+							}else{
+								$msg.alert('数据库连接失败，请联系系统管理员！');
+							}
+						});
+					}
+				}
+
+			var viewUser = 
+				{
+					html: '<a href="#" class="blue">查看用户</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						window.location = "userManagement.html?userGroupId=" + allColumnsDataMap.id+"&orgId="+allColumnsDataMap["orgEntity.id"]+"&type="+ type;
+					}
+				}
+			
+			$pmspage.opArr = [viewObj,viewUser];
+			function showDiffUG(obj,index){
+				if(obj[4]==0&&index!=4&&index!=0){
+					return "<span class='red'>"+obj[index]+"</span>";
+				}
+				else{
+					return obj[index];
+				}
+			}
+	</script>
+	</head>
+	<!-- Body -->
+	<body>
+		<div class="rightcont body_bg clear">
+		<div class="box">
+			  <div class="title clear">
+                <div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();">
+                </div>
+                <div class="ico2">
+                </div>
+                <div class="ico1">
+                </div>
+				<a href="#">用户与权限 :</a>&nbsp;
+				<a href="#">内部角色组查询</a>
+            </div>
+			</div>
+			<div class="containerheader">
+         		<a href="#" onclick="toggleBiz('containerbody','pic');"><img  src="../scripts/images/22.png" align="absmiddle" id="pic" /></a> 内部角色组查询
+     	 	</div>
+			<div id="containerbody">
+			 <table class="bigteble">
+			    <tr>
+			     <td style="padding:5px;" bgcolor="#FFFFFF">
+					 <div style="padding:0px 0px 4px 0px">
+							<table class="Querytable">
+							<tr class="Colorbar1">		
+								 <td width="20" class="Querytext">
+								 	<div>
+								 	   <a href="#" onClick="toggleBiz('conditionsDiv','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+									   <strong>搜索条件</strong>
+								 	</div>
+		                         </td>
+							</tr>
+						</table>					
+						<div id="conditionsDiv">
+							<form id="searchForm" class="pmsForm" validate="true" clienvalidate="true">
+								<table class="bigteble">
+									<tr>
+										<td width="10%" align="left" width="8%" class="basetext">
+											角色组名称:</td>
+										<td  class="baseform" align="left" width="25%">
+											<input type="text" name="name" class="inputtext" />
+										</td>
+										<td   class="basetext" align="left" width="10%">
+											角色组编码:</td>
+										<td class="baseform" align="left" width="40%">
+											<input type="text" name="code" id="code" class="inputtext" />
+										</td>
+									</tr>
+									<tr>
+										<td class="basetext" align="left" width="8%">
+											创建人:</td>
+										<td  class="baseform" align="left" width="42%">
+											<input type="text" id="createUserID" name="createUserID" class="inputtext" />
+										</td>
+										<td class="basetext" align="left" width="10%">
+											创建时间:</td>
+										<td class="baseform" align="left" width="40%">
+											<input id="s1" revalidate="true" type="text" name="createDate" validate="formatDate:true" class="pmsDateField" readonly yearRange="-100:+0" style="width:110px;margin-right: 5px;" likeOption="false"/>至
+											<input id="s2" revalidate="true" type="text" name="createDate" validate="formatDate:true" class="pmsDateField" readonly yearRange="-100:+0" style="width:110px;margin-left: 5px;margin-right:5px" likeOption="false"/>
+										</td>
+									</tr>
+									<tr>
+										<td class="basetext" align="left" width="8%">
+											组织机构:
+										</td>
+										<td class="baseform">
+											<input type="text" name="orgEntity.name" id="orgName" class="inputtext_dis" readonly/>
+											<input class="buttonu" type="button" id="search" onClick="getTenderInterfaceForSearch({inputName:'orgName',inputId:'orgEntity\\.path'})" value="选择" />
+										</td>
+										<td class="basetext" align="left" width="8%">
+											停用标记:
+										</td>
+										<td  class="baseform">
+										  <input type="radio" name = "disabledUser" value="0" onclick="setDisabledFlag()"/>是
+										  <input type="radio" name = "disabledUser" value="1" onclick="setDisabledFlag()" checked="checked"/>否
+										  <input type="hidden" name="disabledFlag" id="disabledFlag"/>
+										  <input type="hidden" name="groupType" id="groupType"/>
+										  <script type="text/javascript">
+												$("#disabledFlag").val("1");
+												$("#groupType").val("0");
+										</script>
+										</td>
+									</tr>
+									<tr class="Colorbar3">
+		                          		<td colspan="4">
+		                          			<input class="buttonu" type="button"  value="查询" onclick="doSearch();"/> 
+			                      		</td>
+		                      		</tr>
+									<input name="orgEntity.path" id="orgEntity.path" type="hidden"/>
+								</table>
+							</form>
+						</div>
+					<!--searchCondition div-->
+					</div>
+					<div id="userGroupContainer" queryid="userGroupQueryPage" queryformat="simple" 
+						showsearch="false" autoload="false" searchDiv="conditionsDiv"
+						showdisplay="false" showtitle="true" fnRender="showDiffUG"
+						showprint="false" showpaging="true" 
+						showcheckbox="false" operators=$pmspage.opArr>
+					</div>
+	            </div>
+				</td>
+				</tr>
+				</table>
+			</div>
+		</div>
+	</body>
+</html>
+							
+<script language="javascript">
+	
+	function doSearch() {
+		 var $validator = new PMSValidator($("#searchForm")[0], {
+            bNormalDisplay: true,
+            iDisplayLength: 5
+        });
+        $validator.clean();
+        var result = $validator.clientValidate();
+        if (result == false) {
+            return;
+        }
+		$validator2.clean();
+		var passed = $validator2.clientValidate();
+		var rev = $validator2.clientRevalidate();
+		if (passed && rev) {
+			var query = document.getElementById("userGroupContainer");
+			query.style.display="block";
+			var temp2 = document.getElementById("createUserID").value;
+			//var createUserID = document.getElementById("createUserID").value.toUpperCase();
+			var createUserID = document.getElementById("createUserID").value.toLowerCase();
+			$("#conditionsDiv").find("input[name=createUserID]").val(createUserID);
+			$$.executeSearch('userGroupQueryPage', 'conditionsDiv'); 
+			$("#conditionsDiv").find("input[name=createUserID]").val(temp2);
+		}
+	}
+	
+	function setDisabledFlag(){
+		$("#disabledFlag").val($(":radio[name=disabledUser][checked]").val());
+	}
+</script>

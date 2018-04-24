@@ -1,0 +1,68 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+    <head>
+        <meta http-equiv="X-UA-Compatible"content="IE=8">
+        <title>用户查询</title>
+        <meta name="author" content="Wang Shicheng">
+        <meta http-equiv="content-type" content="text/html;charset=utf-8"/>
+        <script type="text/javascript" src="../scripts/bidLib.js">
+        </script>
+        <script language="javascript" src="./js/userActivityTree.js">
+        </script>
+        <script language="javascript" src="./js/bizbaseQuery.js">
+        </script>
+        <script type="text/javascript" charset="utf-8">
+        	var positionCode = getUrlParamByKey("positionCode");
+            $(document).ready(function(){
+				$("#positionCode").val(positionCode);
+                doSearch();
+            });
+			function goBack(){
+				window.location = 'positionManagement.html';
+			}
+        </script>
+    </head>
+	<body>
+		<div id="pageheardiv" class="title clear">
+                <div class="arrowleft" style="cursor:hand;" onclick="toggleNavi();">
+                </div>
+                <div class="ico2">
+                </div>
+                <div class="ico1">
+                </div>
+                <a href="#">岗位管理</a>
+                <a href="#">用户查询</a>
+        </div>
+		<div class="rightcont clear">
+			<table id="accessProductsMaintance" class="bigteble">
+                <tr>
+                    <td style="padding:5px;" bgcolor="#FFFFFF">
+                        <div id="userSearchConditionsDiv" class="searchCondition">
+                        	<input type="hidden" id="positionCode" likeOption="false" name="positionCode"/>
+                        </div>
+						<div id="cnpcPositionSearchContainer" queryid="userSearchByPositionQuery"
+							searchDiv="userSearchConditionsDiv" 
+							queryformat="simple" showsearch="false" 
+							showdisplay="false" showtitle="false" 
+							showprint="false" showpaging="true" 
+							showcheckbox="false" autoload="true"
+							>
+						</div>
+                    </td>
+                </tr>
+				<tr class="Colorbar3">
+                            <td colspan="4">
+                                <input type="button" resourceId="prerequisite_asset_change_add" class="buttonu" value="返回" onclick="goBack();"/>
+                            </td>
+                </tr>
+            </table>
+			
+        </div>
+	</body>
+</html>
+<script language="javascript">
+    
+    function doSearch(){
+        $$.executeSearch('userSearchByPositionQuery', 'userSearchConditionsDiv');
+    }
+</script>

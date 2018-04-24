@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>门店信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript" src="../scripts/jedate/jedate.js"></script>
+    <!-- 引入css和js即可 -->
+<link rel="stylesheet" href="../scripts/css/cityselect.css">
+<script type="text/javascript" src="../scripts/cityselect.js"></script>
+   <style type="text/css">
+    	/*   .display{
+    		width:100%
+    	}  
+    	  .display tr td{
+    		word-wrap:break-word;
+    		white-space:normal;
+    	}  */
+    	.but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+    </style> 
+</head>
+<script type="text/javascript">
+var win;
+$(function () {
+	jeDate({
+        dateCell:"#standUP",//isinitVal:true,
+        format:"YYYY-MM-DD",
+        isTime:false
+    });
+
+    jeDate({
+        dateCell:"#endUP",//isinitVal:true,
+        format:"YYYY-MM-DD",
+        isTime:false
+    });
+    //页面加载成功后需要获取数据
+    searchList();
+    $(".operateHeader").width("5%");
+    $("#xuhaoid").width("6%");
+});
+
+//记载页面时请求数据列表默认的方法
+function searchList() {
+    $$.executeSearch('storeyyeeQuery', 'conditionsDiv');
+    $(".operateHeader").width("5%");
+    $("#xuhaoid").width("6%");
+}
+function doClean() {
+    document.service_qa.reset();
+    searchList();
+}
+function addVillage(){
+	window.location.href = 'add_store.html';
+}
+
+  var editObj = {
+		html : '<a href="#"  class="blue">修改</a>',
+		resourceId: "add_store",
+		func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+			var store_id = allColumnsDataMap.store_id;
+			window.location.href = "add_store.html?store_id="+store_id;
+		}
+	}
+ var deleteObj = {
+			html : '<a style="visibility:hidden" href="#">删除</a>',
+			resourceId : "village_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("VillageManager", "deleteVIllageByID", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'village_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		}
+$pmspage.opArr = [ editObj ];
+  
+  function getNoFindPlay(){
+	  window.location.href="storelist_brak.html";
+  }
+  
+  //导出门店数据
+  function excelData(fileName){
+	  var path = getRootPath();
+	  var town_name = $("#town_name").val();
+	  var name = $("#name").val();
+	  var cityName = $("#cityName").val();
+	  var standUP = $("#standUP").val();
+	  var endUP = $("#endUP").val();
+	  var access=$("#access").val();
+	  var storeno=$("#storeno").val();
+	  window.open(path + "/downloadExcel.action"
+			  +"?fileName="+fileName+"&town_name="+town_name+"&name="+name+"&cityName="+cityName+"&standUP="+standUP+"&endUP="+endUP+"&access="+access+"&storeno="+storeno);
+}
+  
+//导出门店台账
+  
+  function exportExcel(){
+	   var path = getRootPath();
+	   window.open(path + "/downloadExcel.action"
+				  +"?fileName="+"store_list_info");
+  }
+  //判断是否为未开业
+  $(function(){
+	   $("#access").click(function(obj){
+			var flag = $("#access").attr("checked");
+			if(flag){
+				$("#standUP").val("");
+				$("#standUP").attr("disabled",true);
+				$("#standUP").css("backgroundColor","#D3D3D3");
+				$("#endUP").val("");
+				$("#endUP").attr("disabled",true);
+				$("#endUP").css("backgroundColor","#D3D3D3");
+			}else{
+				$("#standUP").val("");
+				$("#standUP").attr("disabled",false);
+				$("#standUP").css("backgroundColor","#FFFFFF");
+				$("#endUP").val("");
+				$("#endUP").attr("disabled",false);
+				$("#endUP").css("backgroundColor","#FFFFFF");
+			}
+		});
+	   
+	   
+  })
+  
+</script>
+<body style="height: 100%">
+	<div class="panel panel-default" style="margin: 10px">
+	    <div class="panel-heading">
+	        <h4 class="panel-title">
+	           地址信息:门店信息
+	        </h4>
+	    </div>
+	</div>
+	    <div class="panel panel-primary">
+        <div class="panel-heading">门店信息查询
+        	<span class="but">
+                <input type="button" onclick="exportExcel();" value="门店开业信息台账导出"/>
+            </span>
+        </div>
+        <div class="panel-body">
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="9">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">所属城市:</td>
+                            <td>
+                                <input id="cityName" name="cityName" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">街道名称:</td>
+                            <td>
+                                <input id="town_name" name="town_name" type="text" style="width:60%" class="form-control"/>
+                            </td >
+                            <td width="5%">门店名称:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                            <td width="5%">门店编号:</td>
+                            <td>
+                                <input id="storeno" name="storeno" type="text" style="width:60%" class="form-control"/>
+                            </td>
+                        </tr>
+                        <tr>
+                         <td width="5%" style="margin:20px 0px 0 0; "><span style="margin-top: 10px;">开店时间:</span></td>
+                            <td colspan="3">
+                                <input id="standUP" name="standUP" type="text"  style="margin:10px 0px 0 0;width:30%;float:left;display: inline;" class="wicon form-control" likeOption="false"/>
+                                <span style="margin-top: 15px;float: left;">至</span>
+                                <input id="endUP" name="endUP" type="text"  style=" margin:10px 0px 0 0;width:30%;float: left ;display: inline;" class="wicon form-control" likeOption="false" />
+                            	<input type="checkbox" style="margin:20px 0px 0 10px;float: left; " id="access" name="access" isautotab="true" value="1"/><span style="margin-top: 15px;float: left;">:尚未开店</span>
+                            </td>
+                            <td style="margin:10px 0px 0 0; " ><button class="btn btn-primary" onclick="getNoFindPlay()">完善门店序号</button></td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+        	<button class="btn btn-primary" onclick="excelData('store_list')">导出门店数据</button>
+        	<button class="btn btn-primary" onclick="addVillage()">添加</button>
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+        </div>
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="storeyyeeQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+</body>
+</html>

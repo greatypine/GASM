@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>导入人员信息列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+</head>
+<script>
+    var win;
+    $(function () {
+    	doClean();
+        //页面加载成功后需要获取数据
+        searchList();
+    });
+
+    //操作列
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('importHumanresourcesQuery', 'conditionsDiv');
+    }
+
+    //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str === "" || str == "undefined" || typeof(str) == "undefined";
+    }
+
+    function downloadTemplate(){
+        var path = getRootPath();
+        window.open(path + "/downloadExcel.action?fileName=import_human_template&skip=true");
+    }
+
+    //自定义一个上传Excel的方法
+    function uploadExcel() {
+        var content = $('input[name="file"]').val();
+        //文件不能为空
+        if (isnull(content)) {
+            $$.showMessage("${system.info}", "请选择文件!");
+            return false;
+        }
+        //后缀必须为xls,不支持2007
+        var suffix = content.match(/^(.*)(\.)(.{1,8})$/)[3];
+        if ("xls" != suffix && 'rar' != suffix && 'zip' != suffix && "xlsx" != suffix) {
+            $$.showMessage("${system.info}", "请上传xls,xlsx,rar或zip文件");
+            return false;
+        }
+        var path = getRootPath();
+        var $form_upload = $("#uploadFrom");
+        $form_upload.attr("action", path + "/excelUpload.action?model=human_template");
+        $form_upload.submit();
+    }
+
+    function importSuccess() {
+        $$.showMessage("系统信息", "导入成功");
+        searchList();
+    }
+
+    function doClean() {
+        document.service_qa.reset();
+        $("#store\\.id").val("");
+    }
+
+    function doAdd(){
+    	window.location.href="xx_express_add.html";
+    }
+    
+    function toStore(){
+    	//取得所选择的ID ，将信息插入到分配门店表中。
+    	var objs = $$.getSelectedObj("importHumanresourcesQuery");
+    	if(objs!=null&&objs.length>0){
+    		var ids = "";
+    		for(var i=0;i<objs.length;i++){
+        		ids+=objs[i][0]+",";
+        	}
+    		//doManager
+    		doManager("HumanresourcesManager", "saveHumanresource", ids + '', function(
+					data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					window.location.href = 'import_human_list.html';
+				} else {
+					$$.showMessage("系统信息", "同步失败!");
+				}
+			});
+    		
+    	}else{
+    		alert("请选择数据！ ");
+    		return ;
+    	}
+    	
+    }
+
+  //列表中 列的处理
+    var COLUMNS = {
+            "rcv_tel": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value!=""&&value.length>6){
+                	ret=value.substring(0,3)+"****"+value.substring(value.length-4,value.length);
+                }
+                return ret;
+            }
+        }
+    
+    var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "xxExpress_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("XxExpressManager", "deleteXxExpress", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'xx_express_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		}
+    var editObj = {
+			html : '<a href="#">修改 </a>',
+			resourceId : "xxExpress_List_update",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "xx_express_edit.html?id="+id;
+			}
+		}
+	//$pmspage.opArr = [ editObj , /*publishObj  ,*/ deleteObj ];
+    
+</script>
+<body style="height: 100%">
+<div class="panel panel-default" style="margin: 10px">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            数据导入:人员信息采集
+        </h4>
+    </div>
+</div>
+<div class="rightcont clear">
+    <div class="panel panel-primary">
+        <div class="panel-heading">导入人员查询</div>
+        <div class="panel-body">
+            <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+                <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom"
+                      target="hframe">
+                    <div class="form-group">
+                        <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                            <input type="file" isuploadtable="true" name="file" class="form-control">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="uploadExcel();" name="upload">
+                                    <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+                                </button>
+                            </span>
+                        </div>
+                        <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                        <button name="download" class="btn btn-outline btn-default" onclick="downloadTemplate();">下载模板</button>
+                    </div>
+                </form>
+            </div>
+            <div id="conditionsDiv" style="margin-top: 10px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">员工姓名:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:50%" class="form-control"/>
+                            </td>
+                            <td>
+                            <td width="5%">员工编号:</td>
+                            <td>
+                                <input id="employee_no" name="employee_no" type="text" style="width:50%" class="form-control"/>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+            <button class="btn btn-primary" onclick="toStore();">分配门店</button>
+        </div>
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="importHumanresourcesQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="true" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+</div>
+</body>
+</html>

@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>订单区块列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <script type="text/javascript" src="../scripts/auto.js"></script>
+
+    <!-- 引入css和js即可 -->
+    <link rel="stylesheet" href="../scripts/css/address_relevanceName.css">
+    <script type="text/javascript" src="../scripts/address_relevanceName.js"></script>
+
+</head>
+<script>
+    $(function () {
+        //页面加载成功后需要获取数据
+        searchList();
+    });
+
+    //加载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('AddressRelevanceDataQuery', 'conditionsDiv');
+        $(".operateHeader").width("12%");
+    }
+    var editObj = {
+        html : '<a href="#">编辑小区</a>',
+        resourceId : "humanstore_List_update",
+        func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+            var id = allColumnsDataMap.id;
+            var pids=allColumnsDataMap.tinyId;
+            window.location.href = "orderaddressedit.html?id="+id+"&pids="+pids;
+        }
+    }
+    var deleteObj = {
+            html : '<a href="#">删除订单区块</a>',
+            resourceId : "humanstore_List_delete",
+            func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+                var id = allColumnsDataMap.id;
+                var pids=allColumnsDataMap.tinyId;
+               var publicarea= allColumnsDataMap.publicarea;
+                $$.showPromptDialog("系统提示", "是否删除？", false, 320, function() {
+                	if(pids!=null&&pids!=''){
+                    	$$.showPromptDialog("系统提示", "该订单区块已绑定小区是否删除？", false, 320, function() {
+                    		deleteorderAddress(id);
+                    	})
+                    }else if(publicarea=='是'){
+                    	$$.showPromptDialog("系统提示", "该订单区块为公共区块是否删除？", false, 320, function() {
+                    		deleteorderAddress(id);
+                    	})
+                    } else{
+                    	deleteorderAddress(id);
+                    }
+                })
+            }
+        }
+    $pmspage.opArr = [ editObj, deleteObj ];
+
+    function doClean() {
+        document.service_qa.reset();
+        searchList();
+    }
+    //调用删除接口
+    function deleteorderAddress(id){
+    	doManager("ComnunityAreaManager", "deleteComnunity", id +'', function(
+				data, textStatus, XMLHttpRequest) {
+			if (data.result) {
+				confirm( "删除成功!");
+				window.location.href ="orderAddress_list.html";
+			} else {
+				$$.showMessage("系统信息", "删除失败!");
+			}
+		});
+    }
+    
+    
+    
+    
+    function toTiny(){
+    	window.location.href = "communityArea_ViewList.html";
+    }
+    var COLUMNS = {
+    		"publicarea": function(aData, iColumn, sColumnName, map){
+                var dellable = map['publicarea'];
+                if(dellable==1){
+                	return "是";
+                }
+               
+                return "否";
+            }
+    }
+    
+</script>
+<style type="text/css">
+  .display{
+    		width:100%
+    	} 
+    	/*.display tr td{
+    		word-wrap:break-word;
+    		white-space:normal;
+    	} */
+    .but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+    .auto{max-height:100px; overflow-y:scroll;}
+</style>
+<body style="height: 100%">
+<div class="panel panel-default" style="margin: 10px">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+            订单区块管理:当前为订单区块视角
+        </h4>
+    </div>
+</div>
+<div class="rightcont clear">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <label id="imp_base_div">-</label>&nbsp;订单区块查询
+            <span class="but">
+                <input type="button"  onclick="toTiny();" value="切换到小区视角"/>
+            </span>
+        </div>
+        <div class="panel-body" id="imp_data_div">
+            <div id="conditionsDiv" style="margin-top: 0px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">订单区块名称：</td>
+                            <td width="20%">
+                                <input type="text" class="form-control" id="placename" name="placename" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"  style="width: 60%;" />
+                            </td>
+                             <td width="5%">所属社区:</td>
+                            <td width="20%">
+                                <input id="village_name" name="village_name" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                            <td width="5%">所属小区:</td>
+                            <td width="20%">
+                                <input id="tinyvillage_name" name="tinyvillage_name" type="text" style="width:60%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/>
+                            </td>
+                        </tr>
+                        <tr>
+                           
+                            <td width="5%"><span style="margin-top: 20px;">状&nbsp;&nbsp;&nbsp;&nbsp;态:</span></td>
+                            <td width="20%">
+                                <select name="communityAreastatus" style="width: 60%;margin-top: 15px;" class="form-control">
+                                    <option value=""></option>
+                                    <option value="1">已分配订单区块</option>
+                                    <option value="2">未分配订单区块</option>
+                                </select>
+                            </td>
+                            <td width="5%"><span style="margin-top: 20px;">是否公共区块:</span></td>
+                            <td width="20%">
+                                <select name="publicarea" style="width: 60%;margin-top: 15px;" class="form-control">
+                                    <option value=""></option>
+                                    <option value="1">是</option>
+                                    <option value="2">否</option>
+                                </select>
+                            </td>
+                        </tr>
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+        </div>
+    </div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="AddressRelevanceDataQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+</div>
+</body>
+</html>

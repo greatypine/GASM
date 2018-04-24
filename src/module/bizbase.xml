@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<application xsi:schemaLocation="http://www.cnpc.com/2010/pmsconfig pmsconfig.xsd"
+ xmlns="http://www.cnpc.com/2010/pmsconfig" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <module id="bizbase">
+        <package id="bizValidate" noEntity="true">
+            <managerpackage interfacePackage="com.cnpc.pms.bizbase.validate.manager"/>
+        </package>
+        <package id="function">
+            <managerpackage interfacePackage="com.cnpc.pms.bizbase.rbac.resourcemanage.manager"/>
+             <daopackage interfacePackage="com.cnpc.pms.bizbase.rbac.resourcemanage.dao"
+             implementPackage="com.cnpc.pms.bizbase.rbac.resourcemanage.dao.impl"/>
+        </package>
+        <package id="user">
+            <daopackage interfacePackage="com.cnpc.pms.bizbase.rbac.usermanage.dao"
+             implementPackage="com.cnpc.pms.bizbase.rbac.usermanage.dao.impl"/>
+            <managerpackage interfacePackage="com.cnpc.pms.bizbase.rbac.usermanage.manager"/>
+        </package>
+		
+        <package id="purStruOrg">
+            <daopackage interfacePackage="com.cnpc.pms.bizbase.rbac.orgview.dao"
+             implementPackage="com.cnpc.pms.bizbase.rbac.orgview.dao.impl"/>
+            <managerpackage interfacePackage="com.cnpc.pms.bizbase.rbac.orgview.manager"/>
+        </package>
+        <package id="role">
+            <managerpackage interfacePackage="com.cnpc.pms.bizbase.rbac.rolemanage.manager"/>
+        </package>
+        <package id="funcpermision">
+            <managerpackage interfacePackage="com.cnpc.pms.bizbase.rbac.funcpermision.manager"/>
+        </package>
+        <package id="privilege">
+            <managerpackage interfacePackage="com.cnpc.pms.bizbase.rbac.datapermission.manager"/>
+        </package>
+        
+        <!--<package id="position">-->
+            <!--<daopackage interfacePackage="com.cnpc.pms.bizbase.rbac.position.dao"-->
+             <!--implementPackage="com.cnpc.pms.bizbase.rbac.position.dao.impl"/>-->
+            <!--<managerpackage interfacePackage="com.cnpc.pms.bizbase.rbac.position.manager"/>-->
+        <!--</package>-->
+        <package id="bizBaseCommon">
+            <managerpackage interfacePackage="com.cnpc.pms.bizbase.common.manager"/>
+        </package>
+        
+        <package id="excel">
+            <managerpackage interfacePackage="com.cnpc.pms.base.file.manager"/>
+        </package>
+		
+    </module>
+</application>

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>城市总监列表</title>
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../scripts/css/auto.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+	<script type="text/javascript" src="../scripts/auto.js"></script> 
+</head>
+<script>
+    var win;
+    var array=new Array();
+	//初始化所有门店 
+	
+    $(function () {
+    	
+    	doClean();
+        //页面加载成功后需要获取数据
+        searchList();
+        
+        
+        $("#imp_base_div").click(function(){
+            $("#imp_data_div").toggle(500);
+            if($("#imp_base_div").html()=="-"){
+            	$("#imp_base_div").html("+");
+            }else{
+            	$("#imp_base_div").html("-");
+            }
+        });
+        
+    });
+
+    //操作列
+
+    //记载页面时请求数据列表默认的方法
+    function searchList() {
+        $$.executeSearch('queryGeneralQuery', 'conditionsDiv');
+        $(".display").css("width","100%");
+    }
+
+    //验证是不是空
+    function isnull(str) {
+        return str == null || str == "null" || str === "" || str == "undefined" || typeof(str) == "undefined";
+    }
+
+    function doClean() {
+        document.service_qa.reset();
+        $("#store\\.id").val("");
+    }
+
+    function doAdd(){
+    	window.location.href="general_add.html";
+    }
+
+
+    //列表中 列的处理
+    /* var COLUMNS = {
+            "humanstatus": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value!=""&&value==0){
+                	ret="<font color='red'>未分配门店</font>";
+                }
+                if(value!=null&&value!=""&&value==1){
+                	ret="<font color='green'>在职</font>";
+                }
+				if(value!=null&&value!=""&&value==2){
+                	ret="<font color='grey'>离职</font>";
+                }
+                return ret;
+            },"storenames": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                var ret = "";
+                if(value!=null&&value.length>20){
+                	ret=value.substring(0,20)+"...";
+                }else{
+                	ret=value;
+                }
+                return ret;
+            }
+        } */
+    
+    var deleteObj = {
+			html : '<a href="#">删除</a>',
+			resourceId : "xxExpress_List_delete",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				$$.showPromptDialog("系统提示", "确认删除？", false, 320, function() {
+					doManager("XxExpressManager", "deleteXxExpress", id + '', function(
+							data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							window.location.href = 'xx_express_list.html';
+						} else {
+							$$.showMessage("系统信息", "删除失败!");
+						}
+					});
+				});
+			}
+		}
+    var editObj = {
+			html : '<a href="#">编辑 </a>',
+			resourceId : "general_List_update",
+			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
+				var id = allColumnsDataMap.id;
+				window.location.href = "general_edit.html?id="+id;
+			}
+		}
+   
+    $pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
+    
+    
+</script>
+<style type="text/css">
+    .but {
+        float: right;
+        text-align: center;
+    }
+    .but input{background-color:transparent; border:1px solid #fff; border-radius:3px; padding:0 13px; margin-right:30px;}
+</style>
+<body style="height: 100%">
+<div class="panel panel-default" style="margin: 10px">
+    <div class="panel-heading">
+        <h4 class="panel-title">
+              门店数据维护:城市总监管理
+        </h4>
+    </div>
+</div>
+<div class="rightcont clear">
+    <div class="panel panel-primary">
+        <div class="panel-heading">
+            <label id="imp_base_div">-</label>&nbsp;人员查询
+        </div>
+        <div class="panel-body" id="imp_data_div">
+            <!-- <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+                <form action="uploaderAction.action" method="post" enctype="multipart/form-data" id="uploadFrom"
+                      target="hframe">
+                    <div class="form-group">
+                        <div class="form-group input-group" style="width: 300px;float: left;margin-right: 20px">
+                            <input type="file" isuploadtable="true" name="file" class="form-control">
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" onclick="();" name="upload">
+                                    <img src="../scripts/images/upload_to_cloud.png" alt="导入" style="height: 20px"/>
+                                </button>
+                            </span>
+                        </div>
+                        <iframe name="hframe" id="hframe" style=" display: none"></iframe>
+                        <button name="download" class="btn btn-outline btn-default" onclick="downloadTemplate();">下载模板</button>
+                    </div>
+                </form>
+            </div> -->
+            <div id="conditionsDiv" style="margin-top: 0px">
+                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true"
+                      displaynumber="7">
+                    <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+                        <tr>
+                            <td width="5%">员工姓名:</td>
+                            <td>
+                                <input id="name" name="name" type="text" style="width:50%" class="form-control"/>
+                            </td>
+                      		<td width="5%">
+                                	城市：				 	
+                            </td> 
+                            <td>
+                            	<input type="text" id="citynames" style="width:50%"  name="citynames" class="form-control">
+                            </td>
+                            
+                            
+                        </tr>
+                       
+                    </table>
+                </form>
+            </div>
+        </div>
+        <div class="panel-footer" style="text-align: right">
+            <button class="btn btn-primary" onclick="searchList()">查询</button>
+            <button class="btn btn-primary" onclick="doClean();">重置</button>
+            <button class="btn btn-primary" onclick="doAdd();">新增</button>
+        </div>
+    </div>
+    <input type="hidden" id="store_id" isautotab="true" />
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="queryGeneralQuery" operators="$pmspage.opArr"
+         titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="true"
+         showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+         showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+
+</div>
+</body>
+
+</html>

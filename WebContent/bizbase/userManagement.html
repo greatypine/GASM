@@ -1,0 +1,143 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>用户管理</title>
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+        <script type="text/javascript" src="../scripts/bidLib.js"></script>
+        <script type="text/javascript" src="../scripts/dataTablesLib.js"></script>
+        <script type="text/javascript" src="../scripts/common/pms.js"></script>
+        <script type="text/javascript" src="../scripts/common/pmsCommon.js"></script>
+		<script type="text/javascript" charset="utf-8">
+			function getRequestParams() {
+				var url = window.location.search;
+				var theRequest = new Object();
+				if (url.indexOf('?') != -1) {
+					var str = url.substr(1);
+					var strs = str.split('&');
+					for (var i = 0; i < strs.length; i++) {
+						theRequest[strs[i].split('=')[0]] = unescape(strs[i].split('=')[1]);
+					}
+				}
+				return theRequest;
+			}
+			
+			var request = getRequestParams();
+			var id = request['userGroupId'];
+			var orgId = request['orgId'];
+			var type = request['type'];
+			var userGroupName = request['userGroupName'];
+			var viewObj = 
+				  {
+					html: '<a href="#" class="blue" >查看</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						doManager("userManager", "getUserDTO", allColumnsDataMap.userId, function(datas, textStatus, XMLHttpRequest) {
+							if(allColumnsDataMap.disAbledflag==0){
+								return ;
+							}
+							if (datas.result) {
+								window.location = "userInformation_view.html?userId=" + allColumnsDataMap.userId;
+							}
+						});
+					}
+				  }
+			
+			
+			var editObj = 
+				{
+					html: '<a href="#" class="blue" >编辑</a>',
+					func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+						doManager("userManager", "getUserDTO", allColumnsDataMap.userId, function(datas, textStatus, XMLHttpRequest) {
+							if(allColumnsDataMap.disAbledflag==0){
+								return ;
+							}
+							if (datas.result) {
+								window.location = "userInformation_update.html?userId=" + allColumnsDataMap.userId+ "&orgId=" + orgId;
+							}
+						});
+					}
+				}
+			
+			//发送注册邮件的链接
+			var sendObj = 
+			{
+				html: '<a href="#" class="blue" >发送注册邮件</a>',
+				func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+					doManager("userManager", "mailInitPassword", allColumnsDataMap.userId, function(datas, textStatus, XMLHttpRequest) {
+						if(datas.data){
+							alert(datas.data);
+						}else{
+							alert(datas.message);
+						}
+						
+					});
+				}
+			}
+				if(type=='usergroup_info'){
+					var opArr = [viewObj];
+				}else{
+					var opArr = [viewObj, editObj];
+				}
+				
+			$(function(){
+				$("#userGroupId").val(id);
+				$$.executeSearch('userSearchQuery','conditionDiv');
+			});
+			function backPage() {
+				history.go(-1);
+			}
+			function showDiff(obj, index){
+				if((obj[3]==0||obj[3]==null||obj[3]=='')&&index!=3&&index!=0){
+					return "<span class='red'>"+obj[index]+"</span>";
+				}else{
+					return obj[index];
+				}
+			}
+			function setDisabledFlag() {
+				$("#disAbledflag").val($(":radio[name=disabledUser][checked]").val());
+			}
+			function doSearch() {
+				$$.executeSearch('userSearchQuery','conditionDiv');
+			}
+			function createUser(){
+				window.location = "userAdd.html?userGroupId=" +id +"&orgId=" + orgId+"&userGroupName="+userGroupName;
+			}
+		</script>
+	</head>
+	<body>
+		<div class="rightcont body_bg clear">
+			<div class="panel panel-primary">
+				<div class="panel-heading">
+					<strong>查询条件</strong>
+				</div>
+				<div id="conditionDiv" class="panel-body">
+					<input name="userGroupId" id="userGroupId" type="hidden" operator="1"/>
+					停用标记:
+					<input type="radio" name = "disabledUser" value="0" onclick="setDisabledFlag();"/>是
+					<input type="radio" name = "disabledUser" value="1" onclick="setDisabledFlag();" checked="checked"/>否
+					<input type="hidden" name="disAbledflag" id="disAbledflag" value="1"/>
+
+				</div>
+				<div class="panel-footer" align="right">
+					<input class="btn btn-primary" type="button" value="查询" onclick="doSearch();"/>
+					<input class="btn btn-primary" type="button" value="新增用户" onclick="createUser();"/>
+				</div>
+			</div>
+
+			<div id="gridContainer" queryid="userSearchQuery" searchDiv="conditionDiv" autoload="false" class="panel panel-primary"
+				 showsearch="false" queryformat="simple" showdisplay="false" showtitle="true" fnRender="showDiff"
+				 showprint="false" showpaging="true" showcheckbox="false" operators=opArr>
+			</div>
+
+			<div class="box">
+				<div align="right" class="containerheader" style="padding:2px 5px 2px 0px;border-top:none;">
+					<input align="right" role="button" class="btn btn-primary" onClick="backPage()" value="返回" type="button" />
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

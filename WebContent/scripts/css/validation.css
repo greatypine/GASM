@@ -1,0 +1,24 @@
+﻿/*
+ * 错误提示信息应用的图片
+ */
+label.error {
+	color: red;
+	padding-left: 16px;
+	background-image: url(../images/alert_static.gif);
+	background-repeat: no-repeat;
+	background-position: 0px 0px;
+}
+
+/*
+ * 错误提示信息应用的图片
+ */
+#tooltip {
+	position: absolute;
+	z-index: 3000;
+	border: 1px solid #999999;
+	background-color: #fffde6;
+	padding: 5px;
+	opacity: 0.85;
+	color : red
+}
+#tooltip h3, #tooltip div { margin: 0; }

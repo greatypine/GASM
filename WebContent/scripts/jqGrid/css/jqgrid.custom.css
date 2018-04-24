@@ -1,0 +1,17 @@
+@CHARSET "UTF-8";
+
+.ui-jqgrid { /*用于其他浏览器居中*/
+	width: 100%;
+	margin: 0 auto;
+	font-size: 13px;
+}
+
+body { /*用于IE居中*/
+	text-align: center;
+}
+
+.ui-jqgrid tr.jqgrow td { /*单元格内容强制换行*/
+	white-space: normal !important;
+	word-break: break-all !important;
+	height: auto;
+}

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmsquery>
+    <query id="houseQuery" header="房屋信息"  order="id desc" method="houseManager.showHouseData">
+    	<column key="id" header="编号" display="false" align="center" allowSort="false"/>
+        <column key="village_name" header="社区名" width="18%" align="center" allowSort="false"/>
+        <column key="tinyvillage_name" header="小区名" width="18%" align="center" allowSort="false"/>
+        <column key="building_unit_no" header="单元" width="18%" align="center" allowSort="false" />        
+        <column key="building_name" header="楼号" width="14%" align="center" allowSort="false"/>
+        <column key="building_house_no" header="房号" width="14%" align="center" allowSort="false"/>
+        <column key="address" header="房间地址" display="false" width="18%" align="center" allowSort="false" />
+    </query>
+    
+    <query id="houseListQuery" header="错误信息"  order="id desc" method="houseManager.getPageInfoHouse">
+       <column key="id" 			header="序号" 		display="false" 	type="java.lang.Long" 	allowSearch="true"	allowSort="false" align="center"/>
+        <column key="village_name" header="社区名" width="20%"  align="center" allowSort="false"/>
+        <column key="tinyvillage_name" header="小区名" width="20%"  align="center" allowSort="false"/>
+        <column key="building_unit_no" header="单元" width="10%" align="center" allowSort="false" />        
+        <column key="building_name" header="楼号" width="10%"  align="center" allowSort="false"/>
+        <column key="building_house_no" header="房号" width="10%" align="center" allowSort="false"/>
+        <column key="address" header="房间地址" width="25%"  align="center" allowSort="false" />
+    </query>
+</pmsquery>

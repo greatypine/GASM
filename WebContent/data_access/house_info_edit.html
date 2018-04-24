@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>新增或修改户型客户信息</title>
+
+    <script type="text/javascript" src="../scripts/bidLib.js"></script>
+    <script type="text/javascript" src="select_view/select_option.js"></script>
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+    <script type="text/javascript" src="../scripts/jquery.autocomplete.min.js"></script>
+
+
+</head>
+<style type="text/css">
+    .border_style{
+        width:100%;float: left;margin: 0 20px 20px 0;border: 1px solid #337ab7;border-radius: 3px
+    }
+</style>
+<script>
+
+    function setStoreSelect(json){
+        $("#store_id").val(json.id);
+        $("#store_name").val(json.name);
+        $("#town_id").val(json.town_id);
+        checkIsAllShow();
+    }
+
+    function setTinySelect(json){
+        $('#tv_id').val(json.id);
+        $('#tv_name').val(json.name);
+        $('#tv_address').val(json.address);
+        selectTinyReset();
+    }
+
+    function setBuildingSelect(json){
+        $('#building_id').val(json.id);
+        $('#building_name').val(json.name);
+        searchHouse();
+        checkIsAllShow();
+    }
+
+    function searchHouse(){
+        $$.executeSearch('houseStyleQuery', 'conditionsDiv');
+    }
+
+    function selectTinyWin(callback){
+        var house_type = $('input[name="house_type"]:checked').val();
+        showTinyWin(callback,house_type);
+    }
+
+    function selectBuilding(callback){
+        var tinyvillage_id = $('#tv_id').val();
+        showBuilding(callback,tinyvillage_id);
+    }
+
+    function selectTinyReset(){
+        $('#building_id').val('');
+        $('#building_name').val('');
+        checkIsAllShow();
+    }
+
+    function checkReset(){
+        $('#tv_id').val('');
+        $('#tv_name').val('');
+        $('#tv_address').val('');
+        $('#building_id').val('');
+        $('#building_name').val('');
+        checkIsAllShow();
+    }
+
+    var editObj =
+    {
+        html: '<a href="#" class="blue">编辑</a>',
+        func: function(queryid, data, nTr, allColumns,allColumnsDataMap) {
+//            if(isNaN(allColumnsDataMap.id))
+//                return ;
+//            window.location.href = "roleAuth.html?id=" + allColumnsDataMap.id;
+        }
+    }
+
+    $pmspage.opArr = [editObj];
+
+    function checkIsAllShow(){
+        var store_id = $('#store_id').val();
+        var bulid_id = $('#building_id').val();
+        var tv_id = $('#tv_id').val();
+        var rdo_house_type = $('input[name="house_type"]:checked');
+        if((store_id != '' && store_id != null) && rdo_house_type.length > 0){
+            var house_type = rdo_house_type.val();
+            if(house_type == 0){
+                $('#label_tv_name').text("街/路/胡同");
+                $('#label_tv_address').text("街/路/胡同地址");
+                $('#label_building_name').text("门牌号");
+            }else{
+                $('#label_tv_name').text("小区名称");
+                $('#label_tv_address').text("小区地址");
+                $('#label_building_name').text("楼号");
+            }
+            $('#div_tiny_village').show();
+            queryTinyVillage();
+            if(tv_id != '' && tv_id != null){
+                $('#div_building').show();
+                queryBuilding();
+                if(bulid_id != '' && bulid_id != null){
+                    $('#conditionsDiv').show();
+                    $('#centerQueryGridContainer').show();
+                    searchHouse();
+                }else{
+                    $('#conditionsDiv').hide();
+                    $('#centerQueryGridContainer').hide();
+                }
+            }else{
+                $('#div_building').hide();
+                $('#conditionsDiv').hide();
+                $('#centerQueryGridContainer').hide();
+            }
+        }else{
+            $('#div_tiny_village').hide();
+            $('#div_building').hide();
+            $('#conditionsDiv').hide();
+            $('#centerQueryGridContainer').hide();
+        }
+    }
+
+    $(function () {
+        doManager('storeManager','findStoreAll',null,function (datas) {
+            if(datas.result){
+                var jsonData = JSON.parse(datas.data);
+                autoComplete(jsonData,$('#store_name'),'name','name',['store_id','town_id'],['store_id','town_id'])
+            }
+        });
+    });
+    /**
+     * 自动补全方法
+     * @param show_element 显示自动补全的元素
+     * @param item_name 选项展示列名
+     * @param result_name 结果展示名
+     * @param ext_value_name 扩展显示数据列名称
+     * @param ext_element_id 扩展显示列id数组
+     */
+    function autoComplete(data,$show_element,item_name,result_name,ext_value_name,ext_element_id){
+        var array = [];
+        var dataArray = new Array();
+        for(var index in data){
+            var object = data[index];
+            array.push(object);
+            var str_name = object[result_name];
+            var element_value_array = [];
+            for(var i = 0;i < ext_value_name.length;i++){
+                element_value_array[i] = object[ext_value_name[i]];
+            }
+            dataArray[str_name] = element_value_array;
+        }
+        $show_element.autocomplete(array, {
+            minChars: 1,
+            width: $show_element.css('width'),
+            matchContains: true,
+            autoFill: false,
+            formatItem: function(row, i, n, v) {
+                return row[item_name];
+            },
+            formatResult: function(row,v) {
+                return row[result_name];
+            }
+        });
+        $show_element.keyup(function(){
+            var str_name = $show_element.val();
+            if(dataArray[str_name] != null){
+                var option_array = dataArray[str_name];
+                var flag = false;
+                for(var i = 0;i < ext_element_id.length;i++){
+                    if($("#"+ext_element_id[i]).val() != option_array[i]){
+                        flag = true;
+                        $("#"+ext_element_id[i]).val(option_array[i]);
+                    }
+                }
+                if(flag){
+                    checkIsAllShow();
+                }
+            }
+        });
+    }
+    
+    function queryTinyVillage() {
+        doManager('tinyVillageManager','getTinyVillageByTown_id',[$('#town_id').val(),$('input[name="house_type"]:checked').val()],function (datas) {
+            if(datas.result){
+                var jsonData = JSON.parse(datas.data);
+                autoComplete(jsonData,$('#tv_name'),'name','name',['id','address'],['tv_id','tv_address'])
+            }
+        });
+    }
+
+    function queryBuilding() {
+        doManager('buildingManager','getBuildingListByTinyVillageId',$('#tv_id').val(),function (datas) {
+            if(datas.result){
+                var jsonData = JSON.parse(datas.data);
+                autoComplete(jsonData,$('#building_name'),'name','name',['id','name'],['building_id','building_name'])
+            }
+        });
+    }
+
+</script>
+<body style="height: 100%">
+
+<div class="rightcont clear">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+                新增或修改户型及客户信息
+            </h4>
+        </div>
+    </div>
+    <div class="panel panel-primary">
+        <div class="panel-heading">房屋户型信息查询</div>
+        <div class="panel-body">
+            <div class="border_style" style="width:48%;float: left;height: 130px">
+                <input type="hidden" id="town_id" name="town_id"/>
+                <input type="hidden" id="store_id" name="store_id"/>
+                <label for="store_name">&nbsp;&nbsp;&nbsp;</label>
+                <div class="input-group" style="width:260px;padding: 10px">
+                    <input type="text" id="store_name" name="store_name" class="form-control" placeholder="选择门店" tabindex="0"/>
+                    <span class="input-group-btn">
+                         <button type="button" class="btn btn-default" name="upload" onclick="showStoreWin(setStoreSelect)"  tabindex="-1">
+                            <img src="../scripts/images/search.png" alt=                                                                                                                                             "查询" style="height: 18px"/>
+                        </button>
+                    </span>
+                </div>
+                <div class="input-group" style="width:260px;padding: 10px;">
+                    <label for="bungalow">房屋类型:</label>&nbsp;&nbsp;&nbsp;&nbsp;
+                    <input type="radio" id="bungalow" name="house_type" value="0" onclick="checkReset();" tabindex="-1"/>平房
+                    <label for="building">&nbsp;&nbsp;</label>
+                    <input type="radio" id="building" name="house_type" value="1" onclick="checkReset();"  tabindex="-1" checked/>楼房
+                </div>
+            </div>
+            <div id="div_tiny_village"  class="border_style" style="display: none;width:48%;float: left;height: 130px">
+                <input id="tv_id" name="tv_id" type="hidden" />
+                <table id="tiny_village_table" cellpadding="0" cellspacing="0" style="min-width: 100%;margin: 10px; width: auto">
+                    <tr>
+                        <td>
+                            <label id="label_tv_name" for="tv_name">小区名称:</label>
+                            <input id="tv_name" name="tv_name" type="text" style="width:260px;" class="form-control" tabindex="1"/>
+                        </td>
+                        <td>
+                            <label id="label_tv_address" for="tv_address">小区地址:</label>
+                            <input id="tv_address" name="tv_address" type="text" style="width:260px;" class="form-control" readonly  tabindex="-1"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td align="right" colspan="2" style="padding:20px 20px 0 0">
+                            <button class="btn btn-primary" onclick="selectTinyWin(setTinySelect)"  tabindex="-1">查询</button>
+                            <button class="btn btn-primary" onclick="checkReset();"  tabindex="-1">重置</button>
+                            <button class="btn btn-primary"  tabindex="-1">新增</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="div_building"  class="border_style"  style="display: none;width:48%;float: left;height: 130px">
+                <table id="building_table" cellpadding="0" cellspacing="0" style="min-width: 100%;margin: 10px; width: auto">
+                    <tr>
+                        <td>
+                            <label id="label_building_name" for="building_name">楼号:</label>
+                            <input id="building_name" name="building_name" type="text" style="width:260px;" class="form-control" tabindex="2"/>
+                        </td>
+                        <td  align="right" style="padding-right: 20px;vertical-align: bottom">
+                            <button class="btn btn-primary" onclick="selectBuilding(setBuildingSelect)" tabindex="-1">查询</button>
+                            <button class="btn btn-primary" onclick="selectTinyReset();"  tabindex="-1">重置</button>
+                            <button class="btn btn-primary" tabindex="-1">新增</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <div id="conditionsDiv" class="border_style" style="display: none;width:48%;float: left;height: 130px">
+                <input id="building_id" name="building_id" type="hidden"/>
+                <table cellpadding="0" cellspacing="0" style="min-width: 100%;margin: 10px; width: auto">
+                    <tr>
+                        <td>
+                            <label id="label_house_no" for="house_no">房间号:</label>
+                            <input id="house_no" name="house_no" type="text" style="width:260px;" class="form-control"  tabindex="3"/>
+                        </td>
+                        <td>
+                            <label id="label_floor_number" for="floor_number">楼层:</label>
+                            <input id="floor_number" name="floor_number" type="text" style="width:260px;" class="form-control" tabindex="4"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td  align="right" colspan="2" style="padding:20px 20px 0 0">
+                            <button class="btn btn-primary" onclick="searchHouse()"  tabindex="-1">查询</button>
+                            <button class="btn btn-primary"  tabindex="-1">新增房屋、户型</button>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+
+        <div id="centerQueryGridContainer" class="panel panel-primary" queryid="houseStyleQuery" operators="$pmspage.opArr"
+             titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showNo="true"
+             showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false"
+             showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true" style="margin: 0 15px 10px 15px;display: none;"></div>
+    </div>
+</div>
+</body>
+</html>

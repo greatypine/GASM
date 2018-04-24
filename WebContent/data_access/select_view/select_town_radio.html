@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="IE=8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>选择</title>
+    <script type="text/javascript" src="../../scripts/bidLib.js"></script>
+    <link href="../../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+    <link href="../../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+    <link href="../../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet"
+          type="text/css">
+ <script>
+    var arr =new Array();	
+    	
+        $(function () {
+            //页面加载成功后需要获取数据
+            ids = getUrlParamByKey("ids");
+            city = getUrlParamByKey("city");
+           //city="上海";
+            $("#county_ids").val(decodeURIComponent(city));
+            if(ids!=null){
+            	insertSort(ids);
+            	var obj = ids.split(",");
+                for(n in obj){
+                	 if(obj[n]!=null&&obj[n]!=""){
+                		doManager("townManager", "getTownById", obj[n] , function(data,
+                				textStatus, XMLHttpRequest) {
+                			if (data.result) {
+                				var jsonData = $.fromJSON(data.data);
+                				var paramObj=new Object();
+                				paramObj.id=jsonData.id;
+                				paramObj.name=jsonData.name;
+                				arr.push(paramObj);
+                			}
+                    	},false);
+                	} 
+                }
+            }
+            searchList();
+        });
+        
+        
+        function storecheck(store){
+        	arr.splice(0,arr.length);
+        	if(store.checked){
+        		var obj =new Object();
+        		obj.id=store.value.split(",")[0];
+        		obj.name=store.value.split(",")[1]; 
+        		arr.push(obj);
+        	}else{
+        		for(n in arr){
+        			if(arr[n].id==store.value.split(",")[0]){
+        				arr.splice(n,1);
+        			}
+        		}
+        	}
+        	if (arr.length > 0) {
+        		var idse="";
+            	for(i=0;i<arr.length;i++){
+            		idse+=","+arr[i].id;
+            	}
+                if(idse.length>0){
+                	idse=idse.substring(1,idse.length);
+                	insertSort(idse);
+                }
+            }
+        	
+        }
+        //给街道添加排序标示
+        function insertSort(idse){
+        	doManager("townManager", "updateTownSortById",idse, function(data, textStatus,
+        			XMLHttpRequest) {
+        	},false)
+        }
+        //记载页面时请求数据列表默认的方法
+        function searchList() {
+            $$.executeSearch('selectCheckBoxTownQuery', 'conditionsDiv');
+        }
+
+         function doSubmit(){
+            var jsons=new Array();
+            if (arr.length>0) {
+            	for(i=0;i<arr.length;i++){
+            		var json = {id:arr[i].id,name:arr[i].name};
+            		jsons.push(json);
+            	}
+                
+            }
+            parent.checkStoreWinPlace.callBack(jsons);
+            parent.checkStoreWinPlace.hide();
+        }
+     
+        var COLUMNS = {
+                "id": function(aData, iColumn, sColumnName, map){
+                    var id = map[sColumnName];
+                    var name = map["name"];
+                    var objstr = id+","+name;
+                    if(arr!=""&&arr.length>0){
+                    	for(n in arr){
+                    		if(id==arr[n].id){
+                    			//如果有checked放入店名 
+                    			//arr[n].storename=storename;
+                    			return '<input type="radio" checked="true" name="chkbox" onclick="storecheck(this)" value="'+objstr+'"/>';
+                    		}
+                    	}
+                    }
+                    return '<input type="radio" name="chkbox" onclick="storecheck(this)" value="'+objstr+'"/>';
+                }
+            }
+         
+    </script>
+    <style type="text/css">
+        html,body{
+            height: 100%;
+        }
+    </style>
+</head>
+<body>
+<input type="hidden" value="" id="checkedstoreid"/>
+    <div id="bodyDiv">
+        <div id="userGroupInfo" class="panel panel-primary">
+            <div class="panel-heading">
+                <a href="#" onclick="toggleBizBiz('conditionsDiv','pic');"><img src="../../scripts/images/22.png" align="absmiddle" id="pic"/></a>&nbsp;搜索条件
+            </div>
+            <div id="conditionsDiv" class="panel-body">
+                    <table class="bigteble">
+                        <tr>
+                            <td align="left" width="10%" class="basetext">
+                                街道名称:				<input type="hidden" name="county_ids" id="county_ids" class="form-control" style="width: 70%"/>
+                            </td>
+                            <td class="baseform" align="left" width="40%">
+                                <input type="text" name="name" id="name" class="form-control" style="width: 70%"/>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+                <div class="panel-footer"  align="right">
+                    <input class="btn btn-primary" onClick="searchList()" value="查询" type="button"/>
+                </div>
+            </div>
+            <div id="gridContainer" searchDiv="conditionsDiv" queryid="selectCheckBoxTownQuery" queryformat="simple" class="panel panel-primary"
+                 operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false"
+                 showprint="false" showsearch="false" showtitle="true" showpaging="true" showcheckbox="false"
+                 checkmode="multi" autoload="false" showno="false">
+            </div>
+        </div>
+    </body>
+</html>

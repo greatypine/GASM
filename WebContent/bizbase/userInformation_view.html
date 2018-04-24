@@ -1,0 +1,381 @@
+﻿<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="X-UA-Compatible"content="IE=8">
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+		<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+		<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+		
+		<script type="text/javascript" src="../scripts/lib-main.js"></script>
+		<script type="text/javascript" src="../scripts/common/pms.js"></script>
+		<script type="text/javascript" src="../scripts/common/pmsCommon.js"></script>
+		<script type="text/javascript" src="../scripts/common/qualcommon.js"></script>
+		<script type="text/javascript">
+			$(function() {
+				var type = getUrlParamByKey("type");
+				var id= getUrlParamByKey("userId");
+				if(type == "userQuery"){
+					$("#navigationDiv").removeAttr("style");
+				}
+				doManager("userManager", "getCurrentUserDTO", [], function(datas, textStatus, XMLHttpRequest) {
+					var currentUser = $.fromJSON(datas.data);
+					if(currentUser.usertype != 2){
+					$("#orgEntity\\.path").val(currentUser.orgPath+"%");
+					$("#portalManageText").hide();
+					$("#portalManagerType").hide();
+					}
+				},false);
+				if (null != id || "" == id) {
+					var url = $$.PMSDispatchActionUrl;
+					var data = new PMSRequestObject("userManager", "getUserDTO", [id]);
+					$$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(datas, textStatus, XMLHttpRequest) {
+						var str = datas.data;
+						var userObj = $.fromJSON(str);
+						//显示附件
+                        if (userObj.attachmentInfosDIY.length > 0) {
+                            fileUploadTablesDIY[0].setValues(userObj.attachmentInfosDIY);
+                        }
+						$("#userName").text(userObj.name);
+						$("#userAccount").text(userObj.code);
+						$("#phone").text(userObj.phone);
+						$("#fax").text(userObj.fax);
+						$("#email").text(userObj.email);
+						$("#mobilephone").text(userObj.mobilephone);
+						$("#pwdparam").text(userObj.pwdparam);
+						$("#innercode").text(userObj.innercode);
+						$("#mobilephone").text(userObj.mobilephone);
+						$("#email").text(userObj.email);
+						$("#phone").text(userObj.phone);
+						$("#fax").text(userObj.fax);
+						$("#sex").text(userObj.sex);
+						$("#pwdparam").text(userObj.pwdparam);
+						$("#innerpassword").text(userObj.innerpassword);
+						$("#userGroupName").text(userObj.usergroup.name);
+						$("#employeeId").text(userObj.employeeId);
+						$("#zw").text(userObj.zw);
+						$("#zc").text(userObj.zc);
+						if (userObj.indexPage != null) {
+                        	var indexPage = $dict.getDictText('user_page', userObj.indexPage.toString());
+                            $("#indexPage").text(indexPage);                            	
+                        }
+						if (!isEmptyValue(userObj.startLogDate)) {
+                            var ksrq = new Date(parseInt(userObj.startLogDate));
+                            $("#startLogDate").text(ksrq.format("yyyy-MM-dd"));
+                        }
+                        if (!isEmptyValue(userObj.endLogDate)) {
+                            var jsrq = new Date(parseInt(userObj.endLogDate)).format("yyyy-MM-dd");
+                            $("#endLogDate").text(jsrq);
+                        }
+						
+                        if (userObj.businessType != null) {
+                        	var businessType = $dict.getDictText('PROJECT_STAT_TYPE', userObj.businessType.toString());
+                            $("#businessType").text(businessType);                            	
+                        }
+                        if (userObj.userLevel != null) {
+                        	var userLevel = $dict.getDictText('USER_LEVEL', userObj.userLevel.toString());
+                            $("#userLevel").text(userLevel);                            	
+                        }
+                        if (userObj.financialOfficer != null) {
+                        	var financialOfficer = $dict.getDictText('WF_YESNO', userObj.financialOfficer.toString());
+                            $("#financialOfficer").text(financialOfficer);                            	
+                        }
+                        if (userObj.kyLeader != null) {
+                        	var kyLeader = $dict.getDictText('WF_YESNO', userObj.kyLeader.toString());
+                            $("#kyLeader").text(kyLeader);                            	
+                        }
+                        
+						
+            var jobDis=$dict.getDictText("USER_JOBTYPE",userObj.jobType+"");
+            $("#jobType").text(jobDis);
+						if(userObj.sex==0){
+							$("#userSex").text("男");	
+						}
+						if(userObj.sex==1){
+							$("#userSex").text("女");	
+						}
+						if(userObj.disabledFlag==0){
+							$("#disabledFlag").text("是");	
+						}
+						if(userObj.disabledFlag==1){
+							$("#disabledFlag").text("否");	
+						}
+						if (userObj.usertype == 211) {
+							$("#usertype").text("地区公司级管理员");
+						}
+						if (userObj.usertype == 21) {
+							$("#usertype").text("总部级管理员");
+						}
+						if (userObj.usertype == 2) {
+							$("#usertype").text("系统管理员");
+						}
+						if (userObj.usertype == 2111) {
+							$("#usertype").text("二级单位级管理员");
+						}
+						if (userObj.usertype == 21111) {
+							$("#usertype").text("三级单位级管理员");
+						}
+						if (userObj.usertype == 211111) {
+							$("#usertype").text("普通用户");
+						}
+						if(userObj.portalType== 1){
+							$("#portalType").text("招标门户");
+						}
+						if(userObj.portalType== 2){
+							$("#portalType").text("采购门户");
+						}
+						if(userObj.portalType== 3){
+							$("#portalType").text("招标门户、采购门户");
+						}
+						var portalManageTypeArr = ["物采信息发布","物采信息审核","招标信息发布","招标信息审核"];
+						var portalManageTypeValue = "";
+						if(userObj.portalManageType != null){
+							var portalManageTypeStr = userObj.portalManageType.split("");
+							for(var i=0;i<portalManageTypeStr.length;i++){
+								if(portalManageTypeStr[i] == "1"){
+									portalManageTypeValue += portalManageTypeArr[i]+"、";
+								}
+							}
+						}
+						$("#portalManagerType").text(portalManageTypeValue.substring(0,portalManageTypeValue.length-1));
+						var orgData = new PMSRequestObject("purStruOrgManager", "getDirectoryById", [userObj.pk_org]);
+						$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(orgData.toJsonString()), function(datas, textStatus, XMLHttpRequest) {
+							$("#info").html("组织机构信息:("+datas.data+")");
+						});
+						var pk_position = userObj.pk_position;
+						if(pk_position != null){
+							var url = $$.PMSDispatchActionUrl;
+							var data = new PMSRequestObject("positionManager", "getCnpcPositionById", [pk_position]);
+							$$.ajax(url, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+								if (data.result) {
+									if(data.data !="null"){
+										var info = $.fromJSON(data.data);
+										$("#pk_position").text(info.name);
+									}
+									
+								}
+							});
+						}
+						var exp_id = userObj.exp_id;
+						if(exp_id==null){
+							$("#exp_id").text("非专家用户");
+						}else{
+							var data = new PMSRequestObject("expInfoManager", "getExpert", [exp_id]);
+							$$.ajax($$.PMSDispatchActionUrl, "requestString=" + encodeURIComponent(data.toJsonString()), function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								var info = $.fromJSON(data.data);
+								$("#exp_id").text(info.code);
+							}
+						});
+						}
+					});
+				}
+			})
+		</script>
+		<style type="text/css">
+			table {
+			    border: 0px solid #000;
+			}
+			
+			td {
+			    border: 0px solid #000;
+			}
+		</style>
+	</head>
+	<body>
+	<div class="rightcont body_bg clear">
+		<div id="navigationDiv" style="display:none;" class="panel panel-default">
+			<div class="panel-heading">
+				<h4 class="panel-title">
+					用户与权限:内部用户查询<span></span>用户信息
+				</h4>
+			</div>
+		</div>
+		<div class="panel panel-primary">
+			<div class="panel-heading">
+				 <a href="#" onClick="toggleBiz('temp1','plusMinus1')"><img id="plusMinus1" src="../scripts/images/22.png"/></a>
+				用户信息
+				&nbsp;&nbsp;&nbsp;&nbsp;
+				<br/><span id="info"></span>
+			</div>
+			<div class="panel-body" id="temp1">
+				<table class="layout" cellpadding="0" cellspacing="0" border="1" bordercolor="red"  >
+					<tr>
+                   		<td width="8%"><strong>用户基本信息</strong></td>
+                   		<td width="10%"></td>
+                   		<td></td>
+                   		<td width="10%"></td>
+                   		<td></td>
+                   	</tr>
+					<tr>
+						<td width="8%"></td>
+						<td align="right">
+							用户名称:
+						</td>
+						<td  id="userName" align="left">
+						</td>
+						<td align="right">
+							角色组名称:
+						</td>
+						<td id="userGroupName" align="left">
+						</td>
+					</tr>
+					<tr>
+						<td width="8%"></td>
+						<td align="right">
+							登录账号:
+						</td>
+						<td id="userAccount" align="left">
+						</td>
+						<td align="right">
+							专家用户:
+						</td>
+						<td id="exp_id" align="left">
+						</td>
+					</tr>
+					<tr>
+						<td width="8%"></td>
+						<td align="right">
+							岗位:
+						</td>
+						<td id="pk_position" align="left">
+						</td>
+						<td align="right">
+							UKey:
+						</td>
+						<td id="pwdparam" align="left">
+						</td>
+					</tr>
+					<tr>
+						<td width="8%"></td>
+						<td align="right">
+							员工号:
+						</td>
+						<td id="employeeId" align="left">
+						</td>
+						<td align="right">
+							邮箱:
+						</td>
+						<td id="email" align="left">						
+						</td>
+					</tr>
+					<tr>
+						<td width="8%"></td>
+						<td align="right">
+							电话:
+						</td>
+						<td id="phone" align="left">
+						</td>
+						<td align="right">
+							传真:
+						</td>
+						<td id="fax" align="left">
+						</td>
+					</tr>
+					<tr>
+						<td width="8%"></td>
+						<td align="right">
+							职务:
+						</td>
+						<td id="zw" align="left">
+						</td>
+						<td align="right">
+							职称:
+						</td>
+						<td id="zc" align="left">
+						</td>
+					</tr>
+					<tr>
+						<td width="8%"></td>
+						<td align="right">
+							手机号码:
+						</td>
+						<td id="mobilephone" align="left">						
+						</td>
+						<td align="right">
+							性别:
+						</td>
+						<td id="userSex" align="left">
+						</td>
+					</tr>
+					<tr>
+						<td width="8%"></td>
+						<td align="right">
+							是否停用:
+						</td>
+						<td id="disabledFlag" align="left">
+						</td>
+			            <td align="right">用工类型:</td>
+			            <td id="jobType" align="left"></td>
+					</tr>
+					<tr>
+						<td width="8%"></td>
+                        <td align="right">
+                            	开始填报日志时间:
+                        </td>
+                        <td align="left" id="startLogDate">
+                        </td>
+                        <td align="right">
+                         	  结束填报日志时间:
+                        </td>
+                        <td align="left" id="endLogDate">
+                        </td>
+                    </tr>
+                    	<tr>
+						<td width="8%"></td>
+                        <td align="right">
+                            	选择首页:
+                        </td>
+                        <td align="left" id="indexPage">
+                        </td>
+                       
+                    </tr>
+                    <tr>
+                   		<td width="8%"><strong>电子签名信息</strong></td>
+                   		<td width="10%"></td>
+                   		<td></td>
+                   		<td width="10%"></td>
+                   		<td></td>
+                   	</tr>
+                   	<tr>
+                   		<td></td>
+                   		<td align="right">业务类型:</td>
+                   		<td align="left" id="businessType">
+                   		</td>
+                   		<td align="right">级别:</td>
+                   		<td align="left" id="userLevel">
+                   		</td>
+                   	</tr>
+                   	<tr>
+                   		<td></td>
+                   		<td align="right">财务负责人:</td>
+                   		<td align="left" id="financialOfficer">
+                   		</td>
+                   		<td align="right">科研主管领导:</td>
+                   		<td align="left" id="kyLeader">
+                   		</td>
+                   	</tr>
+					<tr>
+                        <td colspan="5" align="left" class="basetext">
+                            <div class="uploadDIYTable" defaultsDIY="{showAddButton:false,tableColumnsShow:[true,true,true,true,true,false,false],tableColumnsType:['rownum','item','label','label','label'], 
+								 items:[
+								{
+								 title:'电子签名',
+								 required:false
+								}
+								 ]
+								}">
+                            </div>
+                        </td>
+                    </tr>
+				</table>
+			</div>
+			<div class="panel-footer" align="right">
+				<input align="right" role="button" class="btn btn-primary" onClick="javascrip:history.go(-1)"  value="返回" type="button" />
+			</div>
+		</div>
+
+	</div>
+</body>
+</html>
