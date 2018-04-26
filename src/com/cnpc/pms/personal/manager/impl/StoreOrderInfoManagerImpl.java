@@ -65,6 +65,29 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		return storeOrderInfo;
 	}
 	
+	@Override
+	public StoreOrderInfo queryStoreOrderInfoById(Long id){
+		StoreOrderInfo storeOrderInfo = (StoreOrderInfo) this.getObject(id);
+		return storeOrderInfo;
+	}
+	
+	@Override
+	public StoreOrderInfo updateStoreOrderInfo(StoreOrderInfo storeOrderInfo) {
+		StoreOrderInfo updateStoreOrderInfo = null;
+		if(storeOrderInfo!=null&&storeOrderInfo.getId()!=null){
+			updateStoreOrderInfo = (StoreOrderInfo) this.getObject(storeOrderInfo.getId());
+			updateStoreOrderInfo.setWcontent(storeOrderInfo.getWcontent());
+			updateStoreOrderInfo.setEmployee_name(storeOrderInfo.getEmployee_name());
+			updateStoreOrderInfo.setEmployee_no(storeOrderInfo.getEmployee_no());
+			updateStoreOrderInfo.setPhone(storeOrderInfo.getPhone());
+			updateStoreOrderInfo.setWorder_status(storeOrderInfo.getWorder_status());
+			preSaveObject(updateStoreOrderInfo);
+			this.saveObject(updateStoreOrderInfo);
+		}
+		return updateStoreOrderInfo;
+	}
+	
+	
 	
 	
 	protected void preSaveObject(Object o) {

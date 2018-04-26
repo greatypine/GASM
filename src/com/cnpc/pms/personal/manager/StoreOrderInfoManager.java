@@ -8,4 +8,8 @@ public interface StoreOrderInfoManager extends IManager{
 
 	public StoreOrderInfo saveStoreOrderInfo(StoreOrderInfo storeOrderInfo);
 	
+	public StoreOrderInfo updateStoreOrderInfo(StoreOrderInfo storeOrderInfo);
+	
+	public StoreOrderInfo queryStoreOrderInfoById(Long id);
+	
 }

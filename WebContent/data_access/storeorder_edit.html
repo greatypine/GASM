@@ -1,0 +1,232 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>修改工单信息</title>
+<link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
+<link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
+<link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+<link href="../scripts/css/auto.css" rel="stylesheet">
+<script type="text/javascript" src="../scripts/bidLib.js"></script>
+<script type="text/javascript">
+
+var id = getUrlParamByKey("id");
+
+	function yanzhen(){
+		
+		var employee_no = $("#employee_no  option:selected").val();
+		if(employee_no==null||employee_no==""){
+			alert("请选择员工！ ");
+			return;
+		}
+		
+		var wcontent = $("#wcontent").val();
+		if(wcontent==null||wcontent.trim()==""){
+			alert("请填写工单内容！ ");
+			return;
+		}
+		
+		var phone=$("#phone").val();
+		if(phone==null||phone.trim()==""){
+			alert("请填写用户电话！ ");
+			return;
+		}
+		
+		doSave();		
+	}
+	
+	
+	function doSave(){
+		var arr = ["id","wcontent", "phone"];
+			var o = {};
+			for ( var i in arr) {
+				var v = arr[i];
+				var va = $("#" + v).val();
+				o[v] = va;
+			}
+			
+			o["employee_no"] = $("#employee_no  option:selected").val();
+			o["employee_name"] = $("#employee_no  option:selected").text()
+			o["worder_type"] = $("#worder_type  option:selected").val();
+			o["worder_status"] = $("#worder_status  option:selected").val();
+			
+			doManager("StoreOrderInfoManager", "updateStoreOrderInfo", o, function(data,
+					textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var jsonData = $.fromJSON(data.data);
+					window.location.href = 'store_order_list_dz.html';
+				} else {
+					$$.showMessage("系统信息", "添加失败!");
+				}
+			});
+			
+}
+	
+	
+	function querystoreorderbyid(){
+		doManager("StoreOrderInfoManager", "queryStoreOrderInfoById",[id],
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						var obj = JSON.parse(data.data);
+  						
+  						$("#worder_type").attr("value",obj.worder_type);
+  						$("#employee_no").attr("value",obj.employee_no);
+  						$("#employee_no option[text='"+obj.employee_name+"']").attr("selected", true);
+  						
+  						$("#wcontent").val(obj.wcontent);
+  						$("#phone").val(obj.phone);
+  						
+  						$("#worder_status").attr("value",obj.worder_status);
+  					}
+		},false);
+	}
+	
+	$(function(){
+		//加载当前门店的所有的国安侠
+		
+		$("#id").val(id);
+		
+		doManager("UserManager", "getCurrentUserDTO",null,
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						var userObj = JSON.parse(data.data);
+  						var store_id=userObj.store_id==null?"":userObj.store_id;
+  						initStoreEmployee(store_id);
+  					}
+		},false);
+		
+		
+		
+		$("#employee_no").change(function(){
+			var employee_no = $("#employee_no  option:selected").val();
+			$("#showno").html("员工编号："+employee_no);
+		});
+		
+	});
+
+	     
+	 function initStoreEmployee(store_id){
+		 doManager("HumanresourcesManager", "queryHumanresourceGAXListByStoreId",[store_id] , function(data,
+					textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var userObjs = JSON.parse(data.data);
+					if(userObjs!=null&&userObjs.length>0){
+						var employeeHtml="<option value=\"\">--请选择--</option>";
+						for(i=0;i<userObjs.length;i++){
+							var employee_no =  userObjs[i].employee_no;
+							var employee_name = userObjs[i].name;
+							employeeHtml+="<option value=\""+employee_no+"\">"+employee_name+"</option>";
+						}
+						$("#employee_no").html(employeeHtml);
+					}
+					querystoreorderbyid();
+					
+				} 
+			},false);
+	 }
+	
+ 
+</script>
+</head>
+<style type="text/css">
+	td {
+		width=50%;
+	}
+
+	p{
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	table input,table select{border:1px solid #ccc; border-radius:3px; line-height: 30px; height: 30px; width:200px;}
+	.panel-heading .but{float:right; text-align: center;}
+	.but input {
+		background-color: transparent;
+		border: 1px solid #fff;
+		border-radius: 3px;
+		padding: 0 13px;
+		margin-right: 30px;}
+		.ui-dialog .ui-dialog-titlebar-close span {
+    		display: none;
+    	}
+</style>
+<body>
+	<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
+    <div class="panel-heading">工单信息添加
+        <span id="btnSave" onclick="yanzhen();" disabled="false"> 保存</span>
+    	<span id="btnBack" onclick="javascript:history.go(-1);" disabled="false"> 返回</span>
+        
+        <!-- <span class="but">
+			<input name="" type="submit" onclick="yanzhen();" value="保存">
+			<input name="" type="button" onclick="javascript:history.go(-1);" value="返回">
+		</span> -->
+    </div>
+    <div class="panel-body" id="temp1">
+	<form action="" method="post" class="pmsForm">
+	<input type="hidden" name="county_id" id="county_id"/>
+	<input type="hidden" name="id" id="id"/>
+	<table cellpadding="0" cellspacing="0" border="0" width="100%">
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>类&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;型：
+						<select id="worder_type">
+							<option value="0">产品类</option>
+							<option value="1">服务类</option>
+						</select>
+					</p>
+				</td>
+			</tr>
+			
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>选择员工：
+						<select id="employee_no">
+							
+						</select>&nbsp;<label id="showno"></label>
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p style="float: left;"><font color="red">*</font>工单内容：&nbsp;</p>
+					<p style="float: none;">
+						<textarea class="form-control" id="wcontent" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" ></textarea>
+					</p>
+				</td>
+				
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>用户电话：<input type="text" id="phone" value="" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11" />
+					</p>
+				</td>
+			</tr>
+			
+		<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						状&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;态：
+						<select id="worder_status">
+							<option value="0">待确认</option>
+							<option value="1">已确认</option>
+							<option value="2">已完成</option>
+						</select>
+					</p>
+				</td>
+			</tr>
+			
+             <input type="hidden" id="id" value=""/>
+                       
+		</table>
+	</form>
+
+</div></div>
+</body>
+</html>
