@@ -3,10 +3,17 @@ package com.cnpc.pms.personal.manager.impl;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.UUID;
+import java.util.List;
+import java.util.Map;
 
 import com.cnpc.pms.base.entity.DataEntity;
 import com.cnpc.pms.base.manager.impl.BaseManagerImpl;
+import com.cnpc.pms.base.paging.FSP;
+import com.cnpc.pms.base.paging.FilterFactory;
+import com.cnpc.pms.base.paging.IFilter;
+import com.cnpc.pms.base.paging.impl.PageInfo;
+import com.cnpc.pms.base.paging.impl.Sort;
+import com.cnpc.pms.base.query.json.QueryConditions;
 import com.cnpc.pms.base.security.SessionManager;
 import com.cnpc.pms.base.util.SpringHelper;
 import com.cnpc.pms.bizbase.rbac.usermanage.dto.UserDTO;
@@ -18,38 +25,40 @@ import com.cnpc.pms.personal.manager.StoreOrderInfoManager;
 
 
 public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreOrderInfoManager {
-	/*@Override
-	public Map<String, Object> getAppDownloadLogList(QueryConditions condition){
+	@Override
+	public Map<String, Object> queryStoreOrderInfoList(QueryConditions condition){
+		UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
 		Map<String,Object> returnMap = new java.util.HashMap<String, Object>();
 		PageInfo pageInfo = condition.getPageinfo();
 		StringBuffer cond = new StringBuffer();
-		String downloadversion = null;
+		String employee_name = null;
+		String employee_no = null;
 		for(Map<String, Object> map : condition.getConditions()){
-			if("downloadVersion".equals(map.get("key"))&&map.get("value")!=null){//组织机构
-				downloadversion = map.get("value").toString();
+			if("employee_name".equals(map.get("key"))&&map.get("value")!=null){//组织机构
+				employee_name = map.get("value").toString();
+			}
+			if("employee_no".equals(map.get("key"))&&map.get("value")!=null){//组织机构
+				employee_no = map.get("value").toString();
 			}
 		}
 		cond.append(" 1=1 ");
-		if(downloadversion!=null){
-			cond.append(" and b.downloadVersion like '%"+downloadversion+"%'");
+		if(employee_name!=null){
+			cond.append(" and employee_name like '%"+employee_name+"%'");
 		}
-		AppDownloadLogDao appDownloadLogDao = (AppDownloadLogDao) SpringHelper.getBean(AppDownloadLogDao.class.getName());
-		List<AppDownloadLogDTO> rt_dto = new ArrayList<AppDownloadLogDTO>();
-		List<Map<String,Object>> downloadLogMaps = appDownloadLogDao.getAppDownloadLogList(cond.toString(), pageInfo);
-		for(Object map : downloadLogMaps){
-			AppDownloadLogDTO appDownloadLogDTO = new AppDownloadLogDTO();
-			appDownloadLogDTO.setDownloadVersion(((Object[])map)[0].toString());
-			appDownloadLogDTO.setDownloadtype(((Object[])map)[1].toString());
-			appDownloadLogDTO.setCurdays(((Object[])map)[2].toString());
-			appDownloadLogDTO.setCurmonths(((Object[])map)[3].toString());
-			appDownloadLogDTO.setTotalcounts(((Object[])map)[4].toString());
-			rt_dto.add(appDownloadLogDTO);
+		if(employee_no!=null){
+			cond.append(" and employee_no like '%"+employee_no+"%'");
 		}
+		
+		UserDTO userDTO = userManager.getCurrentUserDTO();
+		cond.append(" and store_id ="+userDTO.getStore_id());
+		
+		IFilter iFilter =FilterFactory.getSimpleFilter(cond.toString());
+		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) this.getList(iFilter);
 		returnMap.put("pageinfo", pageInfo);
 		returnMap.put("header", "");
-		returnMap.put("data", rt_dto);
+		returnMap.put("data", lst_List);
 		return returnMap;
-	}*/
+	}
 	
 	@Override
 	public StoreOrderInfo saveStoreOrderInfo(StoreOrderInfo storeOrderInfo) {
@@ -85,6 +94,36 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			this.saveObject(updateStoreOrderInfo);
 		}
 		return updateStoreOrderInfo;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	@Override
+	public Map<String, Object> queryStoreOrderInfoListApp(PageInfo pageInfo,String employee_no){
+		Map<String,Object> returnMap = new java.util.HashMap<String, Object>();
+		StringBuffer cond = new StringBuffer();
+		cond.append(" 1=1 ");
+		if(employee_no!=null){
+			cond.append(" and employee_no = '"+employee_no+"'");
+		}else{
+			cond.append(" and 1=0 ");
+		}
+		FSP fsp = new FSP();
+		IFilter iFilter =FilterFactory.getSimpleFilter(cond.toString());
+		fsp.setUserFilter(iFilter);
+		fsp.setPage(pageInfo);
+		fsp.setSort(new Sort("id",Sort.DESC));
+		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) this.getList(fsp);
+		returnMap.put("pageinfo", pageInfo);
+		returnMap.put("header", "");
+		returnMap.put("data", lst_List);
+		return returnMap;
 	}
 	
 	

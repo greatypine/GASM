@@ -711,7 +711,7 @@
     
     
     <!-- 门店管理系统  工单管理  -->
-    <query id="querystoreorderlist" header="工单列表" baseclass="com.cnpc.pms.personal.entity.StoreOrderInfo" order="id desc">
+    <query id="querystoreorderlist" header="工单列表" baseclass="com.cnpc.pms.personal.entity.StoreOrderInfo" method="storeOrderInfoManager.queryStoreOrderInfoList" order="id desc">
         <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
         <column key="worder_sn" header="工单编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="30%"/>
         <column key="worder_type" header="工单类型" type="java.lang.Integer" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>

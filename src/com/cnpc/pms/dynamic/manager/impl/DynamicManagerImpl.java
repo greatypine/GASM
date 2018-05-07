@@ -78,6 +78,8 @@ public class DynamicManagerImpl extends BizBaseCommonManager implements DynamicM
 	static String platform_key = PropertiesUtil.getValue("platform.key");
 	static String platform_store = PropertiesUtil.getValue("platform.store");
 	static String platform_employee = PropertiesUtil.getValue("platform.employee");
+	
+	static String login_interface=PropertiesUtil.getValue("login.interface");
 	//测试密钥
 	//private static final String KEY="c09bad16-cd92-49ea-8898-82ad2eeead70";
 	//线上密钥
@@ -90,7 +92,7 @@ public class DynamicManagerImpl extends BizBaseCommonManager implements DynamicM
 	private static final String THIRD_PART_EMP_URL = platform_employee;
 	
 	
-	private static final String VALIDATION_USER="http://10.16.31.242/daqWeb/dispatcher.action";
+	private static final String VALIDATION_USER=login_interface;
 	//测试同步地址
 	//private static final String THIRD_PART_STORE_URL = "https://gasq-web-thirdparty.guoanshequ.wang/gasq-web-thirdparty/storeSynchro/store";
 	//private static final String THIRD_PART_EMP_URL = "https://gasq-web-thirdparty.guoanshequ.wang/gasq-web-thirdparty/storeSynchro/employee";

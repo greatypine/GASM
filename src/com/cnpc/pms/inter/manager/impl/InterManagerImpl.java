@@ -19,6 +19,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import javax.swing.Spring;
+
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -94,6 +96,7 @@ import com.cnpc.pms.personal.manager.SendMessageManager;
 import com.cnpc.pms.personal.manager.SiteSelectionManager;
 import com.cnpc.pms.personal.manager.StoreAddressManager;
 import com.cnpc.pms.personal.manager.StoreManager;
+import com.cnpc.pms.personal.manager.StoreOrderInfoManager;
 import com.cnpc.pms.personal.manager.StoreRequirementManager;
 import com.cnpc.pms.personal.manager.StoreStandardManager;
 import com.cnpc.pms.personal.manager.TinyVillageManager;
@@ -3424,6 +3427,23 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 				return userEntity;
 			}
 			return null;
+		}
+		
+		@Override
+		public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no){
+			Result result = new Result();
+			StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+			try {
+				Map<String, Object> rt_maps = storeOrderInfoManager.queryStoreOrderInfoListApp(pageInfo, employee_no);
+				result.setCode(CodeEnum.success.getValue());
+	            result.setMessage(CodeEnum.success.getDescription());
+	            result.setData(rt_maps);
+			} catch (Exception e) {
+				result.setCode(CodeEnum.error.getValue());
+				result.setMessage(CodeEnum.error.getDescription());
+			}
+   		 	return result;
+   		 
 		}
 		
 }

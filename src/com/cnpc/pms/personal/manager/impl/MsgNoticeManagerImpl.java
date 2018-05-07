@@ -2,6 +2,7 @@ package com.cnpc.pms.personal.manager.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.cnpc.pms.base.entity.DataEntity;
 import com.cnpc.pms.base.paging.FSP;
@@ -13,14 +14,16 @@ import com.cnpc.pms.base.util.SpringHelper;
 import com.cnpc.pms.bizbase.common.manager.BizBaseCommonManager;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserManager;
+import com.cnpc.pms.personal.dao.MsgNoticeDao;
 import com.cnpc.pms.personal.entity.MsgNotice;
 import com.cnpc.pms.personal.manager.MsgNoticeManager;
 
 public class MsgNoticeManagerImpl extends BizBaseCommonManager implements MsgNoticeManager {
 	
 	@Override
-	public List<MsgNotice> queryMsgNoticeList(Long num){
-		List<MsgNotice> retList = new ArrayList<MsgNotice>();
+	public List<Map<String, Object>> queryMsgNoticeList(Long num){
+		List<Map<String, Object>> retList = new ArrayList<Map<String,Object>>();
+		MsgNoticeDao msgNoticeDao = (MsgNoticeDao) SpringHelper.getBean(MsgNoticeDao.class.getName());
 		if(num!=null){
 			IFilter repFilter =FilterFactory.getSimpleFilter("1=1");
 			FSP fsp = new FSP();
@@ -28,9 +31,10 @@ public class MsgNoticeManagerImpl extends BizBaseCommonManager implements MsgNot
 			pageInfo.setRecordsPerPage(Integer.parseInt(num+""));
 			fsp.setPage(pageInfo);
 			fsp.setUserFilter(repFilter);
-			retList = (List<MsgNotice>)this.getList(fsp); 
+			//查询通知表t_notice t_notice_receiver
+			retList = msgNoticeDao.queryNoticeList(num);
 		}else{
-			retList = (List<MsgNotice>)this.getList();
+			retList = msgNoticeDao.queryNoticeList(null);
 		}
 		
 		return retList;
@@ -52,7 +56,7 @@ public class MsgNoticeManagerImpl extends BizBaseCommonManager implements MsgNot
 		return msgNotice;
 	}
 	
-	@Override
+	/*@Override
 	public MsgNotice updateMsgNotice(MsgNotice msgNotice) {
 		MsgNotice updateMsgNotice = null;
 		if(msgNotice!=null&&msgNotice.getId()!=null){
@@ -66,7 +70,7 @@ public class MsgNoticeManagerImpl extends BizBaseCommonManager implements MsgNot
 			this.saveObject(updateMsgNotice);
 		}
 		return updateMsgNotice;
-	}
+	}*/
 
 	
 	

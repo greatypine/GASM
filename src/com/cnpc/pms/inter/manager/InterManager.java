@@ -538,4 +538,7 @@ public interface InterManager extends IManager {
 	
 	//系统校验用户是否存在的方法。外部系统登录用。
 	public User commonValidUser(String userCode,String password);
+	
+	public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no);
+	
 }
