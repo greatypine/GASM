@@ -16,8 +16,11 @@ public interface StoreOrderInfoManager extends IManager{
 	
 	public StoreOrderInfo queryStoreOrderInfoById(Long id);
 	
-	public Map<String, Object> queryStoreOrderInfoList(QueryConditions condition);
+	public Map<String, Object> queryStoreOrderInfoList(QueryConditions condition); 
 	
 	public Map<String, Object> queryStoreOrderInfoListApp(PageInfo pageInfo,String employee_no);
+	
+	
+	public StoreOrderInfo saveStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo);
 	
 }

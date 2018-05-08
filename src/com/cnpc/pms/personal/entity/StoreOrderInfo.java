@@ -78,11 +78,24 @@ public class StoreOrderInfo extends DataEntity{
 	private String ordergroup;
 	
 	
+	
 	/**
-	 * 备注
+	 * 用户姓名
 	 */
-	@Column(length = 255, name = "phone")
+	@Column(length = 25, name = "username")
+	private String username;
+	
+	/**
+	 * 电话
+	 */
+	@Column(length = 25, name = "phone")
 	private String phone;
+	
+	/**
+	 * 用户地址
+	 */
+	@Column(length = 255, name = "address")
+	private String address;
 	
 
 	public String getWorder_sn() {
@@ -172,6 +185,22 @@ public class StoreOrderInfo extends DataEntity{
 
 	public void setOrdergroup(String ordergroup) {
 		this.ordergroup = ordergroup;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getAddress() {
+		return address;
+	}
+
+	public void setAddress(String address) {
+		this.address = address;
 	}
 	
 	

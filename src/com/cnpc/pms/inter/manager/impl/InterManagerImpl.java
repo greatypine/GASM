@@ -80,6 +80,7 @@ import com.cnpc.pms.personal.entity.BannerInfo;
 import com.cnpc.pms.personal.entity.SiteSelection;
 import com.cnpc.pms.personal.entity.Store;
 import com.cnpc.pms.personal.entity.StoreAddress;
+import com.cnpc.pms.personal.entity.StoreOrderInfo;
 import com.cnpc.pms.personal.entity.StoreRequirement;
 import com.cnpc.pms.personal.entity.StoreStandard;
 import com.cnpc.pms.personal.entity.UserLoginLog;
@@ -3422,13 +3423,14 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		@Override
 		public User commonValidUser(String userCode,String password){
 			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
-			User userEntity = userManager.isValidUser(userCode, password);
+			User userEntity = userManager.isValidUser(userCode, password); 
 			if(userEntity!=null){
 				return userEntity;
 			}
 			return null;
 		}
 		
+		//工单手机列表
 		@Override
 		public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no){
 			Result result = new Result();
@@ -3443,7 +3445,37 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 				result.setMessage(CodeEnum.error.getDescription());
 			}
    		 	return result;
-   		 
 		}
+		//工单手机新增
+		@Override
+		public Result saveStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo){
+			Result result = new Result();
+			StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+			if(storeOrderInfo!=null){
+				if(storeOrderInfo.getEmployee_no()==null||storeOrderInfo.getEmployee_name()==null||storeOrderInfo.getEmployee_no().trim()==""){
+					result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage("员工为空值！保存失败！");
+				}else if(storeOrderInfo.getWcontent()==null||storeOrderInfo.getWcontent().trim()==""){
+					result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage("工单内容为空值！保存失败！");
+				}else if(storeOrderInfo.getPhone()==null||storeOrderInfo.getPhone().trim()==""){
+					result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage("用户电话为空值！保存失败！");
+				}else if(storeOrderInfo.getAddress()==null||storeOrderInfo.getAddress().trim()==""){
+					result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage("用户地址为空值！保存失败！");
+				}else if(storeOrderInfo.getStore_id()==null){
+					result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage("门店ID为空值！保存失败！");
+				}else{
+					storeOrderInfoManager.saveStoreOrderInfoForApp(storeOrderInfo);
+					result.setCode(CodeEnum.success.getValue());
+					result.setMessage(CodeEnum.success.getDescription());
+					result.setData(storeOrderInfo);
+				}
+			}
+			return result;
+		}
+		
 		
 }

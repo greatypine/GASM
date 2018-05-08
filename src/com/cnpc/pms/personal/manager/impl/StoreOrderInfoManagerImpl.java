@@ -68,11 +68,24 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		String dateString = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		String work_no = "GD"+dateString+(int)((Math.random()*9+1)*100000);
 		storeOrderInfo.setWorder_sn(work_no);
-		storeOrderInfo.setStore_id(userDTO.getStore_id());
+		storeOrderInfo.setStore_id(userDTO.getStore_id()); 
 		preSaveObject(storeOrderInfo);
 		this.saveObject(storeOrderInfo);
 		return storeOrderInfo;
 	}
+	
+	
+	@Override
+	public StoreOrderInfo saveStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo) {
+		String dateString = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
+		String work_no = "GD"+dateString+(int)((Math.random()*9+1)*100000);
+		storeOrderInfo.setWorder_sn(work_no);
+		storeOrderInfo.setStore_id(storeOrderInfo.getStore_id());
+		preSaveObject(storeOrderInfo);
+		this.saveObject(storeOrderInfo);
+		return storeOrderInfo;
+	}
+	
 	
 	@Override
 	public StoreOrderInfo queryStoreOrderInfoById(Long id){
@@ -88,7 +101,9 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			updateStoreOrderInfo.setWcontent(storeOrderInfo.getWcontent());
 			updateStoreOrderInfo.setEmployee_name(storeOrderInfo.getEmployee_name());
 			updateStoreOrderInfo.setEmployee_no(storeOrderInfo.getEmployee_no());
+			updateStoreOrderInfo.setUsername(storeOrderInfo.getUsername());
 			updateStoreOrderInfo.setPhone(storeOrderInfo.getPhone());
+			updateStoreOrderInfo.setAddress(storeOrderInfo.getAddress());
 			updateStoreOrderInfo.setWorder_status(storeOrderInfo.getWorder_status());
 			preSaveObject(updateStoreOrderInfo);
 			this.saveObject(updateStoreOrderInfo);
