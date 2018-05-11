@@ -16,5 +16,7 @@ public interface MsgNoticeManager extends IManager{
 	
 	public MsgNotice queryMsgNoticeById(Long id);
 	
+	public void updateNoticeReadByNo(Long id);
+	
 
 }

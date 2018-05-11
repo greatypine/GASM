@@ -13,7 +13,9 @@ import java.util.Map;
 import org.apache.cxf.message.MessageUtils;
 import org.springframework.beans.BeanUtils;
 
+import com.cnpc.pms.base.paging.FSP;
 import com.cnpc.pms.base.paging.FilterFactory;
+import com.cnpc.pms.base.paging.IFilter;
 import com.cnpc.pms.base.paging.impl.PageInfo;
 import com.cnpc.pms.base.query.json.QueryConditions;
 import com.cnpc.pms.base.util.SpringHelper;
@@ -45,6 +47,7 @@ import com.gexin.rp.sdk.http.IGtPush;
 import com.gexin.rp.sdk.template.NotificationTemplate;
 import com.gexin.rp.sdk.template.TransmissionTemplate;
 import com.ibm.db2.jcc.am.id;
+import com.ibm.db2.jcc.am.me;
 
 /**
  * @author gaobaolei
@@ -744,4 +747,26 @@ public class MessageNewManagerImpl extends BizBaseCommonManager implements Messa
 		saveObject(message);//保存消息
 		this.sendMessageAuto(user, message);
 	}
+	
+	
+	@Override
+	public List<Map<String, Object>>  queryMessageListTop5(){
+		UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+		UserDTO userDTO = userManager.getCurrentUserDTO();
+		MessageNewDao messageNewDao = (MessageNewDao) SpringHelper.getBean(MessageNewDao.class.getName());
+		List<Map<String, Object>>  rep_list =messageNewDao.queryMessageByStoreKeeperId(userDTO.getEmployeeId());
+		return rep_list;
+	}
+	
+	
+	
+	@Override
+	public void updateMessageNewById(Long id){
+		MessageNewDao messageNewDao = (MessageNewDao) SpringHelper.getBean(MessageNewDao.class.getName());
+		messageNewDao.updateMessageReadById(id);
+	}
+	
+	
+	
+	
 }

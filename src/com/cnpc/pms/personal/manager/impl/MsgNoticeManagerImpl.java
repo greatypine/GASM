@@ -12,6 +12,7 @@ import com.cnpc.pms.base.paging.impl.PageInfo;
 import com.cnpc.pms.base.security.SessionManager;
 import com.cnpc.pms.base.util.SpringHelper;
 import com.cnpc.pms.bizbase.common.manager.BizBaseCommonManager;
+import com.cnpc.pms.bizbase.rbac.usermanage.dto.UserDTO;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserManager;
 import com.cnpc.pms.personal.dao.MsgNoticeDao;
@@ -24,17 +25,13 @@ public class MsgNoticeManagerImpl extends BizBaseCommonManager implements MsgNot
 	public List<Map<String, Object>> queryMsgNoticeList(Long num){
 		List<Map<String, Object>> retList = new ArrayList<Map<String,Object>>();
 		MsgNoticeDao msgNoticeDao = (MsgNoticeDao) SpringHelper.getBean(MsgNoticeDao.class.getName());
+		UserManager  userManager = (UserManager) SpringHelper.getBean("userManager");
+		UserDTO userDTO = userManager.getCurrentUserDTO();
 		if(num!=null){
-			IFilter repFilter =FilterFactory.getSimpleFilter("1=1");
-			FSP fsp = new FSP();
-			PageInfo pageInfo = new PageInfo();
-			pageInfo.setRecordsPerPage(Integer.parseInt(num+""));
-			fsp.setPage(pageInfo);
-			fsp.setUserFilter(repFilter);
 			//查询通知表t_notice t_notice_receiver
-			retList = msgNoticeDao.queryNoticeList(num);
+			retList = msgNoticeDao.queryNoticeList(num,userDTO.getEmployeeId(),userDTO.getStore_id());
 		}else{
-			retList = msgNoticeDao.queryNoticeList(null);
+			retList = msgNoticeDao.queryNoticeList(null,userDTO.getEmployeeId(),userDTO.getStore_id());
 		}
 		
 		return retList;
@@ -55,6 +52,17 @@ public class MsgNoticeManagerImpl extends BizBaseCommonManager implements MsgNot
 		this.saveObject(msgNotice);
 		return msgNotice;
 	}
+	
+	@Override
+	public void updateNoticeReadByNo(Long id){
+		MsgNotice msgNotice = (MsgNotice) this.getObject(id);
+		MsgNoticeDao msgNoticeDao = (MsgNoticeDao) SpringHelper.getBean(MsgNoticeDao.class.getName());
+		UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+		String noticeNo = msgNotice.getNoticeNo();
+		String employee_no = userManager.getCurrentUserDTO().getEmployeeId();
+		msgNoticeDao.updateNoticeReadByNo(noticeNo, employee_no);
+	}
+	
 	
 	/*@Override
 	public MsgNotice updateMsgNotice(MsgNotice msgNotice) {

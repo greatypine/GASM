@@ -218,4 +218,8 @@ public interface MessageNewManager extends IManager{
 	 */
 	public void sendMessage_common(String sendUser,String receiveUser,String model,Object obj);
 	
+	public List<Map<String, Object>>  queryMessageListTop5();
+	
+	public void updateMessageNewById(Long id);
+	
 }

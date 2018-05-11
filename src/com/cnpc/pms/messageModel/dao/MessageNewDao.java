@@ -298,4 +298,9 @@ public interface MessageNewDao extends IDAO{
 	 * @return
 	 */
 	public List<Map<String, Object>> queryStoreByCity(String cityInfo);
+	
+	
+	public List<Map<String, Object>> queryMessageByStoreKeeperId(String storeKeeperId);
+	
+	public void updateMessageReadById(Long id);
 }

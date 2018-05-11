@@ -588,6 +588,24 @@ public class MessageNewDaoImpl extends BaseDAOHibernate implements MessageNewDao
 
 
 	
+	@Override
+	public List<Map<String, Object>> queryMessageByStoreKeeperId(String storeKeeperId) {
+		String sql = "SELECT * FROM t_message WHERE receiveId='"+storeKeeperId+"' ORDER BY create_time DESC limit 5;";
+		SQLQuery query = getHibernateTemplate().getSessionFactory()
+                .getCurrentSession().createSQLQuery(sql.toString());
+		//获得查询数据
+	    List<Map<String, Object>> lst_data = query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
+	    return lst_data; 
+	}
 	
+	@Override
+	public void updateMessageReadById(Long id){
+		if(id!=null){
+			String sql = "UPDATE t_message SET isRead=1 WHERE id ="+id;
+			SQLQuery query = getHibernateTemplate().getSessionFactory()
+	                .getCurrentSession().createSQLQuery(sql.toString());
+			int rt = query.executeUpdate();
+		}
+	}
 	
 }
