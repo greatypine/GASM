@@ -3,6 +3,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>门店管理系统-楼房信息</title>
+	<link rel="shortcut icon" type="image/x-icon" href="../icon.png"/>
 	<link href="style.css" rel="stylesheet" media="all" />
 	<link href="" rel="stylesheet" title="style" media="all" />
 	<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
@@ -128,6 +129,46 @@
 	}
 	
 	
+	var curStoreStatus = null;
+	var curStore = null;
+	function tohumanscore(){
+	    	   //判断门店是否发生变动 。
+	    	   var top_store=window.parent.document.getElementById("userName").innerHTML; 
+	    	   
+	    	   var storeischange=false;
+	    	 	//取得当前门店 状态 
+		       	doManager("storeManager", "queryCurrentStoreInfo",null,
+						function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								var curStoreObj = JSON.parse(data.data);
+								curStore = curStoreObj;
+								curStoreStatus = curStoreObj.estate;
+							}
+				},false);
+	    	   if(top_store!=null&&top_store.length>0){
+	    		  var str_arr = top_store.split('<option');
+	    		  for(i=0;i<str_arr.length;i++){
+	    			  var va = str_arr[i];
+	    			  if(va.indexOf('selected=')>-1&&va.indexOf(curStore.name)<0){
+	    				  storeischange = true;
+	    			  }
+	    		  }
+	    	   }
+	    	   if(storeischange){
+	    		   $$.showConfirm("提示","门店发生异动！ 将刷新页面！ ",function () {
+	    			   parent.location.reload();
+					});
+	    		   return;
+	    	   }
+		
+	    	   if(curStoreStatus=="运营中"||curStoreStatus=="试运营"){
+					var url = "store_input_view.html";
+	    			window.open(url,"score_input_view"); 
+      			}else{
+      				$$.showMessage('提示','当前门店暂未开业,暂不填写绩效分！ ');
+      			}
+	}
+	
 </script>
 <body>
 
@@ -157,6 +198,7 @@
 				<a>员工管理</a>
 				<ul>
 					<li><a href="javascript:tohumanmanager()">门店人员信息</a></li>
+					<li><a href="javascript:tohumanscore()">门店人员打分</a></li>
 				</ul>
 			</li>
 			<li>
@@ -164,9 +206,6 @@
 				<ul>
 					<li>
 						<a href="javascript:toworkrecord()">门店考勤录入</a>
-					</li>
-					<li>
-						<a href="javascript:toworkinfolist()">任务列表</a>
 					</li>
 				</ul>
 			</li>
@@ -207,6 +246,14 @@
 				</ul>
 			</li>
 			
+			<li>
+				<a>我的任务</a>
+				<ul>
+					<li>
+						<a href="javascript:toworkinfolist()">任务列表</a>
+					</li>
+				</ul>
+			</li>
 			
 			<li>
 				<!-- <a href="javascript:toindexpage()">系统首页</a> -->

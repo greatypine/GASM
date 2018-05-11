@@ -3,6 +3,7 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 	<title>门店管理系统-首页</title>
+	<link rel="shortcut icon" type="image/x-icon" href="../icon.png"/>
 	<link href="style.css" rel="stylesheet" media="all" />
 	<link href="" rel="stylesheet" title="style" media="all" />
 	<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
@@ -14,8 +15,13 @@
 	<script type="text/javascript" src="js/cookie.js"></script>
 	<script type="text/javascript" src="js/custom.js"></script>
 	<script type="text/javascript" src="../scripts/bidLibjsjquery4.0.js"></script>
-	
 </head>
+
+<style>
+	.msg_list:hover{
+text-decoration: underline;
+}
+</style>
 
 <script >
 
@@ -40,8 +46,51 @@
   						
   					}
 		});
+		
+		
+		$('#dialog_xx').dialog({
+			autoOpen: false,
+			width: 400,
+			height: 230,
+			bgiframe: false,
+			modal: false,
+			buttons: {
+				"确定": function() { 
+					$(this).dialog("close");
+				}
+			}
+		});
+		
+		queryMessageTop5();
 	});	
 	
+	var arr5=new Array();
+	function queryMessageTop5(){
+		doManager("MessageNewManager", "queryMessageListTop5",null,
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						var jsonData = JSON.parse(data.data);
+  						var p_message = "";
+  						if(arr5!=null){
+  							arr5==null;
+  						}
+						$(jsonData).each(function(i,obj){
+							arr5.push(obj.id+"@"+obj.content);
+							var id=obj.id;
+							var scolor=obj.isRead==0?"red":"blue";
+							var isread=obj.isRead==0?"未读":"已读";
+							var content=obj.content;
+							if(content!=null&&content.length>20){
+								content=content.substring(0,20)+"...";
+							}
+	  						p_message+="<p title=\"\" class=\"msg_list\" onclick=\"javascript:showMsg("+id+")\" style=\"cursor: pointer;\">[<font color='"+scolor+"'>"+isread+"</font>]"+content+"</p>";
+						});
+  						$("#message_list").html(p_message);
+  						
+  					}
+		},false);
+		
+	}
 	
 	
 	function queryMsgNoticeList(){
@@ -49,17 +98,15 @@
   				function(data, textStatus, XMLHttpRequest) {
   					if (data.result) {
   						var jsonData = JSON.parse(data.data);
-  						
   						if(jsonData!=null&&jsonData.length>0){
-  							
   							var noticeHtml = "";
-  							
   							for(i=0;i<jsonData.length;i++){
   								var selid =  jsonData[i].id;
   								var title =  jsonData[i].title;
-  								var content = jsonData[i].content;
   								var notice_date = jsonData[i].notice_date;
-  								noticeHtml+='<div class="response-msg notice ui-corner-all">'+
+  								var isReadcss = jsonData[i].isRead==0?"notice":"inf";
+  								var isRead = jsonData[i].isRead;
+  								noticeHtml+='<div class="response-msg '+isReadcss+' ui-corner-all">'+
 								'<span><a href="javascript:tomsgdetail_view('+selid+')">'+title+'</a><a style="float: right;">'+notice_date+'</a></span>'+
 								'</div>';
   							}
@@ -94,74 +141,192 @@
 		window.location.reload();
 	}
 	
+	
+	/**************************************/
+	//门店人员信息 
 	function tohumanmanager(){
-		var url = "../gasm/human_store_view.html";
-		window.open(url,"human_store_view"); 
+		 if(changeStoreFlag()){
+			 var url = "../gasm/human_store_view.html";
+			 window.open(url,"human_store_view"); 
+		 }
 	}
+	//门店人员打分 
+	function tohumanscore(){
+		  if(changeStoreFlag()){
+			  if(curStoreStatus=="运营中"||curStoreStatus=="试运营"){
+					var url = "store_input_view.html";
+	    			window.open(url,"score_input_view"); 
+    			}else{
+    				$$.showMessage('提示','当前门店暂未开业,暂不填写绩效分！ ');
+    			}
+		  }
+	}
+	//门店考勤录入 
 	function toworkrecord(){
-		var url = "../gasm/work_record_view.html";
-		window.open(url,"work_record_view"); 
+		 if(changeStoreFlag()){
+			 var url = "../gasm/work_record_view.html";
+			 window.open(url,"work_record_view"); 
+		 }
 	}
-	function toworkinfolist(){
-		var url = "../gasm/work_info_view.html";
-		window.open(url,"work_info_view"); 
-	}
+	//门店划片 
 	function toarealist(){
-		var url = "../gasm/area_view.html";
-		window.open(url,"area_view"); 
+		if(changeStoreFlag()){
+			var url = "../gasm/area_view.html";
+			window.open(url,"area_view"); 
+		}
 	}
+	//地采坐标范围录入 
 	function totinyvillagelist(){
-		var url = "../gasm/tinyvillage_view.html";
-		window.open(url,"tinyvillage_view"); 
+		if(changeStoreFlag()){
+		 	var url = "../gasm/tinyvillage_view.html";
+		 	window.open(url,"tinyvillage_view");
+		}
 	}
-	
+	//街道信息
 	function totownlist(){
-		var url = "../gasm/town_view.html";
-		window.open(url,"town_view");
+		if(changeStoreFlag()){
+			var url = "../gasm/town_view.html";
+			window.open(url,"town_view");
+		}
 	}
+	//视区信息 
 	function tovillagelist(){
-		var url = "../gasm/village_view.html";
-		window.open(url,"village_view");
+		if(changeStoreFlag()){
+			var url = "../gasm/village_view.html";
+			window.open(url,"village_view");
+		}
 	} 
+	//小区信息 
 	function totinyvillagelistbase(){
-		var url = "../gasm/tinyvillagebase_view.html";
-		window.open(url,"tinyvillagebase_view");
+		if(changeStoreFlag()){
+			var url = "../gasm/tinyvillagebase_view.html";
+			window.open(url,"tinyvillagebase_view");
+		}
 	}
+	//楼房信息 
 	function tobuildinglistdata(){
-		var url = "../gasm/buildinglistdata_view.html";
-		window.open(url,"buildinglistdata_view");
+		if(changeStoreFlag()){
+			var url = "../gasm/buildinglistdata_view.html";
+			window.open(url,"buildinglistdata_view");
+		}
 	}
+	//房屋信息 
 	function tohouselist(){
-		var url = "../gasm/houselist_view.html";
-		window.open(url,"houselist_view");
+		if(changeStoreFlag()){
+			var url = "../gasm/houselist_view.html";
+			window.open(url,"houselist_view");
+		}
 	}
-	
+	//商业信息 
 	function tobusinesslist(){
-		var url = "../gasm/businesslist_view.html";
-		window.open(url,"businesslist_view");
+		if(changeStoreFlag()){
+			var url = "../gasm/businesslist_view.html";
+			window.open(url,"businesslist_view");
+		}
 	}
+	//写字楼信息 
 	function tocompanylist(){
-		var url = "../gasm/companylist_view.html";
-		window.open(url,"companylist_view");
+		if(changeStoreFlag()){
+			var url = "../gasm/companylist_view.html";
+			window.open(url,"companylist_view");
+		}
 	}
-	
+	//工单信息 
+	function tostoreorderlist(){
+		if(changeStoreFlag()){
+			var url = "store_orderdz_view.html";
+			window.open(url,"storeorderdz_view");
+		}
+	}
+	//任务列表
+	function toworkinfolist(){
+		if(changeStoreFlag()){
+			var url = "../gasm/work_info_view.html";
+			window.open(url,"work_info_view");	
+		}
+	}
+	/*************************************/
 	
 	
 	function tomsg_view(){
-		var url = "msg_view.html";
-		window.open(url,"msg_view");
+		if(changeStoreFlag()){
+			var url = "msg_view.html";
+			window.open(url,"msg_view");
+		}
 	}
 	
 	function tomsgdetail_view(selid){
+		//处理消息为已读
+		doManager("MsgNoticeManager", "updateNoticeReadByNo",[selid],
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						queryMsgNoticeList();
+  					}
+		},false);
+		
 		var url = "msgdetail_view.html?id="+selid;
 		window.open(url,"msgdetail_view");
 	}
 	
 	
+
 	
-	function tostoreorderlist(){
-		var url = "store_orderdz_view.html";
-		window.open(url,"storeorderdz_view");
+	
+	function showMsg(msgid){
+		//处理修改数据为已读 
+		doManager("MessageNewManager", "updateMessageNewById",[msgid],
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  					}
+		},false);
+		//刷新消息列表 
+		queryMessageTop5();
+		//获取arr5中的详细 信息 放到dialog中
+		var cont="";
+		for(i=0;i<arr5.length;i++){
+			var id=arr5[i].split("@")[0];
+			var content=arr5[i].split("@")[1];
+			if(msgid==id){
+				cont=content;
+			}
+		}
+		$("#dialog_xx").html("<p>"+cont+"</p>");
+		$('#dialog_xx').dialog('open');
+		
+	}
+	
+	
+	var curStoreStatus = null;
+	var curStore = null;
+	function changeStoreFlag(){
+		 //判断门店是否发生变动 。
+ 	   var top_store=window.parent.document.getElementById("userName").innerHTML; 
+ 	   var storeischange=false;
+ 	 	//取得当前门店 状态 
+	       	doManager("storeManager", "queryCurrentStoreInfo",null,
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var curStoreObj = JSON.parse(data.data);
+							curStore = curStoreObj;
+							curStoreStatus = curStoreObj.estate;
+						}
+			},false);
+ 	   if(top_store!=null&&top_store.length>0){
+ 		  var str_arr = top_store.split('<option');
+ 		  for(i=0;i<str_arr.length;i++){
+ 			  var va = str_arr[i];
+ 			  if(va.indexOf('selected=')>-1&&va.indexOf(curStore.name)<0){
+ 				  storeischange = true;
+ 			  }
+ 		  }
+ 	   }
+ 	   if(storeischange){
+ 		   $$.showConfirm("提示","门店发生异动！ 将刷新页面！ ",function () {
+ 			   parent.location.reload();
+				});
+ 		   return;
+ 	   }
+ 	   return true;
 	}
 	
 	
@@ -191,12 +356,20 @@
 						</li>
 					</ul>
 			</div>
+			
+			
+			<div id="dialog_xx" title="消息">
+				
+			</div>
+			
+			
 		</div>
 		<ul id="navigation" class="sf-navbar">
 			<li>
 				<a>员工管理</a>
 				<ul>
 					<li><a href="javascript:tohumanmanager()">门店人员信息</a></li>
+					<li><a href="javascript:tohumanscore()">门店人员打分</a></li>
 				</ul>
 			</li>
 			<li>
@@ -204,9 +377,6 @@
 				<ul>
 					<li>
 						<a href="javascript:toworkrecord()">门店考勤录入</a>
-					</li>
-					<li>
-						<a href="javascript:toworkinfolist()">任务列表</a>
 					</li>
 				</ul>
 			</li>
@@ -243,6 +413,15 @@
 				<a>门店工单</a>
 				<ul>
 					<li><a href="javascript:tostoreorderlist()">工单管理</a></li>
+				</ul>
+			</li>
+			
+			<li>
+				<a>我的任务</a>
+				<ul>
+					<li>
+						<a href="javascript:toworkinfolist()">任务列表</a>
+					</li>
 				</ul>
 			</li>
 			
@@ -295,6 +474,14 @@
 									员工管理 
 								</a>
 							</li>
+							
+							<li>
+								<a href="javascript:tohumanscore()" class="Mail_compose tooltip"  title="员工打分" >
+									员工打分
+								</a>
+							</li>
+							
+							
 							<li>
 								<a href="javascript:toworkrecord()" class="Books tooltip" title="考勤/请假">
 									考勤/请假
@@ -362,7 +549,7 @@
 					<div class="" style="width: 66%;">
 						<div class="portlet form-bg">
 
-							<div class="portlet-header">公告<a href="javascript:tomsg_view()" style="float: right;">更多</a></div>
+							<div class="portlet-header">通知公告<a href="javascript:tomsg_view()" style="float: right;">更多</a></div>
 							<div class="portlet-content" id="msgnotice">
 								
 								
@@ -402,12 +589,17 @@
 				
 				<div class="other-box yellow-box ui-corner-all">
 					<div class="cont tooltip ui-corner-all" title="">
-						<h3>消息</h3>
-						<p title="" onclick="javascript:alert('read')" style="cursor: pointer;">[<font color='red'>未读</font>]这里可显示消息通知1这里</p>
-						<p title="" onclick="javascript:alert('read')" style="cursor: pointer;">[<font color='red'>未读</font>]这里可显示消息通知22</p>
-						<p title="" onclick="javascript:alert('read')" style="cursor: pointer;">[<font color='blue'>已读</font>]这里可显示消息通知33</p>
-						<p title="" onclick="javascript:alert('read')" style="cursor: pointer;">[<font color='blue'>已读</font>]这里可显示消息通知44</p>
-						<p title="" onclick="javascript:alert('read')" style="cursor: pointer;">[<font color='blue'>已读</font>]这里可显示消息通知55</p>
+						<h3>我的消息</h3>
+						
+						<div id="message_list">
+							<!-- <p title="" onclick="javascript:showMsg(1)" style="cursor: pointer;">[<font color='red'>未读</font>]这里可显示消息通知1这里</p>
+							<p title="" onclick="javascript:showMsg(2)" style="cursor: pointer;">[<font color='red'>未读</font>]这里可显示消息通知22</p>
+							<p title="" onclick="javascript:showMsg(3)" style="cursor: pointer;">[<font color='blue'>已读</font>]这里可显示消息通知33</p>
+							<p title="" onclick="javascript:showMsg(4)" style="cursor: pointer;">[<font color='blue'>已读</font>]这里可显示消息通知44</p>
+							<p title="" onclick="javascript:showMsg(5)" style="cursor: pointer;">[<font color='blue'>已读</font>]这里可显示消息通知55</p>
+						 	-->
+						 </div>
+							
 					</div>
 				</div>
 				<div class="portlet ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">

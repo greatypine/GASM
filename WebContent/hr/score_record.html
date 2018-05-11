@@ -658,10 +658,13 @@ function mGetDate(year, month){
 <input type="hidden" id="idxrow" value=""/>
 <div class="panel panel-primary">
 		<div class="panel-heading"><label id="ym"></label><label>份员工绩效打分统计表</label><label id="pro_status"></label>
-        	<span class="but">
+        	
+        	 <span id="btnSave" onclick="doSave();"> 保存</span>
+             <span id="btnCommit" onclick="doCommit();">提交</span>
+        	<!-- <span class="but">
                 <input id="btnSave" name="" type="button" onclick="doSave();" value="保存"/>
                 <input id="btnCommit" name="" type="button" onclick="doCommit();" value="提交"/>
-            </span>
+            </span> -->
         </div>
         <div class="panel-body" style="padding: 0 10px 0 10px;">
         	<label id="back_msg"></label>

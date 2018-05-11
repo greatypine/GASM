@@ -24,7 +24,7 @@ $(document).ready(function() {
 	$('#tabs, #tabs2, #tabs5').tabs();
 
 	// Dialog			
-	$('#dialog').dialog({
+	/*$('#dialog').dialog({
 		autoOpen: false,
 		width: 600,
 		bgiframe: false,
@@ -37,7 +37,7 @@ $(document).ready(function() {
 				$(this).dialog("close"); 
 			} 
 		}
-	});
+	});*/
 	
 	// Login Dialog			
 	$('#login').dialog({
