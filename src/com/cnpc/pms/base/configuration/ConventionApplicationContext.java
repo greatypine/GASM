@@ -26,7 +26,6 @@ import com.cnpc.pms.base.configuration.registry.DynamicClassLoader;
 import com.cnpc.pms.base.configuration.registry.ManagerRegisterHelper;
 import com.cnpc.pms.base.configuration.registry.RefreshType;
 import com.cnpc.pms.base.configuration.registry.RegistrarAgent;
-import com.cnpc.pms.base.schedule.quartz.SchedulerHelper;
 import com.cnpc.pms.base.util.ConfigurationUtil;
 
 public class ConventionApplicationContext extends AbstractRefreshableApplicationContext {
@@ -211,12 +210,7 @@ public class ConventionApplicationContext extends AbstractRefreshableApplication
 				log.error("Fail to get [{}] :", resource, e);
 			}
 		}
-		if (updatedClassName.size() > 0 || configFileUpdated) {
-			SchedulerHelper.getInstance().standBy();
-			this.refresh();
-			log.info("######Reloaded ApplicationContext with: {} ms", System.currentTimeMillis() - start);
-			SchedulerHelper.getInstance().start();
-		}
+		
 	}
 
 	/**

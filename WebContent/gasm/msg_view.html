@@ -51,11 +51,12 @@
   							for(i=0;i<jsonData.length;i++){
   								var selid =  jsonData[i].id;
   								var title =  jsonData[i].title;
+  								var releaseUnit=jsonData[i].releaseUnit;
   								var content = jsonData[i].content;
   								var notice_date = jsonData[i].notice_date;
   								var isReadcss = jsonData[i].isRead==0?"notice":"inf";
   								noticeHtml+='<div class="response-msg '+isReadcss+' ui-corner-all">'+
-								'<span><a href="javascript:tomsgdetail_view('+selid+')">'+title+'</a><a style="float: right;">'+notice_date+'</a></span>'+
+								'<span><a href="javascript:tomsgdetail_view('+selid+')">'+title+'</a><a style="float: right;">'+releaseUnit+" &nbsp;&nbsp; "+notice_date+'</a></span>'+
 								'</div>';
   							}
   							$("#msgnotice").html(noticeHtml);

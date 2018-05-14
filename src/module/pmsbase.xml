@@ -23,9 +23,6 @@
 		<package id="message" noEntity="true">
 			<managerpackage interfacePackage="com.cnpc.pms.base.message.manager"/>
 		</package>
-		<package id="task">
-			<managerpackage interfacePackage="com.cnpc.pms.base.schedule.manager"/>
-		</package>
 		<package id="script" noEntity="true">
 			<managerpackage interfacePackage="com.cnpc.pms.base.script.manager"/>
 		</package>

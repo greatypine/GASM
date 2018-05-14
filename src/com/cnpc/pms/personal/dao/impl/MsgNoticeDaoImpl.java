@@ -16,7 +16,7 @@ public class MsgNoticeDaoImpl extends BaseDAOHibernate implements MsgNoticeDao {
 
 	@Override
 	public List<Map<String, Object>> queryNoticeList(Long num,String employee_no,Long storeId) {
-        String find_sql="select b.id,DATE_FORMAT(b.create_time,'%Y-%m-%d') as notice_date,b.title,b.noticeNo,a.isRead from (select DISTINCT noticeNo,isRead  from t_notice_reciver where storeId="+storeId+" and employeeNo='"+employee_no+"' and status=0) a INNER JOIN t_notice b on a.noticeNo= b.noticeNo ORDER BY b.noticeNo DESC";
+        String find_sql="select b.id,DATE_FORMAT(b.create_time,'%Y-%m-%d') as notice_date,b.releaseUnit,b.title,b.noticeNo,a.isRead from (select DISTINCT noticeNo,isRead  from t_notice_reciver where storeId="+storeId+" and employeeNo='"+employee_no+"' and status=0) a INNER JOIN t_notice b on a.noticeNo= b.noticeNo ORDER BY b.noticeNo DESC";
         StringBuilder sb_sql = new StringBuilder();
         sb_sql.append(find_sql);
         

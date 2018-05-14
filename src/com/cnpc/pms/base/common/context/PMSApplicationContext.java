@@ -2,22 +2,10 @@ package com.cnpc.pms.base.common.context;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.BeanFactoryUtils;
 
 import com.cnpc.pms.base.init.ExcelImpConfig;
 import com.cnpc.pms.base.query.QueryDefinition;
-import com.cnpc.pms.base.schedule.manager.TaskManager;
-import com.cnpc.pms.base.schedule.quartz.PmsSchedulerFactoryBean;
-import com.cnpc.pms.base.schedule.quartz.SchedulerHelper;
-import com.cnpc.pms.base.util.SpringHelper;
 
-/***
- * CNPC Application Context Loader.<br/>
- * Copyright(c) 2011 China National Petroleum Corporation , http://www.cnpc.com.cn
- * 
- * @author Zhou Zaiqing
- * @since 11.4.2010
- */
 // TODO: Still keep this initialize() 3 times after SpringHelper.setRootContext. May need optimization.
 public final class PMSApplicationContext {
 
