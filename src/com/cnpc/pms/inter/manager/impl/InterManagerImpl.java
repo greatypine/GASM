@@ -3368,8 +3368,8 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 				HttpHost proxy = new HttpHost("10.0.1.11", 3128, "http");
 				RequestConfig requestConfig = RequestConfig.custom().setProxy(proxy).build();
 				/** 上线时，添加代理设置 **/
-				CloseableHttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();;
-				//CloseableHttpClient httpclient = HttpClients.createDefault();
+				//CloseableHttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();;
+				CloseableHttpClient httpclient = HttpClients.createDefault();
 				HttpGet httpGet = new HttpGet(String.format(url, new Object[]{appid,secret,code,grant_type}));
 				CloseableHttpResponse response = httpclient.execute(httpGet);
 				resultString = EntityUtils.toString(response.getEntity(), "utf-8");
@@ -3476,6 +3476,33 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			}
 			return result;
 		}
+		
+		/**
+		 * 手机找回密码 验证手机是否是系统里的可用用户 
+		 * @return
+		 */
+		@Override
+		public Result validateUserPhone(String phone){
+			Result result = new Result();
+			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+			if(phone!=null&&phone.length()>0&&phone.length()==11){
+				IFilter iFilter =FilterFactory.getSimpleFilter("mobilephone='"+phone+"' and disabledFlag=1 ");
+				List<User> userList = (List<User>) userManager.getList(iFilter);
+				if(userList!=null&&userList.size()==1){
+					result.setCode(CodeEnum.success.getValue());
+					result.setMessage(CodeEnum.success.getDescription());
+					result.setData(userList.get(0));
+				}else{
+					result.setCode(CodeEnum.repeatData.getValue());
+					result.setMessage(CodeEnum.repeatData.getDescription());
+				}
+			}else{
+				result.setCode(CodeEnum.nullData.getValue());
+				result.setMessage(CodeEnum.nullData.getDescription());
+			}
+			return result;
+		}
+		
 		
 		
 }
