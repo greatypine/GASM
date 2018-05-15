@@ -3432,11 +3432,11 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		
 		//工单手机列表
 		@Override
-		public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no){
+		public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no,String types){
 			Result result = new Result();
 			StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
 			try {
-				Map<String, Object> rt_maps = storeOrderInfoManager.queryStoreOrderInfoListApp(pageInfo, employee_no);
+				Map<String, Object> rt_maps = storeOrderInfoManager.queryStoreOrderInfoListApp(pageInfo, employee_no,types);
 				result.setCode(CodeEnum.success.getValue());
 	            result.setMessage(CodeEnum.success.getDescription());
 	            result.setData(rt_maps);

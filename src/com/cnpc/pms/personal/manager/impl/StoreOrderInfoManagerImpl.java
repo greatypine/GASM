@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import BI.IF;
+
 import com.cnpc.pms.base.entity.DataEntity;
 import com.cnpc.pms.base.manager.impl.BaseManagerImpl;
 import com.cnpc.pms.base.paging.FSP;
@@ -136,12 +138,17 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 	
 	
 	@Override
-	public Map<String, Object> queryStoreOrderInfoListApp(PageInfo pageInfo,String employee_no){
+	public Map<String, Object> queryStoreOrderInfoListApp(PageInfo pageInfo,String employee_no,String types){
 		Map<String,Object> returnMap = new java.util.HashMap<String, Object>();
 		StringBuffer cond = new StringBuffer();
 		cond.append(" 1=1 ");
 		if(employee_no!=null){
 			cond.append(" and employee_no = '"+employee_no+"'");
+		}else{
+			cond.append(" and 1=0 ");
+		}
+		if(types!=null&&types.length()>0){
+			cond.append(" and worder_status in("+types+") ");
 		}else{
 			cond.append(" and 1=0 ");
 		}

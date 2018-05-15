@@ -541,7 +541,7 @@ public interface InterManager extends IManager {
 	public User commonValidUser(String userCode,String password);
 	
 	//****************工单相关 **************//
-	public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no);
+	public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no,String types);
 	public Result saveStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo);
 	public Result queryStoreOrderInfoByPhone(PageInfo pageinfo,String phone);
 	
