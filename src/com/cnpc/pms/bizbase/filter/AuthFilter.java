@@ -100,7 +100,9 @@ public class AuthFilter extends OncePerRequestFilter {
 			filterChain.doFilter(servletRequest, servletResponse);
 		} else if (url.indexOf("ndow.html") >= 0) {
 			filterChain.doFilter(servletRequest, servletResponse);
-		} else if (url.indexOf("resetPassword.html") >= 0) {
+		} else if (url.indexOf("resetpwd.html") >= 0) {
+			filterChain.doFilter(servletRequest, servletResponse);
+		} else if (url.indexOf("validation.html") >= 0) {
 			filterChain.doFilter(servletRequest, servletResponse);
 			// 通知公告
 		} else if (url.indexOf("generalPortalContentView.html") >= 0) {

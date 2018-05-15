@@ -441,4 +441,6 @@ public interface UserManager extends IManager {
 
 	 public Map<String, Object> querySysUserSendBoxQueryList(QueryConditions condition);
 	 
+	 public String modifyStoreUserPassword(User user);
+	 
 }

@@ -3368,8 +3368,8 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 				HttpHost proxy = new HttpHost("10.0.1.11", 3128, "http");
 				RequestConfig requestConfig = RequestConfig.custom().setProxy(proxy).build();
 				/** 上线时，添加代理设置 **/
-				//CloseableHttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();;
-				CloseableHttpClient httpclient = HttpClients.createDefault();
+				CloseableHttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();;
+				//CloseableHttpClient httpclient = HttpClients.createDefault();
 				HttpGet httpGet = new HttpGet(String.format(url, new Object[]{appid,secret,code,grant_type}));
 				CloseableHttpResponse response = httpclient.execute(httpGet);
 				resultString = EntityUtils.toString(response.getEntity(), "utf-8");
@@ -3409,7 +3409,7 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 				sendMessage.setMobilephone(mobilephone);
 				sendMessage.setCode(content);
 				sendMessage.setRcvmessage(resultString);
-				sendMessage.setMsgstatus(1L);//未使用 
+				sendMessage.setMsgstatus(0L);//未使用 
 				sendMessageManager.saveSendMessage(sendMessage);*/
 				
 			} catch (Exception e) {
@@ -3485,22 +3485,114 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		public Result validateUserPhone(String phone){
 			Result result = new Result();
 			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+			SendMessageManager sendMessageManager = (SendMessageManager) SpringHelper.getBean("sendMessageManager");
 			if(phone!=null&&phone.length()>0&&phone.length()==11){
 				IFilter iFilter =FilterFactory.getSimpleFilter("mobilephone='"+phone+"' and disabledFlag=1 ");
 				List<User> userList = (List<User>) userManager.getList(iFilter);
 				if(userList!=null&&userList.size()==1){
+					//发送短信
+					String code = randomcode();
+					String sendcode = "您的验证码是"+code+"，十分钟内有效。";
+					String resultString ="";
+					//resultString = commonSendMessage(phone, sendcode, "找回密码验证");
+					
+					//保存发送记录 
+					SendMessage sendMessage = new SendMessage();
+					sendMessage.setFunctionname("找回密码验证");
+					sendMessage.setMobilephone(phone);
+					sendMessage.setCode(code);
+					sendMessage.setRcvmessage(resultString);
+					sendMessage.setMsgstatus(0L);//未使用 
+					sendMessageManager.saveSendMessage(sendMessage);
+					
 					result.setCode(CodeEnum.success.getValue());
 					result.setMessage(CodeEnum.success.getDescription());
 					result.setData(userList.get(0));
 				}else{
 					result.setCode(CodeEnum.repeatData.getValue());
-					result.setMessage(CodeEnum.repeatData.getDescription());
+					result.setMessage("无效电话");
 				}
 			}else{
 				result.setCode(CodeEnum.nullData.getValue());
-				result.setMessage(CodeEnum.nullData.getDescription());
+				result.setMessage("无效电话");
 			}
 			return result;
+		}
+		@Override
+		public Result codeValidation(String phone,String code){
+			SendMessageManager sendMessageManager = (SendMessageManager) SpringHelper.getBean("sendMessageManager");
+			Result result = new Result();
+			if(code!=null&&code.trim().length()>0&&phone!=null&&phone.trim().length()>0){
+				Calendar calendar = Calendar.getInstance();
+		        calendar.add(Calendar.MINUTE, -10);
+		        String tenMin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
+				FSP fsp = new FSP();
+				fsp.setSort(SortFactory.createSort("create_time",ISort.DESC));
+		        IFilter messageFilter =FilterFactory.getSimpleFilter("functionname='找回密码验证' and mobilephone='"+phone+"' and create_time>'"+tenMin+"'");
+		        fsp.setUserFilter(messageFilter);
+		        List<SendMessage> sendMessages = (List<SendMessage>) sendMessageManager.getList(fsp);
+		        if(sendMessages!=null&&sendMessages.size()>0){
+					SendMessage sendMessage = sendMessages.get(0);
+					if(sendMessage.getMsgstatus().equals(0L)&&sendMessage.getCode().equals(code)){
+						sendMessage.setMsgstatus(1L);//已使用
+						sendMessageManager.saveSendMessage(sendMessage);
+						result.setCode(CodeEnum.success.getValue());
+						result.setMessage(CodeEnum.success.getDescription());
+						result.setData(sendMessage);
+					}else{
+						result.setCode(CodeEnum.nullData.getValue());
+						result.setMessage("验证码错误");
+					}
+		        }else{
+		        	result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage("无效电话/验证码");
+		        }
+			}else{
+				result.setCode(CodeEnum.nullData.getValue());
+				result.setMessage("无效电话/验证码");
+			}
+			return result;
+		}
+		//查询一次 防止刷URL
+		@Override
+		public Result queryUserByPhoneCode(String phone,String code){
+			SendMessageManager sendMessageManager = (SendMessageManager) SpringHelper.getBean("sendMessageManager");
+			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+			Result result = new Result();
+			Calendar calendar = Calendar.getInstance();
+	        calendar.add(Calendar.MINUTE, -10);
+	        String tenMin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
+			if(phone!=null&&phone.length()==11&&code!=null&&code.length()==4){
+				IFilter messageFilter =FilterFactory.getSimpleFilter("functionname='找回密码验证' and mobilephone='"+phone+"' and code = '"+code+"' and create_time>'"+tenMin+"'");
+		        List<SendMessage> sendMessages = (List<SendMessage>) sendMessageManager.getList(messageFilter);
+		        if(sendMessages!=null&&sendMessages.size()>0){
+		        	SendMessage sendMessage = sendMessages.get(0);
+		        	String mobilephone = sendMessage.getMobilephone();
+		        	IFilter iFilter =FilterFactory.getSimpleFilter("mobilephone='"+mobilephone+"' and disabledFlag=1 ");
+					List<User> userList = (List<User>) userManager.getList(iFilter);
+					if(userList!=null&&userList.size()>0){
+						result.setCode(CodeEnum.success.getValue());
+						result.setMessage(CodeEnum.success.getDescription());
+						result.setData(userList.get(0));
+					}else{
+						result.setCode(CodeEnum.nullData.getValue());
+						result.setMessage("无效电话/验证码");
+					}
+		        }else{
+		        	result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage("无效电话/验证码");
+		        }
+			}else{
+				result.setCode(CodeEnum.nullData.getValue());
+				result.setMessage("无效电话/验证码");
+			}
+	        return result;
+		}
+		@Override
+		public String updatePassword(User user){
+			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+			String ret_msg = userManager.modifyStoreUserPassword(user);
+			return ret_msg;
 		}
 		
 		

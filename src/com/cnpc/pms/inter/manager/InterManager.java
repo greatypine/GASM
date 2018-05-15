@@ -547,5 +547,8 @@ public interface InterManager extends IManager {
 	
 	//****************找回密码相关***************//
 	public Result validateUserPhone(String phone);
+	public Result codeValidation(String phone,String code);
+	public Result queryUserByPhoneCode(String phone,String code);
+	public String updatePassword(User user);
 	
 }
