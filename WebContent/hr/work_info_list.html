@@ -135,6 +135,7 @@
         //记载页面时请求数据列表默认的方法
         function searchList() {
             $$.executeSearch('workInfoQuery', 'conditionsDiv');
+            $(".display").css("width","auto");
         }
 
         function doClean() {
