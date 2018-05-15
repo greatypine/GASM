@@ -94,6 +94,22 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 	}
 	
 	@Override
+	public Map<String,Object> queryStoreOrderInfoListByPhone(PageInfo pageInfo,String phone){
+		Map<String,Object> returnMap = new java.util.HashMap<String, Object>();
+		StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+		FSP fsp = new FSP();
+		IFilter iFilter =FilterFactory.getSimpleFilter("phone='"+phone+"'");
+		fsp.setUserFilter(iFilter);
+		fsp.setPage(pageInfo);
+		fsp.setSort(new Sort("id",Sort.DESC));
+		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) this.getList(fsp);
+		returnMap.put("pageinfo", pageInfo);
+		returnMap.put("header", "");
+		returnMap.put("data", lst_List);
+		return returnMap;
+	}
+	
+	@Override
 	public StoreOrderInfo updateStoreOrderInfo(StoreOrderInfo storeOrderInfo) {
 		StoreOrderInfo updateStoreOrderInfo = null;
 		if(storeOrderInfo!=null&&storeOrderInfo.getId()!=null){

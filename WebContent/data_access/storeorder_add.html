@@ -37,11 +37,18 @@
 			return;
 		}
 		
+		if(phone.length!=11){
+			alert("电话格式不正确！ ");
+			return;
+		}
+		
 		var address=$("#address").val();
 		if(address==null||address.trim()==""){
 			alert("请填写用户地址！ ");
 			return;
 		}
+		
+		
 		
 		doSave();		
 	}

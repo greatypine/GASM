@@ -543,6 +543,7 @@ public interface InterManager extends IManager {
 	//****************工单相关 **************//
 	public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no);
 	public Result saveStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo);
+	public Result queryStoreOrderInfoByPhone(PageInfo pageinfo,String phone);
 	
 	
 	//****************找回密码相关***************//

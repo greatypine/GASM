@@ -1,6 +1,7 @@
 package com.cnpc.pms.personal.manager;
 
 
+import java.util.List;
 import java.util.Map;
 
 import com.cnpc.pms.base.manager.IManager;
@@ -22,5 +23,7 @@ public interface StoreOrderInfoManager extends IManager{
 	
 	
 	public StoreOrderInfo saveStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo);
+	
+	public Map<String,Object> queryStoreOrderInfoListByPhone(PageInfo pageInfo,String phone);
 	
 }

@@ -3596,5 +3596,21 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		}
 		
 		
+		@Override
+		public Result queryStoreOrderInfoByPhone(PageInfo pageinfo,String phone){
+			Result result = new Result();
+			StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+			Map<String, Object> storeOrderInfos = storeOrderInfoManager.queryStoreOrderInfoListByPhone(pageinfo,phone);
+			if(storeOrderInfos!=null&&storeOrderInfos.size()>0){
+				result.setCode(CodeEnum.success.getValue());
+				result.setMessage(CodeEnum.success.getDescription());
+				result.setData(storeOrderInfos);
+			}else{
+				result.setCode(CodeEnum.nullData.getValue());
+				result.setMessage(CodeEnum.nullData.getDescription());
+			}
+			return result;
+		}
+		
 		
 }

@@ -1,16 +1,6 @@
 package com.cnpc.pms.inter.common;
 
-/**
- * @Title   : CodeEnum.java
- * @Package ：com.cnpc.pms.reception.common
- * @Description : 返回状态码及状态码说明 枚举类型.
- * @author  ：赵彤
- * @date    ：2013-11-4 上午10:30:23
- * @version ：V1.0
- */
 public enum CodeEnum {
-	
-	
 	
 	// 用户相关---------------------------------------------------------------------
 	           /**注册**/
