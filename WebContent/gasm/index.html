@@ -80,8 +80,8 @@ text-decoration: underline;
 							var scolor=obj.isRead==0?"red":"blue";
 							var isread=obj.isRead==0?"未读":"已读";
 							var content=obj.content;
-							if(content!=null&&content.length>20){
-								content=content.substring(0,20)+"...";
+							if(content!=null&&content.length>25){
+								content=content.substring(0,25)+"...";
 							}
 	  						p_message+="<p title=\"\" class=\"msg_list\" onclick=\"javascript:showMsg("+id+")\" style=\"cursor: pointer;\">[<font color='"+scolor+"'>"+isread+"</font>]"+content+"</p>";
 						});
@@ -103,6 +103,9 @@ text-decoration: underline;
   							for(i=0;i<jsonData.length;i++){
   								var selid =  jsonData[i].id;
   								var title =  jsonData[i].title;
+  								if(title!=null&&title.length>26){
+  									title=title.substring(0,25)+"...";
+  								}
   								var releaseUnit=jsonData[i].releaseUnit;
   								var notice_date = jsonData[i].notice_date;
   								var isReadcss = jsonData[i].isRead==0?"notice":"inf";
