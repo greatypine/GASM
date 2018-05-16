@@ -87,6 +87,8 @@ Date.prototype.format=function(fmt) {
   						var content = o.content;
   						var releaseUnit=o.releaseUnit;
   						var createUser=o.create_user;
+  						var fileName=o.fileName;
+  						var filePath=o.filePath;
   						var createTime=new Date(parseInt(o.create_time)).format("yyyy-MM-dd");
   						var title_sub = "发布单位:"+releaseUnit+"&nbsp;&nbsp;&nbsp;发布人:"+createUser+"&nbsp;&nbsp;&nbsp;发布时间:"+createTime;
   						
@@ -94,6 +96,11 @@ Date.prototype.format=function(fmt) {
   						$("#title_sub").html(title_sub);
   						
   						$("#content").html(content);
+  						if(fileName!=null&&fileName.length>0){
+  							var noticefile="附件：<a target=\"_blank\" href=\""+filePath+"\" style=\"color:blue;\">"+fileName+"</a>";
+  							$("#noticefile").html(noticefile);
+  						}
+  						
   						
   					}
 		});
@@ -336,7 +343,7 @@ Date.prototype.format=function(fmt) {
 					<div class="" style="width: 100%;">
 						<div class="portlet form-bg">
 
-							<div class="portlet-header">公告</div>
+							<div class="portlet-header">通知公告</div>
 							<div class="portlet-content">
 								
 								<h1 style="text-align: center;font-size:30px;" id="title"></h1> 
@@ -345,7 +352,8 @@ Date.prototype.format=function(fmt) {
 								<p id="content" style="font-size: 18px;">
 								
 								</p>
-								
+								<br />
+								<p id="noticefile"></p>
 								
 							</div>
 						</div>

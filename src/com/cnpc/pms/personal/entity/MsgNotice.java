@@ -38,6 +38,12 @@ public class MsgNotice extends DataEntity{
 	@Column(name="zw")
 	private String zw;
 	
+	@Column(name="filePath",length=200)
+	private String filePath;//附件路径
+	
+	@Column(name="fileName",length=50)
+	private String fileName;
+	
 	public String getTitle() {
 		return title;
 	}
@@ -108,5 +114,21 @@ public class MsgNotice extends DataEntity{
 
 	public void setZw(String zw) {
 		this.zw = zw;
+	}
+
+	public String getFilePath() {
+		return filePath;
+	}
+
+	public void setFilePath(String filePath) {
+		this.filePath = filePath;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
+
+	public void setFileName(String fileName) {
+		this.fileName = fileName;
 	}
 }
