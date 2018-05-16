@@ -51,6 +51,13 @@ public class StoreOrderInfo extends DataEntity{
 	
 	
 	/**
+	 * 员工电话
+	 */
+	@Column(length = 64, name = "employee_phone")
+	private String employee_phone;
+	
+	
+	/**
 	 * 工单状态（0待确认 1已确认  2已完成  ）
 	 */
 	@Column(name = "worder_status")
@@ -80,19 +87,27 @@ public class StoreOrderInfo extends DataEntity{
 	
 	
 	/**
-	 * 用户姓名
+	 * 客户姓名
 	 */
 	@Column(length = 25, name = "username")
 	private String username;
 	
 	/**
-	 * 电话
+	 * 客户电话
 	 */
 	@Column(length = 25, name = "phone")
 	private String phone;
 	
+	
+
 	/**
-	 * 用户地址
+	 * 收货电话
+	 */
+	@Column(length = 64, name = "rcv_phone")
+	private String rcv_phone;
+	
+	/**
+	 * 收货地址
 	 */
 	@Column(length = 255, name = "address")
 	private String address;
@@ -201,6 +216,22 @@ public class StoreOrderInfo extends DataEntity{
 
 	public void setAddress(String address) {
 		this.address = address;
+	}
+
+	public String getEmployee_phone() {
+		return employee_phone;
+	}
+
+	public void setEmployee_phone(String employee_phone) {
+		this.employee_phone = employee_phone;
+	}
+
+	public String getRcv_phone() {
+		return rcv_phone;
+	}
+
+	public void setRcv_phone(String rcv_phone) {
+		this.rcv_phone = rcv_phone;
 	}
 	
 	

@@ -29,19 +29,13 @@ var id = getUrlParamByKey("id");
 		
 		var username=$("#username").val();
 		if(username==null||username.trim()==""){
-			alert("请填写用户姓名！ ");
+			alert("请填写客户姓名！ ");
 			return;
 		}
 		
 		var phone=$("#phone").val();
 		if(phone==null||phone.trim()==""){
-			alert("请填写用户电话！ ");
-			return;
-		}
-		
-		var address=$("#address").val();
-		if(address==null||address.trim()==""){
-			alert("请填写用户地址！ ");
+			alert("请填写客户电话！ ");
 			return;
 		}
 		
@@ -50,12 +44,33 @@ var id = getUrlParamByKey("id");
 			return;
 		}
 		
+		
+		var rcv_phone=$("#rcv_phone").val();
+		if(rcv_phone==null||rcv_phone.trim()==""){
+			alert("请填写收货电话！ ");
+			return;
+		}
+		
+		if(rcv_phone.length!=11){
+			alert("收货电话格式不正确！ ");
+			return;
+		}
+		
+		
+		var address=$("#address").val();
+		if(address==null||address.trim()==""){
+			alert("请填写收货地址！ ");
+			return;
+		}
+		
+		
+		
 		doSave();		
 	}
 	
 	
 	function doSave(){
-		var arr = ["id","wcontent", "phone","username","address"];
+		var arr = ["id","wcontent", "phone","username","address","rcv_phone"];
 			var o = {};
 			for ( var i in arr) {
 				var v = arr[i];
@@ -94,6 +109,7 @@ var id = getUrlParamByKey("id");
   						$("#wcontent").val(obj.wcontent);
   						$("#username").val(obj.username);
   						$("#phone").val(obj.phone);
+  						$("#rcv_phone").val(obj.rcv_phone);
   						$("#address").val(obj.address);
   						
   						$("#worder_status").attr("value",obj.worder_status);
@@ -224,7 +240,7 @@ var id = getUrlParamByKey("id");
 				<td colspan="2">
 					<p></p>
 					<p>
-						<font color="red">*</font>用户姓名：<input type="text" id="username" value="" />
+						<font color="red">*</font>客户姓名：<input type="text" id="username" value="" />
 					</p>
 				</td>
 			</tr>
@@ -233,7 +249,15 @@ var id = getUrlParamByKey("id");
 				<td colspan="2">
 					<p></p>
 					<p>
-						<font color="red">*</font>用户电话：<input type="text" id="phone" value="" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11" />
+						<font color="red">*</font>客户电话：<input type="text" id="phone" value="" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11" />
+					</p>
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p>
+						<font color="red">*</font>收货电话：<input type="text" id="rcv_phone" value="" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11" />
 					</p>
 				</td>
 			</tr>
@@ -242,7 +266,7 @@ var id = getUrlParamByKey("id");
 				<td colspan="2">
 					<p></p>
 					<p>
-						<font color="red">*</font>用户地址：<input type="text" id="address" value="" style="width:59%;"/>
+						<font color="red">*</font>收货地址：<input type="text" id="address" value="" style="width:59%;"/>
 					</p>
 				</td>
 			</tr>

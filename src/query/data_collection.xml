@@ -720,7 +720,7 @@
         <column key="employee_no" header="员工编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="10%"/>
         <column key="worder_status" header="工单状态" type="java.lang.Integer" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
         <column key="confirm_date" header="确认时间" type="java.util.Date" format="yyyy-MM-dd" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
-        <column key="sign_date" header="完成时间" type="java.util.Date" format="yyyy-MM-dd" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+        <column key="sign_date" header="完成时间" type="java.util.Date" format="yyyy-MM-dd" align="center" allowSearch="true" operator="like" allowSort="false" display="false" width="8%"/>
         <column key="username" header="用户姓名" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="15%"/>
         <column key="phone" header="用户电话" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="15%"/>
     </query>

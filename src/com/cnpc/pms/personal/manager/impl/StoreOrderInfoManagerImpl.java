@@ -21,7 +21,9 @@ import com.cnpc.pms.base.util.SpringHelper;
 import com.cnpc.pms.bizbase.rbac.usermanage.dto.UserDTO;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserManager;
+import com.cnpc.pms.personal.entity.Humanresources;
 import com.cnpc.pms.personal.entity.StoreOrderInfo;
+import com.cnpc.pms.personal.manager.HumanresourcesManager;
 import com.cnpc.pms.personal.manager.StoreOrderInfoManager;
 
 
@@ -54,8 +56,11 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		UserDTO userDTO = userManager.getCurrentUserDTO();
 		cond.append(" and store_id ="+userDTO.getStore_id());
 		
+		FSP fsp = new FSP();
 		IFilter iFilter =FilterFactory.getSimpleFilter(cond.toString());
-		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) this.getList(iFilter);
+		fsp.setPage(pageInfo);
+		fsp.setUserFilter(iFilter);
+		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) this.getList(fsp);
 		returnMap.put("pageinfo", pageInfo);
 		returnMap.put("header", "");
 		returnMap.put("data", lst_List);
@@ -66,11 +71,20 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 	public StoreOrderInfo saveStoreOrderInfo(StoreOrderInfo storeOrderInfo) {
 		//处理工单编号
 		UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+		HumanresourcesManager humanresourcesManager = (HumanresourcesManager) SpringHelper.getBean("humanresourcesManager");
 		UserDTO userDTO = userManager.getCurrentUserDTO();
 		String dateString = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		String work_no = "GD"+dateString+(int)((Math.random()*9+1)*100000);
 		storeOrderInfo.setWorder_sn(work_no);
 		storeOrderInfo.setStore_id(userDTO.getStore_id()); 
+		//根据员工编号查询员工电话
+		IFilter iFilter =FilterFactory.getSimpleFilter("humanstatus=1 and employee_no='"+storeOrderInfo.getEmployee_no()+"'");
+		List<Humanresources> human_list = (List<Humanresources>) humanresourcesManager.getList(iFilter);
+		if(human_list!=null&&human_list.size()>0){
+			Humanresources humanresources = human_list.get(0);
+			storeOrderInfo.setEmployee_phone(humanresources.getPhone());
+		}
+		
 		preSaveObject(storeOrderInfo);
 		this.saveObject(storeOrderInfo);
 		return storeOrderInfo;
@@ -79,10 +93,20 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 	
 	@Override
 	public StoreOrderInfo saveStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo) {
+		HumanresourcesManager humanresourcesManager = (HumanresourcesManager) SpringHelper.getBean("humanresourcesManager");
 		String dateString = new SimpleDateFormat("yyyyMMddHHmmss").format(new Date());
 		String work_no = "GD"+dateString+(int)((Math.random()*9+1)*100000);
 		storeOrderInfo.setWorder_sn(work_no);
 		storeOrderInfo.setStore_id(storeOrderInfo.getStore_id());
+		
+		//根据员工编号查询员工电话
+		IFilter iFilter =FilterFactory.getSimpleFilter("humanstatus=1 and employee_no='"+storeOrderInfo.getEmployee_no()+"'");
+		List<Humanresources> human_list = (List<Humanresources>) humanresourcesManager.getList(iFilter);
+		if(human_list!=null&&human_list.size()>0){
+			Humanresources humanresources = human_list.get(0);
+			storeOrderInfo.setEmployee_phone(humanresources.getPhone());
+		}
+				
 		preSaveObject(storeOrderInfo);
 		this.saveObject(storeOrderInfo);
 		return storeOrderInfo;
@@ -119,8 +143,18 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			updateStoreOrderInfo.setWcontent(storeOrderInfo.getWcontent());
 			updateStoreOrderInfo.setEmployee_name(storeOrderInfo.getEmployee_name());
 			updateStoreOrderInfo.setEmployee_no(storeOrderInfo.getEmployee_no());
+			//根据员工编号查询员工电话
+			HumanresourcesManager humanresourcesManager = (HumanresourcesManager) SpringHelper.getBean("humanresourcesManager");
+			IFilter iFilter =FilterFactory.getSimpleFilter("humanstatus=1 and employee_no='"+storeOrderInfo.getEmployee_no()+"'");
+			List<Humanresources> human_list = (List<Humanresources>) humanresourcesManager.getList(iFilter);
+			if(human_list!=null&&human_list.size()>0){
+				Humanresources humanresources = human_list.get(0);
+				updateStoreOrderInfo.setEmployee_phone(humanresources.getPhone());
+			}
+			
 			updateStoreOrderInfo.setUsername(storeOrderInfo.getUsername());
 			updateStoreOrderInfo.setPhone(storeOrderInfo.getPhone());
+			updateStoreOrderInfo.setRcv_phone(storeOrderInfo.getRcv_phone());
 			updateStoreOrderInfo.setAddress(storeOrderInfo.getAddress());
 			updateStoreOrderInfo.setWorder_status(storeOrderInfo.getWorder_status());
 			preSaveObject(updateStoreOrderInfo);

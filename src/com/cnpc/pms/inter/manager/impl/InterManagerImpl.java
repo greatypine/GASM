@@ -3460,10 +3460,13 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 					result.setMessage("工单内容为空值！保存失败！");
 				}else if(storeOrderInfo.getPhone()==null||storeOrderInfo.getPhone().trim()==""){
 					result.setCode(CodeEnum.nullData.getValue());
-					result.setMessage("用户电话为空值！保存失败！");
+					result.setMessage("客户电话为空值！保存失败！");
+				}else if(storeOrderInfo.getRcv_phone()==null||storeOrderInfo.getRcv_phone().trim()==""){
+					result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage("收货电话为空值！保存失败！");
 				}else if(storeOrderInfo.getAddress()==null||storeOrderInfo.getAddress().trim()==""){
 					result.setCode(CodeEnum.nullData.getValue());
-					result.setMessage("用户地址为空值！保存失败！");
+					result.setMessage("收货地址为空值！保存失败！");
 				}else if(storeOrderInfo.getStore_id()==null){
 					result.setCode(CodeEnum.nullData.getValue());
 					result.setMessage("门店ID为空值！保存失败！");
