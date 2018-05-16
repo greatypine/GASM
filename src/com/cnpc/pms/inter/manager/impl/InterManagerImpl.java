@@ -3612,5 +3612,22 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			return result;
 		}
 		
+		//修改工单状态(根据工单编号)
+		@Override
+		public Result updateStoreOrderStatusByNo(String worder_sn,int worder_status){
+			Result result = new Result();
+			StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+			StoreOrderInfo storeOrderInfo = storeOrderInfoManager.updateStoreOrderInfoBySN(worder_sn, worder_status);
+			if(storeOrderInfo!=null&&storeOrderInfo.getWorder_sn().equals(worder_sn)){
+				result.setCode(CodeEnum.success.getValue());
+				result.setMessage(CodeEnum.success.getDescription());
+				result.setData(storeOrderInfo);
+			}else{
+				result.setCode(CodeEnum.error.getValue());
+				result.setMessage(CodeEnum.error.getDescription());
+			}
+			return result;
+		}
+		
 		
 }

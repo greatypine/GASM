@@ -129,6 +129,20 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		return updateStoreOrderInfo;
 	}
 	
+	@Override
+	public StoreOrderInfo updateStoreOrderInfoBySN(String worder_sn,int worder_status){
+		StoreOrderInfo updateStoreOrderInfo = null;
+		StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+		IFilter iFilter =FilterFactory.getSimpleFilter("worder_sn='"+worder_sn+"'");
+		List<StoreOrderInfo> storeOrderInfos = (List<StoreOrderInfo>) storeOrderInfoManager.getList(iFilter);
+		if(storeOrderInfos!=null&&storeOrderInfos.size()==1){
+			updateStoreOrderInfo=storeOrderInfos.get(0);
+			updateStoreOrderInfo.setWorder_status(worder_status);
+			preSaveObject(updateStoreOrderInfo);
+			storeOrderInfoManager.saveObject(updateStoreOrderInfo);
+		}
+		return updateStoreOrderInfo;
+	}
 	
 	
 	

@@ -25,4 +25,6 @@ public interface StoreOrderInfoManager extends IManager{
 	
 	public Map<String,Object> queryStoreOrderInfoListByPhone(PageInfo pageInfo,String phone);
 	
+	public StoreOrderInfo updateStoreOrderInfoBySN(String worder_sn,int worder_status);
+	
 }
