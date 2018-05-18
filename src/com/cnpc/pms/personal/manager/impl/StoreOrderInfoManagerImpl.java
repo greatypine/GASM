@@ -124,11 +124,11 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		Map<String,Object> returnMap = new java.util.HashMap<String, Object>();
 		StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
 		FSP fsp = new FSP();
-		IFilter iFilter =FilterFactory.getSimpleFilter("phone='"+phone+"'");
+		IFilter iFilter =FilterFactory.getSimpleFilter("rcv_phone='"+phone+"'");
 		fsp.setUserFilter(iFilter);
 		fsp.setPage(pageInfo);
 		fsp.setSort(new Sort("id",Sort.DESC));
-		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) this.getList(fsp);
+		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) storeOrderInfoManager.getList(fsp);
 		returnMap.put("pageinfo", pageInfo);
 		returnMap.put("header", "");
 		returnMap.put("data", lst_List);
