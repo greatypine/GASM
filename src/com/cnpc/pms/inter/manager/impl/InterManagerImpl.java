@@ -3480,6 +3480,26 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			return result;
 		}
 		
+		
+		
+		//工单手机修改
+		@Override
+		public Result updateStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo){
+			Result result = new Result();
+			StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+			if(storeOrderInfo!=null&&storeOrderInfo.getId()!=null){
+				StoreOrderInfo updateStoreOrderInfo = storeOrderInfoManager.updateStoreOrderInfo(storeOrderInfo);
+				result.setCode(CodeEnum.success.getValue());
+				result.setMessage(CodeEnum.success.getDescription());
+				result.setData(storeOrderInfo);
+			}else{
+				result.setCode(CodeEnum.error.getValue());
+				result.setMessage(CodeEnum.error.getDescription());
+			}
+			return result;
+		}
+				
+		
 		/**
 		 * 手机找回密码 验证手机是否是系统里的可用用户 
 		 * @return
