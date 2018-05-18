@@ -3491,7 +3491,7 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 				StoreOrderInfo updateStoreOrderInfo = storeOrderInfoManager.updateStoreOrderInfo(storeOrderInfo);
 				result.setCode(CodeEnum.success.getValue());
 				result.setMessage(CodeEnum.success.getDescription());
-				result.setData(storeOrderInfo);
+				result.setData(updateStoreOrderInfo);
 			}else{
 				result.setCode(CodeEnum.error.getValue());
 				result.setMessage(CodeEnum.error.getDescription());
