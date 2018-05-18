@@ -590,7 +590,7 @@ public class MessageNewDaoImpl extends BaseDAOHibernate implements MessageNewDao
 	
 	@Override
 	public List<Map<String, Object>> queryMessageByStoreKeeperId(String storeKeeperId) {
-		String sql = "SELECT * FROM t_message WHERE receiveId='"+storeKeeperId+"' ORDER BY create_time DESC limit 5;";
+		String sql = "SELECT * FROM t_message WHERE receiveId='"+storeKeeperId+"' ORDER BY isRead ASC,create_time DESC limit 5;";
 		SQLQuery query = getHibernateTemplate().getSessionFactory()
                 .getCurrentSession().createSQLQuery(sql.toString());
 		//获得查询数据

@@ -157,6 +157,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			updateStoreOrderInfo.setRcv_phone(storeOrderInfo.getRcv_phone());
 			updateStoreOrderInfo.setAddress(storeOrderInfo.getAddress());
 			updateStoreOrderInfo.setWorder_status(storeOrderInfo.getWorder_status());
+			updateStoreOrderInfo.setWorder_type(storeOrderInfo.getWorder_type());
 			preSaveObject(updateStoreOrderInfo);
 			this.saveObject(updateStoreOrderInfo);
 		}
