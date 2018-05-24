@@ -127,7 +127,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		IFilter iFilter =FilterFactory.getSimpleFilter("rcv_phone='"+phone+"'");
 		fsp.setUserFilter(iFilter);
 		fsp.setPage(pageInfo);
-		fsp.setSort(new Sort("id",Sort.DESC));
+		fsp.setSort(new Sort("worder_status",Sort.ASC).appendSort(new Sort("id",Sort.DESC)));
 		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) storeOrderInfoManager.getList(fsp);
 		returnMap.put("pageinfo", pageInfo);
 		returnMap.put("header", "");
@@ -205,7 +205,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		IFilter iFilter =FilterFactory.getSimpleFilter(cond.toString());
 		fsp.setUserFilter(iFilter);
 		fsp.setPage(pageInfo);
-		fsp.setSort(new Sort("id",Sort.DESC));
+		fsp.setSort(new Sort("worder_status",Sort.ASC).appendSort(new Sort("id",Sort.DESC)));
 		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) this.getList(fsp);
 		returnMap.put("pageinfo", pageInfo);
 		returnMap.put("header", "");
