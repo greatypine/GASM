@@ -553,5 +553,6 @@ public interface InterManager extends IManager {
 	public Result codeValidation(String phone,String code);
 	public Result queryUserByPhoneCode(String phone,String code);
 	public String updatePassword(User user);
+	public Result createCode();
 	
 }

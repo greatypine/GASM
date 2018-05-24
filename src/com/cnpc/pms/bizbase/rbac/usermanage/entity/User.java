@@ -234,6 +234,9 @@ public class User extends PMSAuditEntity {
 	@Transient
 	private String modulefunc;
 	
+	@Transient
+	private String inviteCode;
+	
 	public String getBlankPassword() {
 		return blankPassword;
 	}
@@ -781,5 +784,13 @@ public class User extends PMSAuditEntity {
 
 	public void setModulefunc(String modulefunc) {
 		this.modulefunc = modulefunc;
+	}
+
+	public String getInviteCode() {
+		return inviteCode;
+	}
+
+	public void setInviteCode(String inviteCode) {
+		this.inviteCode = inviteCode;
 	}
 }

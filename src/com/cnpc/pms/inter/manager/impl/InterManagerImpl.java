@@ -112,6 +112,7 @@ import com.cnpc.pms.slice.dao.AreaDao;
 import com.cnpc.pms.slice.entity.Area;
 import com.cnpc.pms.slice.manager.AreaManager;
 import com.cnpc.pms.utils.BarCodeUtils;
+import com.cnpc.pms.utils.ValidationCode;
 
 import com.cnpc.pms.utils.PhoneFormatCheckUtils;
 
@@ -3564,15 +3565,15 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 						result.setData(sendMessage);
 					}else{
 						result.setCode(CodeEnum.nullData.getValue());
-						result.setMessage("验证码错误");
+						result.setMessage("手机验证码错误");
 					}
 		        }else{
 		        	result.setCode(CodeEnum.nullData.getValue());
-					result.setMessage("无效电话/验证码");
+					result.setMessage("无效电话/手机验证码");
 		        }
 			}else{
 				result.setCode(CodeEnum.nullData.getValue());
-				result.setMessage("无效电话/验证码");
+				result.setMessage("无效电话/手机验证码");
 			}
 			return result;
 		}
@@ -3652,5 +3653,14 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			return result;
 		}
 		
+		@Override
+		public Result createCode(){
+			Result result = new Result();
+			String validcode = ValidationCode.createCode();
+			result.setCode(CodeEnum.success.getValue());
+			result.setMessage(CodeEnum.success.getDescription());
+			result.setData(validcode);
+			return result;
+		}
 		
 }

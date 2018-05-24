@@ -170,7 +170,7 @@
     	<column key="humanstatus" header="状态" type="java.lang.Long" align="center" allowSearch="true" operator="eq" allowSort="false" display="true"/>
     	
     	<column key="career_group" header="事业群" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="false"/>
-    	
+    	<column key="inviteCode" header="社员邀请码" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="true"/>
     	
     	<column key="editdelete" header="操作" type="java.lang.String" align="center" allowSearch="true" operator="eq" allowSort="false" display="true"/>
     	<column key="create_user_id" header="创建人编号" type="java.lang.Long" allowSort="false" allowSearch="true" operator="between" display="false"/>

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Date;
 
 import javax.persistence.Column;
+import javax.persistence.Transient;
 
 import com.cnpc.pms.base.dto.PMSDTO;
 
@@ -220,6 +221,8 @@ public class UserDTO extends PMSDTO {
 	private String store_name;
 	
 	private String token;
+	
+	private String inviteCode;
 	
 	public String getBlankPassword() {
 		return blankPassword;
@@ -1017,5 +1020,13 @@ public class UserDTO extends PMSDTO {
 
 	public void setToken(String token) {
 		this.token = token;
+	}
+
+	public String getInviteCode() {
+		return inviteCode;
+	}
+
+	public void setInviteCode(String inviteCode) {
+		this.inviteCode = inviteCode;
 	}
 }
