@@ -90,12 +90,13 @@ Date.prototype.format=function(fmt) {
   						var fileName=o.fileName;
   						var filePath=o.filePath;
   						var createTime=new Date(parseInt(o.create_time)).format("yyyy-MM-dd");
-  						var title_sub = "发布单位:"+releaseUnit+"&nbsp;&nbsp;&nbsp;发布人:"+createUser+"&nbsp;&nbsp;&nbsp;发布时间:"+createTime;
+  						//var title_sub = "发布单位:"+releaseUnit+"&nbsp;&nbsp;&nbsp;发布人:"+createUser+"&nbsp;&nbsp;&nbsp;发布时间:"+createTime;
+  						var title_sub = "发布单位:"+releaseUnit+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发布时间:"+createTime;
   						
   						$("#title").html(title);
   						$("#title_sub").html(title_sub);
   						
-  						$("#content").html(content);
+  						$("#content").html(content.replace(/\n|\r\n/g,"<br/>"));
   						if(fileName!=null&&fileName.length>0){
   							var noticefile="附件：<a target=\"_blank\" href=\""+filePath+"\" style=\"color:blue;\">"+fileName+"</a>";
   							$("#noticefile").html(noticefile);
