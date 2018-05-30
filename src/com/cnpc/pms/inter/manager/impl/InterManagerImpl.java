@@ -3668,4 +3668,27 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			return result;
 		}
 		
+		
+		//根据工单编号  查询一条工单 
+		@Override
+		public Result queryStoreOrderByOrderSN(String orderSN){
+			Result result = new Result();
+	    	if(orderSN!=null&&orderSN.length()>0){
+	    		IFilter iFilter =FilterFactory.getSimpleFilter("worder_sn='"+orderSN+"'");
+	    		StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+	    		List<StoreOrderInfo> storeOrderInfos = (List<StoreOrderInfo>) storeOrderInfoManager.getList(iFilter);
+	    		if(storeOrderInfos!=null&&storeOrderInfos.size()>0){
+	    			result.setCode(CodeEnum.success.getValue());
+	    			result.setMessage(CodeEnum.success.getDescription());
+	    			result.setData(storeOrderInfos.get(0));
+	    		}else{
+	    			result.setCode(CodeEnum.repeatData.getValue());
+	    			result.setMessage(CodeEnum.repeatData.getDescription());
+	    		}
+	    	}else{
+	    		result.setCode(CodeEnum.nullData.getValue());
+				result.setMessage(CodeEnum.nullData.getDescription());
+	    	}
+			return result;
+		}
 }

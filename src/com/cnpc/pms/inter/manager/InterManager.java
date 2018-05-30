@@ -546,6 +546,7 @@ public interface InterManager extends IManager {
 	public Result queryStoreOrderInfoByPhone(PageInfo pageinfo,String phone);
 	public Result updateStoreOrderStatusByNo(String worder_sn,int worder_status);
 	public Result updateStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo);
+	public Result queryStoreOrderByOrderSN(String orderSN);
 	
 	
 	//****************找回密码相关***************//
