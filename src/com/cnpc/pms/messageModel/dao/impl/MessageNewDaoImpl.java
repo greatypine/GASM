@@ -590,13 +590,44 @@ public class MessageNewDaoImpl extends BaseDAOHibernate implements MessageNewDao
 	
 	@Override
 	public List<Map<String, Object>> queryMessageByStoreKeeperId(String storeKeeperId) {
-		String sql = "SELECT * FROM t_message WHERE receiveId='"+storeKeeperId+"' ORDER BY isRead ASC,create_time DESC limit 5;";
+		String sql = "SELECT * FROM t_message WHERE receiveId='"+storeKeeperId+"' ORDER BY isRead ASC,create_time DESC limit 5";
 		SQLQuery query = getHibernateTemplate().getSessionFactory()
                 .getCurrentSession().createSQLQuery(sql.toString());
 		//获得查询数据
 	    List<Map<String, Object>> lst_data = query.setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP).list();
 	    return lst_data; 
 	}
+	
+	
+	//点击显示更多消息列表 
+	@Override
+	public List<Map<String, Object>> queryMoreMessageByStoreKeeperId(String storeKeeperId, PageInfo pageInfo) {
+		String sql = "SELECT * FROM t_message WHERE isDelete=0 and receiveId='"+storeKeeperId+"' ORDER BY isRead ASC,create_time DESC";
+		//SQL查询对象
+        SQLQuery query = getHibernateTemplate().getSessionFactory()
+                .getCurrentSession().createSQLQuery(sql);
+        pageInfo.setTotalRecords(query.list().size());
+        //获得查询数据
+        List<Map<String, Object>> lst_data = query
+                .setResultTransformer(Transformers.ALIAS_TO_ENTITY_MAP)
+                .setFirstResult(
+                        pageInfo.getRecordsPerPage()
+                                * (pageInfo.getCurrentPage() - 1))
+                .setMaxResults(pageInfo.getRecordsPerPage()).list();
+        //如果没有数据返回
+        if(lst_data == null || lst_data.size() == 0){
+            return new ArrayList<Map<String, Object>>();
+        }
+        return (List<Map<String,Object>>)lst_data;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	@Override
 	public void updateMessageReadById(Long id){

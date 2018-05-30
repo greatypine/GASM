@@ -340,6 +340,15 @@ text-decoration: underline;
 	
 	
 	
+	//更多信息 
+	function tomoremessagelist(){
+		if(changeStoreFlag()){
+			var url = "../gasm/message_more_view.html";
+			window.open(url,"messagemore_view");
+		}
+	}
+	
+	
 </script>
 
 
@@ -598,7 +607,7 @@ text-decoration: underline;
 				
 				<div class="other-box yellow-box ui-corner-all">
 					<div class="cont tooltip ui-corner-all" title="">
-						<h3>我的消息</h3>
+						<h3><label>我的消息</label><label style="float:right;"><a href="javascript:tomoremessagelist()">更多</a></label></h3>
 						
 						<div id="message_list">
 							<!-- <p title="" onclick="javascript:showMsg(1)" style="cursor: pointer;">[<font color='red'>未读</font>]这里可显示消息通知1这里</p>

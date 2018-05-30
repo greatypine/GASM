@@ -726,6 +726,14 @@
     </query>
     
     
+    <!-- 门店管理系统  更多消息    -->
+    <query id="querymoremessagelist" header="消息列表"  method="messageNewManager.queryMoreMessageList" >
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="title" header="消息标题" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="10%"/>
+        <column key="content" header="内容" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="isRead" header="状态" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+    </query>
+    
     
     
     

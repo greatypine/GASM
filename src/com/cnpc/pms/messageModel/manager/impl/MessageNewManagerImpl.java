@@ -28,7 +28,6 @@ import com.cnpc.pms.inter.common.Result;
 import com.cnpc.pms.messageModel.dao.MessageNewDao;
 import com.cnpc.pms.messageModel.entity.Message;
 import com.cnpc.pms.messageModel.entity.MessageSendUtil;
-import com.cnpc.pms.messageModel.entity.MessageTemplate;
 import com.cnpc.pms.messageModel.manager.MessageNewManager;
 import com.cnpc.pms.personal.entity.Customer;
 import com.cnpc.pms.personal.entity.Relation;
@@ -36,18 +35,7 @@ import com.cnpc.pms.personal.entity.WorkInfo;
 import com.cnpc.pms.personal.manager.CustomerManager;
 import com.cnpc.pms.personal.manager.RelationManager;
 import com.cnpc.pms.platform.entity.Order;
-import com.cnpc.pms.slice.dao.AreaDao;
 import com.cnpc.pms.slice.dto.AreaDto;
-import com.cnpc.pms.utils.PropertiesValueUtil;
-import com.gexin.rp.sdk.base.IPushResult;
-import com.gexin.rp.sdk.base.impl.SingleMessage;
-import com.gexin.rp.sdk.base.impl.Target;
-import com.gexin.rp.sdk.base.payload.APNPayload;
-import com.gexin.rp.sdk.http.IGtPush;
-import com.gexin.rp.sdk.template.NotificationTemplate;
-import com.gexin.rp.sdk.template.TransmissionTemplate;
-import com.ibm.db2.jcc.am.id;
-import com.ibm.db2.jcc.am.me;
 
 /**
  * @author gaobaolei
@@ -756,6 +744,28 @@ public class MessageNewManagerImpl extends BizBaseCommonManager implements Messa
 		MessageNewDao messageNewDao = (MessageNewDao) SpringHelper.getBean(MessageNewDao.class.getName());
 		List<Map<String, Object>>  rep_list =messageNewDao.queryMessageByStoreKeeperId(userDTO.getEmployeeId());
 		return rep_list;
+	}
+	
+	
+	
+	
+	/**
+	 * 消息更多列表
+	 */
+	@Override
+	public Map<String, Object>  queryMoreMessageList(QueryConditions queryConditions){
+		UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+		Map<String,Object> returnMap = new HashMap<String, Object>();
+		UserDTO userDTO = userManager.getCurrentUserDTO();
+		MessageNewDao messageNewDao = (MessageNewDao) SpringHelper.getBean(MessageNewDao.class.getName());
+		//分页对象
+        PageInfo pageInfo = queryConditions.getPageinfo();
+		List<Map<String, Object>>  rep_list =messageNewDao.queryMoreMessageByStoreKeeperId(userDTO.getEmployeeId(), pageInfo);
+		returnMap.put("pageinfo", pageInfo);
+		returnMap.put("header", "");
+		returnMap.put("data", rep_list);
+		
+		return returnMap;
 	}
 	
 	

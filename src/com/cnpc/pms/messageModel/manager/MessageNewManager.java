@@ -222,4 +222,12 @@ public interface MessageNewManager extends IManager{
 	
 	public void updateMessageNewById(Long id);
 	
+	
+	
+	
+	/**
+	 * 消息更多列表
+	 */
+	public Map<String, Object>  queryMoreMessageList(QueryConditions queryConditions);
+	
 }
