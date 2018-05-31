@@ -3589,7 +3589,7 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
 			Result result = new Result();
 			Calendar calendar = Calendar.getInstance();
-	        calendar.add(Calendar.MINUTE, -10);
+	        calendar.add(Calendar.MINUTE, -2);
 	        String tenMin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
 			if(phone!=null&&phone.length()==11&&code!=null&&code.length()==4){
 				IFilter messageFilter =FilterFactory.getSimpleFilter("functionname='找回密码验证' and mobilephone='"+phone+"' and code = '"+code+"' and create_time>'"+tenMin+"'");

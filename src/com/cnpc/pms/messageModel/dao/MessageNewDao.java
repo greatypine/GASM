@@ -307,7 +307,7 @@ public interface MessageNewDao extends IDAO{
 	
 	
 	//点击显示更多消息列表 
-    public List<Map<String, Object>> queryMoreMessageByStoreKeeperId(String storeKeeperId, PageInfo pageInfo);
+    public List<Map<String, Object>> queryMoreMessageByStoreKeeperId(String content,String storeKeeperId, PageInfo pageInfo);
     
     
 }

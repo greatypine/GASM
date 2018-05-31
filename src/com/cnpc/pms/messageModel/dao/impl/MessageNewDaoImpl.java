@@ -601,8 +601,12 @@ public class MessageNewDaoImpl extends BaseDAOHibernate implements MessageNewDao
 	
 	//点击显示更多消息列表 
 	@Override
-	public List<Map<String, Object>> queryMoreMessageByStoreKeeperId(String storeKeeperId, PageInfo pageInfo) {
-		String sql = "SELECT * FROM t_message WHERE isDelete=0 and receiveId='"+storeKeeperId+"' ORDER BY isRead ASC,create_time DESC";
+	public List<Map<String, Object>> queryMoreMessageByStoreKeeperId(String content,String storeKeeperId, PageInfo pageInfo) {
+		String sqlwhere = "";
+		if(content!=null&&content.length()>0){
+			sqlwhere+=" and content like '%"+content+"%'";
+		}
+		String sql = "SELECT * FROM t_message WHERE isDelete=0 and receiveId='"+storeKeeperId+"' "+sqlwhere+" ORDER BY isRead ASC,create_time DESC";
 		//SQL查询对象
         SQLQuery query = getHibernateTemplate().getSessionFactory()
                 .getCurrentSession().createSQLQuery(sql);

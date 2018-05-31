@@ -89,7 +89,7 @@
 
 
     function doClean() {
-        //document.service_qa.reset();
+        document.service_qa.reset();
         $("#store\\.id").val("");
     }
 
@@ -252,55 +252,36 @@
     </div>
 </div>
 
-   <!--  <div class="panel panel-primary"> -->
-      <!--   <div class="panel-heading">
+    <div class="panel panel-primary"> 
+        <div class="panel-heading">
             消息查询
-            <span class="but">
-                <input type="button" onclick="exportExcel();" value="门店员工花名册生成"/>
-            </span>
-        </div> -->
+        </div> 
         
         
         
-        <!-- <div class="panel-body" id="imp_data_div">
+         <div class="panel-body" id="imp_data_div">
             <div id="conditionsDiv" style="margin-top: 0px">
                 <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
                   <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
                     <tr>
                       <td width="33.33%">
-                        <p>员工姓名</p>
-                        <p><input id="employee_name" name="employee_name" type="text" style="width:80%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
-                      </td>
-                      <td width="33.33%">
-                        <p>员工编号</p>
-                        <p><input id="employee_no" name="employee_no" type="text" style="width:80%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
-                      </td>
-                      <td width="33.33%">
-                        <p>状态</p>
-                        <p><select name="humanstatus" style="width:80%;" class="form-control">
-                          <option value="">全部</option>
-                          <option value="1">在职</option>
-                          <option value="2">离职</option>
-                        </select></p>
+                        <p>消息内容</p>
+                        <p><input id="content" name="content" type="text" style="width:20%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
                       </td>
                     </tr>
                   </table>
                 </form>
             </div>
-        </div> -->
-       <!--  <div class="clearfix" style="padding: 10px 0 15px 0;">
-        <div class="col-sm-1 pull-right">
-	            <button class="btn btn-block btn-danger"  id="addStoreOrder"  onclick="addStoreOrder();">新增</button>
-	          </div>
-	          
+        </div> 
+         <div class="clearfix" style="padding: 10px 0 15px 0;">
           <div class="col-sm-1 pull-right">
             <button class="btn btn-block btn-success" onclick="doClean();">重置</button>
           </div>
           <div class="col-sm-1 pull-right">
             <button class="btn btn-block btn-warning" onclick="searchList()">查询</button>
           </div>
-        </div> -->
-<!--     </div> -->
+        </div> 
+    </div> 
     <input type="hidden" id="store_id" isautotab="true" />
     <div id="centerQueryGridContainer" class="panel panel-primary" queryid="querymoremessagelist" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
 

@@ -760,7 +760,18 @@ public class MessageNewManagerImpl extends BizBaseCommonManager implements Messa
 		MessageNewDao messageNewDao = (MessageNewDao) SpringHelper.getBean(MessageNewDao.class.getName());
 		//分页对象
         PageInfo pageInfo = queryConditions.getPageinfo();
-		List<Map<String, Object>>  rep_list =messageNewDao.queryMoreMessageByStoreKeeperId(userDTO.getEmployeeId(), pageInfo);
+        
+        String content=null;
+        for(Map<String, Object> map : queryConditions.getConditions()){
+			if("content".equals(map.get("key"))&&map.get("value")!=null){//查询条件
+				content = map.get("value").toString();
+			}
+		}
+        
+        
+        
+        
+		List<Map<String, Object>>  rep_list =messageNewDao.queryMoreMessageByStoreKeeperId(content,userDTO.getEmployeeId(), pageInfo);
 		returnMap.put("pageinfo", pageInfo);
 		returnMap.put("header", "");
 		returnMap.put("data", rep_list);
