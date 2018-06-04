@@ -3556,7 +3556,7 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		        calendar.add(Calendar.MINUTE, -10);
 		        String tenMin = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(calendar.getTime());
 				FSP fsp = new FSP();
-				fsp.setSort(SortFactory.createSort("create_time",ISort.DESC));
+				fsp.setSort(SortFactory.createSort("id",ISort.DESC));
 		        IFilter messageFilter =FilterFactory.getSimpleFilter("functionname='找回密码验证' and mobilephone='"+phone+"' and create_time>'"+tenMin+"'");
 		        fsp.setUserFilter(messageFilter);
 		        List<SendMessage> sendMessages = (List<SendMessage>) sendMessageManager.getList(fsp);
