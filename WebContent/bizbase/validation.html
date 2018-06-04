@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>门店管理系统-修改密码</title>
+  <link rel="shortcut icon" type="image/x-icon" href="../icon.png"  />
+  <meta content="width=device-width, initial-scale=0.3, maximum-scale=1, user-scalable=yes" name="viewport">
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="css/AdminLTE.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="css/blue.css">
+  
+   <link rel="stylesheet" href="css/mbox.css">
+
+  <style>
+    html,body{
+      height:100%;
+    }
+    body{font-size: 12px;}
+    .container{
+      min-height:100%;
+    }
+
+    footer{width:100%; height:70px; text-align: center;}
+    .register-page{background-color: #dce0e4;}
+    /*.register-logo{color: transparent;
+      background-color : black;
+      text-shadow : rgba(255,255,255,0.5) 0 5px 6px, rgba(255,255,255,0.2) 1px 3px 3px;
+      -webkit-background-clip : text;}*/
+	.register-pos{overflow: hidden; clear: both; position: absolute; top: 50%;margin-left:33%; margin-top: -160px;}
+	
+    .col-sm-6{ margin: 6.5% 4% 0 0; width: 57%;}
+    .col-sm-6 img{width: 100%;}
+    .login_line{width: 1px; height: 450px; overflow: hidden;margin-top: 2%;}
+    .log_line1{ background: -webkit-linear-gradient(top, #dce0e4 , #cbced2 , #dce0e4); background: -o-linear-gradient(top, #dce0e4 , #cbced2 , #dce0e4); background: -moz-linear-gradient(top, #dce0e4 , #cbced2 , #dce0e4); background: linear-gradient(to top, #dce0e4 , #cbced2 , #dce0e4);}
+    .log_line2{ background: -webkit-linear-gradient(top, #dce0e4 , #edeff1 , #dce0e4); background: -o-linear-gradient(top, #dce0e4 , #edeff1 , #dce0e4); background: -moz-linear-gradient(top, #dce0e4 , #edeff1 , #dce0e4); background: linear-gradient(to top, #dce0e4 , #edeff1 , #dce0e4);}
+    .form-control,.form-control-feedback{height: 52px; line-height: 52px; font-size: 16px;}
+    .form-control{padding-left: 38px; padding-right: 0; background-color: #f1f3f4;border-radius: 5px; border: 1px solid #cbcfd2; box-shadow: 0 1px 1px rgba(0,0,0,0.2);}
+    .register-logo{text-align: left; margin-top: 30px;}
+    .logo_img img{width: auto; height: 40px;}
+    .title img{height: 30px; margin-left: 10px;}
+    .form-control-feedback{left: 5px; font-size: 14px;color: #9fa2a4;}
+    input{outline: #488ee7;}
+    .btn.btn-flat{border-radius: 5px; height: 40px;background: -webkit-linear-gradient(top, #255e7d , #144465 ); background: -o-linear-gradient(top, #255e7d , #144465); background: -moz-linear-gradient(top, #255e7d , #144465); background: linear-gradient(to top, #255e7d , #144465); letter-spacing: 10px;}
+
+    .register-box-body{background: none;}
+    footer{color: #9ea0a3; height: 30px; position: absolute; bottom: 0;}
+    /*二维码*/
+    .download{position: fixed; bottom: 0px; right: 20px; text-align: center; width: 100px;}
+    .download p{color: #333; cursor: pointer; font-size: 14px; position: absolute; bottom: 0;}
+    .download i{font-size: 40px;}
+    .download_con{ position: absolute; bottom: 80px; right: 10px; display: none;}
+	.download:hover .download_con{display: block;}
+	.download:hover{height: 300px;}
+	.download a{color: #169fee;}
+    
+    
+    
+    
+    #process_div{ 
+		background-color:#292a2b; 
+		display:inline; 
+		z-index:100000;  
+		left:0px; 
+		opacity:0.3; top:0; left:0;height:100%; width:100%; z-index:999; position:fixed; _position:absolute; _left: expression_r(documentElement.scrollLeft + documentElement.clientWidth - this.offsetWidth); _top: expression_r(documentElement.scrollTop + documentElement.clientHeight - this.offsetHeight);
+		filter:Alpha(Opacity=30); 
+		opacity: 0.3; 
+	} 
+	
+	
+  </style>
+</head>
+<body class="hold-transition register-page">
+
+
+
+<div id="process_div" style="display:none;"></div>
+<div id="model_alert" times="2" showtime="0"
+	style="display: none; z-index: 19891016; width: 450px; height: auto; margin-left: -225px; top: 40%; left: 50%;"
+	id="jm-box-layout2" class="jm-box-layout" type="dialog">
+	<div
+		style="background-color: rgb(255, 255, 255); z-index: 19891016; height: 166px;"
+		class="jm-box-main">
+		<div class="jm-box-dialog">
+			<span class="jm-box-msg jm-box-text" style="padding-top: 54px;"><i
+				class="jm-box-icon jm-box-icon-2"></i><label id="msgdetail"></label></span>
+		</div>
+		<div class="jm-box-title" style="cursor: move;" move="ok">
+			<em>提示</em>
+		</div>
+		<!-- <span class="jm-box-setwin"><a
+			class="jm-box-close jm-layer-png32 jm-box-close0"
+			href="javascript:closealert();" style=""></a>
+		</span> -->
+		<span class="jm-box-button"><a href="javascript:closealert();"
+			class="jm-box-yes jm-box-button2">确定</a>
+			<!-- <a href="javascript:tobeContinueLogin();"
+			class="jm-box-no jm-box-button3">直接登录</a> -->
+		</span>
+	</div>
+</div>
+
+	
+
+
+
+
+<div class="container" style="width: 1000px; position: relative;">
+  <div id="test" style="overflow: hidden; clear: both;">
+    
+	<div class="register-pos">
+	    
+	    <div style="text-align: center;font-size: 18px;margin-bottom: -20px;"><strong>密 码 重 置</strong></div>
+	    <div style="text-align: right;margin-top: 20px;margin-right:20px;"></div>
+	    <!-- <div class="col-sm-6"><img src="images/reg_img2.png"> </div> -->
+	    <!-- <div class="login_line log_line1 pull-left"></div>
+	    <div class="login_line log_line2 pull-left"></div> -->
+	    <!-- <div style="color: blue;margin-left: 20px;">请您输入电话号码：</div> -->
+	    <div class="register-box pull-right" style="margin-top: 10px;">
+	
+	    <div class="register-box-body" style="padding-top: 10px;">
+	    
+	      <!--<div class="login-box-msg h4"><strong>登录</strong><span class="line"></span></div>-->
+	
+	      <form action="index.html" method="post">
+	      <div id="login_error_msg" class="has-feedback text-red" style="font-size: 16px;padding-bottom: 5px;"></div>
+	         <div class="form-group has-feedback" style="margin-bottom: 5px;clear:both;overflow: overlay;">
+	          <input type="text" class="form-control" style="width: 80%;float:left;" name="phone" id="phone" placeholder="输入您的电话号码" onkeyup="value=this.value.replace(/\D+/g,'')" maxlength="11">
+	          <button id="sendCodeBtn" type="button" style="width:20%;float:right;height: 52px;" onclick="sendMessage()" class="btn btn-primary btn-block ">发送</button>
+	          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+	        </div>
+	
+	        <div class="form-group has-feedback" style="margin-bottom: 5px;">
+	          <input type="text" class="form-control" name="valcode" id="valcode" placeholder="输入短信验证码">
+	          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+	        </div>
+	        
+	        
+	        <div class="form-group has-feedback" style="margin-bottom: 20px;">
+	          <input type="text" class="form-control" style="width: 75%;float:left;" name="incode" id="incode" placeholder="输入右侧验证码">
+	          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+	          <label onclick="javascript:createCode()" style="width:20%;float:right;height: 52px;font-size: 20px;margin-top: 10px;" title="看不清？点击切换" id="showcode"></label>
+	        </div>
+	        
+	        
+	        <div class="row">
+	           <div class="col-xs-12">
+	            <button id="loginBtn" type="button" onclick="donext();" class="btn btn-primary btn-block btn-flat">确定</button>
+	          </div>
+	          <!-- /.col -->
+	        </div>
+	      </form>
+	
+	
+	    </div>
+	    <!-- /.form-box -->
+	  </div>
+  </div>
+
+		<!-- /.register-box -->
+  <!-- <footer>
+    <p>为了让平台能够发挥出更理想的性能，推荐您使用<a target="_blank" style="color: #9ea0a3;text-decoration: underline;" href="http://www.google.cn/intl/zh-CN/chrome/browser/desktop/index.html">谷歌</a>或<a target="_blank" style="color: #9ea0a3;text-decoration: underline;" href="http://www.firefox.com.cn/">火狐</a>浏览器</p>
+  </footer> -->
+  
+  <!-- <div class="download">
+    <div class="download_con">
+      <img src="images/download_page_info.png" style="width: 100px; height: 100px" alt="" />
+      <br />
+      <label style="text-align: center; color: black;">Android / IOS</label>
+      <ul style="width: 100%; text-align: center; color: red; margin: 0; padding: 0;">
+        <li><a href="images/iPhone_instaill_illustrated.docx" style="color: blue;">安装说明</a>
+        </li>
+      </ul>
+    </div>
+    <p><i class="fa fa-mobile"></i><br>国安数据APP</p>
+  </div> -->
+  
+  
+</div>
+
+<!-- jQuery 2.2.0 -->
+<!-- <script src="/crm/plugins/jQuery/jQuery-2.2.0.min.js"></script> -->
+<!-- Bootstrap 3.3.6 -->
+<!-- <script src="/crm/bootstrap/js/bootstrap.min.js"></script> -->
+<!-- iCheck -->
+<!-- <script src="/crm/plugins/iCheck/icheck.min.js"></script> -->
+
+<!-- <script type="text/javascript" src="js/png.js"></script> -->
+<script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js"></script>
+<script language="javascript" src="../scripts/common/common-tool.js"></script>
+<script language="javascript" src="../scripts/common/common-core.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/validate/jquery.validate.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/validate/lib/jquery.metadata.js"></script>
+<script language="javascript" src="../scripts/common/common-validation.js"></script>
+<script language="javascript" src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+<script language="javascript" src="../forecast/js/scripts/bidCommon.js"></script>
+<script src="js/lib.js" type="text/javascript"></script>
+<script src="js/refDialog.js" type="text/javascript"></script> 
+
+<script>
+	function sendMessage(){
+		var phone = $("#phone").val();
+		if(phone==null||phone==""||phone.trim()==""){
+			$("#msgdetail").html("电话不能为空！");
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+		if(phone.length!=11){
+			$("#msgdetail").html("电话格式错误！");
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+		
+		//设置按钮60S不可用 
+		$("#sendCodeBtn").attr("disabled",true);
+		var count=60;
+		var interval = setInterval(function() { 
+			count--;
+			$("#sendCodeBtn").html(count+"s");
+			 if(count==0){
+				 clearInterval(interval);
+				$("#sendCodeBtn").attr("disabled",false);
+				$("#sendCodeBtn").html("发送");
+			}
+		},1000); 
+		
+		
+		 doManager("InterManager", "validateUserPhone",[phone],
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var defaultInfo = $.fromJSON(data.data);
+							if(defaultInfo.code==9000033){
+								$("#msgdetail").html("该电话号码无效！");
+								clearInterval(interval);
+								$("#sendCodeBtn").attr("disabled",false);
+								$("#sendCodeBtn").html("发送");
+								document.getElementById("model_alert").style.display="block";
+								document.getElementById("process_div").style.display="block";
+							}
+						}
+		 });
+	}
+	
+	function closealert(){
+		document.getElementById("model_alert").style.display="none";
+		document.getElementById("process_div").style.display="none";
+	}
+	
+	
+	function donext(){
+		
+		var showcode=$("#showcode").html();
+		var incode=$("#incode").val();
+		
+		if(incode==null||incode==""||incode.trim()==""){
+			$("#msgdetail").html("验证码不能为空！");
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+		
+		var phone = $("#phone").val();
+		if(phone==null||phone==""||phone.trim()==""){
+			$("#msgdetail").html("电话不能为空！");
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+		if(phone.length!=11){
+			$("#msgdetail").html("电话格式错误！");
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+		
+		if(incode.toLowerCase()!=showcode.toLowerCase()){
+			$("#msgdetail").html("验证码错误！");
+			$("#incode").val("");
+			createCode();
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+		
+		var valcode = $("#valcode").val();
+		if(valcode!=null&&valcode.trim().length>0){
+				doManager("InterManager", "codeValidation",[phone,valcode],
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var defaultInfo = $.fromJSON(data.data);
+							if(defaultInfo.code==9000003){
+								$("#msgdetail").html(defaultInfo.message);
+								document.getElementById("model_alert").style.display="block";
+								document.getElementById("process_div").style.display="block";
+							}else{
+								window.location="resetpwd.html?phone="+encode64(phone)+"&code="+encode64(valcode);
+							}
+			  			}
+			   },false);
+			
+		}else{
+			$("#msgdetail").html("请输入短信验证码！");
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+	}
+	
+	$(function(){
+		createCode();
+	});
+	
+	function createCode(){
+		 doManager("InterManager", "createCode","",
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var defaultInfo = $.fromJSON(data.data);
+						$("#showcode").html(defaultInfo.data);
+		  			}
+		   },false); 
+	}
+</script>
+
+
+</body>
+</html>
