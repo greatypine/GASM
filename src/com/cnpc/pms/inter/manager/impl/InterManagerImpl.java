@@ -112,6 +112,7 @@ import com.cnpc.pms.slice.dao.AreaDao;
 import com.cnpc.pms.slice.entity.Area;
 import com.cnpc.pms.slice.manager.AreaManager;
 import com.cnpc.pms.utils.BarCodeUtils;
+import com.cnpc.pms.utils.MD5Utils;
 import com.cnpc.pms.utils.ValidationCode;
 
 import com.cnpc.pms.utils.PhoneFormatCheckUtils;
@@ -3547,6 +3548,57 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			}
 			return result;
 		}
+		
+		//根据手机号 员工编号 查询一个用户 如果存在多个，则返回异常
+		@Override
+		public Result initReset(String inputcode){
+			Result result = new Result();
+			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+	        IFilter userFilter = (FilterFactory.getSimpleFilter("employeeId",inputcode)
+			.appendOr(FilterFactory.getSimpleFilter("mobilephone", inputcode)))
+			.appendAnd(FilterFactory.getSimpleFilter("disabledFlag", "1"));
+	        List<User> lst_users = (List<User>) userManager.getList(userFilter);
+	        if(lst_users!=null&&lst_users.size()>0){
+	        	//账号正常
+	        	if(lst_users.size()==1){
+	        		result.setCode(CodeEnum.success.getValue());
+					result.setMessage(CodeEnum.success.getDescription());
+					result.setData(lst_users.get(0));
+	        	}else{
+	        		result.setCode(CodeEnum.repeatData.getValue());
+					result.setMessage("该账号存在异常");
+	        	}
+	        }else{
+	        	result.setCode(CodeEnum.nullData.getValue());
+				result.setMessage("您输入的账户名不存在，请核对后重新输入。");
+	        }
+			return result;
+		}
+		
+		
+		//根据ID查询一个用户 返回电话
+		@Override
+		public Result queryuserbyid(String id){
+			Result result = new Result();
+			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+	        
+			if(id!=null&&id.length()>0){
+				try {
+					User user = (User) userManager.getObject(Long.parseLong(id));
+					result.setCode(CodeEnum.success.getValue());
+					result.setMessage(CodeEnum.success.getDescription());
+					result.setData(user);
+				} catch (Exception e) {
+					result.setCode(CodeEnum.repeatData.getValue());
+					result.setMessage("该账号存在异常");
+				}
+			}else{
+				result.setCode(CodeEnum.nullData.getValue());
+				result.setMessage("该账号不存在");
+			}
+			return result;
+		}
+		
 		@Override
 		public Result codeValidation(String phone,String code){
 			SendMessageManager sendMessageManager = (SendMessageManager) SpringHelper.getBean("sendMessageManager");

@@ -89,6 +89,10 @@ Date.prototype.format=function(fmt) {
   						var createUser=o.create_user;
   						var fileName=o.fileName;
   						var filePath=o.filePath;
+  						var fileName2=o.fileName2;
+  						var filePath2=o.filePath2;
+  						var fileName3=o.fileName3;
+  						var filePath3=o.filePath3;
   						var createTime=new Date(parseInt(o.create_time)).format("yyyy-MM-dd");
   						//var title_sub = "发布单位:"+releaseUnit+"&nbsp;&nbsp;&nbsp;发布人:"+createUser+"&nbsp;&nbsp;&nbsp;发布时间:"+createTime;
   						var title_sub = "发布单位:"+releaseUnit+"&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;发布时间:"+createTime;
@@ -97,11 +101,18 @@ Date.prototype.format=function(fmt) {
   						$("#title_sub").html(title_sub);
   						
   						$("#content").html(content.replace(/\n|\r\n/g,"<br/>"));
+  						var noticefile="";
   						if(fileName!=null&&fileName.length>0){
-  							var noticefile="附件：<a target=\"_blank\" href=\""+filePath+"\" style=\"color:blue;\">"+fileName+"</a>";
-  							$("#noticefile").html(noticefile);
+  							noticefile+="附件一：<a target=\"_blank\" href=\""+filePath+"\" style=\"color:blue;\">"+fileName+"</a><br>";
+  						}
+  						if(fileName2!=null&&fileName2.length>0){
+  							noticefile+="附件二：<a target=\"_blank\" href=\""+filePath2+"\" style=\"color:blue;\">"+fileName2+"</a><br>";
+  						}
+  						if(fileName3!=null&&fileName3.length>0){
+  							noticefile+="附件三：<a target=\"_blank\" href=\""+filePath3+"\" style=\"color:blue;\">"+fileName3+"</a>";
   						}
   						
+  						$("#noticefile").html(noticefile);
   						
   					}
 		});

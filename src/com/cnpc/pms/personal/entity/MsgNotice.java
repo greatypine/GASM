@@ -44,6 +44,19 @@ public class MsgNotice extends DataEntity{
 	@Column(name="fileName",length=50)
 	private String fileName;
 	
+	@Column(name="filePath2",length=200)
+	private String filePath2;
+	
+	@Column(name="fileName2",length=50)
+	private String fileName2;
+	
+	@Column(name="filePath3",length=200)
+	private String filePath3;
+	
+	@Column(name="fileName3",length=50)
+	private String fileName3;
+	
+	
 	public String getTitle() {
 		return title;
 	}
@@ -130,5 +143,37 @@ public class MsgNotice extends DataEntity{
 
 	public void setFileName(String fileName) {
 		this.fileName = fileName;
+	}
+
+	public String getFilePath2() {
+		return filePath2;
+	}
+
+	public void setFilePath2(String filePath2) {
+		this.filePath2 = filePath2;
+	}
+
+	public String getFileName2() {
+		return fileName2;
+	}
+
+	public void setFileName2(String fileName2) {
+		this.fileName2 = fileName2;
+	}
+
+	public String getFilePath3() {
+		return filePath3;
+	}
+
+	public void setFilePath3(String filePath3) {
+		this.filePath3 = filePath3;
+	}
+
+	public String getFileName3() {
+		return fileName3;
+	}
+
+	public void setFileName3(String fileName3) {
+		this.fileName3 = fileName3;
 	}
 }

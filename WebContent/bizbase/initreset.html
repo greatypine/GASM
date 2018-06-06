@@ -132,20 +132,20 @@
 	      <form action="index.html" method="post">
 	      <div id="login_error_msg" class="has-feedback text-red" style="font-size: 16px;padding-bottom: 5px;"></div>
 	         <div class="form-group has-feedback" style="margin-bottom: 5px;clear:both;overflow: overlay;">
-	          <input type="text" class="form-control" style="width: 80%;float:left;" name="phone" id="phone" maxlength="11" disabled="disabled">
-	          <button id="sendCodeBtn" type="button" style="width:20%;float:right;height: 52px;" onclick="sendMessage()" class="btn btn-primary btn-block ">发送</button>
+	          <input type="text" class="form-control" style="width: 100%;float:left;" name="phone" id="phone" placeholder="输入您的员工编号/电话号" maxlength="12">
 	          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
-	          <input type="hidden" name="hiddenphone" id="hiddenphone"/>
 	        </div>
 	
-	        <div class="form-group has-feedback" style="margin-bottom: 5px;">
-	          <input type="text" class="form-control" name="valcode" id="valcode" placeholder="输入短信验证码">
+	        <div class="form-group has-feedback" style="margin-bottom: 20px;">
+	          <input type="text" class="form-control" style="width: 75%;float:left;" name="incode" id="incode" placeholder="输入右侧验证码">
 	          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+	          <label onclick="javascript:createCode()" style="width:20%;float:right;height: 52px;font-size: 20px;margin-top: 10px;" title="看不清？点击切换" id="showcode"></label>
 	        </div>
+	        
 	        
 	        <div class="row">
 	           <div class="col-xs-12">
-	            <button id="loginBtn" type="button" onclick="javascript:donext()" class="btn btn-primary btn-block btn-flat">确定</button>
+	            <button id="loginBtn" type="button" onclick="donext();" class="btn btn-primary btn-block btn-flat">下一步</button>
 	          </div>
 	          <!-- /.col -->
 	        </div>
@@ -198,48 +198,6 @@
 <script src="js/refDialog.js" type="text/javascript"></script> 
 
 <script>
-
-var inputcode = decode64(getUrlParamByKey("inputcode"));
-var id = decode64(getUrlParamByKey("id"));
-
-	function sendMessage(){
-		var hiddenphone = $("#hiddenphone").val();
-		if(hiddenphone==null||hiddenphone==""||hiddenphone.trim()==""){
-			$("#msgdetail").html("电话不能为空！");
-			document.getElementById("model_alert").style.display="block";
-			document.getElementById("process_div").style.display="block";
-		    return;
-		}
-		
-		//设置按钮60S不可用 
-		$("#sendCodeBtn").attr("disabled",true);
-		var count=60;
-		var interval = setInterval(function() { 
-			count--;
-			$("#sendCodeBtn").html(count+"s");
-			 if(count==0){
-				 clearInterval(interval);
-				$("#sendCodeBtn").attr("disabled",false);
-				$("#sendCodeBtn").html("发送");
-			}
-		},1000); 
-		
-		
-		 doManager("InterManager", "validateUserPhone",[hiddenphone],
-					function(data, textStatus, XMLHttpRequest) {
-						if (data.result) {
-							var defaultInfo = $.fromJSON(data.data);
-							if(defaultInfo.code==9000033){
-								$("#msgdetail").html("该电话号码无效！");
-								clearInterval(interval);
-								$("#sendCodeBtn").attr("disabled",false);
-								$("#sendCodeBtn").html("发送");
-								document.getElementById("model_alert").style.display="block";
-								document.getElementById("process_div").style.display="block";
-							}
-						}
-		 });
-	}
 	
 	function closealert(){
 		document.getElementById("model_alert").style.display="none";
@@ -248,68 +206,60 @@ var id = decode64(getUrlParamByKey("id"));
 	
 	
 	function donext(){
-		var hiddenphone = $("#hiddenphone").val();
-		var valcode = $("#valcode").val();
-		if(valcode!=null&&valcode.trim().length>0){
-				doManager("InterManager", "codeValidation",[hiddenphone,valcode],
-					function(data, textStatus, XMLHttpRequest) {
-						if (data.result) {
-							var defaultInfo = $.fromJSON(data.data);
-							if(defaultInfo.code==9000003){
-								$("#msgdetail").html(defaultInfo.message);
-								document.getElementById("model_alert").style.display="block";
-								document.getElementById("process_div").style.display="block";
-							}else{
-								window.location="resetpwd.html?phone="+encode64(hiddenphone)+"&code="+encode64(valcode);
-							}
-			  			}
-			   },false);
-			
-		}else{
-			$("#msgdetail").html("请输入短信验证码！");
+		
+		var phone = $("#phone").val();
+		if(phone==null||phone==""||phone.trim()==""){
+			$("#msgdetail").html("员工编号/电话号不能为空！");
 			document.getElementById("model_alert").style.display="block";
 			document.getElementById("process_div").style.display="block";
 		    return;
 		}
+		
+		var showcode=$("#showcode").html();
+		var incode=$("#incode").val();
+		
+		if(incode==null||incode==""||incode.trim()==""){
+			$("#msgdetail").html("验证码不能为空！");
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+		
+		if(incode.toLowerCase()!=showcode.toLowerCase()){
+			$("#msgdetail").html("验证码错误！");
+			$("#incode").val("");
+			createCode();
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block";
+		    return;
+		}
+		
+		doManager("InterManager", "initReset",[phone],
+			function(data, textStatus, XMLHttpRequest) {
+				if (data.result) {
+					var defaultInfo = $.fromJSON(data.data);
+					if(defaultInfo.code!=200){
+						$("#msgdetail").html(defaultInfo.message);
+						document.getElementById("model_alert").style.display="block";
+						document.getElementById("process_div").style.display="block";
+					}else{
+						window.location="validation.html?inputcode="+encode64(phone)+"&id="+encode64(defaultInfo.data.id);
+					}
+	  			}
+	   },false);
+			
 	}
 	
 	$(function(){
-		queryuserbyid();
+		createCode();
 	});
 	
-	function queryuserbyid(){
-		if(id==null||id.trim()==""){
-			window.location.href="login.html";
-			return;
-		}
-		 doManager("InterManager", "queryuserbyid",[id],
+	function createCode(){
+		 doManager("InterManager", "createCode","",
 				function(data, textStatus, XMLHttpRequest) {
 					if (data.result) {
 						var defaultInfo = $.fromJSON(data.data);
-						var emp_phone=defaultInfo.data.phone;
-						var emp_id=defaultInfo.data.employeeId;
-						if(inputcode==emp_phone||inputcode.toLowerCase()==emp_id.toLowerCase()){
-							//通过。显示手机号 并隐藏前七位 
-							if(emp_phone!=null&&emp_phone.length==11){
-								$("#hiddenphone").val(emp_phone);
-								$("#phone").val("*******"+emp_phone.substring(emp_phone.length-4,emp_phone.length));
-								$("#sendCodeBtn").attr("disabled",false);
-							}else{
-								//账号存在异常 
-								$("#msgdetail").html("该账号电话信息异常！");
-								document.getElementById("model_alert").style.display="block";
-								document.getElementById("process_div").style.display="block";
-								$("#sendCodeBtn").attr("disabled",true);
-							    return;
-							}
-						}else{
-							//账号存在异常 
-							$("#msgdetail").html("账号存在异常！");
-							document.getElementById("model_alert").style.display="block";
-							document.getElementById("process_div").style.display="block";
-							$("#sendCodeBtn").attr("disabled",true);
-						    return;
-						}
+						$("#showcode").html(defaultInfo.data);
 		  			}
 		   },false); 
 	}
