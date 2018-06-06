@@ -3626,11 +3626,11 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 					}
 		        }else{
 		        	result.setCode(CodeEnum.nullData.getValue());
-					result.setMessage("无效电话/手机验证码");
+					result.setMessage("手机验证码错误");
 		        }
 			}else{
 				result.setCode(CodeEnum.nullData.getValue());
-				result.setMessage("无效电话/手机验证码");
+				result.setMessage("无效手机验证码");
 			}
 			return result;
 		}
