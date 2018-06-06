@@ -36,6 +36,12 @@ text-decoration: underline;
   					if (data.result) {
   						var userObj = JSON.parse(data.data);
   						var userid = userObj.id;
+  						var zw = userObj.zw;
+  						if(zw!=null&&zw!=""&&zw.trim()!="店长"){
+  							urlStr = "../logout.do";
+  							window.location.href = urlStr;
+  						}
+  						
   						var store_name=userObj.store_name==null?"":userObj.store_name;
   						var employee_id=userObj.employeeId==null?"":userObj.employeeId;
   						employee_no=employee_id;
