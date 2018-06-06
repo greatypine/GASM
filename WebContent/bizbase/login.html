@@ -366,10 +366,10 @@
           if (data.result == true) {
             var returnObj = $.fromJSON(data.data);
             if (returnObj.user.zw != "店长") {
-              $$.showMessage("提示", "无效用户！");
+              $$.showMessage("提示", "非店长角色暂未开放使用。");
               return;
             }
-            //保存记录
+            //保存记录 
             //saveLoginLog(returnObj);
 
             if (returnObj.user.blankPassword == null || returnObj.user.blankPassword.trim() == "") {
