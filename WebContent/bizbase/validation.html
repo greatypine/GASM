@@ -286,7 +286,7 @@ var id = decode64(getUrlParamByKey("id"));
 				function(data, textStatus, XMLHttpRequest) {
 					if (data.result) {
 						var defaultInfo = $.fromJSON(data.data);
-						var emp_phone=defaultInfo.data.phone;
+						var emp_phone=defaultInfo.data.mobilephone;
 						var emp_id=defaultInfo.data.employeeId;
 						if(inputcode==emp_phone||inputcode.toLowerCase()==emp_id.toLowerCase()){
 							//通过。显示手机号 并隐藏前七位 
