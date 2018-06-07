@@ -3524,7 +3524,7 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 					String code = randomcode();
 					String sendcode = "您的验证码是"+code+"，十分钟内有效。";
 					String resultString ="";
-					//resultString = commonSendMessage(phone, sendcode, "找回密码验证");
+					resultString = commonSendMessage(phone, sendcode, "找回密码验证");
 					
 					//保存发送记录 
 					SendMessage sendMessage = new SendMessage();
