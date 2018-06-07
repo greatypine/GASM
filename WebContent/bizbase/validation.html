@@ -205,9 +205,10 @@ var id = decode64(getUrlParamByKey("id"));
 	function sendMessage(){
 		var hiddenphone = $("#hiddenphone").val();
 		if(hiddenphone==null||hiddenphone==""||hiddenphone.trim()==""){
-			$("#msgdetail").html("电话不能为空！");
+			$("#login_error_msg").html("电话不能为空！");
+			/* $("#msgdetail").html("电话不能为空！");
 			document.getElementById("model_alert").style.display="block";
-			document.getElementById("process_div").style.display="block";
+			document.getElementById("process_div").style.display="block"; */
 		    return;
 		}
 		
@@ -230,12 +231,13 @@ var id = decode64(getUrlParamByKey("id"));
 						if (data.result) {
 							var defaultInfo = $.fromJSON(data.data);
 							if(defaultInfo.code==9000033){
-								$("#msgdetail").html("该电话号码无效！");
+								$("#login_error_msg").html("该电话号码无效！");
+								/* $("#msgdetail").html("该电话号码无效！"); */
 								clearInterval(interval);
 								$("#sendCodeBtn").attr("disabled",false);
 								$("#sendCodeBtn").html("发送");
-								document.getElementById("model_alert").style.display="block";
-								document.getElementById("process_div").style.display="block";
+								/* document.getElementById("model_alert").style.display="block";
+								document.getElementById("process_div").style.display="block"; */
 							}
 						}
 		 });
@@ -256,9 +258,10 @@ var id = decode64(getUrlParamByKey("id"));
 						if (data.result) {
 							var defaultInfo = $.fromJSON(data.data);
 							if(defaultInfo.code==9000003){
-								$("#msgdetail").html(defaultInfo.message);
+								$("#login_error_msg").html(defaultInfo.message);
+								/* $("#msgdetail").html(defaultInfo.message);
 								document.getElementById("model_alert").style.display="block";
-								document.getElementById("process_div").style.display="block";
+								document.getElementById("process_div").style.display="block"; */
 							}else{
 								window.location="resetpwd.html?phone="+encode64(hiddenphone)+"&code="+encode64(valcode);
 							}
@@ -266,9 +269,10 @@ var id = decode64(getUrlParamByKey("id"));
 			   },false);
 			
 		}else{
-			$("#msgdetail").html("请输入短信验证码！");
+			$("#login_error_msg").html("请输入短信验证码！");
+			/* $("#msgdetail").html("请输入短信验证码！");
 			document.getElementById("model_alert").style.display="block";
-			document.getElementById("process_div").style.display="block";
+			document.getElementById("process_div").style.display="block"; */
 		    return;
 		}
 	}
@@ -296,17 +300,19 @@ var id = decode64(getUrlParamByKey("id"));
 								$("#sendCodeBtn").attr("disabled",false);
 							}else{
 								//账号存在异常 
-								$("#msgdetail").html("该账号电话信息异常！");
+								$("#login_error_msg").html("该账号电话信息异常！");
+								/* $("#msgdetail").html("该账号电话信息异常！");
 								document.getElementById("model_alert").style.display="block";
-								document.getElementById("process_div").style.display="block";
+								document.getElementById("process_div").style.display="block"; */
 								$("#sendCodeBtn").attr("disabled",true);
 							    return;
 							}
 						}else{
 							//账号存在异常 
-							$("#msgdetail").html("账号存在异常！");
+							$("#login_error_msg").html("账号存在异常！");
+							/* $("#msgdetail").html("账号存在异常！");
 							document.getElementById("model_alert").style.display="block";
-							document.getElementById("process_div").style.display="block";
+							document.getElementById("process_div").style.display="block"; */
 							$("#sendCodeBtn").attr("disabled",true);
 						    return;
 						}
