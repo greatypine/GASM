@@ -124,7 +124,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		Map<String,Object> returnMap = new java.util.HashMap<String, Object>();
 		StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
 		FSP fsp = new FSP();
-		IFilter iFilter =FilterFactory.getSimpleFilter("rcv_phone='"+phone+"'");
+		IFilter iFilter =FilterFactory.getSimpleFilter("phone='"+phone+"'");
 		fsp.setUserFilter(iFilter);
 		fsp.setPage(pageInfo);
 		fsp.setSort(new Sort("worder_status",Sort.ASC).appendSort(new Sort("id",Sort.DESC)));
@@ -160,6 +160,11 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			updateStoreOrderInfo.setWorder_type(storeOrderInfo.getWorder_type());
 			preSaveObject(updateStoreOrderInfo);
 			this.saveObject(updateStoreOrderInfo);
+			
+			
+			//如果状态为已确认 则插入mongo表中
+			
+			
 		}
 		return updateStoreOrderInfo;
 	}
