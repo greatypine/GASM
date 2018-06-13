@@ -113,17 +113,19 @@
                 	ret="待确认";
                 }
                 if(value!=null&&value==1){
-                	ret="已确认";
+                	ret="客户确认中";
                 }
                 if(value!=null&&value==2){
-                	ret="已取消";
+                	ret="已确认";
                 }
                 if(value!=null&&value==3){
                 	ret="已完成";
                 }
+                if(value!=null&&value==4){
+                	ret="已取消";
+                }
                 return ret;
             }
-            
         }
     
   
