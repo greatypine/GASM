@@ -8,8 +8,6 @@
 		<property name="userName" value="${mongodb.userName}" />
 		<property name="password" value="${mongodb.password}" />
 		<property name="host1" value="${mongodb.host1}" />
-		<property name="host2" value="${mongodb.host2}" />
-		<property name="host3" value="${mongodb.host3}" />
 		
 	</bean>
 	

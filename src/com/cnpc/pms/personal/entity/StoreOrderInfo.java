@@ -58,7 +58,7 @@ public class StoreOrderInfo extends DataEntity{
 	
 	
 	/**
-	 * 工单状态（0待确认 1已确认  2已完成  ）
+	 * 工单状态（0待确认  1已确认  2已完成  ）
 	 */
 	@Column(name = "worder_status")
 	private Integer worder_status;
@@ -111,6 +111,10 @@ public class StoreOrderInfo extends DataEntity{
 	 */
 	@Column(length = 255, name = "address")
 	private String address;
+	
+	
+	@Column(length = 64, name = "order_sn")
+	private String order_sn;
 	
 
 	public String getWorder_sn() {
@@ -232,6 +236,14 @@ public class StoreOrderInfo extends DataEntity{
 
 	public void setRcv_phone(String rcv_phone) {
 		this.rcv_phone = rcv_phone;
+	}
+
+	public String getOrder_sn() {
+		return order_sn;
+	}
+
+	public void setOrder_sn(String order_sn) {
+		this.order_sn = order_sn;
 	}
 	
 	

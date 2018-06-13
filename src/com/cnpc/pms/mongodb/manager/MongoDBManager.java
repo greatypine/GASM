@@ -12,6 +12,7 @@ import org.json.JSONObject;
 import com.cnpc.pms.base.manager.IManager;
 import com.cnpc.pms.mongodb.dto.TinyVillageCoordDto;
 import com.cnpc.pms.personal.entity.Store;
+import com.cnpc.pms.personal.entity.StoreOrderInfo;
 import com.cnpc.pms.slice.entity.Area;
 import com.cnpc.pms.slice.entity.AreaInfo;
 import com.mongodb.client.MongoCollection;
@@ -264,4 +265,9 @@ public interface MongoDBManager extends IManager{
 	 * @return
 	 */
 	public Map<String, Object> queryEmployeeDiveRecord(String employeeNo);
+	
+	
+	
+	//保存mongo工单信息
+	public Map<String, Object> saveStoreOrderInfo(StoreOrderInfo storeOrderInfo);
 }

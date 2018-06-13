@@ -3,6 +3,7 @@
  */
 package com.cnpc.pms.mongodb.manager.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -30,6 +31,7 @@ import com.cnpc.pms.mongodb.manager.MongoDBManager;
 import com.cnpc.pms.personal.dao.StoreDao;
 import com.cnpc.pms.personal.dao.TinyAreaDao;
 import com.cnpc.pms.personal.entity.Store;
+import com.cnpc.pms.personal.entity.StoreOrderInfo;
 import com.cnpc.pms.personal.entity.TinyArea;
 import com.cnpc.pms.personal.entity.TinyVillage;
 import com.cnpc.pms.personal.entity.TinyVillageCode;
@@ -1447,6 +1449,57 @@ public class MongoDBManagerImpl extends BizBaseCommonManager implements MongoDBM
 		return result;
 	}
 
+	
+	
+	//保存mongo工单信息
+	@Override
+	public Map<String, Object> saveStoreOrderInfo(StoreOrderInfo storeOrderInfo) {
+		Map<String, Object> result = new HashMap<String,Object>();
+		try {
+				MongoDbUtil mDbUtil = (MongoDbUtil)SpringHelper.getBean("mongodb");
+				MongoDatabase database = mDbUtil.getDatabase();
+			    // 注意这里的数据类型是document  
+				MongoCollection<Document> collection = database.getCollection("service_ref_order");
+				
+				//保存mongodb
+				Document doc = new Document();
+				doc.put("serv_order_sn", storeOrderInfo.getWorder_sn());
+				doc.put("custom_tel", storeOrderInfo.getPhone());
+				doc.put("confirm_date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(storeOrderInfo.getConfirm_date()));
+				doc.put("employee_no", storeOrderInfo.getEmployee_no());
+				doc.put("serv_content", storeOrderInfo.getWcontent());
+				doc.put("address", storeOrderInfo.getAddress());
+				
+				
+				doc.put("orderid", null);
+				doc.put("order_sn", null);
+				doc.put("order_date", null);
+				
+				//serv_order_sn,  custom_tel, confirm_date, orderid,  order_sn, order_date
+				FindIterable<Document> findIterable =  collection.find(Filters.eq("serv_order_sn",storeOrderInfo.getWorder_sn()));
+				Document document = findIterable.first();
+				System.out.println(document);
+				if(document==null){
+					collection.insertOne(doc);//保存
+				}/*else{
+					BasicDBObject query = new BasicDBObject();
+					query.append("serv_order_sn", storeOrderInfo.getWorder_sn());
+					Document updateDoc = new Document("custom_tel",storeOrderInfo.getPhone()).append("confirm_date", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(storeOrderInfo.getConfirm_date()));
+					collection.updateMany(query, new Document("$set",updateDoc)); 
+				}*/
+				//collection.deleteMany(Filters.eq("code",tinyVillageCode.getCode()));//删除
+				//collection.insertOne(doc);//保存
+		}catch(Exception e){
+				result.put("code",CodeEnum.error.getValue());
+				result.put("message", "保存失败！ ");
+				return result;
+		}
+		
+		result.put("code",CodeEnum.success.getValue());
+		result.put("message", CodeEnum.success.getDescription());
+		return result;
+	}
+	
 
 
 }
