@@ -86,7 +86,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			storeOrderInfo.setEmployee_phone(humanresources.getPhone());
 		}
 		
-		if(storeOrderInfo.getWorder_status()==1){
+		if(storeOrderInfo.getWorder_status()==2){
 			storeOrderInfo.setConfirm_date(new Date());
 		}
 		
@@ -95,7 +95,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 		
 		
 		//如果状态为已确认 则插入mongo表中
-		if(storeOrderInfo.getWorder_status()==1){
+		if(storeOrderInfo.getWorder_status()==2){
 			MongoDBManager mongoDBManager = (MongoDBManager) SpringHelper.getBean("mongoDBManager");
 			mongoDBManager.saveStoreOrderInfo(storeOrderInfo);
 		}
@@ -173,7 +173,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			updateStoreOrderInfo.setWorder_status(storeOrderInfo.getWorder_status());
 			updateStoreOrderInfo.setWorder_type(storeOrderInfo.getWorder_type());
 			
-			if(updateStoreOrderInfo.getWorder_status()==1){
+			if(updateStoreOrderInfo.getWorder_status()==2){
 				updateStoreOrderInfo.setConfirm_date(new Date());
 			}
 			
@@ -182,7 +182,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			
 			
 			//如果状态为已确认 则插入mongo表中
-			if(updateStoreOrderInfo.getWorder_status()==1){
+			if(updateStoreOrderInfo.getWorder_status()==2){
 				MongoDBManager mongoDBManager = (MongoDBManager) SpringHelper.getBean("mongoDBManager");
 				mongoDBManager.saveStoreOrderInfo(updateStoreOrderInfo);
 			}
@@ -204,7 +204,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			storeOrderInfoManager.saveObject(updateStoreOrderInfo);
 			
 			//如果工单 状态为1。已确认的 。插入mongo
-			if(updateStoreOrderInfo!=null&&updateStoreOrderInfo.getWorder_status()==1){
+			if(updateStoreOrderInfo!=null&&updateStoreOrderInfo.getWorder_status()==2){
 				updateStoreOrderInfo.setConfirm_date(new Date());
 				MongoDBManager mongoDBManager = (MongoDBManager) SpringHelper.getBean("mongoDBManager");
 				mongoDBManager.saveStoreOrderInfo(updateStoreOrderInfo);
