@@ -205,6 +205,7 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			
 			//如果工单 状态为1。已确认的 。插入mongo
 			if(updateStoreOrderInfo!=null&&updateStoreOrderInfo.getWorder_status()==1){
+				updateStoreOrderInfo.setConfirm_date(new Date());
 				MongoDBManager mongoDBManager = (MongoDBManager) SpringHelper.getBean("mongoDBManager");
 				mongoDBManager.saveStoreOrderInfo(updateStoreOrderInfo);
 			}

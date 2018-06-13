@@ -1490,6 +1490,7 @@ public class MongoDBManagerImpl extends BizBaseCommonManager implements MongoDBM
 				//collection.deleteMany(Filters.eq("code",tinyVillageCode.getCode()));//删除
 				//collection.insertOne(doc);//保存
 		}catch(Exception e){
+				e.printStackTrace();
 				result.put("code",CodeEnum.error.getValue());
 				result.put("message", "保存失败！ ");
 				return result;
