@@ -19,11 +19,11 @@ public interface StoreOrderInfoManager extends IManager{
 	
 	public Map<String, Object> queryStoreOrderInfoList(QueryConditions condition); 
 	
-	public Map<String, Object> queryStoreOrderInfoListApp(PageInfo pageInfo,String employee_no,String types);
+	public Map<String, Object> queryStoreOrderInfoListApp(PageInfo pageInfo,String employee_no,String types,String inputnum);
 	
 	public StoreOrderInfo saveStoreOrderInfoForApp(StoreOrderInfo storeOrderInfo);
 	
-	public Map<String,Object> queryStoreOrderInfoListByPhone(PageInfo pageInfo,String phone);
+	public Map<String,Object> queryStoreOrderInfoListByPhone(PageInfo pageInfo,String phone,String inputnum);
 	
 	public StoreOrderInfo updateStoreOrderInfoBySN(String worder_sn,int worder_status);
 	

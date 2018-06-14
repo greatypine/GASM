@@ -101,6 +101,12 @@ public class StoreOrderInfo extends DataEntity{
 	
 
 	/**
+	 * 收货人姓名
+	 */
+	@Column(length = 64, name = "rcv_name")
+	private String rcv_name;
+	
+	/**
 	 * 收货电话
 	 */
 	@Column(length = 64, name = "rcv_phone")
@@ -244,6 +250,14 @@ public class StoreOrderInfo extends DataEntity{
 
 	public void setOrder_sn(String order_sn) {
 		this.order_sn = order_sn;
+	}
+
+	public String getRcv_name() {
+		return rcv_name;
+	}
+
+	public void setRcv_name(String rcv_name) {
+		this.rcv_name = rcv_name;
 	}
 	
 	

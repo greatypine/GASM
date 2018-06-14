@@ -3439,11 +3439,11 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		
 		//工单手机列表
 		@Override
-		public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no,String types){
+		public Result queryStoreOrderListForApp(PageInfo pageInfo,String employee_no,String types,String inputnum){
 			Result result = new Result();
 			StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
 			try {
-				Map<String, Object> rt_maps = storeOrderInfoManager.queryStoreOrderInfoListApp(pageInfo, employee_no,types);
+				Map<String, Object> rt_maps = storeOrderInfoManager.queryStoreOrderInfoListApp(pageInfo, employee_no,types,inputnum);
 				result.setCode(CodeEnum.success.getValue());
 	            result.setMessage(CodeEnum.success.getDescription());
 	            result.setData(rt_maps);
@@ -3678,10 +3678,10 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		
 		
 		@Override
-		public Result queryStoreOrderInfoByPhone(PageInfo pageinfo,String phone){
+		public Result queryStoreOrderInfoByPhone(PageInfo pageinfo,String phone,String inputnum){
 			Result result = new Result();
 			StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
-			Map<String, Object> storeOrderInfos = storeOrderInfoManager.queryStoreOrderInfoListByPhone(pageinfo,phone);
+			Map<String, Object> storeOrderInfos = storeOrderInfoManager.queryStoreOrderInfoListByPhone(pageinfo,phone,inputnum);
 			if(storeOrderInfos!=null&&storeOrderInfos.size()>0){
 				result.setCode(CodeEnum.success.getValue());
 				result.setMessage(CodeEnum.success.getDescription());

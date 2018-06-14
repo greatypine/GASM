@@ -22,6 +22,7 @@ import com.cnpc.pms.bizbase.rbac.usermanage.dto.UserDTO;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserManager;
 import com.cnpc.pms.mongodb.manager.MongoDBManager;
+import com.cnpc.pms.personal.dao.StoreOrderInfoDao;
 import com.cnpc.pms.personal.entity.Humanresources;
 import com.cnpc.pms.personal.entity.StoreOrderInfo;
 import com.cnpc.pms.personal.manager.HumanresourcesManager;
@@ -134,19 +135,10 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 	}
 	
 	@Override
-	public Map<String,Object> queryStoreOrderInfoListByPhone(PageInfo pageInfo,String phone){
-		Map<String,Object> returnMap = new java.util.HashMap<String, Object>();
-		StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
-		FSP fsp = new FSP();
-		IFilter iFilter =FilterFactory.getSimpleFilter("phone='"+phone+"'");
-		fsp.setUserFilter(iFilter);
-		fsp.setPage(pageInfo);
-		fsp.setSort(new Sort("worder_status",Sort.ASC).appendSort(new Sort("id",Sort.DESC)));
-		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) storeOrderInfoManager.getList(fsp);
-		returnMap.put("pageinfo", pageInfo);
-		returnMap.put("header", "");
-		returnMap.put("data", lst_List);
-		return returnMap;
+	public Map<String,Object> queryStoreOrderInfoListByPhone(PageInfo pageInfo,String phone,String inputnum){
+		StoreOrderInfoDao storeOrderInfoDao = (StoreOrderInfoDao) SpringHelper.getBean(StoreOrderInfoDao.class.getName());
+		Map<String, Object> lst_List = storeOrderInfoDao.queryStoreOrderInfoListByPhone(pageInfo, phone, inputnum);
+		return lst_List;
 	}
 	
 	@Override
@@ -222,30 +214,10 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 	
 	
 	@Override
-	public Map<String, Object> queryStoreOrderInfoListApp(PageInfo pageInfo,String employee_no,String types){
-		Map<String,Object> returnMap = new java.util.HashMap<String, Object>();
-		StringBuffer cond = new StringBuffer();
-		cond.append(" 1=1 ");
-		if(employee_no!=null){
-			cond.append(" and employee_no = '"+employee_no+"'");
-		}else{
-			cond.append(" and 1=0 ");
-		}
-		if(types!=null&&types.length()>0){
-			cond.append(" and worder_status in("+types+") ");
-		}else{
-			cond.append(" and 1=0 ");
-		}
-		FSP fsp = new FSP();
-		IFilter iFilter =FilterFactory.getSimpleFilter(cond.toString());
-		fsp.setUserFilter(iFilter);
-		fsp.setPage(pageInfo);
-		fsp.setSort(new Sort("worder_status",Sort.ASC).appendSort(new Sort("id",Sort.DESC)));
-		List<StoreOrderInfo> lst_List = (List<StoreOrderInfo>) this.getList(fsp);
-		returnMap.put("pageinfo", pageInfo);
-		returnMap.put("header", "");
-		returnMap.put("data", lst_List);
-		return returnMap;
+	public Map<String, Object> queryStoreOrderInfoListApp(PageInfo pageInfo,String employee_no,String types,String inputnum){
+		StoreOrderInfoDao storeOrderInfoDao = (StoreOrderInfoDao) SpringHelper.getBean(StoreOrderInfoDao.class.getName());
+		Map<String, Object> maps = storeOrderInfoDao.queryStoreOrderInfoListApp(pageInfo, employee_no, types, inputnum);
+		return maps;
 	}
 	
 	
