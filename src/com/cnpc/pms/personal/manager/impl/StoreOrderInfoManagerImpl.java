@@ -164,6 +164,8 @@ public class StoreOrderInfoManagerImpl extends BaseManagerImpl implements StoreO
 			updateStoreOrderInfo.setAddress(storeOrderInfo.getAddress());
 			updateStoreOrderInfo.setWorder_status(storeOrderInfo.getWorder_status());
 			updateStoreOrderInfo.setWorder_type(storeOrderInfo.getWorder_type());
+			updateStoreOrderInfo.setRcv_name(storeOrderInfo.getRcv_name());
+			
 			
 			if(updateStoreOrderInfo.getWorder_status()==2){
 				updateStoreOrderInfo.setConfirm_date(new Date());

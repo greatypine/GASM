@@ -45,6 +45,13 @@ var id = getUrlParamByKey("id");
 		}
 		
 		
+		var rcv_name=$("#rcv_name").val();
+		if(rcv_name==null||rcv_name.trim()==""){
+			alert("请填写收货人姓名！ ");
+			return;
+		}
+		
+		
 		var rcv_phone=$("#rcv_phone").val();
 		if(rcv_phone==null||rcv_phone.trim()==""){
 			alert("请填写收货电话！ ");
@@ -70,7 +77,7 @@ var id = getUrlParamByKey("id");
 	
 	
 	function doSave(){
-		var arr = ["id","wcontent", "phone","username","address","rcv_phone"];
+		var arr = ["id","wcontent", "phone","username","address","rcv_phone","rcv_name"];
 			var o = {};
 			for ( var i in arr) {
 				var v = arr[i];
@@ -109,6 +116,7 @@ var id = getUrlParamByKey("id");
   						$("#wcontent").val(obj.wcontent);
   						$("#username").val(obj.username);
   						$("#phone").val(obj.phone);
+  						$("#rcv_name").val(obj.rcv_name);
   						$("#rcv_phone").val(obj.rcv_phone);
   						$("#address").val(obj.address);
   						
@@ -253,6 +261,17 @@ var id = getUrlParamByKey("id");
 					</p>
 				</td>
 			</tr>
+			
+			<tr>
+				<td colspan="2">
+					<p></p>
+					<p> 
+						<font color="red">*</font>收货人姓名：<input type="text" id="rcv_name" value=""  />
+					</p>
+				</td>
+			</tr>
+			
+			
 			<tr>
 				<td colspan="2">
 					<p></p>
