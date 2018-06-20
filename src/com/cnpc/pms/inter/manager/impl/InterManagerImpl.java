@@ -3524,7 +3524,7 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 					String code = randomcode();
 					String sendcode = "您的验证码是"+code+"，十分钟内有效。";
 					String resultString ="";
-					resultString = commonSendMessage(phone, sendcode, "找回密码验证");
+					//resultString = commonSendMessage(phone, sendcode, "找回密码验证");
 					
 					//保存发送记录 
 					SendMessage sendMessage = new SendMessage();
@@ -3743,4 +3743,32 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 	    	}
 			return result;
 		}
+		
+		
+		
+		//根据客户电话，查询该客户下过的工单  
+		@Override
+		public Result queryStoreOrderByPhone(String phone){
+			Result result = new Result();
+	    	if(phone!=null&&phone.length()>0){
+	    		IFilter iFilter =FilterFactory.getSimpleFilter("phone='"+phone+"'");
+	    		StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
+	    		List<StoreOrderInfo> storeOrderInfos = (List<StoreOrderInfo>) storeOrderInfoManager.getList(iFilter);
+	    		if(storeOrderInfos!=null&&storeOrderInfos.size()>0){
+	    			result.setCode(CodeEnum.success.getValue());
+	    			result.setMessage(CodeEnum.success.getDescription());
+	    			result.setData(storeOrderInfos);
+	    		}else{
+	    			result.setCode(CodeEnum.nullData.getValue());
+					result.setMessage(CodeEnum.nullData.getDescription());
+	    		}
+	    	}else{
+	    		result.setCode(CodeEnum.nullData.getValue());
+				result.setMessage(CodeEnum.nullData.getDescription());
+	    	}
+			return result;
+		}
+				
+		
+		
 }
