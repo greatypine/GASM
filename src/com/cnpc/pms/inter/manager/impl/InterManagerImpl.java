@@ -3751,13 +3751,16 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		public Result queryStoreOrderByPhone(String phone){
 			Result result = new Result();
 	    	if(phone!=null&&phone.length()>0){
-	    		IFilter iFilter =FilterFactory.getSimpleFilter("phone='"+phone+"'");
+	    		IFilter iFilter =FilterFactory.getSimpleFilter("phone='"+phone+"' and worder_status=3");
 	    		StoreOrderInfoManager storeOrderInfoManager = (StoreOrderInfoManager) SpringHelper.getBean("storeOrderInfoManager");
-	    		List<StoreOrderInfo> storeOrderInfos = (List<StoreOrderInfo>) storeOrderInfoManager.getList(iFilter);
+	    		FSP fsp = new FSP();
+	    		fsp.setSort(SortFactory.createSort("id",ISort.DESC));
+	    		fsp.setUserFilter(iFilter);
+	    		List<StoreOrderInfo> storeOrderInfos = (List<StoreOrderInfo>) storeOrderInfoManager.getList(fsp);
 	    		if(storeOrderInfos!=null&&storeOrderInfos.size()>0){
 	    			result.setCode(CodeEnum.success.getValue());
 	    			result.setMessage(CodeEnum.success.getDescription());
-	    			result.setData(storeOrderInfos);
+	    			result.setData(storeOrderInfos.get(0));
 	    		}else{
 	    			result.setCode(CodeEnum.nullData.getValue());
 					result.setMessage(CodeEnum.nullData.getDescription());
