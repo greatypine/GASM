@@ -58,7 +58,7 @@ public class StoreOrderInfo extends DataEntity{
 	
 	
 	/**
-	 * 工单状态（0待确认  1已确认  2已完成  ）
+	 * 工单状态（0待确认  1客户确认中  2已确认  3已完成  4已取消  ）
 	 */
 	@Column(name = "worder_status")
 	private Integer worder_status;
