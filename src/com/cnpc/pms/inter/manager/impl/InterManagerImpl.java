@@ -3396,20 +3396,22 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			String resultString = "";
 			String proxyip = PropertiesUtil.getValue("iproxy.sendip");
 			int proxyport = Integer.parseInt(PropertiesUtil.getValue("iproxy.sendport"));
+			String setcode = PropertiesUtil.getValue("iproxy.set");
 			try {
-				String sendcode_gb2312 = URLEncoder.encode(content,"utf8");
-				System.out.println(sendcode_gb2312);
-				//String url = "http://q.hl95.com:8061/?username=gasjyz&password=Gasj0121&message="+sendcode_gb2312+"&phone="+mobilephone+"&epid=123743&linkid=&subcode=";
-				String url = "https://datatest.guoanshequ.top/eprj/dispatcher.action?phone=%s&sendcode=%s";
-				HttpHost proxy = new HttpHost(proxyip, proxyport, "http");
-				RequestConfig requestConfig = RequestConfig.custom().setProxy(proxy).build();
-				/** 上线时，添加代理设置 **/
-				CloseableHttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();;
-				//CloseableHttpClient httpclient = HttpClients.createDefault();
-				HttpGet httpGet = new HttpGet(String.format(url, new Object[]{mobilephone,sendcode_gb2312}));
-				CloseableHttpResponse response = httpclient.execute(httpGet);
-				resultString = EntityUtils.toString(response.getEntity(), "utf-8");
-				
+				if(setcode!=null&&setcode.equals("ON")){
+					String sendcode_gb2312 = URLEncoder.encode(content,"utf8");
+					System.out.println(sendcode_gb2312);
+					//String url = "http://q.hl95.com:8061/?username=gasjyz&password=Gasj0121&message="+sendcode_gb2312+"&phone="+mobilephone+"&epid=123743&linkid=&subcode=";
+					String url = "https://datatest.guoanshequ.top/eprj/dispatcher.action?phone=%s&sendcode=%s";
+					HttpHost proxy = new HttpHost(proxyip, proxyport, "http");
+					RequestConfig requestConfig = RequestConfig.custom().setProxy(proxy).build();
+					/** 上线时，添加代理设置 **/
+					CloseableHttpClient httpclient = HttpClients.custom().setDefaultRequestConfig(requestConfig).build();;
+					//CloseableHttpClient httpclient = HttpClients.createDefault();
+					HttpGet httpGet = new HttpGet(String.format(url, new Object[]{mobilephone,sendcode_gb2312}));
+					CloseableHttpResponse response = httpclient.execute(httpGet);
+					resultString = EntityUtils.toString(response.getEntity(), "utf-8");
+				}
 				//保存发送记录 
 				/*SendMessage sendMessage = new SendMessage();
 				sendMessage.setFunctionname(functionname);
