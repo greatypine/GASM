@@ -131,7 +131,7 @@
 	    <!-- <div class="col-sm-6"><img src="images/reg_img2.png"> </div> -->
 	    <!-- <div class="login_line log_line1 pull-left"></div>
 	    <div class="login_line log_line2 pull-left"></div> -->
-	    <div style="color: blue;margin-left: 20px;">您使用的是初始密码，请修改后重新登录。</div>
+	    <div style="color: blue;margin-left: 20px;">您是首次使用国安数据账号，请设置密码。</div>
 	    <div class="register-box pull-right" style="margin-top: 10px;">
 	
 	    <div class="register-box-body" style="padding-top: 10px;">
@@ -145,12 +145,27 @@
 	          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
 	        </div>
 	
-	        <div class="form-group has-feedback" style="margin-bottom: 20px;">
+	        <div class="form-group has-feedback" style="margin-bottom: 5px;">
 	          <input type="password" class="form-control" name="confirmpassword" id="confirmpassword" placeholder="确认新的登录密码">
 	          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
 	        </div>
-	        <div class="row">
-	           <div class="col-xs-12">
+	        
+	        
+	        
+	         <div class="form-group has-feedback" style="margin-bottom: 5px;clear:both;overflow: hidden;">
+	          <label id="phone"></label>
+	          <input type="hidden" name="hiddenphone" id="hiddenphone"/>
+	        </div>
+	
+	        <div class="form-group has-feedback" style="margin-bottom: 5px;">
+	          <input type="text" class="form-control" style="width:80%;float:left;" name="valcode" id="valcode" placeholder="输入短信验证码">
+	          <button id="sendCodeBtn" type="button" style="width:20%;float:right;height: 52px;" onclick="sendMessage()" class="btn btn-primary btn-block ">发送</button>
+	          <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+	        </div>
+	        
+	        
+	        <div class="row" >
+	           <div class="col-xs-12" style="margin-top: 5px;">
 	            <button id="loginBtn" type="button" onclick="doUpdate();" class="btn btn-primary btn-block btn-flat">确定</button>
 	          </div>
 	          <!-- /.col -->
@@ -266,6 +281,10 @@ function doUpdate(){
 		return;
 	}
 	
+	if(!donext()){
+		return;
+	}
+	
 	var confirmpassword = $("#confirmpassword").val();
 	
 	  var obj = new Object();
@@ -324,7 +343,7 @@ function doUpdate(){
 		},false);
 		
 		
-		
+		queryuserbyid(userid,curuserobj.mobilephone);
 		
 		$('input').iCheck({
 		      checkboxClass: 'icheckbox_square-blue',
@@ -390,6 +409,121 @@ function doUpdate(){
 	}
 	
 
+	
+	
+	function queryuserbyid(user_id,inputcode){
+		 doManager("InterManager", "queryuserbyid",[user_id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var defaultInfo = $.fromJSON(data.data);
+						var emp_phone=defaultInfo.data.mobilephone;
+						var emp_id=defaultInfo.data.employeeId;
+						if(inputcode==emp_phone||inputcode.toLowerCase()==emp_id.toLowerCase()){
+							//通过。显示手机号 并隐藏前七位 
+							if(emp_phone!=null&&emp_phone.length==11){
+								$("#hiddenphone").val(emp_phone);
+								$("#phone").html("您的手机号码："+emp_phone.substring(0,3)+"****"+emp_phone.substring(emp_phone.length-4,emp_phone.length));
+								$("#sendCodeBtn").attr("disabled",false);
+							}else{
+								//账号存在异常 
+								$("#login_error_msg").html("该账号电话信息异常！");
+								/* $("#msgdetail").html("该账号电话信息异常！");
+								document.getElementById("model_alert").style.display="block";
+								document.getElementById("process_div").style.display="block"; */
+								$("#sendCodeBtn").attr("disabled",true);
+							    return;
+							}
+						}else{
+							//账号存在异常 
+							$("#login_error_msg").html("账号存在异常！");
+							/* $("#msgdetail").html("账号存在异常！");
+							document.getElementById("model_alert").style.display="block";
+							document.getElementById("process_div").style.display="block"; */
+							$("#sendCodeBtn").attr("disabled",true);
+						    return;
+						}
+		  			}
+		   },false); 
+	}
+	
+	
+	
+	function donext(){
+		var hiddenphone = $("#hiddenphone").val();
+		var valcode = $("#valcode").val();
+		var flag = false;
+		if(valcode!=null&&valcode.trim().length>0){
+				doManager("InterManager", "codeValidation",[hiddenphone,valcode],
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var defaultInfo = $.fromJSON(data.data);
+							if(defaultInfo.code==9000003){
+								$("#login_error_msg").html(defaultInfo.message);
+								flag=false;
+								/* $("#msgdetail").html(defaultInfo.message);
+								document.getElementById("model_alert").style.display="block";
+								document.getElementById("process_div").style.display="block"; */
+							}else{
+								//window.location="resetpwd.html?phone="+encode64(hiddenphone)+"&code="+encode64(valcode);
+								flag=true;
+							}
+			  			}
+			   },false);
+			
+		}else{
+			$("#login_error_msg").html("请输入短信验证码！");
+		    flag=false;
+		}
+		return flag;
+	}
+	
+	
+	
+	function sendMessage(){
+		if(!checkPwd()){
+			return;
+		}
+		
+		var hiddenphone = $("#hiddenphone").val();
+		if(hiddenphone==null||hiddenphone==""||hiddenphone.trim()==""){
+			$("#login_error_msg").html("电话不能为空！");
+			/* $("#msgdetail").html("电话不能为空！");
+			document.getElementById("model_alert").style.display="block";
+			document.getElementById("process_div").style.display="block"; */
+		    return;
+		}
+		$("#login_error_msg").html("");
+		//设置按钮60S不可用 
+		$("#sendCodeBtn").attr("disabled",true);
+		var count=60;
+		var interval = setInterval(function() { 
+			count--;
+			$("#sendCodeBtn").html(count+"s");
+			 if(count==0){
+				 clearInterval(interval);
+				$("#sendCodeBtn").attr("disabled",false);
+				$("#sendCodeBtn").html("发送");
+			}
+		},1000); 
+		
+		
+		 doManager("InterManager", "validateUserPhone",[hiddenphone],
+					function(data, textStatus, XMLHttpRequest) {
+						if (data.result) {
+							var defaultInfo = $.fromJSON(data.data);
+							if(defaultInfo.code==9000033){
+								$("#login_error_msg").html("该电话号码无效！");
+								/* $("#msgdetail").html("该电话号码无效！"); */
+								clearInterval(interval);
+								$("#sendCodeBtn").attr("disabled",false);
+								$("#sendCodeBtn").html("发送");
+								/* document.getElementById("model_alert").style.display="block";
+								document.getElementById("process_div").style.display="block"; */
+							}
+						}
+		 });
+	}
+	
 </script>
 
 </body>
