@@ -171,6 +171,7 @@ var id = getUrlParamByKey("id");
 	}
 
 	//初始化国安侠下拉菜单 
+	//添加1版注释edit 
 	function initSelectNamesBySid(id) {
 		doManager("UserManager", "findNamesBySid", "" + id,
 				function(data, textStatus, XMLHttpRequest) {
