@@ -300,7 +300,7 @@
 
     function initdoLogin() {
       if (issu) {
-        //大屏登录
+        /* //大屏登录
         var reObj = new PMSRequestObject("userManager", "isScreenUser", [screenlogin]);
         var callback = function callback(data, textStatus, XMLHttpRequest) {
           //window.parent.location=getRootPath() + "/crm/index_headquarters.html";
@@ -310,7 +310,7 @@
           return false;
         }
         var url = "../login.do";
-        $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
+        $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback); */
 
       } else {
         doLogin();//正常登录
@@ -365,8 +365,15 @@
         doManager("userManager", "isInitPassword", [userCode, psw], function (data, textStatus, XMLHttpRequest) {
           if (data.result == true) {
             var returnObj = $.fromJSON(data.data);
-            if (returnObj.user.zw != "店长") {
-              $$.showMessage("提示", "非店长角色暂未开放使用。");
+            var isaccess=false;
+            if(returnObj.user.zw=="店长"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="国安侠"){
+            	isaccess = true;
+            }
+            if (!isaccess) {
+              $$.showMessage("提示", "该用户暂无访问权限！");
               return;
             }
             //保存记录 

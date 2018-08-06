@@ -72,6 +72,7 @@ import com.cnpc.pms.personal.entity.AppVersion;
 import com.cnpc.pms.personal.entity.CodeLogin;
 import com.cnpc.pms.personal.entity.Customer;
 import com.cnpc.pms.personal.entity.Express;
+import com.cnpc.pms.personal.entity.HumanVacation;
 import com.cnpc.pms.personal.entity.Humanresources;
 
 import com.cnpc.pms.personal.entity.SendMessage;
@@ -92,6 +93,7 @@ import com.cnpc.pms.personal.manager.BannerInfoManager;
 import com.cnpc.pms.personal.manager.CodeLoginManager;
 import com.cnpc.pms.personal.manager.CustomerManager;
 import com.cnpc.pms.personal.manager.ExpressManager;
+import com.cnpc.pms.personal.manager.HumanVacationManager;
 import com.cnpc.pms.personal.manager.HumanresourcesManager;
 import com.cnpc.pms.personal.manager.SendMessageManager;
 import com.cnpc.pms.personal.manager.SiteSelectionManager;
@@ -3791,5 +3793,51 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		}
 				
 		
+		
+		
+		//请假申请 HR审批同意接口  
+		public Result update_hr_audit(HumanVacation humanVacation){
+			Result result = new Result();
+			try {
+				HumanVacationManager humanVacationManager = (HumanVacationManager) SpringHelper.getBean("humanVacationManager");
+				HumanVacation reHumanVacation = humanVacationManager.update_hr_Audit(humanVacation);
+				result.setCode(CodeEnum.success.getValue());
+				result.setMessage(CodeEnum.success.getDescription());
+				result.setData(reHumanVacation);
+			} catch (Exception e) {
+				result.setCode(CodeEnum.error.getValue());
+				result.setMessage(CodeEnum.error.getDescription());
+				e.printStackTrace();
+			}
+			return result;
+		}
+		//请假申请 HR审批驳回接口  
+		public Result update_hr_audit_re(HumanVacation humanVacation){
+			Result result = new Result();
+			try {
+				HumanVacationManager humanVacationManager = (HumanVacationManager) SpringHelper.getBean("humanVacationManager");
+				HumanVacation reHumanVacation = humanVacationManager.update_hr_Audit_Re(humanVacation);
+				result.setCode(CodeEnum.success.getValue());
+				result.setMessage(CodeEnum.success.getDescription());
+				result.setData(reHumanVacation);
+			} catch (Exception e) {
+				result.setCode(CodeEnum.error.getValue());
+				result.setMessage(CodeEnum.error.getDescription());
+				e.printStackTrace();
+			}
+			return result;
+		}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+				
 		
 }

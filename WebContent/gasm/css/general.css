@@ -77,6 +77,7 @@
 .ui-icon-carat-1-n, .headerSortUp .ui-icon-carat-2-n-s { background-position: 0 0; }
 .ui-icon-carat-1-ne { background-position: -16px 0; }
 .ui-icon-carat-1-e, #navigation li ul .ui-icon-carat-1-s { background-position: -32px 0; }
+.ui-icon-carat-1-e, #navigation_gax li ul .ui-icon-carat-1-s { background-position: -32px 0; }
 .ui-icon-carat-1-se { background-position: -48px 0; }
 .ui-icon-carat-1-s, .headerSortDown .ui-icon-carat-2-n-s { background-position: -64px 0; }
 .ui-icon-carat-1-sw { background-position: -80px 0; }
@@ -575,6 +576,55 @@ button { float: right; margin: .5em .4em .5em 0; cursor: pointer; padding: .2em 
 }
 
 #navigation .ui-icon-carat-1-s {
+	float:right;
+	margin:12px 0 0 0;
+}
+
+
+	/* Header navigation_gax  menu */
+
+#navigation_gax li {
+	float:left;
+	position:relative;
+}
+
+#navigation_gax li a {
+	display:block;
+	height:38px;
+	line-height:38px;
+	padding:0 8px;
+}
+
+#navigation_gax li.sfHover a, #navigation_gax li.sfHover2 a {
+	padding:0 7px;
+}
+
+#navigation_gax li ul {
+	width:185px;
+	padding:5px;
+	left:-1px;
+	position:absolute;
+	z-index:999;
+}
+
+#navigation_gax li ul li {
+	float:none;
+	position:relative;
+	z-index:999;
+}
+
+#navigation_gax li ul li.sfHover, #navigation_gax li ul li.sfHover2 { 
+	margin:0;
+	border-left:0;
+	border-right:0;
+}
+
+#navigation_gax li ul li ul {
+	left:185px;
+	top:0;
+}
+
+#navigation_gax .ui-icon-carat-1-s {
 	float:right;
 	margin:12px 0 0 0;
 }

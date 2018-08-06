@@ -15,6 +15,25 @@
 	padding-right:22px!important;
 }
 
+
+#navigation_gax .ui-icon {
+	position:absolute;
+	top:0;
+	right:4px!important;
+}
+
+
+#navigation_gax li li .ui-icon {
+	position:absolute;
+	top:0;
+	right:8px!important;
+}
+
+#navigation_gax a {
+	padding-right:22px!important;
+}
+
+
 .ui-widget-header {
 	height:25px;
 	line-height:25px;

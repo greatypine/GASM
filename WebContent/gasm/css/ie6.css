@@ -32,6 +32,43 @@
 	top:0!important;
 }
 
+
+
+#navigation_gax li, #navigation_gax li a {
+	float:left;
+	width:auto;
+}
+
+#navigation_gax .ui-icon {
+	position:absolute;
+	top:0;
+	right:4px!important;
+}
+
+
+#navigation_gax li li .ui-icon {
+	position:absolute;
+	top:0;
+	right:8px!important;
+}
+
+#navigation_gax a {
+	padding-right:22px!important;
+}
+
+#navigation_gax li ul li a {
+	float:none;
+}
+
+#navigation_gax li ul {
+	top:38px!important;
+}
+
+#navigation_gax li ul li ul {
+	top:0!important;
+}
+
+
 #sidebar {
 	margin:0 0 0 -243px;
 }

@@ -738,4 +738,24 @@
     
     
     
+    <!-- 门店管理系统  请假列表    -->
+    <query id="queryHumanVacationlist" header="请假列表"  baseclass="com.cnpc.pms.personal.entity.HumanVacation"  method="humanVacationManager.queryHumanVacationList" >
+        <column key="id" header="序号" type="java.lang.Long" operator="in" align="center" allowSort="false" display="false"  width="5%"/>
+        <column key="store_name" header="门店名称" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="10%"/>
+        <column key="employee_no" header="员工编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="employee_name" header="员工姓名" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
+        <column key="vacation_type" header="请假类别" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="vacation_reason" header="原因" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="start_date" header="开始日期" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        <column key="end_date" header="结束日期" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        
+        <column key="process_status" header="流程状态" type="java.lang.Integer" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        
+        
+        <column key="editdelete" header="操作"  type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
+        
+        
+    </query>
+    
+    
 </pmsquery>

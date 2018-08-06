@@ -5,23 +5,14 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Column;
-import javax.persistence.Transient;
-import javax.swing.Spring;
-
-import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
-
 import org.apache.poi.hssf.usermodel.HSSFCellStyle;
-import org.apache.poi.hssf.usermodel.HSSFFont;
 import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.hssf.util.CellRangeAddress;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.poifs.filesystem.POIFSFileSystem;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -29,25 +20,18 @@ import org.apache.poi.ss.usermodel.Font;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.h2.mvstore.DataUtils;
-import org.springframework.jmx.export.SpringModelMBean;
 import org.springframework.util.FileCopyUtils;
 
-import com.aliyun.oss.common.utils.RangeSpec.Type;
 import com.cnpc.pms.base.entity.DataEntity;
 import com.cnpc.pms.base.manager.impl.BaseManagerImpl;
-import com.cnpc.pms.base.paging.FSP;
 import com.cnpc.pms.base.paging.FilterFactory;
 import com.cnpc.pms.base.paging.IFilter;
 import com.cnpc.pms.base.security.SessionManager;
-import com.cnpc.pms.base.util.PropertiesUtil;
 import com.cnpc.pms.base.util.SpringHelper;
 import com.cnpc.pms.bizbase.rbac.usermanage.dto.UserDTO;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
-import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserGroupManager;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserManager;
 import com.cnpc.pms.personal.dao.WorkRecordDao;
-import com.cnpc.pms.personal.entity.Company;
 import com.cnpc.pms.personal.entity.DsTopData;
 import com.cnpc.pms.personal.entity.Humanresources;
 import com.cnpc.pms.personal.entity.ScoreRecord;
@@ -57,9 +41,9 @@ import com.cnpc.pms.personal.entity.WorkInfo;
 import com.cnpc.pms.personal.entity.WorkMonth;
 import com.cnpc.pms.personal.entity.WorkRecord;
 import com.cnpc.pms.personal.entity.WorkRecordTotal;
-import com.cnpc.pms.personal.manager.CompanyManager;
 import com.cnpc.pms.personal.manager.DsTopDataManager;
 import com.cnpc.pms.personal.manager.HumanresourcesManager;
+import com.cnpc.pms.personal.manager.OssRefFileManager;
 import com.cnpc.pms.personal.manager.ScoreRecordManager;
 import com.cnpc.pms.personal.manager.ScoreRecordTotalManager;
 import com.cnpc.pms.personal.manager.StoreManager;
@@ -71,6 +55,8 @@ import com.cnpc.pms.utils.DateUtils;
 import com.cnpc.pms.utils.PropertiesValueUtil;
 import com.cnpc.pms.utils.ValueUtil;
 import com.cnpc.pms.utils.excel.PinyinUtil;
+
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 @SuppressWarnings("all")
 public class WorkRecordManagerImpl extends BaseManagerImpl implements WorkRecordManager{
@@ -513,7 +499,9 @@ public class WorkRecordManagerImpl extends BaseManagerImpl implements WorkRecord
 	        
 	        UserManager userManager = (UserManager)SpringHelper.getBean("userManager");
 	        
-	        String str_file_dir_path = PropertiesUtil.getValue("file.root");
+	        //String str_file_dir_path = PropertiesUtil.getValue("file.root");
+	        String str_file_dir_path=this.getClass().getClassLoader().getResource("../../").getPath()+"template";
+
 	        
 	        String exportFileName = "";
 	        try {
@@ -791,11 +779,17 @@ public class WorkRecordManagerImpl extends BaseManagerImpl implements WorkRecord
     	        wb_wrinfo.write(fis_out_excel);
     	        fis_out_excel.close();
     	        fis_input_excel.close();
+    	        
+    	        //上传oss
+    	        OssRefFileManager ossRefFileManager = (OssRefFileManager) SpringHelper.getBean("ossRefFileManager");
+    	        String url = ossRefFileManager.uploadOssFile(file_new, "xls", "daqWeb/workrecord/");
+    	        return url ;
+    	        
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	        
-	  return PropertiesUtil.getValue("file.web.root")+"/"+exportFileName;
+	  return null;
 		
 		
 	}

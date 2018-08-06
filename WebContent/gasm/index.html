@@ -26,7 +26,7 @@ text-decoration: underline;
 <script >
 
 	var employee_no="";
-
+    var isgax=false;
 	$(function(){
 		queryMsgNoticeList();
 		$(".ui-icon-circle-arrow-s").remove();
@@ -37,7 +37,29 @@ text-decoration: underline;
   						var userObj = JSON.parse(data.data);
   						var userid = userObj.id;
   						var zw = userObj.zw;
-  						if(zw!=null&&zw!=""&&zw.trim()!="店长"){
+  						
+  						var isaccess=false;
+  						if(zw.trim()=="店长"){
+  			            	isaccess = true;
+  			            	$("#dz").show();
+  			            	$("#gax").hide();
+  			            	
+  			            	$("#quick_dz").show();
+  			            	$("#quick_gax").hide();
+  			            }
+  			            if(zw.trim()=="国安侠"){
+  			            	isaccess = true;
+  			            	$("#dz").hide();
+  			            	$("#gax").show();
+  			            	
+  			            	$("#quick_dz").hide();
+  			            	$("#quick_gax").show();
+  			            	
+  			            	$("#quickstart").hide();
+  			            	$("#mymsg").hide();
+  			            	$("#mynotice").hide();
+  			            }
+  						if(zw!=null&&zw!=""&&!isaccess){
   							urlStr = "../logout.do";
   							window.location.href = urlStr;
   						}
@@ -355,6 +377,15 @@ text-decoration: underline;
 	}
 	
 	
+	
+	/************国安侠 请假申请 ****************/
+	function toappvacation(){
+		 alert("develop...");
+		 var url = "../gasm/human_vacation_view.html";
+		 window.open(url,"human_vacation_view"); 
+		 
+	}
+	
 </script>
 
 
@@ -388,7 +419,19 @@ text-decoration: underline;
 			
 			
 		</div>
+		
 		<ul id="navigation" class="sf-navbar">
+		<div id="gax">
+			<li>
+				<a>我的任务</a>
+				<ul>
+					<li>
+						<a href="javascript:toappvacation()">请假申请</a>
+					</li>
+				</ul>
+			</li>
+		</div>
+		<div id="dz">
 			<li>
 				<a>员工管理</a>
 				<ul>
@@ -463,6 +506,7 @@ text-decoration: underline;
 					</li>
 				</ul> -->
 			</li>
+			</div>
 		</ul>
 	</div>
 	<div id="page-wrapper">
@@ -491,8 +535,63 @@ text-decoration: underline;
 				<div class="page-title ui-widget-content ui-corner-all">
 					<h1>快捷选项</h1>
 					<div class="other">
-
+						
 						<ul id="dashboard-buttons">
+						<div id="quick_gax">
+							<li>
+								<a href="javascript:toappvacation()" class="Book_phones tooltip" title="请假申请">
+									请假申请
+								</a>
+							</li>
+							<li>
+								<a href="#" class="Globe tooltip" title="划片管理"  style="background-color: #bbbbbb;pointer-events:none;">
+									划片管理
+								</a>
+							</li>
+							
+							
+							<li>
+								<a href="#" class="Box_recycle tooltip"  title="工单管理"   style="background-color: #bbbbbb;pointer-events:none;">
+									工单管理
+								</a>
+							</li>
+							
+							<li>
+								<a href="#" class="Books tooltip" title="业务报表" style="background-color: #bbbbbb;pointer-events:none;" >
+									业务报表
+								</a>
+
+							</li>
+							<li>
+								<a href="#" class="Box_content tooltip" title="订单管理" style="background-color: #bbbbbb;pointer-events:none;">
+									订单管理
+								</a>
+							</li>
+							<li>
+								<a href="#" class="Briefcase_files tooltip" title="客户管理" style="background-color: #bbbbbb;pointer-events:none;">
+									客户管理
+								</a>
+
+							</li>
+							<li>
+								<a href="#" class="Chart_4 tooltip" title="门店备用金管理" style="background-color: #bbbbbb;pointer-events:none;">
+									门店备用金管理 
+								</a>
+							</li>
+							<li>
+								<a href="#" class="Clipboard_3 tooltip" title="门店备品管理" style="background-color: #bbbbbb;pointer-events:none;">
+									门店备品管理
+								</a>
+
+							</li>
+							<li>
+								<a href="#" class="Chart_5 tooltip" title="库存管理" style="background-color: #bbbbbb;pointer-events:none;">
+									库存管理
+								</a>
+							</li>
+							
+						</div>
+						<div id="quick_dz">
 							<li>
 								<a href="javascript:tohumanmanager()" class="Book_phones tooltip" title="员工管理 ">
 									员工管理 
@@ -558,7 +657,7 @@ text-decoration: underline;
 									库存管理
 								</a>
 							</li>
-							
+						</div>
 						</ul>
 						<div class="clearfix"></div>
 					</div>
@@ -569,7 +668,7 @@ text-decoration: underline;
 
 
 				
-			 <div class="three-column">
+			 <div id="mynotice" class="three-column">
 					<div class="" style="width: 66%;">
 						<div class="portlet form-bg">
 
@@ -596,7 +695,7 @@ text-decoration: underline;
 
 	<div id="sidebar" style="z-index: 11111111;">
 			<div class="side-col ui-sortable">
-				<div class="portlet ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
+				<div id="quickstart" class="portlet ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
 					<div class="portlet-header ui-widget-header">快速进入</div>
 					<div class="portlet-content">
 						<ul class="side-menu">
@@ -611,7 +710,7 @@ text-decoration: underline;
 				</div>
 				
 				
-				<div class="other-box yellow-box ui-corner-all">
+				<div id="mymsg" class="other-box yellow-box ui-corner-all">
 					<div class="cont tooltip ui-corner-all" title="">
 						<h3><label>我的消息</label><label style="float:right;"><a href="javascript:tomoremessagelist()">更多</a></label></h3>
 						

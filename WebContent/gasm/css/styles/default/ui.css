@@ -13,6 +13,10 @@ body {
 	text-shadow:0 1px 0 #fff;
 }
 
+#navigation_gax li a, .portlet-header, .ui-datepicker-title, .page-title h1, .ui-widget-header, .hastable thead td, .hastable thead th, #page-wrapper .other-box h3 {
+	text-shadow:0 1px 0 #fff;
+}
+
 	/* Rounded corners ( CSS3 ony ) */
 
 .ui-corner-tl {
@@ -249,6 +253,57 @@ a:hover, .ui-state-active a, .ui-state-active a:link, .ui-state-active a:visited
 #navigation li ul li ul li a:hover {
 	color:#000;
 }
+
+
+
+
+	/* Header navigation_gax menu */
+
+#navigation_gax li a {
+	color:#454545;
+	font-weight:bold;
+	border-right:#d0d0d0 solid 1px;
+	border-left:#f7f7f7 solid 1px;
+}
+
+#navigation_gax li.sfHover, #navigation_gax li.sfHover2 {
+	background:#fff;
+	border-left:#b2b2b2 solid 1px;
+	border-right:#b2b2b2 solid 1px;
+
+}
+
+#navigation_gax li ul {
+	background:#fff;
+	border:#b2b2b2 solid 1px;
+}
+
+#navigation_gax li ul li {
+	border-bottom:#ccc dotted 1px;
+	background:#f0f0f0;
+}
+
+#navigation_gax li ul li a {
+	color:#000000;
+}
+
+#navigation_gax li ul li a:hover {
+	color:#696969;
+	background:#f7f7f7;
+}
+
+#navigation_gax li ul li.sfHover, #navigation_gax li ul li.sfHover2 { 
+	background:#e0e0e0;
+}
+
+#navigation_gax li ul li.sfHover a {
+	color:#333;	
+}
+
+#navigation_gax li ul li ul li a:hover {
+	color:#000;
+}
+
 
 	/* Pages title box */
 

@@ -103,4 +103,13 @@
 	<!-- cache config -->
     <bean id="pmsCacheManager" class="com.cnpc.pms.base.cache.manager.impl.PmsCacheManagerImpl">
     </bean>
+    
+    
+    <bean id ="actProcessEngine " class="com.cnpc.pms.utils.ActProcessEngine" init-method="initProcessEngineInstance" >
+		<property name="userName" value="${act.userName}" />
+		<property name="passWord" value="${act.password}" />
+		<property name="host1" value="${act.host1}" />
+		<property name="dbName" value="${act.dbName}" />
+	</bean>
+    
 </beans>
