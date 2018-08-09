@@ -11,9 +11,43 @@
 <script type="text/javascript" src="../scripts/bidLib.js"></script>
 <script type="text/javascript"> 
 
+
+Date.prototype.format = function(format) {
+    var o = {
+        "M+": this.getMonth() + 1,
+        "d+": this.getDate(),
+        "h+": this.getHours(),
+        "m+": this.getMinutes(),
+        "s+": this.getSeconds(),
+        "q+": Math.floor((this.getMonth() + 3) / 3),
+        "S": this.getMilliseconds()
+    }
+    if (/(y+)/.test(format)) {
+        format = format.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    for (var k in o) {
+        if (new RegExp("(" + k + ")").test(format)) {
+            format = format.replace(RegExp.$1, RegExp.$1.length == 1 ? o[k] : ("00" + o[k]).substr(("" + o[k]).length));
+        }
+    }
+    return format;
+}
+function getFormatDate(date, pattern) {
+    if (date == undefined) {
+        date = new Date();
+    }
+    if (pattern == undefined) {
+        pattern = "yyyy-MM-dd hh:mm:ss";
+    }
+    return date.format(pattern);
+}
+
+
+
+
 var id = getUrlParamByKey("id");
 
-
+var curr_user;
 
 function initcurruser(){
 		//取得当前登录人的门店
@@ -21,17 +55,6 @@ function initcurruser(){
 				function(data, textStatus, XMLHttpRequest) {
 					if (data.result) {
 						 curr_user = JSON.parse(data.data);
-						 if(curr_user!=null&&curr_user.zw=="店长"){
-							 $("#btnDZ").show();
-							 $("#btnDZRe").show();
-							 
-
-							 $("#btnHR").show();
-							 $("#btnHRRe").show();
-						 }
-						 if(curr_user!=null&&curr_user.zw=="国安侠"){
-							 $("#btnEMSave").show();
-						 }
 					}
 	},false);
 	}
@@ -152,21 +175,57 @@ function initcurruser(){
   						$("#store_name").val(humanObj.store_name);
   						$("#processInstanceId").val(humanObj.processInstanceId);
   						
-  						/* var store_id=userObj.store_id==null?"":userObj.store_id;
-  						//initStoreEmployee(store_id);
-  						$("#employee_name_show").html(userObj.name+"【"+userObj.employeeId+"】");
-  						$("#store_name_show").html(userObj.store_name);
-  						
-  						$("#employee_no").val(userObj.employeeId);
-  						$("#employee_name").val(userObj.name);
-  						$("#store_id").val(userObj.store_id);
-  						$("#store_name").val(userObj.store_name); */
-  						
   						var ps = humanObj.processlog;
-  						alert(JSON.stringify(ps));
+  						var lastmsg = ps[0].message;
+  						//显示审批历史记录   
+  						var processlog="";
+  						for(i=0;i<ps.length;i++){
+  							var obj = ps[i];
+  							var s = new Date(obj.time);
+  							var oneLine = getFormatDate(s)+" -- "+obj.message;
+  							processlog+=oneLine+"<br>";
+  						}
+  						$("#processlog").html(processlog);
   						
-  						//显示审批历史记录 
+  						var status = humanObj.process_status;
   						
+  						if(curr_user!=null&&curr_user.zw=="店长"){
+  							if(status==3||status==2){
+  								 $("#btnDZ").hide();
+  								 $("#btnDZRe").hide();
+  								 //审批意见 
+  								 $(".sp_content").hide();
+  							}else{
+  								//如果最后一个为自己审批的 则已经审批过了 
+  								if(lastmsg.indexOf(curr_user.name)>-1){
+  									 $("#btnDZ").hide();
+  	  								 $("#btnDZRe").hide();
+  	  								 //审批意见 
+  	  								 $(".sp_content").hide();
+  								}else{
+  									 $("#btnDZ").show();
+  	  								 $("#btnDZRe").show();
+  	  								 //$("#btnHR").show();
+  	  								 //$("#btnHRRe").show();
+  	  								 //审批意见 
+  	  								 $(".sp_content").show();
+  								}
+  							}
+							 
+						 }
+						 if(curr_user!=null&&curr_user.zw=="国安侠"){
+							 	if(status!=1&&status!=2){
+		  							$("#btnEMSave").show();
+		  							//填写或是驳回状态 可以编辑 和再提交 
+		  							$("#vacation_reason").attr("readonly",false);
+		  							$("#work_relay").attr("readonly",false);
+		  							$("#vacation_type").attr("disabled",false);
+		  							
+		  						}else{
+		  							$("#btnEMSave").hide();
+		  						}
+						 }
+						 
   						
   					}
 		});
@@ -207,6 +266,8 @@ function initcurruser(){
 		  o["processInstanceId"] = processid;
 		  o["id"]=id;
 		  o["re_content"]=$("#re_content").val();
+		  o["employee_no"]=curr_user.employeeId;
+		  o["store_id"]=curr_user.store_id;
 		  doManager("HumanVacationManager", "update_storekeeper_Audit", o, function(data,
 					textStatus, XMLHttpRequest) {
 				if (data.result) {
@@ -227,6 +288,7 @@ function initcurruser(){
 			  o["processInstanceId"] = processid;
 			  o["id"]=id;
 			  o["re_content"]=$("#re_content").val();
+			  o["employee_no"]=curr_user.employeeId;
 			  doManager("HumanVacationManager", "update_storekeeper_Audit_Re", o, function(data,
 						textStatus, XMLHttpRequest) {
 					if (data.result) {
@@ -308,6 +370,10 @@ function initcurruser(){
 		.ui-dialog .ui-dialog-titlebar-close span {
     		display: none;
     	}
+    	
+    .sp_content{
+    	display: none;
+    }
 </style>
 <body>
 	<div class="panel panel-primary" style="margin: 10px 5px 0 5px">
@@ -437,7 +503,7 @@ function initcurruser(){
              <input type="hidden" id="processInstanceId" value=""/>
                
                
-            <tr>
+            <tr class="sp_content">
 				<td colspan="2">
 					<p style="float: left;">审批意见：&nbsp;</p>
 					<p style="float: none;">

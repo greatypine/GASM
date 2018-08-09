@@ -21,6 +21,7 @@ import java.util.Random;
 
 import javax.swing.Spring;
 
+import org.activiti.engine.task.Comment;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -51,6 +52,7 @@ import com.cnpc.pms.dynamic.manager.UserOperationStatManager;
 import com.cnpc.pms.inter.common.CodeEnum;
 import com.cnpc.pms.inter.common.Result;
 import com.cnpc.pms.inter.dao.InterDao;
+import com.cnpc.pms.inter.entity.CommentDto;
 import com.cnpc.pms.inter.manager.InterManager;
 import com.cnpc.pms.messageModel.entity.Message;
 import com.cnpc.pms.messageModel.manager.MessageNewManager;
@@ -72,6 +74,7 @@ import com.cnpc.pms.personal.entity.AppVersion;
 import com.cnpc.pms.personal.entity.CodeLogin;
 import com.cnpc.pms.personal.entity.Customer;
 import com.cnpc.pms.personal.entity.Express;
+import com.cnpc.pms.personal.entity.HumanReContent;
 import com.cnpc.pms.personal.entity.HumanVacation;
 import com.cnpc.pms.personal.entity.Humanresources;
 
@@ -93,6 +96,7 @@ import com.cnpc.pms.personal.manager.BannerInfoManager;
 import com.cnpc.pms.personal.manager.CodeLoginManager;
 import com.cnpc.pms.personal.manager.CustomerManager;
 import com.cnpc.pms.personal.manager.ExpressManager;
+import com.cnpc.pms.personal.manager.HumanReContentManager;
 import com.cnpc.pms.personal.manager.HumanVacationManager;
 import com.cnpc.pms.personal.manager.HumanresourcesManager;
 import com.cnpc.pms.personal.manager.SendMessageManager;
@@ -122,6 +126,8 @@ import com.cnpc.pms.utils.PhoneFormatCheckUtils;
 import com.cnpc.pms.utils.DateUtils;
 
 import com.cnpc.pms.utils.ValueUtil;
+import com.mysql.jdbc.ResultSetInternalMethods;
+import com.sun.org.apache.bcel.internal.generic.ReturnInstruction;
 
 /**
  * App接口实现类interDao
@@ -3795,7 +3801,33 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 		
 		
 		
+		//HR同意 时  审批内容存数据库中，然后查询出来 
+		@Override
+		public Result update_hr_audit_cn(Long vacationid) {
+			HumanReContentManager humanReContentManager = (HumanReContentManager) SpringHelper.getBean("humanReContentManager");
+			HumanReContent humanReContent = (HumanReContent) humanReContentManager.getObject(vacationid);
+			System.out.println("------------------------");
+			System.out.println("processInstanceid:"+humanReContent.getProcessInstanceId());
+			System.out.println("re_content:"+humanReContent.getRe_content());
+			System.out.println("employee_name:"+humanReContent.getEmployee_name());
+			System.out.println("id:"+humanReContent.getId());
+			System.out.println("------------------------");
+			HumanVacation humanVacation = new HumanVacation();
+			humanVacation.setProcessInstanceId(humanReContent.getProcessInstanceId());
+			humanVacation.setRe_content(humanReContent.getRe_content());
+			humanVacation.setEmployee_name(humanReContent.getEmployee_name());
+			humanVacation.setId(humanReContent.getVacationid());
+			Result result = update_hr_audit(humanVacation);
+			return result;
+		}
+				
 		//请假申请 HR审批同意接口  
+		/**
+		 * 参数说明：
+		 * @param humanVacation  processInstanceId,re_content,employee_name,id
+		 * @return
+		 */
+		@Override
 		public Result update_hr_audit(HumanVacation humanVacation){
 			Result result = new Result();
 			try {
@@ -3811,9 +3843,42 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			}
 			return result;
 		}
+		
+		
+		//驳回时 审批内容存数据库中，然后查询出来 
+		@Override
+		public Result update_hr_audit_re_cn(Long vacationid) {
+			HumanReContentManager humanReContentManager = (HumanReContentManager) SpringHelper.getBean("humanReContentManager");
+			HumanReContent humanReContent = (HumanReContent) humanReContentManager.getObject(vacationid);
+			System.out.println("------------------------");
+			System.out.println("processInstanceid:"+humanReContent.getProcessInstanceId());
+			System.out.println("re_content:"+humanReContent.getRe_content());
+			System.out.println("employee_name:"+humanReContent.getEmployee_name());
+			System.out.println("id:"+humanReContent.getId());
+			System.out.println("------------------------");
+			HumanVacation humanVacation = new HumanVacation();
+			humanVacation.setProcessInstanceId(humanReContent.getProcessInstanceId());
+			humanVacation.setRe_content(humanReContent.getRe_content());
+			humanVacation.setEmployee_name(humanReContent.getEmployee_name());
+			humanVacation.setId(humanReContent.getVacationid());
+			Result result = update_hr_audit_re(humanVacation);
+			return result;
+		}
 		//请假申请 HR审批驳回接口  
+		/**
+		 * 参数说明：
+		 * @param humanVacation  processInstanceId,re_content,employee_name,id
+		 * @return
+		 */
+		@Override
 		public Result update_hr_audit_re(HumanVacation humanVacation){
 			Result result = new Result();
+			System.out.println("------------------------");
+			System.out.println("processInstanceid:"+humanVacation.getProcessInstanceId());
+			System.out.println("re_content:"+humanVacation.getRe_content());
+			System.out.println("employee_name:"+humanVacation.getEmployee_name());
+			System.out.println("id:"+humanVacation.getId());
+			System.out.println("------------------------");
 			try {
 				HumanVacationManager humanVacationManager = (HumanVacationManager) SpringHelper.getBean("humanVacationManager");
 				HumanVacation reHumanVacation = humanVacationManager.update_hr_Audit_Re(humanVacation);
@@ -3828,8 +3893,23 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			return result;
 		}
 		
-		
-		
+		@Override
+		public Result queryProcessCommentByProcessId(String processId) {
+			Result result = new Result();
+			HumanVacationManager humanVacationManager = (HumanVacationManager) SpringHelper.getBean("humanVacationManager");
+			List<Comment> comments = humanVacationManager.findCommentByProcessId(processId);
+			List<CommentDto> commentDtos = new ArrayList<CommentDto>();
+			for(Comment comm:comments) {
+				CommentDto commentDto = new CommentDto();
+				commentDto.setCreatetime(comm.getTime());
+				commentDto.setMessage(comm.getFullMessage());
+				commentDtos.add(commentDto);
+			}
+			result.setCode(CodeEnum.success.getValue());
+			result.setMessage(CodeEnum.success.getDescription());
+			result.setData(commentDtos);
+			return result;
+		}
 		
 		
 		

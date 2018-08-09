@@ -59,6 +59,12 @@ public class HumanVacation extends DataEntity{
 	@Column(name="process_status")
 	private Integer process_status;//流程状态  1审批中   2通过  3驳回 
 	
+	//记录审批人
+	@Column(name="app_name",length=64)
+	private String app_name;
+	
+	
+	
 	@Transient
 	private String re_content;
 	
@@ -184,6 +190,14 @@ public class HumanVacation extends DataEntity{
 
 	public void setRe_content(String re_content) {
 		this.re_content = re_content;
+	}
+
+	public String getApp_name() {
+		return app_name;
+	}
+
+	public void setApp_name(String app_name) {
+		this.app_name = app_name;
 	}
 
 	

@@ -751,6 +751,8 @@
         
         <column key="process_status" header="流程状态" type="java.lang.Integer" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
         
+        <column key="app_name" header="审批人" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        
         
         <column key="editdelete" header="操作"  type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
         

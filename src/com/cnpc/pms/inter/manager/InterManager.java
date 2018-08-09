@@ -8,6 +8,7 @@ import com.cnpc.pms.dynamic.entity.DynamicDto;
 import com.cnpc.pms.inter.common.Result;
 import com.cnpc.pms.personal.entity.Customer;
 import com.cnpc.pms.personal.entity.Express;
+import com.cnpc.pms.personal.entity.HumanVacation;
 import com.cnpc.pms.personal.entity.SiteSelection;
 import com.cnpc.pms.personal.entity.StoreAddress;
 import com.cnpc.pms.personal.entity.StoreOrderInfo;
@@ -558,5 +559,19 @@ public interface InterManager extends IManager {
 	public Result createCode();
 	public Result initReset(String inputcode);
 	public Result queryuserbyid(String id);
+	
+	
+	
+	/*****************请假审批相关*********************/
+	public Result update_hr_audit(HumanVacation humanVacation);
+	public Result update_hr_audit_re(HumanVacation humanVacation);
+	public Result queryProcessCommentByProcessId(String processId);
+	public Result update_hr_audit_cn(Long vacationid);
+	public Result update_hr_audit_re_cn(Long vacationid);
+	
+	
+	
+	
+	
 	
 }
