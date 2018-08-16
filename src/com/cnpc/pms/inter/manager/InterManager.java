@@ -570,6 +570,13 @@ public interface InterManager extends IManager {
 	public Result update_hr_audit_re_cn(Long vacationid);
 	
 	
+	public Result update_rm_audit(HumanVacation humanVacation);
+	public Result update_rm_audit_cn(Long vacationid);
+	
+	public Result update_rm_audit_re(HumanVacation humanVacation);
+	public Result update_rm_audit_re_cn(Long vacationid);
+	
+	
 	
 	
 	

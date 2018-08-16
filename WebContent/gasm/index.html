@@ -380,11 +380,17 @@ text-decoration: underline;
 	
 	/************国安侠 请假申请 ****************/
 	function toappvacation(){
-		 alert("develop...");
 		 var url = "../gasm/human_vacation_view.html";
 		 window.open(url,"human_vacation_view"); 
 		 
 	}
+	
+	/*************店长 请假管理 ***************/
+	function tovacationlist(){
+		 var url = "../gasm/human_vacation_view.html";
+		 window.open(url,"human_vacation_view"); 
+	}
+	
 	
 </script>
 
@@ -489,6 +495,11 @@ text-decoration: underline;
 					<li>
 						<a href="javascript:toworkinfolist()">任务列表</a>
 					</li>
+					
+					<li>
+						<a href="javascript:tovacationlist()">请假列表</a>
+					</li>
+					
 				</ul>
 			</li>
 			

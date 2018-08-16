@@ -124,7 +124,7 @@ function initcurruser(){
 	
 	
 	function doSave(){
-		var arr = ["processInstanceId","store_id", "store_name","employee_no","employee_name","work_date","topostdate","vacation_reason","start_date","end_date","work_relay"];
+		var arr = ["days","processInstanceId","store_id", "store_name","employee_no","employee_name","work_date","topostdate","vacation_reason","start_date","end_date","work_relay"];
 			var o = {};
 			for ( var i in arr) {
 				var v = arr[i];
@@ -166,7 +166,8 @@ function initcurruser(){
   						$("#start_date").val(humanObj.start_date);
   						$("#end_date").val(humanObj.end_date);
   						$("#work_relay").val(humanObj.work_relay);
-						
+  						$("#totaldays").html("共"+humanObj.days+"天");
+  						
   						processid=humanObj.processInstanceId;
   						
   						$("#employee_no").val(humanObj.employee_no);
@@ -174,6 +175,7 @@ function initcurruser(){
   						$("#store_id").val(humanObj.store_id);
   						$("#store_name").val(humanObj.store_name);
   						$("#processInstanceId").val(humanObj.processInstanceId);
+  						$("#days").val(humanObj.days);
   						
   						var ps = humanObj.processlog;
   						var lastmsg = ps[0].message;
@@ -228,6 +230,57 @@ function initcurruser(){
 						 
   						
   					}
+  					
+  					
+  					
+  					
+  					
+  					
+  					
+  					
+  					
+  					
+  					
+  					
+  					
+  					$("#end_date").change(function () {
+  						 var start_date=$("#start_date").val();
+  						 if(start_date!=null&&start_date.length>0){
+  							 var end_date=$("#end_date").val();
+  						        var date1 = new Date(end_date).getTime(),
+  						        date2 = new Date(start_date).getTime();
+  						        var diff = date1 - date2; //相差的毫秒数
+  						        var day = (diff / 1000 / 60 / 60 / 24)+1;
+  						        if(day<1){
+  						        	alert("日期填写错误！ ");
+  						        	$("#totaldays").html("");
+  						        	$("#end_date").val("");
+  						        	return;
+  						        }
+  						        $("#totaldays").html("共 "+day+" 天");
+  						        $("#days").val(day);
+  						 }
+  				    });
+  					
+  					$("#start_date").change(function () {
+  						var end_date=$("#end_date").val();
+  						 if(end_date!=null&&end_date.length>0){
+  							 var start_date=$("#start_date").val();	 
+  						        var date1 = new Date(end_date).getTime(),
+  						        date2 = new Date(start_date).getTime();
+  						        var diff = date1 - date2; //相差的毫秒数
+  						        var day = (diff / 1000 / 60 / 60 / 24)+1;
+  						        if(day<1){
+  						        	alert("日期填写错误！ ");
+  						        	$("#totaldays").html("");
+  						        	$("#start_date").val("");
+  						        	return;
+  						        }
+  						        $("#totaldays").html("共 "+day+" 天");
+  						        $("#days").val(day);
+  						 }
+  				    });
+  					
 		});
 		
 		
@@ -481,6 +534,7 @@ function initcurruser(){
 								validate="formatDate:true" class="pmsDateField form-control"
 								yearRange="-100:+10" style="width: 15%; display: inline; height:40px;"
 								readonly />
+								<label id="totaldays"></label> 
 					</p>
 				</td>
 			</tr>
@@ -502,6 +556,7 @@ function initcurruser(){
              <input type="hidden" id="store_id" value=""/>
              <input type="hidden" id="processInstanceId" value=""/>
                
+             <input type="hidden" id="days" value=""/>
                
             <tr class="sp_content">
 				<td colspan="2">
@@ -515,10 +570,10 @@ function initcurruser(){
 		</table>
 		
 		<label id="processlog">
-		张三:填写<br>
-		店长:通过<br>
-		HR：驳回<br>
-		这里是审批历史记录。<br>
+		<br>
+		<br>
+		<br>
+		<br>
 		</label>
 	</form>
 

@@ -3893,6 +3893,131 @@ public class InterManagerImpl extends BizBaseCommonManager implements InterManag
 			return result;
 		}
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		//运营经理同意 时  审批内容存数据库中，然后查询出来 
+				@Override
+				public Result update_rm_audit_cn(Long vacationid) {
+					HumanReContentManager humanReContentManager = (HumanReContentManager) SpringHelper.getBean("humanReContentManager");
+					HumanReContent humanReContent = (HumanReContent) humanReContentManager.getObject(vacationid);
+					System.out.println("------------------------");
+					System.out.println("processInstanceid:"+humanReContent.getProcessInstanceId());
+					System.out.println("re_content:"+humanReContent.getRe_content());
+					System.out.println("employee_name:"+humanReContent.getEmployee_name());
+					System.out.println("id:"+humanReContent.getId());
+					System.out.println("------------------------");
+					HumanVacation humanVacation = new HumanVacation();
+					humanVacation.setProcessInstanceId(humanReContent.getProcessInstanceId());
+					humanVacation.setRe_content(humanReContent.getRe_content());
+					humanVacation.setEmployee_name(humanReContent.getEmployee_name());
+					humanVacation.setEmployee_no(humanReContent.getEmployee_no());
+					humanVacation.setId(humanReContent.getVacationid());
+					Result result = update_rm_audit(humanVacation);
+					return result;
+				}
+						
+				//请假申请 运营经理审批同意接口  
+				/**
+				 * 参数说明：
+				 * @param humanVacation  processInstanceId,re_content,employee_name,id
+				 * @return
+				 */
+				@Override
+				public Result update_rm_audit(HumanVacation humanVacation){
+					Result result = new Result();
+					try {
+						HumanVacationManager humanVacationManager = (HumanVacationManager) SpringHelper.getBean("humanVacationManager");
+						HumanVacation reHumanVacation = humanVacationManager.update_rm_Audit(humanVacation);
+						result.setCode(CodeEnum.success.getValue());
+						result.setMessage(CodeEnum.success.getDescription());
+						result.setData(reHumanVacation);
+					} catch (Exception e) {
+						result.setCode(CodeEnum.error.getValue());
+						result.setMessage(CodeEnum.error.getDescription());
+						e.printStackTrace();
+					}
+					return result;
+				}
+				
+				
+		//运营经理 驳回时 审批内容存数据库中，然后查询出来 
+				@Override
+				public Result update_rm_audit_re_cn(Long vacationid) {
+					HumanReContentManager humanReContentManager = (HumanReContentManager) SpringHelper.getBean("humanReContentManager");
+					HumanReContent humanReContent = (HumanReContent) humanReContentManager.getObject(vacationid);
+					System.out.println("------------------------");
+					System.out.println("processInstanceid:"+humanReContent.getProcessInstanceId());
+					System.out.println("re_content:"+humanReContent.getRe_content());
+					System.out.println("employee_name:"+humanReContent.getEmployee_name());
+					System.out.println("id:"+humanReContent.getId());
+					System.out.println("------------------------");
+					HumanVacation humanVacation = new HumanVacation();
+					humanVacation.setProcessInstanceId(humanReContent.getProcessInstanceId());
+					humanVacation.setRe_content(humanReContent.getRe_content());
+					humanVacation.setEmployee_name(humanReContent.getEmployee_name());
+					humanVacation.setId(humanReContent.getVacationid());
+					humanVacation.setEmployee_no(humanReContent.getEmployee_no());
+					Result result = update_rm_audit_re(humanVacation);
+					return result;
+				}
+				//请假申请 运营经理审批驳回接口  
+				/**
+				 * 参数说明：
+				 * @param humanVacation  processInstanceId,re_content,employee_name,id
+				 * @return
+				 */
+				@Override
+				public Result update_rm_audit_re(HumanVacation humanVacation){
+					Result result = new Result();
+					System.out.println("------------------------");
+					System.out.println("processInstanceid:"+humanVacation.getProcessInstanceId());
+					System.out.println("re_content:"+humanVacation.getRe_content());
+					System.out.println("employee_name:"+humanVacation.getEmployee_name());
+					System.out.println("id:"+humanVacation.getId());
+					System.out.println("------------------------");
+					try {
+						HumanVacationManager humanVacationManager = (HumanVacationManager) SpringHelper.getBean("humanVacationManager");
+						HumanVacation reHumanVacation = humanVacationManager.update_rm_Audit_Re(humanVacation);
+						result.setCode(CodeEnum.success.getValue());
+						result.setMessage(CodeEnum.success.getDescription());
+						result.setData(reHumanVacation);
+					} catch (Exception e) {
+						result.setCode(CodeEnum.error.getValue());
+						result.setMessage(CodeEnum.error.getDescription());
+						e.printStackTrace();
+					}
+					return result;
+				}
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		@Override
 		public Result queryProcessCommentByProcessId(String processId) {
 			Result result = new Result();

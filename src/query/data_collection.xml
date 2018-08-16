@@ -745,6 +745,10 @@
         <column key="employee_no" header="员工编号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
         <column key="employee_name" header="员工姓名" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="8%"/>
         <column key="vacation_type" header="请假类别" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        
+        <column key="days" header="天数" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
+        
+        
         <column key="vacation_reason" header="原因" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
         <column key="start_date" header="开始日期" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
         <column key="end_date" header="结束日期" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
@@ -753,7 +757,7 @@
         
         <column key="app_name" header="审批人" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true"/>
         
-        
+       
         <column key="editdelete" header="操作"  type="java.lang.String" align="left" allowSearch="true" operator="eq" allowSort="false" display="true"/>
         
         

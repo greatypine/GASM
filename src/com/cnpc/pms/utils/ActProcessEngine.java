@@ -52,6 +52,8 @@ public class ActProcessEngine {
 	        historyService=processEngine.getHistoryService();
 	        
 	        //repositoryService.createDeployment().addClasspathResource("actconf/oneVacationProcess.bpmn").name("请假流程").category("请假").deploy();
+	        //repositoryService.createDeployment().addClasspathResource("actconf/threeVacationProcess.bpmn").name("请假流程").category("请假").deploy();
+	        //repositoryService.createDeployment().addClasspathResource("actconf/moreVacationProcess.bpmn").name("请假流程").category("请假").deploy();
 	       
 	        
 	        ///////////////以下代码为测试///////////////

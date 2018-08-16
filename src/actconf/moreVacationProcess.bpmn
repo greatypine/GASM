@@ -20,12 +20,20 @@
       <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outname=='员工关系驳回'}]]></conditionExpression>
     </sequenceFlow>
     <endEvent id="endevent1" name="End"></endEvent>
-    <userTask id="rm_audit" name="运营经理审批"></userTask>
-    <sequenceFlow id="flow15" name="运营经理通过" sourceRef="rm_audit" targetRef="zj_audit"></sequenceFlow>
-    <sequenceFlow id="flow16" name="运营经理驳回" sourceRef="rm_audit" targetRef="employee_write"></sequenceFlow>
-    <userTask id="zj_audit" name="门店运营中心总监"></userTask>
-    <sequenceFlow id="flow17" name="总监通过" sourceRef="zj_audit" targetRef="hr_audit"></sequenceFlow>
-    <sequenceFlow id="flow18" name="总监驳回" sourceRef="zj_audit" targetRef="employee_write"></sequenceFlow>
+    <userTask id="rm_audit" name="运营经理审批" activiti:assignee="${employee_no_rm}"></userTask>
+    <sequenceFlow id="flow15" name="运营经理通过" sourceRef="rm_audit" targetRef="zj_audit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outname=='运营经理通过'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow16" name="运营经理驳回" sourceRef="rm_audit" targetRef="employee_write">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outname=='运营经理驳回'}]]></conditionExpression>
+    </sequenceFlow>
+    <userTask id="zj_audit" name="门店运营中心总监" activiti:assignee="${employee_no_zj}"></userTask>
+    <sequenceFlow id="flow17" name="总监通过" sourceRef="zj_audit" targetRef="hr_audit">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outname=='总监通过'}]]></conditionExpression>
+    </sequenceFlow>
+    <sequenceFlow id="flow18" name="总监驳回" sourceRef="zj_audit" targetRef="employee_write">
+      <conditionExpression xsi:type="tFormalExpression"><![CDATA[${outname=='总监驳回'}]]></conditionExpression>
+    </sequenceFlow>
   </process>
   <bpmndi:BPMNDiagram id="BPMNDiagram_moreVacationProcess">
     <bpmndi:BPMNPlane bpmnElement="moreVacationProcess" id="BPMNPlane_moreVacationProcess">
@@ -104,7 +112,7 @@
         <omgdi:waypoint x="525.0" y="176.0"></omgdi:waypoint>
         <omgdi:waypoint x="593.0" y="174.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="72.0" x="522.0" y="179.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="522.0" y="179.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow16" id="BPMNEdge_flow16">
@@ -114,7 +122,7 @@
         <omgdi:waypoint x="146.0" y="294.0"></omgdi:waypoint>
         <omgdi:waypoint x="146.0" y="204.0"></omgdi:waypoint>
         <bpmndi:BPMNLabel>
-          <omgdc:Bounds height="14.0" width="72.0" x="273.0" y="277.0"></omgdc:Bounds>
+          <omgdc:Bounds height="14.0" width="100.0" x="273.0" y="277.0"></omgdc:Bounds>
         </bpmndi:BPMNLabel>
       </bpmndi:BPMNEdge>
       <bpmndi:BPMNEdge bpmnElement="flow17" id="BPMNEdge_flow17">

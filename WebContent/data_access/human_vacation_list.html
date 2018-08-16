@@ -110,6 +110,13 @@
                 var id = map['id'];
                 var editbtn = "<a href='javascript:toEditVacation("+id+")'>详情</a>";
                 return editbtn;
+            },
+            "vacation_reason": function(aData, iColumn, sColumnName, map){
+                var value = map[sColumnName];
+                if(value!=null&&value.length>10){
+                	value=value.substring(0,9)+"...";
+                }
+                return value;
             }
             
         }

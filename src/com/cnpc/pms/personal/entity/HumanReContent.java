@@ -17,6 +17,9 @@ public class HumanReContent extends PMSEntity{
 	@Column(name="employee_name",length=64)
 	private String employee_name;
 	
+	@Column(name="employee_no",length=64)
+	private String employee_no;
+	
 	@Column(name="processInstanceId",length=64)
 	private String processInstanceId;
 	
@@ -56,6 +59,14 @@ public class HumanReContent extends PMSEntity{
 
 	public void setRe_content(String re_content) {
 		this.re_content = re_content;
+	}
+
+	public String getEmployee_no() {
+		return employee_no;
+	}
+
+	public void setEmployee_no(String employee_no) {
+		this.employee_no = employee_no;
 	}
 
 	
