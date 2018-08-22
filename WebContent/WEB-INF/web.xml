@@ -348,4 +348,14 @@
     <servlet-name>abnormalOrderUpload</servlet-name>
     <url-pattern>/uploadOrderExcel.action</url-pattern>
   </servlet-mapping>
+  
+  <servlet>
+    <servlet-name>uploadVacationFileAction</servlet-name>
+    <servlet-class>com.cnpc.pms.bizbase.action.UploadVacationFileAction</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>uploadVacationFileAction</servlet-name>
+    <url-pattern>/vacationFileUpload.action</url-pattern>
+  </servlet-mapping>
+  
 </web-app>

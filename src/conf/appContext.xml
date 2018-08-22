@@ -24,6 +24,8 @@
 				<prop key="do*">PROPAGATION_REQUIRED</prop>
 				<prop key="newTx">PROPAGATION_REQUIRES_NEW</prop>
 				<prop key="newTran*">PROPAGATION_REQUIRES_NEW</prop>
+				<prop key="Upload*">PROPAGATION_REQUIRED</prop>
+				<prop key="upload*">PROPAGATION_REQUIRED</prop>
 				<!-- 语义重复 -->
 				<prop key="add*">PROPAGATION_REQUIRED </prop>
 				<prop key="change*">PROPAGATION_REQUIRED </prop>

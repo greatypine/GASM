@@ -9,7 +9,13 @@
 <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
 <link href="../scripts/css/auto.css" rel="stylesheet">
 <script type="text/javascript" src="../scripts/bidLib.js"></script>
+
+<script type="text/javascript" src="../scripts/ajaxfileupload.js"></script>
+    
+    
 <script type="text/javascript"> 
+
+
 
 	function yanzhen(){
 		
@@ -75,7 +81,7 @@
 	
 	
 	function doSave(){
-		var arr = ["days","store_id", "store_name","employee_no","employee_name","work_date","topostdate","vacation_reason","start_date","end_date","work_relay"];
+		var arr = ["ossurl","days","store_id", "store_name","employee_no","employee_name","work_date","topostdate","vacation_reason","start_date","end_date","work_relay"];
 			var o = {};
 			for ( var i in arr) {
 				var v = arr[i];
@@ -84,6 +90,7 @@
 			}
 			
 			o["vacation_type"] = $("#vacation_type  option:selected").val();
+			o["filename"]=$("#filename").val();
 			
 			doManager("HumanVacationManager", "saveHumanVacation", o, function(data,
 					textStatus, XMLHttpRequest) {
@@ -163,11 +170,52 @@
 	    });
 		
 		
-		
+		loadUpload();
 	});
 
 	     
 	
+	
+	
+	
+	
+	function loadUpload(){
+        var url = getRootPath()+ "/vacationFileUpload.action?model=vacation";
+        var elementsId = ['upfile'];
+        $('#upfile').change(function(){
+             $.ajaxFileUpload({
+                url: url,
+                type: 'post',
+                secureuri: false, //一般设置为false
+                fileElementId: elementsId, // 上传文件的id、name属性名
+                dataType: 'JSON', //返回值类型，一般设置为json、application/json
+                success: function(data, status){
+                    data = JSON.parse(data);
+                    /* if(data.result){
+                        var pmsFile = JSON.parse(data.data);
+                        alert(pmsFile.filePath);
+                     //$('#cus_pic').attr('src',getFilePath()+pmsFile.filePath);
+                       //$('#cus_pic').attr('src',"https://imagedata.guoanshequ.com/file_manager/"+pmsFile.filePath); 
+                       $('#customer_pic').val(pmsFile.name);
+                    }else{
+                        $$.showMessage('提示',data.message);
+                    } */
+                },
+                error: function(data, status, e){
+                    //$$.showMessage("提示",e);
+                }
+            }); 
+        });
+    }
+	
+	function uploadsuccess(url){
+		$("#ossurl").val(url);
+		var arr = $("#upfile").val().split('\\');
+		var ahref="<a href='"+url+"'>"+arr[arr.length-1]+"</a>";
+		$("#filename").val(arr[arr.length-1]);
+		$("#filenameshow").html(ahref);
+		
+	}
 	
 	
  
@@ -209,6 +257,10 @@
 	<form action="" method="post" class="pmsForm">
 	<input type="hidden" name="county_id" id="county_id"/>
 	<input type="hidden" name="id" id="id"/>
+	
+	<input type="hidden" name="ossurl" id="ossurl"/>
+	<input type="hidden" name="filename" id="filename"/>
+	
 	<table cellpadding="0" cellspacing="0" border="0" width="100%">
 			<tr>
 				<td colspan="2">
@@ -308,6 +360,33 @@
 					<p style="float: none;">
 						<textarea class="form-control" id="work_relay" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" ></textarea>
 					</p>
+				</td>
+			</tr>
+			
+			
+			<tr>
+				<td>
+				<p style="float: left;">附件：&nbsp;</p>
+					<p style="float: none;">
+
+									<input id="upfile" type="file" isuploadtable="true" name="file"
+										class="form-control">
+									<span class="users-list-date">当附件为多个，建议转换成压缩包ZIP格式上传</span>
+									<br>
+									<label id="filenameshow"></label>
+									
+							<!-- <div id="uploadDiv" style="border-bottom: 1px solid #eee">
+								<form name="file1" style="display: none;"
+									action="uploaderAction.action" method="post"
+									enctype="multipart/form-data" id="uploadFrom" target="hframe">
+									<input id="upfile" type="file" isuploadtable="true" name="file" class="form-control" multiple="" onchange="upload_file_mult()">
+									
+									<iframe name="hframe" id="hframe" style="display: none"></iframe>
+								</form>
+								<label id="ret"></label>
+							</div> -->
+					</p>
+
 				</td>
 			</tr>
 			

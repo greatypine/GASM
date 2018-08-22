@@ -27,6 +27,11 @@ public interface HumanVacationManager extends IManager{
 	public HumanVacation update_rm_Audit_Re(HumanVacation humanVacation);
 	
 	
+	public HumanVacation update_zj_Audit(HumanVacation humanVacation);
+	public HumanVacation update_zj_Audit_Re(HumanVacation humanVacation);
+	
+	
+	
 	public HumanVacation update_hr_Audit(HumanVacation humanVacation);
 	public HumanVacation update_hr_Audit_Re(HumanVacation humanVacation);
 	

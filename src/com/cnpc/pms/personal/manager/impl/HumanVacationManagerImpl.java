@@ -7,8 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.swing.Spring;
-
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
@@ -16,7 +14,6 @@ import org.activiti.engine.history.HistoricTaskInstance;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
-import org.apache.commons.configuration.beanutils.BeanFactory;
 
 import com.cnpc.pms.base.entity.DataEntity;
 import com.cnpc.pms.base.paging.FSP;
@@ -102,6 +99,8 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 		humanVacation.setProcessInstanceId(pi.getId());
 		preSaveObject(humanVacation);
 		this.saveObject(humanVacation);
+		
+				
 		return humanVacation;
 	}
 	
@@ -126,7 +125,14 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 		//重新申请 判断天数是否发生了变化 
 		HumanVacation saveHumanVacation2 = queryHumanVacationInfo(humanVacation.getId());
 		String newProcessId="";
-		if(!humanVacation.getDays().equals(saveHumanVacation2.getDays())) {
+		boolean nochange=false;
+		if(humanVacation.getDays().equals(2)&&saveHumanVacation2.getDays().equals(3)) {
+			nochange=true;
+		}
+		if(humanVacation.getDays().equals(3)&&saveHumanVacation2.getDays().equals(2)) {
+			nochange=true;
+		}
+		if(!humanVacation.getDays().equals(saveHumanVacation2.getDays())&&!nochange) {
 			ProcessInstance pi=null;
 			if(humanVacation.getDays()==1) {
 				pi = runtimeService.startProcessInstanceByKey("oneVacationProcess");
@@ -138,6 +144,10 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 				return null;
 			}
 			newProcessId = pi.getId();
+			
+			//删除原流程
+			stopProcessInstance(actProcessEngine, humanVacation.getProcessInstanceId());
+			
 		}else {
 			newProcessId=humanVacation.getProcessInstanceId();
 		}
@@ -161,7 +171,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 			}else {
 				re_content=humanVacation.getEmployee_name()+":重新申请";
 			}
-			taskService.addComment(task.getId(), humanVacation.getProcessInstanceId(),"重新申请" ,re_content);
+			taskService.addComment(task.getId(), newProcessId,"重新申请" ,re_content);
 			taskService.complete(task.getId(),saveMap);
 		}
 		
@@ -177,10 +187,20 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 		saveHumanVacation2.setCity_name(humanVacation.getCity_name());
 		saveHumanVacation2.setDays(humanVacation.getDays());
 		
+		saveHumanVacation2.setFilename(humanVacation.getFilename());
+		saveHumanVacation2.setOssurl(humanVacation.getOssurl());
+		
+		saveHumanVacation2.setProcessInstanceId(newProcessId);
+		
 		saveHumanVacation2.setProcess_status(1);//状态 审批中 
 		preSaveObject(saveHumanVacation2);
 		this.saveObject(saveHumanVacation2);
+		
 		return humanVacation;
+	}
+	
+	public void stopProcessInstance(ActProcessEngine pe,String processInstanceId) {
+		pe.getRuntimeService().deleteProcessInstance(processInstanceId, "ok");
 	}
 	
 	
@@ -209,7 +229,10 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 			hrNames = queryRmNamesByStoreNo(humanVacation.getStore_id());
 			group_code=queryRmEmployeeNoByStoreNo(humanVacation.getStore_id());
 		}else if(updateStatusHumanVacation.getDays()>3) {
-			group_code="MDCSZJQJ";
+			//group_code="MDYYZXZJJSZ";
+			group_code=humanVacation.getEmployee_no();
+			hrNames = queryRmNamesByStoreNo(humanVacation.getStore_id());
+			group_code=queryRmEmployeeNoByStoreNo(humanVacation.getStore_id());
 		}else {
 			group_code = null;
 		}
@@ -314,10 +337,17 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 			//String group_code = queryHRGroupCodeByStoreNo(humanVacation.getStore_id());
 			String hrNames ="";
 			HumanVacation updateStatusHumanVacation = queryHumanVacationInfo(humanVacation.getId());
+			String group_code = "";
+			if(updateStatusHumanVacation.getDays()>3) {//如果大于3天了。指定门店总监
+				group_code="MDYYZXZJJSZ";
+				User user = userManager.findEmployeeByEmployeeNo(manager);
+				hrNames = queryZjNamesByStoreNo(user.getStore_id());
+			}else {
+				group_code="YGGXJSZ";
+				User user = userManager.findEmployeeByEmployeeNo(manager);
+				hrNames = queryHrNamesByStoreNo(user.getStore_id());
+			}
 			
-			String group_code="YGGXJSZ";
-			User user = userManager.findEmployeeByEmployeeNo(manager);
-			hrNames = queryHrNamesByStoreNo(user.getStore_id());
 			
 			
 			if(group_code!=null&&group_code.length()>0) {
@@ -325,6 +355,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 				String outname="运营经理通过";
 				varMaps.put("outname", outname);
 				varMaps.put("group_code", group_code);
+				varMaps.put("employee_no_zj", group_code);
 				
 				humanVacation.setApp_name(hrNames);//记录下级审批人姓名
 				
@@ -341,7 +372,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 				}else {
 					re_content=person_name+":通过";
 				}
-				taskService.addComment(task.getId(), humanVacation.getProcessInstanceId(),"店长通过" ,re_content);
+				taskService.addComment(task.getId(), humanVacation.getProcessInstanceId(),"运营经理通过" ,re_content);
 				taskService.complete(task.getId(), varMaps);
 				
 				
@@ -380,7 +411,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 			}else {
 				re_content=person_name+":驳回";
 			}
-			taskService.addComment(task.getId(), humanVacation.getProcessInstanceId(),"店长驳回" ,re_content);
+			taskService.addComment(task.getId(), humanVacation.getProcessInstanceId(),"运营经理驳回" ,re_content);
 			taskService.complete(task.getId(), varMaps);
 			
 			
@@ -401,6 +432,112 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 	
 	
 	
+		
+		
+		
+		//总监审批
+				@Override
+				public HumanVacation update_zj_Audit(HumanVacation humanVacation) {
+					ActProcessEngine actProcessEngine = (ActProcessEngine) SpringHelper.getBean("actProcessEngine");
+					UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+					
+					TaskService taskService=actProcessEngine.getTaskService();
+					String manager = "MDYYZXZJJSZ";
+					Task task = taskService.createTaskQuery().processInstanceId(humanVacation.getProcessInstanceId())
+							.taskAssignee(manager)
+							.singleResult();
+					System.out.println("门店总监审批: task 2-------------------------"+task.getName());
+					
+					//指定审批人为当前城市HR组  
+					//String group_code = queryHRGroupCodeByStoreNo(humanVacation.getStore_id());
+					String hrNames ="";
+					HumanVacation updateStatusHumanVacation = queryHumanVacationInfo(humanVacation.getId());
+					String group_code = "";
+					
+					group_code="YGGXJSZ";
+					//User user = userManager.findEmployeeByEmployeeNo(manager);
+					hrNames = queryHrNamesByStoreNo(updateStatusHumanVacation.getStore_id());
+					
+					if(group_code!=null&&group_code.length()>0) {
+						Map<String, Object> varMaps = new HashMap<String, Object>();
+						String outname="总监通过";
+						varMaps.put("outname", outname);
+						varMaps.put("group_code", group_code);
+						
+						humanVacation.setApp_name(hrNames);//记录下级审批人姓名
+						
+						String person_name = "";
+						if(humanVacation.getEmployee_name()!=null&&humanVacation.getEmployee_name().length()>0) {
+							person_name=humanVacation.getEmployee_name();
+						}else {
+							person_name=userManager.getCurrentUserDTO().getName();
+						}
+						
+						String re_content=humanVacation.getRe_content();
+						if(re_content!=null&&re_content.length()>0) {
+							re_content=person_name+":"+humanVacation.getRe_content();
+						}else {
+							re_content=person_name+":通过";
+						}
+						taskService.addComment(task.getId(), humanVacation.getProcessInstanceId(),"总监通过" ,re_content);
+						taskService.complete(task.getId(), varMaps);
+						
+						
+						updateStatusHumanVacation.setApp_name(humanVacation.getApp_name());
+						preSaveObject(updateStatusHumanVacation);
+						this.saveObject(updateStatusHumanVacation);
+					}
+					return updateStatusHumanVacation;
+				}
+				
+				
+				//总监驳回
+				@Override
+				public HumanVacation update_zj_Audit_Re(HumanVacation humanVacation) {
+					ActProcessEngine actProcessEngine = (ActProcessEngine) SpringHelper.getBean("actProcessEngine");
+					UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+					TaskService taskService=actProcessEngine.getTaskService();
+					//String manager = humanVacation.getEmployee_no();
+					String manager="MDYYZXZJJSZ";
+					Task task = taskService.createTaskQuery().processInstanceId(humanVacation.getProcessInstanceId())
+							.taskAssignee(manager)
+							.singleResult();
+					System.out.println("总监驳回: task 2-------------------------"+task.getName());
+					Map<String, Object> varMaps = new HashMap<String, Object>();
+					String outname="总监驳回";
+					varMaps.put("outname", outname);
+					
+					String re_content=humanVacation.getRe_content();
+					
+					String person_name = "";
+					if(humanVacation.getEmployee_name()!=null&&humanVacation.getEmployee_name().length()>0) {
+						person_name=humanVacation.getEmployee_name();
+					}else {
+						person_name=userManager.getCurrentUserDTO().getName();
+					}
+					
+					if(re_content!=null&&re_content.length()>0) {
+						re_content=person_name+":"+humanVacation.getRe_content();
+					}else {
+						re_content=person_name+":驳回";
+					}
+					taskService.addComment(task.getId(), humanVacation.getProcessInstanceId(),"总监驳回" ,re_content);
+					taskService.complete(task.getId(), varMaps);
+					
+					
+					HumanVacation updateStatusHumanVacation = queryHumanVacationInfo(humanVacation.getId());
+					updateStatusHumanVacation.setProcess_status(3);
+					updateStatusHumanVacation.setApp_name(null);
+					preSaveObject(updateStatusHumanVacation);
+					this.saveObject(updateStatusHumanVacation);
+					return updateStatusHumanVacation;
+				}
+				
+				
+		
+		
+		
+		
 	
 	
 	
@@ -771,6 +908,9 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 		return app_names;
 	}
 	
+	
+	
+	
 	//查找运营经理名字 
 	public String queryRmNamesByStoreNo(Long storeId) {
 		StoreManager storeManager = (StoreManager) SpringHelper.getBean("storeManager");
@@ -793,6 +933,35 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 				return user.getEmployeeId();
 			}
 			return "";
+		}
+		
+		
+		
+		//总监名字 
+		public String queryZjNamesByStoreNo(Long storeId) {
+			UserGroupManager userGroupManager = (UserGroupManager) SpringHelper.getBean("userGroupManager");
+			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+			StoreManager storeManager = (StoreManager) SpringHelper.getBean("storeManager");
+			DistCityManager distCityManager = (DistCityManager) SpringHelper.getBean("distCityManager");
+			IFilter iFilter =FilterFactory.getSimpleFilter(" code = 'MDYYZXZJJSZ' ");
+			List<UserGroup> userGroups = (List<UserGroup>) userGroupManager.getList(iFilter);
+			Store store = storeManager.findStore(storeId);
+			String app_names="";
+			if(userGroups!=null) {
+				UserGroup userGroup = userGroups.get(0);
+				IFilter userIFilter =FilterFactory.getSimpleFilter("pk_usergroup ="+userGroup.getId());
+				List<User> users = (List<User>) userManager.getList(userIFilter);
+				//取得门店所在城市的user的name 返回 
+				for(User user :users) {
+					Long userid=user.getId();
+					String cityName=store.getCityName();
+					List<DistCity> distCities = distCityManager.queryDistCityByUserIdCity(userid, cityName);
+					if(distCities!=null&&distCities.size()>0) {
+						app_names+=user.getName()+",";
+					}
+				}
+			}
+			return app_names;
 		}
 		
 	

@@ -75,6 +75,14 @@ public class HumanVacation extends DataEntity{
 	
 		
 	
+	
+		@Column(name = "filename",length=64)
+		private String filename;
+		@Column(name = "ossurl",length=255)
+		private String ossurl;
+	
+	
+	
 	@Transient
 	private String re_content;
 	
@@ -224,6 +232,22 @@ public class HumanVacation extends DataEntity{
 
 	public void setDays(Integer days) {
 		this.days = days;
+	}
+
+	public String getFilename() {
+		return filename;
+	}
+
+	public void setFilename(String filename) {
+		this.filename = filename;
+	}
+
+	public String getOssurl() {
+		return ossurl;
+	}
+
+	public void setOssurl(String ossurl) {
+		this.ossurl = ossurl;
 	}
 
 	
