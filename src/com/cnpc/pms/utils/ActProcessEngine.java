@@ -41,6 +41,11 @@ public class ActProcessEngine {
 	        config.setJdbcUsername(userName);
 	        config.setJdbcPassword(passWord);
 	        config.setDatabaseSchemaUpdate(ProcessEngineConfiguration.DB_SCHEMA_UPDATE_TRUE);
+	        
+	        config.setJdbcPingQuery("SELECT NOW()");
+	        config.setJdbcPingEnabled(true);
+	        
+	        
 	        processEngine = config.buildProcessEngine();
 	        System.out.println("-----------------------------processEngine--------------------------------");
 	        System.out.println(processEngine);
