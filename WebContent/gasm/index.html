@@ -38,6 +38,10 @@ text-decoration: underline;
   						var userid = userObj.id;
   						var zw = userObj.zw;
   						
+  						if(userid==null||userid==""){
+  							window.location.reload();
+  						}
+  						
   						var isaccess=false;
   						if(zw.trim()=="店长"){
   			            	isaccess = true;
@@ -521,7 +525,7 @@ text-decoration: underline;
 		</ul>
 	</div>
 	<div id="page-wrapper">
-		<div id="main-wrapper">
+		<div id="main-wrapper" style="width:75%;">
 			<div id="main-content">
 				<div class="other-box yellow-box ui-corner-all">
 					<div class="cont tooltip ui-corner-all" title="">
@@ -554,7 +558,10 @@ text-decoration: underline;
 									请假申请
 								</a>
 							</li>
-							<li>
+							
+							
+							
+							<!-- <li>
 								<a href="#" class="Globe tooltip" title="划片管理"  style="background-color: #bbbbbb;pointer-events:none;">
 									划片管理
 								</a>
@@ -599,7 +606,19 @@ text-decoration: underline;
 								<a href="#" class="Chart_5 tooltip" title="库存管理" style="background-color: #bbbbbb;pointer-events:none;">
 									库存管理
 								</a>
-							</li>
+							</li> -->
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
 							
 						</div>
 						<div id="quick_dz">
@@ -668,6 +687,17 @@ text-decoration: underline;
 									库存管理
 								</a>
 							</li>
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
+							
 						</div>
 						</ul>
 						<div class="clearfix"></div>
@@ -704,7 +734,7 @@ text-decoration: underline;
 
 
 
-	<div id="sidebar" style="z-index: 11111111;">
+	<div id="sidebar" style="z-index: 11111111;width:23%;">
 			<div class="side-col ui-sortable">
 				<div id="quickstart" class="portlet ui-widget ui-widget-content ui-helper-clearfix ui-corner-all">
 					<div class="portlet-header ui-widget-header">快速进入</div>
