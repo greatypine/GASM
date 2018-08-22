@@ -38,6 +38,12 @@
 		}
 		
 		
+		var end_date=$("#start_date").val();
+		if(end_date==null||end_date.trim()==""){
+			alert("请选择请假结束日期！ ");
+			return;
+		}
+		
 		
 		/* var employee_no = $("#employee_no  option:selected").val();
 		if(employee_no==null||employee_no==""){
@@ -193,6 +199,9 @@
         var url = getRootPath()+ "/vacationFileUpload.action?model=vacation";
         var elementsId = ['upfile'];
         $('#upfile').change(function(){
+        	
+        	$("#btnSave").attr("disabled",true);
+        	
              $.ajaxFileUpload({
                 url: url,
                 type: 'post',
@@ -224,6 +233,8 @@
 		var ahref="<a href='"+url+"'>"+arr[arr.length-1]+"</a>";
 		$("#filename").val(arr[arr.length-1]);
 		$("#filenameshow").html(ahref);
+		
+		$('#btnSave').attr("disabled",false);
 		
 	}
 	
