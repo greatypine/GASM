@@ -19,23 +19,33 @@
 
 	function yanzhen(){
 		
+		var vacation_reason = $("#vacation_reason").val();
+		if(vacation_reason==null||vacation_reason.trim()==""){
+			alert("请填写请假原因！ ");
+			return;
+		}
+		
+		var start_date=$("#start_date").val();
+		if(start_date==null||start_date.trim()==""){
+			alert("请选择请假开始日期！ ");
+			return;
+		}
+		
+		var end_date=$("#start_date").val();
+		if(end_date==null||end_date.trim()==""){
+			alert("请选择请假结束日期！ ");
+			return;
+		}
+		
+		
+		
 		/* var employee_no = $("#employee_no  option:selected").val();
 		if(employee_no==null||employee_no==""){
 			alert("请选择员工！ ");
 			return;
 		}
 		
-		var wcontent = $("#wcontent").val();
-		if(wcontent==null||wcontent.trim()==""){
-			alert("请填写工单内容！ ");
-			return;
-		}
 		
-		var username=$("#username").val();
-		if(username==null||username.trim()==""){
-			alert("请填写客户姓名！ ");
-			return;
-		}
 		
 		var phone=$("#phone").val();
 		if(phone==null||phone.trim()==""){
