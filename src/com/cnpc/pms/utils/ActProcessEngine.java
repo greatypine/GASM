@@ -34,7 +34,7 @@ public class ActProcessEngine {
 			StringBuffer jdbcurl = new StringBuffer("jdbc:mysql://");
 			ProcessEngineConfiguration config = ProcessEngineConfiguration.createStandaloneProcessEngineConfiguration();
 	        config.setJdbcDriver("com.mysql.jdbc.Driver");
-	        jdbcurl.append(host1).append("/").append(dbName).append("?useUnicode=true&amp;characterEncoding=utf8");
+	        jdbcurl.append(host1).append("/").append(dbName).append("?useOldAliasMetadataBehavior=true&useUnicode=true&characterEncoding=utf8&autoReconnect=true");
 	        config.setJdbcUrl(jdbcurl.toString());
 	        System.out.println("-----------------------------jdbcurl--------------------------------");
 	        System.out.println(jdbcurl);
