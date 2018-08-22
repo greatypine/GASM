@@ -19,31 +19,17 @@
 
 	function yanzhen(){
 		
-		var vacation_reason = $("#vacation_reason").val();
-		if(vacation_reason==null||vacation_reason.trim()==""){
-			alert("请填写请假原因！ ");
-			return;
-		}
-		
 		var start_date=$("#start_date").val();
 		if(start_date==null||start_date.trim()==""){
 			alert("请选择请假开始日期！ ");
 			return;
 		}
 		
-		var end_date=$("#start_date").val();
+		var end_date=$("#end_date").val();
 		if(end_date==null||end_date.trim()==""){
 			alert("请选择请假结束日期！ ");
 			return;
 		}
-		
-		
-		var end_date=$("#start_date").val();
-		if(end_date==null||end_date.trim()==""){
-			alert("请选择请假结束日期！ ");
-			return;
-		}
-		
 		
 		/* var employee_no = $("#employee_no  option:selected").val();
 		if(employee_no==null||employee_no==""){
@@ -346,7 +332,7 @@
 				<td colspan="2">
 					<p style="float: left;"><!-- <font color="red">*</font> -->请假原因：&nbsp;</p>
 					<p style="float: none;">
-						<textarea class="form-control" id="vacation_reason" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" ></textarea>
+						<textarea class="form-control" id="vacation_reason" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" onkeyup="value=value.replace(/[\W]/g,'') " ></textarea>
 					</p>
 				</td>
 			</tr>
@@ -379,7 +365,7 @@
 				<td colspan="2">
 					<p style="float: left;">假期工作<br>交接情况：&nbsp;</p>
 					<p style="float: none;">
-						<textarea class="form-control" id="work_relay" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" ></textarea>
+						<textarea class="form-control" id="work_relay" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" onkeyup="value=value.replace(/[\W]/g,'') " ></textarea>
 					</p>
 				</td>
 			</tr>
