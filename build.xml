@@ -2,7 +2,7 @@
   
 <project name="GASM" default="warFile" basedir=".">  
 
-    <property name="tomcat.lib" value="/usr/local/tomcat7/lib" /> 
+    <property name="tomcat.lib" value="lib" /> 
     <property name="warFileName" value="${warFileName}"/>  
     <property name="build" value="${basedir}/build" />
       
