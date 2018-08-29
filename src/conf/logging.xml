@@ -2,6 +2,23 @@
 
 <configuration>
 
+
+
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">   
+    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">   
+      <fileNamePattern>/tomcat/logs/GASM.log</fileNamePattern>   
+    </rollingPolicy>   
+   
+    <encoder>   
+      <pattern>%d{yyyy-MM-dd HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>  
+    </encoder>   
+  </appender>    
+
+
+
+
+
+
 	<appender name="ErrorLoggerFileAppender" class="ch.qos.logback.core.FileAppender">
 		<file>/pmsapp/pmslog/pms.err</file>
 		<append>true</append>
@@ -150,4 +167,11 @@
 		<appender-ref ref="RootFileAppender" />
 	</root>
 
+
+	<root level="INFO">   
+   	 <appender-ref ref="FILE" />   
+  	</root> 
+  
+  
+  
 </configuration>
