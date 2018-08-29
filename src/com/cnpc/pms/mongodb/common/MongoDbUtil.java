@@ -5,26 +5,32 @@ package com.cnpc.pms.mongodb.common;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import com.mongodb.MongoCredential;
+import com.mongodb.ServerAddress;
 import com.mongodb.client.MongoDatabase;
+
+import java.sql.SQLOutput;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * @author gaobaolei
  *
  */
 public class MongoDbUtil {
-	
+
 	private MongoDatabase database;
 	
 	private MongoClient mongoClient;
-	
+
 	private String userName;
-	
+
 	private String password;
-	
+
 	private String host1;
-	
+
 	private String host2;
-	
+
 	private String host3;
 	
 	
@@ -116,23 +122,46 @@ public class MongoDbUtil {
 
 
 	public void connectMongo(){
-		 try{   
-			 StringBuilder urlSb = new StringBuilder("mongodb://");
-			 if(userName!=null&&!"".equals(userName)&&password!=null&&!"".equals(password)){
-				 urlSb.append(userName).append(":").append(password).append("@");
-			 }
-			 
-			 urlSb.append(host1).append(",").append(host2).append(",").append(host3).append("/gemini?safe=true;socketTimeoutMS=150000");
-			 
-			 
-		       // 连接到 mongodb 服务
-			     mongoClient =  new MongoClient(new MongoClientURI(urlSb.toString()));
-			   
-		     }catch(Exception e){
-		    	  mongoClient.close();
-		     }
-		  
-	         database = mongoClient.getDatabase("gemini");
+//		 try{
+//			 System.out.println("-------------------------"+userName+"::::::::::::::::::"+password+"---------------------------------------------------------");
+//			 StringBuilder urlSb = new StringBuilder("mongodb://");
+//			 if(userName!=null&&!"".equals(userName)&&password!=null&&!"".equals(password)){
+//				 urlSb.append(userName).append(":").append(password).append("@");
+//			 }
+//
+//			 //urlSb.append(host1).append("/gemini?safe=true;socketTimeoutMS=150000");
+//			 urlSb.append(host1).append(",").append(host2).append(",").append(host3).append("/gemini?safe=true;socketTimeoutMS=150000");
+//			 System.out.println("-------------------------"+urlSb+"---------------------------------------------------------");
+//		       // 连接到 mongodb 服务
+//			     mongoClient =  new MongoClient(new MongoClientURI(urlSb.toString()));
+//
+//		     }catch(Exception e){
+//		    	  mongoClient.close();
+//		     }
+//
+//	         database = mongoClient.getDatabase("gemini");
+
+
+
+		ServerAddress sa = new ServerAddress(host1, 27017);
+
+		ServerAddress sa1 = new ServerAddress(host2, 27017);
+
+		ServerAddress sa2 = new ServerAddress(host3, 27017);
+
+		List<ServerAddress> sends = new ArrayList<ServerAddress>();
+
+		sends.add(sa);
+
+		sends.add(sa1);
+
+		sends.add(sa2);
+
+		List<MongoCredential> mongoCredentialList = new ArrayList<MongoCredential>();
+
+		mongoCredentialList.add(MongoCredential.createScramSha1Credential(userName, "gemini",password.toCharArray()));
+
+		database = new MongoClient(sends,mongoCredentialList).getDatabase("gemini");
 	}
 	
 	
