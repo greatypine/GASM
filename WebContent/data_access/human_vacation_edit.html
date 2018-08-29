@@ -593,7 +593,7 @@ function initcurruser(){
 				<td colspan="2">
 					<p style="float: left;"><!-- <font color="red">*</font> -->请假原因：&nbsp;</p>
 					<p style="float: none;">
-						<textarea class="form-control" id="vacation_reason" readonly="readonly" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" onkeyup="value=value.replace(/[\W]/g,'') " ></textarea>
+						<textarea class="form-control" id="vacation_reason" readonly="readonly" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')" ></textarea>
 					</p>
 				</td>
 			</tr>
@@ -626,7 +626,7 @@ function initcurruser(){
 				<td colspan="2">
 					<p style="float: left;">假期工作<br>交接情况：&nbsp;</p>
 					<p style="float: none;">
-						<textarea class="form-control" id="work_relay" readonly="readonly" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" onkeyup="value=value.replace(/[\W]/g,'') " ></textarea>
+						<textarea class="form-control" id="work_relay" readonly="readonly" maxlength="1000" style="display: inline-block;width:59%;height:50px;resize:none;" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')" ></textarea>
 					</p>
 				</td>
 			</tr>
