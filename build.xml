@@ -67,7 +67,7 @@
         <antcall target="develop.datasource"/>
     </target>
     <target name="compile" depends="copyFiles">
-        <javac srcdir="${basedir}/src" destdir="${build}/WEB-INF/classes" encoding="utf-8" includeantruntime="false">  
+        <javac srcdir="${basedir}/src" destdir="${build}/WEB-INF/classes" debug="true" debuglevel="lines,vars,source" encoding="utf-8" includeantruntime="false">  
             <classpath refid="classpath">  
             </classpath>  
         </javac>  
