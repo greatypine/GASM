@@ -2,9 +2,9 @@
 
 <configuration>
 <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>/tomcat/log/GASM.log</file>
+		<file>/tomcat/logs/store.log</file>
     	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>/tomcat/log/GASM.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<fileNamePattern>/tomcat/logs/store.%d{yyyy-MM-dd}.log</fileNamePattern>
 			<maxHistory>30</maxHistory>
     	</rollingPolicy>
 		<append>true</append>
