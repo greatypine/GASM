@@ -1,18 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <configuration>
-
-
-
-	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">   
-    <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">   
-      <fileNamePattern>/tomcat/logs/GASM.log</fileNamePattern>   
-    </rollingPolicy>   
-   
-    <encoder>   
-      <pattern>%d{yyyy-MM-dd HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>  
-    </encoder>   
-  </appender>    
+<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+		<file>/tomcat/log/GASM.log</file>
+    	<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+			<fileNamePattern>/tomcat/log/GASM.%d{yyyy-MM-dd}.log</fileNamePattern>
+			<maxHistory>30</maxHistory>
+    	</rollingPolicy>
+		<append>true</append>
+		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+			<level>DEBUG</level>
+		</filter>
+		<layout class="ch.qos.logback.classic.PatternLayout">
+			<pattern>%d{yyyy-MM-dd HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
+		</layout>
+	</appender> 
 
 
 
@@ -168,7 +170,7 @@
 	</root>
 
 
-	<root level="INFO">   
+	<root level="DEBUG">   
    	 <appender-ref ref="FILE" />   
   	</root> 
   
