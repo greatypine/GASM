@@ -214,7 +214,7 @@
 	</query>
 	-->
 	<!-- 用户登录记录 -->
-	<query id="userLoginInfoQuery" header="用户登录记录" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserLoginInfo" order="loginDate desc">
+	<!-- <query id="userLoginInfoQuery" header="用户登录记录" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserLoginInfo" order="loginDate desc">
 		<column key="id" header="序号" type="java.lang.Long" allowSearch="true" operator="eq" display="false" />
 		<column key="userId" header="用户Id号" type="java.lang.Long" display="false" />
 		<column key="userCode" header="用户登录号" type="java.lang.String" allowSearch="true" operator="eq" allowSort="true"/>
@@ -222,7 +222,7 @@
 		<column key="loginIP" header="登录的IP地址" type="java.lang.String" allowSort="true"/>
 		<column key="loginMachine" header="登录机的IP地址" type="java.lang.String" allowSort="true"/>
 		<column key="loginArea" header="登录地区" type="java.lang.String" allowSort="true"/>
-	</query>
+	</query> -->
 	<!-- 用户登录一小时内记录 -->
 	<query id="userLoginInfoQuery" header="用户登录记录" baseclass="com.cnpc.pms.bizbase.rbac.usermanage.entity.UserLoginInfo" order="loginDate desc">
 		<column key="id" header="序号" type="java.lang.Long" allowSearch="true" operator="eq" display="false" />

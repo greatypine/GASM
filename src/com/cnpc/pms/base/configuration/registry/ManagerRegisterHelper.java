@@ -51,7 +51,11 @@ public class ManagerRegisterHelper {
 				managerBean.getPropertyValues().addPropertyValue(entityClass);
 				log.debug("Set EntityClass [{}] for Manager [{}]", entityName, beanName);
 			} catch (ClassNotFoundException e) {
-				log.error("Fail to inject EntityClass [{}] to Manager [{}]", entityName, beanName);
+				String errorEntity="BaseFile,Excel,ExcelUpload,EshopPurchase,MassOrder,UserProfile,AppDownLoadLog,Attachments,EshopPurchase,MassOrder,SyncData,UserProfile,ChartStat,Dynamic,TurnoverStat,"
+	        			+ "UserOperationStat,UserOperationStat,DfCustomerMonthOrder,GAXDriveRecode,Inter,MessageNew,MongoDB,OrderHeat,MapBasicData,NxQuery,QueryConfig";
+	        	if(errorEntity.indexOf(entityName)==-1) {
+	        		log.error("Fail to inject EntityClass [{}] to Manager [{}]", entityName, beanName);
+	        	}
 			}
 		}
 		BeanDefinitionHolder holder = new BeanDefinitionHolder(managerBean, fullClassName);

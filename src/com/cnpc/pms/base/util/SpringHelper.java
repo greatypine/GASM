@@ -216,7 +216,11 @@ public class SpringHelper
         }
         catch(ClassNotFoundException ex1)
         {
-            log.error("Fail to find the Entity: [{}].", entityName);
+        	String errorEntity="BaseFile,Excel,ExcelUpload,EshopPurchase,MassOrder,UserProfile,AppDownLoadLog,Attachments,EshopPurchase,MassOrder,SyncData,UserProfile,ChartStat,Dynamic,TurnoverStat,"
+        			+ "UserOperationStat,UserOperationStat,DfCustomerMonthOrder,GAXDriveRecode,Inter,MessageNew,MongoDB,OrderHeat,MapBasicData,NxQuery,QueryConfig";
+        	if(errorEntity.indexOf(entityName)==-1) {
+        		log.error("Fail to find the Entity: [{}].", entityName);
+        	}
         }
         catch(Exception e)
         {
