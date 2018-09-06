@@ -30,7 +30,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 
 
 	public Integer getOrderCount(String store_id,String employee_id,String year_month){
-        if(year_month == null){
+        /*if(year_month == null){
             year_month = "DATE_FORMAT(curdate(),'%Y-%m')";
         }else{
             year_month = "'"+year_month+"'";
@@ -57,13 +57,13 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
             e.printStackTrace();
         }finally {
             session.close();
-        }
-        return result;
+        }*/
+        return 0;
 	}
 
     @Override
     public Map<String, Object> queryOrderEmployeeCountByStore(PageInfo pageInfo, String store_id, String date_value) {
-        if(date_value == null){
+       /* if(date_value == null){
             date_value = "DATE_FORMAT(curdate(),'%Y-%m')";
         }else{
             date_value = "'"+date_value+"'";
@@ -109,13 +109,13 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
         }
         map_result.put("pageinfo", pageInfo);
         map_result.put("header", "");
-        map_result.put("data", lst_data);
-        return map_result;
+        map_result.put("data", lst_data);*/
+        return null;
     }
 
     @Override
     public List<Map<String, Object>> getOrderEmployeeData(String store_id, String date_value) {
-        if(date_value == null){
+        /*if(date_value == null){
             date_value = "DATE_FORMAT(curdate(),'%Y-%m')";
         }else{
             date_value = "'"+date_value+"'";
@@ -156,8 +156,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
             e.printStackTrace();
         } finally {
             session.close();
-        }
-        return lst_result;
+        }*/
+        return null;
     }
     
  
@@ -168,7 +168,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
     @Override
     public Map<String, Object> queryOrderListByArea(String store_id,String area,PageInfo pageInfo){
     	// 查询片区 里的 所有服务 
-    	String sql = "SELECT t.id,t.order_sn,t.customer_id,store_id,t.employee_name,t.placename,t.order_date,t.customer_name,t.mobilephone,concat(GROUP_CONCAT(t_order_item.eshop_pro_name),'') as eshop_pro_name from (SELECT "+
+    	/*String sql = "SELECT t.id,t.order_sn,t.customer_id,store_id,t.employee_name,t.placename,t.order_date,t.customer_name,t.mobilephone,concat(GROUP_CONCAT(t_order_item.eshop_pro_name),'') as eshop_pro_name from (SELECT "+
     	"	a.*,toa.placename,t_customer.mobilephone,t_customer.short_name as customer_name "+
     	"FROM	(		SELECT"+
     	"			tor.*,tof.create_time as order_date"+
@@ -229,8 +229,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 			e.printStackTrace();
 		}finally{
 			session.close();
-		}
-    	return maps;
+		}*/
+    	return null;
     }
     
     
@@ -243,7 +243,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
     public Map<String, Object> queryOrderListByEmployeeNo(String store_id,String employee_no,String area_names,PageInfo pageInfo){
     	
     	// 查询片区 里的 所有服务 
-    	String sqlwhere =" from (SELECT "+
+    	/*String sqlwhere =" from (SELECT "+
     	"	a.*,toa.placename,t_customer.mobilephone,t_customer.short_name as customer_name "+
     	"FROM	(		SELECT"+
     	"			tor.*,tof.create_time as order_date"+
@@ -292,8 +292,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 			e.printStackTrace();
 		}finally{
 			session.close();
-		}
-    	return maps;
+		}*/
+    	return null;
     }
     
     
@@ -303,7 +303,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
      */
     @Override
     public List<Map<String, Object>> queryOrderFourMonth(String store_id,String areaInfo){
-    	List<String> curMonths = new ArrayList<String>();
+    	/*List<String> curMonths = new ArrayList<String>();
     	excnowdate(curMonths);
     	
     	String sql ="select b.curmonth as month,(CASE WHEN s.totalcount is null THEN 0 ELSE s.totalcount END) as totalcount  from " +
@@ -357,9 +357,9 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 			e.printStackTrace();
 		}finally{
 			session.close();
-		}
+		}*/
     	
-        return lst_data;
+        return null;
     	    	
     }
     
@@ -372,7 +372,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
      */
     @Override
     public List<Map<String, Object>> queryOrderFiveMonth(String store_id,String areaInfo){
-    	List<String> curMonths = new ArrayList<String>();
+    	/*List<String> curMonths = new ArrayList<String>();
     	excnowdatefive(curMonths);
     	
     	String sql ="select b.curmonth as month,(CASE WHEN s.totalcount is null THEN 0 ELSE s.totalcount END) as totalcount, "+
@@ -441,9 +441,9 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 			e.printStackTrace();
 		}finally{
 			session.close();
-		}
+		}*/
     	
-        return retList;
+        return null;
     	    	
     }
     
@@ -664,7 +664,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
     
     @Override
     public Integer gettotalOrderCount(String store_id,String employee_id){
-        int result = 0;
+       /* int result = 0;
 		String sql = "SELECT" +
                 "       COUNT(DISTINCT tor.group_id) AS complete_count" +
                 "       FROM t_order tor" +
@@ -685,8 +685,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
             e.printStackTrace();
         }finally {
             session.close();
-        }
-        return result;
+        }*/
+        return null;
 	}
    
     
@@ -697,20 +697,20 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
      */
     @Override
     public List<Map<String, Object>> queryOrderCountByStoreId(String store_id){
-    	String sql = "select rt.employee_name,count(1) as count from (SELECT "+
+    	/*String sql = "select rt.employee_name,count(1) as count from (SELECT "+
 					"		t.employee_name,count(1) as count   "+
 					"	FROM "+
 					"		( "+
 					"			SELECT "+
 					"				a.*" +
-/*					"				, toa.placename, "+
+					"				, toa.placename, "+
 					"				t_customer.mobilephone, "+
-					"				t_customer.short_name AS customer_name "+*/
+					"				t_customer.short_name AS customer_name "+
 					"			FROM "+
 					"				( "+
 					"					SELECT "+
 					"						tor.* " +
-	/*				"					, tof.create_time AS order_date "+*/
+					"					, tof.create_time AS order_date "+
 					"					FROM "+
 					"						t_order tor "+
 					"					JOIN t_order_flow tof ON tof.order_id = tor.id "+
@@ -719,10 +719,10 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 					"                   AND DATE_FORMAT(tof.create_time, '%Y-%m')=DATE_FORMAT(CURDATE(),'%Y-%m')  "+
 					//"                   AND DATE_FORMAT(tof.create_time, '%Y-%m')='2017-03' "+
 					"				) a "+
-/*					"			LEFT JOIN t_order_address toa ON toa.id = a.order_address_id "+
+					"			LEFT JOIN t_order_address toa ON toa.id = a.order_address_id "+
 					"			LEFT JOIN t_customer ON t_customer.id = a.customer_id "+
 					"			WHERE "+
-					"				1 = 1 "+*/
+					"				1 = 1 "+
 					"		) t "+
 					"	JOIN t_order_item ON t_order_item.order_id = t.id "+
 					"	GROUP BY "+
@@ -738,8 +738,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
              e.printStackTrace();
          }finally {
              session.close();
-         }
-		 return lst_data;
+         }*/
+		 return null;
 		 
     }
     
@@ -753,7 +753,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
      */
     @Override
     public List<Map<String, Object>> queryOrderListByArea(String store_id,String area_name){
-        String sql ="    SELECT "+
+       /* String sql ="    SELECT "+
 				    "	z.placename,count(1) as ordercount,SUM(z.payable_price) as total_price  "+
 				    " FROM "+
 				    "	( "+
@@ -765,8 +765,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 				    "			t.employee_name, "+
 				    "			t.placename, "+
 				    "			t.order_date, "+
-/*				    "			t.customer_name, "+
-				    "			t.mobilephone, "+*/
+				    "			t.customer_name, "+
+				    "			t.mobilephone, "+
 				    "			concat( "+
 				    "				GROUP_CONCAT( "+
 				    "					t_order_item.eshop_pro_name "+
@@ -778,8 +778,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 				    "			( "+
 				    "				SELECT "+
 				    "					a.*, toa.placename "+
-/*				    "					t_customer.mobilephone, "+
-				    "					t_customer.short_name AS customer_name "+*/
+				    "					t_customer.mobilephone, "+
+				    "					t_customer.short_name AS customer_name "+
 				    "				FROM "+
 				    "					( "+
 				    "						SELECT "+
@@ -794,7 +794,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 				    "						AND tor.employee_name IS NOT NULL "+
 				    "					) a "+
 				    "				LEFT JOIN t_order_address toa ON toa.id = a.order_address_id "+
-/*				    "				LEFT JOIN t_customer ON t_customer.id = a.customer_id "+*/
+				    "				LEFT JOIN t_customer ON t_customer.id = a.customer_id "+
 				    "				WHERE "+
 				    "					toa.placename IN ( "+
 				    						area_name +
@@ -816,8 +816,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
             e.printStackTrace();
         }finally {
             session.close();
-        }
-        return lst_data;
+        }*/
+        return null;
     }
     
     
@@ -827,7 +827,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
      */
     @Override
     public List<Map<String, Object>> queryOrderCountByMonthStoreId(String store_id){
-    	String sql = "SELECT m.month,case when o.totalcount is NULL then 0 else o.totalcount END as total_count,ROUND(CASE when o.total_price is null then 0 else o.total_price end,0) as total_price from ( "+
+    	/*String sql = "SELECT m.month,case when o.totalcount is NULL then 0 else o.totalcount END as total_count,ROUND(CASE when o.total_price is null then 0 else o.total_price end,0) as total_price from ( "+
 					execSqlMonth() +
 					"	) m LEFT JOIN (SELECT "+
 					"			DATE_FORMAT(t.order_date, '%Y-%m') AS MONTH, "+
@@ -872,9 +872,9 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
             e.printStackTrace();
         }finally {
             session.close();
-        }
+        }*/
 		
-		return lst_data;
+		return null;
     }
     
     
@@ -885,7 +885,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
      */
     @Override
     public List<Map<String, Object>> queryOrderFiveMonthOrderApp(String store_id,String employee_no){
-    	List<String> curMonths = new ArrayList<String>();
+    	/*List<String> curMonths = new ArrayList<String>();
     	excnowdatefive(curMonths);
     	
     	String sql ="select b.curmonth as month,(CASE WHEN s.totalcount is null THEN 0 ELSE s.totalcount END) as totalcount, "+
@@ -954,9 +954,9 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 			e.printStackTrace();
 		}finally{
 			session.close();
-		}
+		}*/
     	
-        return retList;
+        return null;
     	    	
     }
     
@@ -1004,7 +1004,7 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 	public List<Map<String, Object>> queryOrderListOfStore_CSZJ_QYJL(Object store) {
 		
 		
-		String sql ="    SELECT  t.store_id,count(1) as ordercount,round(SUM(t.payable_price),0) as total_price  "+
+		/*String sql ="    SELECT  t.store_id,count(1) as ordercount,round(SUM(t.payable_price),0) as total_price  "+
 				    "	 FROM	( "+
 				    "		SELECT 	tor.order_sn,tor.id,tor.store_id,tor.payable_price, tof.create_time AS order_date"+
 				    "		FROM t_order tor "+
@@ -1026,17 +1026,17 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
          e.printStackTrace();
      }finally {
          session.close();
-     }
+     }*/
      
      
-     return lst_data;
+     return null;
 	}
 
 	
 	@Override
 	public List<Map<String, Object>> queryOrderCountOfMonth_CSZJ_QYJL(Object store) {
 
-		String sql ="    SELECT  DATE_FORMAT(t.order_date, '%c月') AS order_date,count(1) as ordercount,round(SUM(t.payable_price),0) as total_price  "+
+		/*String sql ="    SELECT  DATE_FORMAT(t.order_date, '%c月') AS order_date,count(1) as ordercount,round(SUM(t.payable_price),0) as total_price  "+
 				    "	 FROM	( "+
 				    "		SELECT 	tor.order_sn,tor.id,tor.store_id,tor.payable_price, tof.create_time AS order_date"+
 				    "		FROM t_order tor "+
@@ -1058,14 +1058,14 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
          e.printStackTrace();
      }finally {
          session.close();
-     }
-     return lst_data;
+     }*/
+     return null;
 	}
 
 	
 	@Override
 	public Map<String, Object> getAllOrderOfStore(String storeId) {
-		String sql ="    SELECT  count(1) as total,round(SUM(t.payable_price),0) as total_price  "+
+		/*String sql ="    SELECT  count(1) as total,round(SUM(t.payable_price),0) as total_price  "+
 			    "	 FROM	( "+
 			    "		SELECT 	tor.order_sn,tor.id,tor.store_id,tor.payable_price, tof.create_time AS order_date"+
 			    "		FROM t_order tor "+
@@ -1087,13 +1087,14 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 	         session.close();
 	     }
 	    
-		return (lst_data==null||lst_data.size()==0)?null:lst_data.get(0);
+		return (lst_data==null||lst_data.size()==0)?null:lst_data.get(0);*/
+		return null;
 	}
 
 	
 	@Override
 	public Map<String, Object> getOrderFlow(String order_id, String status) {
-		String sql ="select * from t_order_flow where order_id='"+order_id+"' and order_status='"+status+"'";
+		/*String sql ="select * from t_order_flow where order_id='"+order_id+"' and order_status='"+status+"'";
 		 Session session = getHibernateTemplate().getSessionFactory().openSession();
 		 List<Map<String, Object>> lst_data = null;
 	     try{
@@ -1105,7 +1106,8 @@ public class OrderDaoImpl extends DAORootHibernate implements OrderDao {
 	         session.close();
 	     }
 	    
-		return (lst_data==null||lst_data.size()==0)?null:lst_data.get(0);
+		return (lst_data==null||lst_data.size()==0)?null:lst_data.get(0);*/
+		return null;
 	}
 
 	
