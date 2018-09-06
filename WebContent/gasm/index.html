@@ -27,8 +27,8 @@ text-decoration: underline;
 
 	var employee_no="";
     var isgax=false;
+    var currentUser=null;
 	$(function(){
-		queryMsgNoticeList();
 		$(".ui-icon-circle-arrow-s").remove();
 		
 		doManager("UserManager", "getCurrentUserDTO",null,
@@ -37,7 +37,7 @@ text-decoration: underline;
   						var userObj = JSON.parse(data.data);
   						var userid = userObj.id;
   						var zw = userObj.zw;
-  						
+  						currentUser=userObj;
   						if(userid==null||userid==""){
   							window.location.reload();
   						}
@@ -77,7 +77,7 @@ text-decoration: underline;
   						$("#userName").html(userObj.name+"："+employee_id+" &nbsp;&nbsp;&nbsp;&nbsp; "+store_name);
   						
   					}
-		});
+		},false);
 		
 		
 		$('#dialog_xx').dialog({
@@ -92,6 +92,12 @@ text-decoration: underline;
 				}
 			}
 		});
+		
+		if(currentUser==null){
+			window.location.href =getRootPath()+"/bizbase/login.html";
+		}
+		
+		queryMsgNoticeList();
 		
 		queryMessageTop5();
 	});	
