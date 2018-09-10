@@ -893,7 +893,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 		String app_names="";
 		if(userGroups!=null) {
 			UserGroup userGroup = userGroups.get(0);
-			IFilter userIFilter =FilterFactory.getSimpleFilter("pk_usergroup ="+userGroup.getId());
+			IFilter userIFilter =FilterFactory.getSimpleFilter(" disabledFlag=1 and pk_usergroup ="+userGroup.getId());
 			List<User> users = (List<User>) userManager.getList(userIFilter);
 			//取得门店所在城市的user的name 返回 
 			for(User user :users) {
