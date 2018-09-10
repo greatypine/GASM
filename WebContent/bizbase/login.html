@@ -114,6 +114,10 @@
   </style>
 </head>
 <body class="hold-transition register-page">
+
+<font color='red' id="webinfo" style="display:none;">当前浏览器版本过低，请您<a target="_blank" style="color: #9ea0a3;text-decoration: underline;cursor: pointer;" href="http://www.google.cn/intl/zh-CN/chrome/browser/desktop/index.html">升级</a>最新版本</font>
+
+
 <div id="process_div" style="display:none;"></div>
 <div id="model_alert" times="2" showtime="0" style="display: none; z-index: 19891016; width: 450px; height: auto; margin-left: -225px; top: 40%; left: 50%;" id="jm-box-layout2" class="jm-box-layout" type="dialog">
   <div style="background-color: rgb(255, 255, 255); z-index: 19891016; height: 166px;" class="jm-box-main">
@@ -256,6 +260,7 @@
     
 
     $(function () {
+      showversion();
       documentrefer();
       if (logincode != null && logincode.length > 0) {
         $("#textfield").val(logincode);
@@ -472,8 +477,31 @@
         }
       }
     }
+    
+    
+    function getBrowserInfo(){
+    	var agent = navigator.userAgent.toLowerCase() ;
+    	var regStr_chrome = /chrome\/[\d.]+/gi ;
+        //Chrome
+    	if(agent.indexOf("chrome") > 0)
+    	{
+    		return agent.match(regStr_chrome) ;
+    	}
+     }
+    	
+    function showversion(){
+    	var browser = getBrowserInfo() ;
+    	var verinfo = (browser+"").replace(/[^0-9.]/ig,""); 
+    	if(verinfo=="49.0.2623.75"){
+    		$("#webinfo").show();
+    	}
+    }
+    
+    
+    
+    
+    
   </script>
-  
   
   
   <footer>
