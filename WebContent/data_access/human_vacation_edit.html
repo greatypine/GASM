@@ -238,12 +238,15 @@ function initcurruser(){
   	  								 //审批意见 
   	  								 $(".sp_content").hide();
   								}else{
-  									 $("#btnDZ").show();
-  	  								 $("#btnDZRe").show();
-  	  								 //$("#btnHR").show();
-  	  								 //$("#btnHRRe").show();
-  	  								 //审批意见 
-  	  								 $(".sp_content").show();
+  									if(humanObj.app_name!=null&&humanObj.app_name==curr_user.name){
+  										$("#btnDZ").show();
+  	  	  								 $("#btnDZRe").show();
+  	  	  								 //$("#btnHR").show();
+  	  	  								 //$("#btnHRRe").show();
+  	  	  								 //审批意见 
+  	  	  								 $(".sp_content").show();
+  									}
+  									 
   								}
   							}
 							 
