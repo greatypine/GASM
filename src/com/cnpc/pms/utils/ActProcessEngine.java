@@ -58,9 +58,9 @@ public class ActProcessEngine {
 	        
 	        
 	        //上线前要发布一下。
-	        //repositoryService.createDeployment().addClasspathResource("actconf/oneVacationProcess.bpmn").name("请假流程1").category("请假1").deploy();
-	        //repositoryService.createDeployment().addClasspathResource("actconf/threeVacationProcess.bpmn").name("请假流程2").category("请假2").deploy();
-	        //repositoryService.createDeployment().addClasspathResource("actconf/moreVacationProcess.bpmn").name("请假流程3").category("请假3").deploy();
+	        repositoryService.createDeployment().addClasspathResource("actconf/oneVacationProcess.bpmn").name("请假流程1").category("请假1").deploy();
+	        repositoryService.createDeployment().addClasspathResource("actconf/threeVacationProcess.bpmn").name("请假流程2").category("请假2").deploy();
+	        repositoryService.createDeployment().addClasspathResource("actconf/moreVacationProcess.bpmn").name("请假流程3").category("请假3").deploy();
 	       
 	        
 	        ///////////////以下代码为测试///////////////
