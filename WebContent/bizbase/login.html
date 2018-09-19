@@ -377,6 +377,21 @@
             if(returnObj.user.zw=="国安侠"){
             	isaccess = true;
             }
+            if(returnObj.user.zw=="综合管理"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="事务管理"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="服务专员"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="综合专员"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="副店长"){
+            	isaccess = true;
+            }
             if (!isaccess) {
               $$.showMessage("提示", "该用户暂无访问权限！");
               return;

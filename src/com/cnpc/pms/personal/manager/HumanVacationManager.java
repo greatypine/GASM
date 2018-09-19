@@ -1,6 +1,7 @@
 package com.cnpc.pms.personal.manager;
 
 
+import java.io.File;
 import java.util.List;
 import java.util.Map;
 
@@ -43,5 +44,8 @@ public interface HumanVacationManager extends IManager{
 	
 	
 	public List<Comment> findCommentByProcessId(String processId);
+	
+	
+	public File exportVacationInfo(String vacation_id);
 
 }

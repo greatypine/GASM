@@ -10,8 +10,6 @@ import javax.persistence.Entity;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
-import org.apache.poi.hssf.model.Model;
-
 import com.cnpc.pms.base.entity.DataEntity;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
 

@@ -251,7 +251,8 @@ function initcurruser(){
   							}
 							 
 						 }
-						 if(curr_user!=null&&curr_user.zw=="国安侠"){
+						 if(curr_user!=null&&curr_user.zw=="国安侠"||curr_user.zw=="综合管理"||curr_user.zw=="事务管理"||curr_user.zw=="服务专员"||curr_user.zw=="综合专员"||curr_user.zw=="副店长"){
+							 	$("#btnEMExport").show();
 							 	if(status!=1&&status!=2){
 		  							$("#btnEMSave").show();
 		  							//填写或是驳回状态 可以编辑 和再提交 
@@ -485,6 +486,13 @@ function initcurruser(){
 		  }
 		}
  
+	
+	//按模板导出请假单 
+	function emexport(){
+		var employee_no=curr_user.employeeId;
+		var path = getRootPath();
+		window.open(path + "/downloadExcel.action?fileName=vacation_list&vacation_id="+id+"&employee_no="+employee_no+"&skip=true");
+	}
 </script>
 </head>
 <style type="text/css">
@@ -522,6 +530,8 @@ function initcurruser(){
     	<span id="btnHRRe" style="display: none;" onclick="doHrNo();" disabled="false">HR驳回</span>
     	
     	
+    	
+    	<span id="btnEMExport" style="display: none;" onclick="emexport();" disabled="false">导出</span>
         <span id="btnEMSave" style="display: none;" onclick="yanzhen();" disabled="false">提交申请</span>
     	<span id="btnBack" onclick="javascript:history.go(-1);" disabled="false"> 返回</span>
         

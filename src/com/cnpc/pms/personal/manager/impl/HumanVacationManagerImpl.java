@@ -2,18 +2,30 @@ package com.cnpc.pms.personal.manager.impl;
 
 
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.activiti.engine.HistoryService;
 import org.activiti.engine.RuntimeService;
 import org.activiti.engine.TaskService;
 import org.activiti.engine.history.HistoricTaskInstance;
+import org.activiti.engine.impl.persistence.entity.CommentEntity;
+import org.activiti.engine.impl.persistence.entity.CommentEntityImpl;
 import org.activiti.engine.runtime.ProcessInstance;
 import org.activiti.engine.task.Comment;
 import org.activiti.engine.task.Task;
+import org.apache.poi.hwpf.HWPFDocument;
+import org.apache.poi.hwpf.usermodel.Range;
 
 import com.cnpc.pms.base.entity.DataEntity;
 import com.cnpc.pms.base.paging.FSP;
@@ -30,6 +42,7 @@ import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.UserGroup;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserGroupManager;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserManager;
+import com.cnpc.pms.personal.dto.CommentDto;
 import com.cnpc.pms.personal.entity.DistCity;
 import com.cnpc.pms.personal.entity.DistCityCode;
 import com.cnpc.pms.personal.entity.HumanVacation;
@@ -41,6 +54,7 @@ import com.cnpc.pms.personal.manager.HumanVacationManager;
 import com.cnpc.pms.personal.manager.HumanresourcesManager;
 import com.cnpc.pms.personal.manager.StoreManager;
 import com.cnpc.pms.utils.ActProcessEngine;
+import com.cnpc.pms.utils.PropertiesValueUtil;
 
 public class HumanVacationManagerImpl extends BizBaseCommonManager implements HumanVacationManager {
 	
@@ -229,7 +243,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 			hrNames = queryRmNamesByStoreNo(humanVacation.getStore_id());
 			group_code=queryRmEmployeeNoByStoreNo(humanVacation.getStore_id());
 		}else if(updateStatusHumanVacation.getDays()>3) {
-			//group_code="MDYYZXZJJSZ";
+			//group_code="CSMDYYZXZJJSZ";
 			group_code=humanVacation.getEmployee_no();
 			hrNames = queryRmNamesByStoreNo(humanVacation.getStore_id());
 			group_code=queryRmEmployeeNoByStoreNo(humanVacation.getStore_id());
@@ -339,7 +353,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 			HumanVacation updateStatusHumanVacation = queryHumanVacationInfo(humanVacation.getId());
 			String group_code = "";
 			if(updateStatusHumanVacation.getDays()>3) {//如果大于3天了。指定门店总监
-				group_code="MDYYZXZJJSZ";
+				group_code="CSMDYYZXZJJSZ";
 				User user = userManager.findEmployeeByEmployeeNo(manager);
 				hrNames = queryZjNamesByStoreNo(user.getStore_id());
 			}else {
@@ -442,7 +456,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 					UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
 					
 					TaskService taskService=actProcessEngine.getTaskService();
-					String manager = "MDYYZXZJJSZ";
+					String manager = "CSMDYYZXZJJSZ";
 					Task task = taskService.createTaskQuery().processInstanceId(humanVacation.getProcessInstanceId())
 							.taskAssignee(manager)
 							.singleResult();
@@ -498,7 +512,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 					UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
 					TaskService taskService=actProcessEngine.getTaskService();
 					//String manager = humanVacation.getEmployee_no();
-					String manager="MDYYZXZJJSZ";
+					String manager="CSMDYYZXZJJSZ";
 					Task task = taskService.createTaskQuery().processInstanceId(humanVacation.getProcessInstanceId())
 							.taskAssignee(manager)
 							.singleResult();
@@ -652,7 +666,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 		for(Comment com:list){
 			System.out.println("---------------------------------------");
 			System.out.println("ID:"+com.getId());
-			System.out.println("Message:"+com.getFullMessage());
+			//System.out.println("Message:"+com.getFullMessage());
 			System.out.println("TaskId:"+com.getTaskId());
 			System.out.println("ProcessInstanceId:"+com.getProcessInstanceId());
 			System.out.println("---------------------------------------");
@@ -943,7 +957,7 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 			UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
 			StoreManager storeManager = (StoreManager) SpringHelper.getBean("storeManager");
 			DistCityManager distCityManager = (DistCityManager) SpringHelper.getBean("distCityManager");
-			IFilter iFilter =FilterFactory.getSimpleFilter(" code = 'MDYYZXZJJSZ' ");
+			IFilter iFilter =FilterFactory.getSimpleFilter(" code = 'CSMDYYZXZJJSZ' ");
 			List<UserGroup> userGroups = (List<UserGroup>) userGroupManager.getList(iFilter);
 			Store store = storeManager.findStore(storeId);
 			String app_names="";
@@ -965,4 +979,216 @@ public class HumanVacationManagerImpl extends BizBaseCommonManager implements Hu
 		}
 		
 	
+		
+		
+		
+		
+		@Override
+		public File exportVacationInfo(String vacation_id) {
+			
+			String str_file_name = "export_vacation_list";
+			String strRootpath = Thread.currentThread().getContextClassLoader().getResource(File.separator).getPath();
+			//配置文件中的路径
+			String str_filepath = strRootpath.concat(getPropertiesValueUtil().getStringValue(str_file_name).replace("/", File.separator));
+			//File file_template = new File(str_filepath);
+			File rt_file = null;
+			try {
+				if(vacation_id!=null&&vacation_id.length()>0) {
+					Long id=Long.parseLong(vacation_id);
+					HumanVacation humanVacation = (HumanVacation) this.getObject(id);
+					InputStream is = new FileInputStream(str_filepath); 
+					HWPFDocument doc = new HWPFDocument(is);  
+					Range range = doc.getRange();
+					
+					//把range范围内的${reportDate}替换为当前的日期  
+					range.replaceText("${dept}", humanVacation.getStore_name());
+					range.replaceText("${name}", humanVacation.getEmployee_name());
+					range.replaceText("${time1}", new SimpleDateFormat("YYYY-MM-dd").format(humanVacation.getCreate_time()));
+					range.replaceText("${time2}", humanVacation.getWork_date()==null?"":humanVacation.getWork_date());
+					range.replaceText("${time3}", humanVacation.getTopostdate()==null?"":humanVacation.getTopostdate());
+					range.replaceText("${reason}", humanVacation.getVacation_reason()==null?"":humanVacation.getVacation_reason());
+					range.replaceText("${start}", humanVacation.getStart_date()==null?"":humanVacation.getStart_date());
+					range.replaceText("${end}", humanVacation.getEnd_date()==null?"":humanVacation.getEnd_date());
+					String type = humanVacation.getVacation_type();
+					//事假 病假 婚假 产假 年假 丧假 陪产假 
+					//①事假②病假③婚假④产假⑤年假⑥丧假⑦陪产假⑧其他
+					
+					String type_content="";
+					String type1="●事假②病假③婚假④产假⑤年假⑥丧假⑦陪产假";
+					String type2="①事假●病假③婚假④产假⑤年假⑥丧假⑦陪产假";
+					String type3="①事假②病假●婚假④产假⑤年假⑥丧假⑦陪产假";
+					String type4="①事假②病假③婚假●产假⑤年假⑥丧假⑦陪产假";
+					String type5="①事假②病假③婚假④产假●年假⑥丧假⑦陪产假";
+					String type6="①事假②病假③婚假④产假⑤年假●丧假⑦陪产假";
+					String type7="①事假②病假③婚假④产假⑤年假⑥丧假●陪产假";
+					if(type!=null&&type.equals("事假")) {
+						type_content=type1;
+					}else if(type!=null&&type.equals("病假")) {
+						type_content=type2;
+					}else if(type!=null&&type.equals("婚假")) {
+						type_content=type3;
+					}else if(type!=null&&type.equals("产假")) {
+						type_content=type4;
+					}else if(type!=null&&type.equals("年假")) {
+						type_content=type5;
+					}else if(type!=null&&type.equals("丧假")) {
+						type_content=type6;
+					}else if(type!=null&&type.equals("陪产假")) {
+						type_content=type7;
+					}
+					
+					range.replaceText("${type}", type_content);
+				    
+					range.replaceText("${relay}", humanVacation.getWork_relay()==null?"":humanVacation.getWork_relay());
+					//range.replaceText("${storere}", humanVacation.getRe_content()==null?"":humanVacation.getRe_content());;
+					
+					
+					String processInstanceId = humanVacation.getProcessInstanceId();
+					List<Comment> comments = findCommentByProcessId(processInstanceId);
+
+					System.out.println("=======================================================");
+					List<CommentEntityImpl> printComment=new ArrayList<CommentEntityImpl>();
+					for(Comment c:comments) {
+						CommentEntityImpl commentEntityImpl = (CommentEntityImpl) c;
+						if(commentEntityImpl.getType().contains("HR")) {
+							continue;
+						}
+						if(commentEntityImpl.getType().contains("申请")) {
+							break;
+						}else {
+							printComment.add(commentEntityImpl);
+						}
+					}
+					for(CommentEntityImpl commentEntityImpl : printComment) {
+						System.out.println(commentEntityImpl.getType()+"---"+commentEntityImpl.getMessage());
+						String re=commentEntityImpl.getMessage().split(":")[1];
+						String sign=commentEntityImpl.getMessage().split(":")[0];
+						String date = new SimpleDateFormat("YYYY年MM月dd日").format(commentEntityImpl.getTime());
+						if(commentEntityImpl.getType().contains("店长")) {
+							//写入 店长框中 
+							range.replaceText("${storere}", re);
+							range.replaceText("${storesign}", sign+"  "+date);
+						}
+						
+						if(commentEntityImpl.getType().contains("运营经理")) {
+							//写入 运营经理框中 
+							range.replaceText("${sustorere}", re);
+							range.replaceText("${sustoresign}", sign+"  "+date);
+						}
+						
+						if(commentEntityImpl.getType().contains("总监")) {
+							//写入 总监框中 
+							range.replaceText("${directorre}", re);
+							range.replaceText("${directorsign}", sign+"  "+date);
+						}
+						
+					}
+					
+					if(printComment.size()==0) {
+						range.replaceText("${storere}", "");
+						range.replaceText("${storesign}","            年  月  日");
+						range.replaceText("${sustorere}","");
+						range.replaceText("${sustoresign}","                     年  月  日");
+						range.replaceText("${directorre}", "");
+						range.replaceText("${directorsign}", "                     年  月  日");
+					}else if(printComment.size()==1) {
+						range.replaceText("${sustorere}","");
+						range.replaceText("${sustoresign}","                     年  月  日");
+						range.replaceText("${directorre}", "");
+						range.replaceText("${directorsign}", "                     年  月  日");
+					}else if(printComment.size()==2) {
+						range.replaceText("${directorre}", "");
+						range.replaceText("${directorsign}", "                     年  月  日");
+					}
+					
+					System.out.println("=======================================================");
+					
+					/**
+					    HR通过---员工关系1:通过
+						总监通过---测试门店总监:通过
+						运营经理通过---测试运营经理:通过
+						店长通过---李进:通过
+						重新申请---陈虎:重新申请
+						总监驳回---测试门店总监:驳回
+						运营经理通过---测试运营经理:通过
+						店长通过---李进:通过
+						重新申请---陈虎:重新申请
+						运营经理驳回---测试运营经理:驳回
+						店长通过---李进:通过
+						申请---陈虎:申请
+					 */
+					
+					String newFilePath = Thread.currentThread().getContextClassLoader().getResource(File.separator).getPath();
+					
+					String fileName=UUID.randomUUID().toString().replace("-", "");
+					String rt_filepath=newFilePath+fileName+".doc";
+					rt_file=new File(rt_filepath);
+					OutputStream os = new FileOutputStream(rt_filepath);
+				    doc.write(os);  
+				    closeStream(os);  
+				    closeStream(is);
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			
+			
+			
+			
+			
+			
+			return rt_file;
+		}
+		
+		
+		
+		/**
+		 * 配置文件获取帮助类
+		 */
+		private PropertiesValueUtil propertiesValueUtil;
+		/**
+	     * 获取配置文件
+	     * @return 配置文件对象
+	     */
+	    public PropertiesValueUtil getPropertiesValueUtil(){
+	        if(propertiesValueUtil==null){
+	            propertiesValueUtil = new PropertiesValueUtil(File.separator+"conf"+File.separator+"download_config.properties");
+	        }
+	        return propertiesValueUtil;
+	    }
+	    
+	    
+	    
+	    
+	    /** 
+		    * 关闭输入流 
+		    * @param is 
+		    */  
+		@SuppressWarnings("unused")
+		private static void closeStream(InputStream is) {  
+		      if (is != null) {  
+		         try {  
+		            is.close();  
+		         } catch (IOException e) {  
+		            e.printStackTrace();  
+		         }  
+		      }  
+		   }  
+		   
+		   /** 
+		    * 关闭输出流 
+		    * @param os 
+		    */  
+		   @SuppressWarnings("unused")
+		   private static void closeStream(OutputStream os) {  
+		      if (os != null) {  
+		         try {  
+		            os.close();  
+		         } catch (IOException e) {  
+		            e.printStackTrace();  
+		         }  
+		      }  
+		   }
+		   
+		
 }

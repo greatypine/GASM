@@ -21,6 +21,7 @@ import com.cnpc.pms.personal.manager.BusinessInfoManager;
 import com.cnpc.pms.personal.manager.CityHumanresourcesManager;
 import com.cnpc.pms.personal.manager.ExpressManager;
 import com.cnpc.pms.personal.manager.HouseCustomerManager;
+import com.cnpc.pms.personal.manager.HumanVacationManager;
 import com.cnpc.pms.personal.manager.HumanresourcesManager;
 import com.cnpc.pms.personal.manager.OfficeManager;
 import com.cnpc.pms.personal.manager.StoreDocumentInfoManager;
@@ -54,6 +55,9 @@ public class DownloadAction extends HttpServlet {
 		String str_file_name = req.getParameter("fileName");
 		String express_month = req.getParameter("month");
 		String store_id = req.getParameter("store_id");
+		String employee_no=req.getParameter("employee_no");
+		String vacation_id=req.getParameter("vacation_id");
+		
 		AttachmentManager attachmentManager = (AttachmentManager) SpringHelper.getBean("attachmentManager");
 		String strRootpath;
 		if ("house_info_proofread".equals(str_file_name)) {
@@ -82,6 +86,15 @@ public class DownloadAction extends HttpServlet {
 				File file = humanresourcesManager.exportHumanExcel();
 				DownloadUtil.downLoadFile(file.getAbsolutePath(), resp,
 						"humanList" + DateUtils.dateFormat(new Date()) + ".xls", "xls");
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}else if ("vacation_list".equals(str_file_name)) {
+			try {
+				HumanVacationManager humanVacationManager = (HumanVacationManager) SpringHelper.getBean("humanVacationManager");
+				File file = humanVacationManager.exportVacationInfo(vacation_id);
+				DownloadUtil.downLoadFile(file.getAbsolutePath(), resp,
+						""+ employee_no + DateUtils.dateFormat(new Date(),"YYYYMMddHHmmSS") + ".doc", "doc");
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
