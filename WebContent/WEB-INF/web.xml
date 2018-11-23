@@ -9,7 +9,8 @@
     <param-name>contextConfigLocation</param-name>
     <param-value>classpath*:/conf/appContext.xml,
 		classpath*:/conf/appContext-database.xml,
-		classpath*:/conf/appContext-mongo.xml</param-value>
+		classpath*:/conf/appContext-mongo.xml,
+		classpath*:/conf/appContext-third.xml</param-value>
   </context-param>
   <context-param>
     <param-name>LogbaseConfigLocation</param-name>
