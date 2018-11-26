@@ -3,9 +3,12 @@ package com.cnpc.pms.utils;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  * 日期工具类（如有新需求请自行添加）
@@ -286,4 +289,67 @@ public class DateUtils {
         }
         return null;
 	}
+	
+	/**
+	 * 获取当年的周，从周日开始
+	 * @param weeks
+	 * @return
+	 */
+	public static List<String> getDateByWeek(){
+		int weeks = getWeekOfYear(new Date());
+		List<String> list = new ArrayList<String>();
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+		Calendar c = new GregorianCalendar();
+		c.setFirstDayOfWeek(Calendar.MONDAY);
+		c.setTime(new Date());
+		c.set(Calendar.DAY_OF_WEEK, c.getFirstDayOfWeek());
+		Date date = c.getTime();
+		Date date2 = getDateBeforeOneDate(date);
+		for (int i = 0; i < weeks; i++) {
+			Date weekBefore = getWeekBefore(i, date2);
+			list.add(dateFormat.format(weekBefore));
+		}
+
+		Collections.sort(list);
+		
+		return list;  
+	}
+	
+	/**
+	 * @author sunning 获取当前时间所在年的周数
+	 * @param date
+	 * @return
+	 */
+	public static int getWeekOfYear(Date date) {
+		Calendar c = new GregorianCalendar();
+		c.setFirstDayOfWeek(Calendar.MONDAY);
+		c.setMinimalDaysInFirstWeek(7);
+		c.setTime(date);
+		return c.get(Calendar.WEEK_OF_YEAR);
+	}
+	
+	/**
+	 * 获取指定日期的前一天
+	 * 
+	 * @author sunning
+	 * @param date
+	 * @return
+	 */
+	public static Date getDateBeforeOneDate(Date date) {
+		Calendar calendar = Calendar.getInstance(); // 得到日历
+		calendar.setTime(date);// 把当前时间赋给日历
+		calendar.add(Calendar.DATE, -1); // 设置为前一天
+		return calendar.getTime(); // 得到前一天的时间
+	}
+	
+	public static Date getWeekBefore(int n, Date date) {
+		Calendar c = Calendar.getInstance();
+
+		// 过去七天
+		c.setTime(date);
+		c.add(Calendar.DATE, -7 * n);
+		Date d = c.getTime();
+		return d;
+	}
+	
 }

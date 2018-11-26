@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>门店管理系统-运营总概</title>
+	<link rel="shortcut icon" type="image/x-icon" href="../icon.png"/>
+	<link href="style.css" rel="stylesheet" media="all" />
+	<link href="" rel="stylesheet" title="style" media="all" />
+	<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
+	<script type="text/javascript" src="js/superfish.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.7.2.js"></script>
+	<script type="text/javascript" src="js/tooltip.js"></script>
+	<script type="text/javascript" src="js/tablesorter.js"></script>
+	<script type="text/javascript" src="js/tablesorter-pager.js"></script>
+	<script type="text/javascript" src="js/cookie.js"></script>
+	<script type="text/javascript" src="js/custom.js"></script>
+	<script type="text/javascript" src="../scripts/bidLibjsjquery4.0.js"></script>
+	
+</head>
+
+
+<script >
+
+	var employee_no="";
+
+	$(function(){
+		doManager("UserManager", "getCurrentUserDTO",null,
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						var userObj = JSON.parse(data.data);
+  						var userid = userObj.id;
+  						var store_name=userObj.store_name==null?"":userObj.store_name;
+  						var employee_id=userObj.employeeId==null?"":userObj.employeeId;
+  						employee_no=employee_id;
+  						$("#userName").html("用户: "+employee_id+" | "+userObj.name+" | "+store_name);
+  						
+  					}
+		});
+	});	
+	
+	
+	function doLogout() {
+		$('#login').dialog('open');
+	}
+	
+	
+	function updatestoreid(selectobj){
+		var store_id=selectobj.value;
+		//更改店长用户的 store_id
+		var url = "../dispatcher.action";
+		var data = new PMSRequestObject("userManager", "updateUserStoreId",[store_id,employee_no]);
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+			if (datas.result) {
+				refreshView();
+			}else{
+				$$.showMessage("系统信息", "切换失败!");
+			}
+		});
+	}
+	
+	function refreshView(){
+		window.location.reload();
+	}
+	function refreshIndex(){
+		window.location.reload();
+	}
+	
+	function tohumanmanager(){
+		var url = "../gasm/human_store_view.html";
+		window.open(url,"human_store_view"); 
+	}
+	function toworkrecord(){
+		var url = "../gasm/work_record_view.html";
+		window.open(url,"work_record_view"); 
+	}
+	function toworkinfolist(){
+		var url = "../gasm/work_info_view.html";
+		window.open(url,"work_info_view"); 
+	}
+	function toarealist(){
+		var url = "../gasm/area_view.html";
+		window.open(url,"area_view"); 
+	}
+	function totinyvillagelist(){
+		var url = "../gasm/tinyvillage_view.html";
+		window.open(url,"tinyvillage_view"); 
+	}
+	
+	
+	
+	function totownlist(){
+		var url = "../gasm/town_view.html";
+		window.open(url,"town_view");
+	}
+	function tovillagelist(){
+		var url = "../gasm/village_view.html";
+		window.open(url,"village_view");
+	} 
+	function totinyvillagelistbase(){
+		var url = "../gasm/tinyvillagebase_view.html";
+		window.open(url,"tinyvillagebase_view");
+	}
+	function tobuildinglistdata(){
+		var url = "../gasm/buildinglistdata_view.html";
+		window.open(url,"buildinglistdata_view");
+	}
+	function tohouselist(){
+		var url = "../gasm/houselist_view.html";
+		window.open(url,"houselist_view");
+	}
+	
+	function tobusinesslist(){
+		var url = "../gasm/businesslist_view.html";
+		window.open(url,"businesslist_view");
+	}
+	function tocompanylist(){
+		var url = "../gasm/companylist_view.html";
+		window.open(url,"companylist_view");
+	}
+	
+	
+	
+	function toindexpage(){
+		window.location.href="../gasm/index.html";
+	}
+
+	
+	
+	function tostoreorderlist(){
+		var url = "store_orderdz_view.html";
+		window.open(url,"storeorderdz_view");
+	}
+	
+	
+	var curStoreStatus = null;
+	var curStore = null;
+	function tohumanscore(){
+	    	   //判断门店是否发生变动 。
+	    	   var top_store=window.parent.document.getElementById("userName").innerHTML; 
+	    	   
+	    	   var storeischange=false;
+	    	 	//取得当前门店 状态 
+		       	doManager("storeManager", "queryCurrentStoreInfo",null,
+						function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								var curStoreObj = JSON.parse(data.data);
+								curStore = curStoreObj;
+								curStoreStatus = curStoreObj.estate;
+							}
+				},false);
+	    	   if(top_store!=null&&top_store.length>0){
+	    		  var str_arr = top_store.split('<option');
+	    		  for(i=0;i<str_arr.length;i++){
+	    			  var va = str_arr[i];
+	    			  if(va.indexOf('selected=')>-1&&va.indexOf(curStore.name)<0){
+	    				  storeischange = true;
+	    			  }
+	    		  }
+	    	   }
+	    	   if(storeischange){
+	    		   $$.showConfirm("提示","门店发生异动！ 将刷新页面！ ",function () {
+	    			   parent.location.reload();
+					});
+	    		   return;
+	    	   }
+		
+	    	   if(curStoreStatus=="运营中"||curStoreStatus=="试运营"){
+					var url = "store_input_view.html";
+	    			window.open(url,"score_input_view"); 
+      			}else{
+      				$$.showMessage('提示','当前门店暂未开业,暂不填写绩效分！ ');
+      			}
+	}
+	
+	/***********请假管理 ****************/
+	function tovacationlist(){
+		 var url = "../gasm/human_vacation_view.html";
+		 window.open(url,"human_vacation_view"); 
+	}
+	
+	
+</script>
+<body>
+
+<!-- <div class="ui-widget-overlay" style="width: 100%; height: 100%; z-index: 1001;display: none;"></div>
+ -->	
+ 	<div id="header">
+		<div id="sitename">
+			<a href="index.html" class="logo float-left" title="国安社区门店管理系统">国安社区门店管理系统</a>
+			<div class="button float-right" id="top-menu">
+			<!--	<a href="#" id="dialog_link" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-newwin"></span>打开对话框</a>
+				<a href="#" id="login_dialog" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-image"></span>登录框</a>  -->
+              <span id="userName"></span>
+              <!-- | <a href="#" title="Edit profile">编辑资料</a> -->
+              <!-- | <a href="javascript:doLogout()" title="Logout">退出</a> -->
+			</div>
+			<div id="login" title="退出" style="min-height: 35px; width: auto;">
+					<ul>
+						<li>
+							确定退出国安社区门店管理系统？
+						</li>
+					</ul>
+			</div>
+		</div>
+		<ul id="navigation" class="sf-navbar">
+			<li>
+				<a>运营总概</a>
+			</li>
+		</ul>
+	</div>
+	
+	<iframe id="i2ui_shell_top" name="i2ui_shell_top" src="../data_access/business_summary.html" style="width: 100%;height: 100%;"></iframe>
+		
+</body>
+</html>
