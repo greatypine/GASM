@@ -12,6 +12,16 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jasig.cas.client.authentication.AttributePrincipal;
+import org.jasig.cas.client.authentication.AuthenticationFilter;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
+
 import com.cnpc.pms.base.common.action.DispatcherAction;
 import com.cnpc.pms.base.common.model.ClientRequestObject;
 import com.cnpc.pms.base.common.model.ClientResponseObject;
@@ -25,8 +35,8 @@ import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.UserLoginInfo;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserLoginInfoManager;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserManager;
-//import com.yadea.crm.common.entity.CrmIP;
-//import com.yadea.crm.common.manager.CrmIPManager;
+import com.cnpc.pms.platform.entity.SystemUser;
+import com.cnpc.pms.platform.entity.SystemUserInfo;
 
 /**
  * <p>
@@ -47,9 +57,23 @@ public class LoginAction extends DispatcherAction {
 
 	protected static final Hashtable<String, List<String>> ACL_CACHE = new Hashtable<String, List<String>>();
 
+	//此方法为用户统一退出方法
+	//casServerUrlPrefix自行配置cas服务地址  eg:http://10.16.31.229:8080/cas
+	//
+//	  public String logout(HttpServletResponse response,HttpServletRequest request) {
+//	      // 登出操作
+//		  request.getSession().removeAttribute(AuthenticationFilter.CONST_CAS_ASSERTION);
+//	      SystemUser systemUser = SystemUserInfo.getInstance();
+//    	  request.getSession().removeAttribute("user");
+//	      SystemUserInfo.destroy();
+//	      request.getSession().invalidate();
+//		  String logoutFullUrl = request.getRequestURL().toString();
+//		  String indexUrl = logoutFullUrl.substring(0, logoutFullUrl.lastIndexOf("/logout"));
+//	      return "redirect:" + casServerUrlPrefix + "/logout?service=" + indexUrl + "/index";
+//	  }
+	  
 	@Override
-	protected final void doPost(HttpServletRequest request,
-			HttpServletResponse response) throws ServletException, IOException {
+	protected final void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// 从request中获取IP地址,写入session中
 		String ip = request.getRemoteAddr();
 		String host = request.getRemoteHost();

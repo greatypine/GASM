@@ -69,7 +69,7 @@
     	</rollingPolicy>
 		<append>true</append>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>debug</level>
+			<level>info</level>
 		</filter>
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<pattern>%d{HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
@@ -85,7 +85,7 @@
     	</rollingPolicy>
 		<append>true</append>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>debug</level>
+			<level>info</level>
 		</filter>
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<pattern>%d{HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
@@ -101,7 +101,7 @@
     	</rollingPolicy>
 		<append>false</append>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>debug</level>
+			<level>info</level>
 		</filter>
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<pattern>%d{HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
@@ -117,7 +117,7 @@
     	</rollingPolicy>
 		<append>false</append>
 		<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
-			<level>debug</level>
+			<level>info</level>
 		</filter>
 		<layout class="ch.qos.logback.classic.PatternLayout">
 			<pattern>%d{yyyy-MM-dd HH:mm:ss},[%t]%p, %C{1}.%M, %m%n</pattern>
@@ -144,17 +144,17 @@
 	</logger>
 	
 	<logger name="com.yadea.crm.etl">
-		<level value="debug"/>
+		<level value="info"/>
 		<appender-ref ref="EtlFileAppender" /> 
 	</logger>
 	
 	<logger name="com.yadea.crm.autoetl">
-		<level value="debug"/>
+		<level value="info"/>
 		<appender-ref ref="AutoEtlFileAppender" /> 
 	</logger>
 	
 	<logger name="com.yadea.crm.common.jco">
-		<level value="debug"/>
+		<level value="info"/>
 		<appender-ref ref="JcoFileAppender" /> 
 	</logger>
 	
@@ -170,7 +170,7 @@
 	</root>
 
 
-	<root level="DEBUG">   
+	<root level="info">   
    	 <appender-ref ref="FILE" />   
   	</root> 
   

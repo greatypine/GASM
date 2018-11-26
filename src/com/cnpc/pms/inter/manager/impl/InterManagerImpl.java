@@ -19,8 +19,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import javax.swing.Spring;
-
 import org.activiti.engine.task.Comment;
 import org.apache.http.HttpHost;
 import org.apache.http.client.config.RequestConfig;
@@ -71,16 +69,14 @@ import com.cnpc.pms.personal.dto.StoreRequirementDto;
 import com.cnpc.pms.personal.dto.StoreStandardDto;
 import com.cnpc.pms.personal.entity.AppDownloadLog;
 import com.cnpc.pms.personal.entity.AppVersion;
+import com.cnpc.pms.personal.entity.BannerInfo;
 import com.cnpc.pms.personal.entity.CodeLogin;
 import com.cnpc.pms.personal.entity.Customer;
 import com.cnpc.pms.personal.entity.Express;
 import com.cnpc.pms.personal.entity.HumanReContent;
 import com.cnpc.pms.personal.entity.HumanVacation;
 import com.cnpc.pms.personal.entity.Humanresources;
-
 import com.cnpc.pms.personal.entity.SendMessage;
-
-import com.cnpc.pms.personal.entity.BannerInfo;
 import com.cnpc.pms.personal.entity.SiteSelection;
 import com.cnpc.pms.personal.entity.Store;
 import com.cnpc.pms.personal.entity.StoreAddress;
@@ -118,16 +114,10 @@ import com.cnpc.pms.slice.dao.AreaDao;
 import com.cnpc.pms.slice.entity.Area;
 import com.cnpc.pms.slice.manager.AreaManager;
 import com.cnpc.pms.utils.BarCodeUtils;
-import com.cnpc.pms.utils.MD5Utils;
-import com.cnpc.pms.utils.ValidationCode;
-
-import com.cnpc.pms.utils.PhoneFormatCheckUtils;
-
 import com.cnpc.pms.utils.DateUtils;
-
+import com.cnpc.pms.utils.PhoneFormatCheckUtils;
+import com.cnpc.pms.utils.ValidationCode;
 import com.cnpc.pms.utils.ValueUtil;
-import com.mysql.jdbc.ResultSetInternalMethods;
-import com.sun.org.apache.bcel.internal.generic.ReturnInstruction;
 
 /**
  * App接口实现类interDao

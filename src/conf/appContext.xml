@@ -113,5 +113,11 @@
 		<property name="host1" value="${act.host1}" />
 		<property name="dbName" value="${act.dbName}" />
 	</bean>
-    
+    <!-- 配置RestTemplate -->
+    <!--Http client Factory -->
+    <bean id="httpClientFactory" class="org.springframework.http.client.SimpleClientHttpRequestFactory"/>
+    <!--RestTemplate -->
+    <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
+        <constructor-arg ref="httpClientFactory" />
+    </bean>
 </beans>
