@@ -725,6 +725,16 @@
         <column key="phone" header="用户电话" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="15%"/>
     </query>
     
+    <!-- 门店管理系统  工单管理   -->
+    <query id="queryrecommenduserlist"  header="重要发展客户"  baseclass="com.cnpc.pms.personal.entity.UserRecommendInfo" method="businessReportManager.queryrecommenduserlist">
+        <column key="mobilephone" header="手机号" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="area_no" header="片区" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="10%"/>
+        <column key="employee_a_no" header="国安侠" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="10%"/>
+        <column key="item1" header="推荐商品1" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="item2" header="推荐商品2" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+        <column key="item3" header="推荐商品3" type="java.lang.String" align="center" allowSearch="true" operator="like" allowSort="false" display="true" width="20%"/>
+    </query>
+    
     
     <!-- 门店管理系统  更多消息    -->
     <query id="querymoremessagelist" header="消息列表"  method="messageNewManager.queryMoreMessageList" >

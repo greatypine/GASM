@@ -201,7 +201,7 @@ public class ImpalaUtil {
 
 
     // set the impalad host
-    private static final String IMPALAD_HOST = "10.16.31.192";
+    private static final String IMPALAD_HOST = "10.16.21.76";
 
     // port 21050 is the default impalad JDBC port
     private static final String IMPALAD_JDBC_PORT = "21050";

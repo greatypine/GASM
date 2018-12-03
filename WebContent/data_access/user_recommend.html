@@ -22,12 +22,15 @@
     var win;
     var array=new Array();
 	var curr_user;
+	var platformid;
+	var storeno;
 	function initcurruser(){
   		//取得当前登录人的门店
 		doManager("UserManager", "getCurrentUserDTO",null,
     				function(data, textStatus, XMLHttpRequest) {
     					if (data.result) {
     						 curr_user = JSON.parse(data.data);
+    						 initCurrStore(curr_user.store_id);
     					}
     	},false);
   	}
@@ -37,7 +40,7 @@
     	initCareerGroup();
     	
     	initcurruser();
-    	doClean();
+    	//doClean();
         //页面加载成功后需要获取数据
         searchList();
         
@@ -71,13 +74,32 @@
 				}, false);
 	}
   
+     
+	//初始化当前门店
+	function initCurrStore(store_id){
+		doManager("StoreManager", "findStore", [store_id],
+				function(data, textStatus, XMLHttpRequest) {
+					if (data.result) {
+						var jsonData = $.fromJSON(data.data);
+						//alert(jsonData.platformid);
+						platformid = jsonData.platformid;
+						storeno = jsonData.storeno;
+						$("#platformid").val(platformid);
+					}
+				}, false);
+		
+        
+        /* loadTable(platformid); */
+	}
+	
+	
     //记载页面时请求数据列表默认的方法
     function searchList() {
     	//判断是否多个门店 发生切换变化 
     	if(!checkStoreChange()){
     		return;
     	}
-        $$.executeSearch('querystoreorderlist', 'conditionsDiv');
+        $$.executeSearch('queryrecommenduserlist', 'conditionsDiv');
         $("#cstmz_actv").remove();
         $(".display").css("width","auto");
     }
@@ -88,10 +110,10 @@
     }
 
 
-    function doClean() {
+    /* function doClean() {
         document.service_qa.reset();
         $("#store\\.id").val("");
-    }
+    } */
 
   //列表中 列的处理
     var COLUMNS = {
@@ -228,16 +250,16 @@
     
   
   
-  var editObj = {
+  /* var editObj = {
 			html : '<a href="#">编辑 </a>',
 			resourceId : "storeorder_List_update",
 			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
 				var id = allColumnsDataMap.id;
 				window.location.href = "storeorder_edit.html?id="+id;
 			}
-		}
+		} */
   
-  $pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
+  //$pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
   
 </script>
 <style type="text/css">
@@ -251,51 +273,51 @@
 </style>
 <body style="height: 100%">
 
-<div class="panel panel-default">
+<!-- <div class="panel panel-default">
     <div class="panel-heading">
         <h4 class="panel-title">
-              门店工单:工单管理
+              门店工单:重要发展客户
         </h4>
     </div>
-</div>
+</div> -->
 
-    <div class="panel panel-primary">
+    <!-- <div class="panel panel-primary"> 
         <div class="panel-heading">
             工单查询
-           <!--  <span class="but">
+           <span class="but">
                 <input type="button" onclick="exportExcel();" value="门店员工花名册生成"/>
-            </span> -->
-        </div>
+            </span> 
+        </div>-->
         
         
         
-        <div class="panel-body" id="imp_data_div">
-            <div id="conditionsDiv" style="margin-top: 0px">
+        <div class="panel-body" id="imp_data_div"> 
+            <div id="conditionsDiv" style="margin-top: 0px;display:none;">
                 <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
                   <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
                     <tr>
                       <td width="33.33%">
                         <p>员工姓名</p>
-                        <p><input id="employee_name" name="employee_name" type="text" style="width:80%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
+                        <p><input id="platformid" name="platformid" type="text" style="width:80%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
                       </td>
                       <td width="33.33%">
                         <p>员工编号</p>
                         <p><input id="employee_no" name="employee_no" type="text" style="width:80%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
                       </td>
                       <td width="33.33%">
-                       <!--  <p>状态</p>
+                      <p>状态</p>
                         <p><select name="humanstatus" style="width:80%;" class="form-control">
                           <option value="">全部</option>
                           <option value="1">在职</option>
                           <option value="2">离职</option>
-                        </select></p> -->
-                      </td>
+                        </select></p>
+                      </td> 
                     </tr>
                   </table>
                 </form>
-            </div>
+            </div> 
         </div>
-        <div class="clearfix" style="padding: 10px 0 15px 0;">
+        <!-- <div class="clearfix" style="padding: 10px 0 15px 0;">
         <div class="col-sm-1 pull-right">
 	            <button class="btn btn-block btn-danger"  id="addStoreOrder"  onclick="addStoreOrder();">新增</button>
 	          </div>
@@ -306,10 +328,9 @@
           <div class="col-sm-1 pull-right">
             <button class="btn btn-block btn-warning" onclick="searchList()">查询</button>
           </div>
-        </div>
-    </div>
+        </div> -->
     <input type="hidden" id="store_id" isautotab="true" />
-    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="querystoreorderlist" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+    <div id="centerQueryGridContainer" class="panel panel-primary" queryid="queryrecommenduserlist" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
 
 
 </body>

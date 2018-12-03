@@ -1,27 +1,121 @@
-<!DOCTYPE html>
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
 <html>
-
 <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=8">
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>工单信息列表</title>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>门店管理系统-运营日报</title>
+	<link rel="shortcut icon" type="image/x-icon" href="../icon.png"/>
+	<link href="style.css" rel="stylesheet" media="all" />
+	<link href="" rel="stylesheet" title="style" media="all" />
     <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="../startbootstrap/bower_components/metisMenu/dist/metisMenu.min.css" rel="stylesheet">
-    <link href="../startbootstrap/dist/css/sb-admin-2.css" rel="stylesheet">
-    <link href="../scripts/css/auto.css" rel="stylesheet">
-    <link href="../startbootstrap/bower_components/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-    <script type="text/javascript" src="../scripts/bidLib.js"></script>
-    <!-- <script src="../hr/plugins/jQuery/jQuery-2.2.0.min.js"></script>  -->
-	<!-- <script type="text/javascript" src="../startbootstrap/bower_components/bootstrap/dist/js/jQuery-2.2.0.min.js"></script> -->
+    <style>
+        .box-body img{width: 100%}
+        .report{font-size: 16px;background-color: #a93f31;color: #fff; padding-bottom: 20px;}
+        .report .box-header{color: #fff;}
+        .report em{width: 70px; position: absolute; right: 0; bottom: 0;}
+        .report img{height: 100%;}
+        .report li{float:left; line-height: 28px; color: #f8e7e5; margin-top: 5px;}
+        .report i{margin-right: 5px; opacity: 0.6;}
+        .report span{font-size: 24px; color: #ffb959; font-weight: bold;}
+        .report p i{color: #fff;}
+        .report p small{font-size: 16px;}
+        .report p:nth-child(2),.report p:nth-child(2n){font-size: 18px; margin: 10px 0 5px 0; color: rgba(255,255,255,0.7);}
+        .report p:nth-child(2n+1){font-size: 34px; padding-left: 20px;}
+        .report dt{border-bottom: 1px dashed rgba(255,255,255,1); padding: 0 5px 5px 5px; position: relative; margin: 0 10px;}
+        .report dt:after{content: ''; width: 7px; height: 8px; background-color: rgba(255,255,255,.8); border-radius: 50%; position: absolute; bottom: -5px; left: -7px;}
+        .report dt:before{content: ''; width: 7px; height: 8px; background-color: rgba(255,255,255,.8); border-radius: 50%; position: absolute; bottom: -5px; right: -7px;}
+        .report_jr li{width: 23%; background-color: rgba(0,0,0,0.2); box-shadow: 0 1px 1px rgba(0,0,0,1); border-radius: 5px; margin: 15px 1% 0 1%; padding: 15px 0; line-height: 30px;}
+        .report_jr li i{font-size: 50px; color: rgba(255, 255, 255, 0.4); padding-top: 5px;}
+        .report_jr li span{font-size: 22px; color: #ffde00;}
+
+        .vertical-example{
+            position: absolute;
+            top: 140px;
+            right: 5px;
+            width: 70px;}
+        .navimenu{min-height: 800px;width: 70px; padding-top: 0;}
+        #gooey-v .open-button, #gooey-v .gooey-menu-item{margin-top: 0; margin-bottom: 15em;}
+        #process_div{
+            background-color:#292a2b;
+            display:inline;
+            z-index:100000;
+            left:0px;
+            opacity:0.3; top:0; left:0;height:100%; width:100%; z-index:999; position:fixed; _position:absolute; _left: expression_r(documentElement.scrollLeft + documentElement.clientWidth - this.offsetWidth); _top: expression_r(documentElement.scrollTop + documentElement.clientHeight - this.offsetHeight);
+            filter:Alpha(Opacity=30);
+            opacity: 0.3;
+        }
+
+        #process_div_pic{
+            position:fixed;
+            top:50%;
+            left:50%;
+            z-index:100000000;
+            margin:-16px 0 0 -50px;
+            width:100px;
+            height:32px;
+            color: #fff;
+        }
+        .download{position: fixed; right: 20px; top: 120px; height: 100px; overflow: hidden; z-index: 1000;}
+        .download p{font-size: 12px;}
+        .download_icon{font-size: 36px; position:relative;animation-name:myfirst;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite;animation-direction:alternate;animation-play-state:running;
+            /* Firefox: */
+            -moz-animation-name:myfirst; -moz-animation-duration:2s;-moz-animation-timing-function:linear;-moz-animation-iteration-count:infinite;-moz-animation-direction:alternate;-moz-animation-play-state:running;
+            /* Safari and Chrome: */
+            -webkit-animation-name:myfirst;-webkit-animation-duration:2s;-webkit-animation-timing-function:linear;-webkit-animation-iteration-count:infinite;-webkit-animation-direction:alternate;-webkit-animation-play-state:running;
+            /* Opera: */
+            -o-animation-name:myfirst;-o-animation-duration:2s;-o-animation-timing-function:linear;-o-animation-delay:2s;-o-animation-iteration-count:infinite;-o-animation-direction:alternate;-o-animation-play-state:running;}
+        .add_citymember{wposition: absolute;}
+        .show_cmBig{wposition: absolute;}
+        .add_TestMember{wposition: absolute;}
+        .toast{
+            width:450px;
+            height:240px;
+            background:transparent;
+            background-color:rgba(241,241,241,1);
+            box-shadow: 0 1px 1px rgba(0,0,0,1);
+            border-radius:10px;
+            position: fixed;
+            z-index: 1;
+        }
+        .toast li{float:left; line-height: 28px; color: #0096BB; margin-top: 5px;}
+        .bigtoast{
+            width:350px;
+            height:240px;
+            background:transparent;
+            background-color:rgba(241,241,241,1);
+            box-shadow: 0 1px 1px rgba(0,0,0,1);
+            border-radius:10px;
+            position: absolute;
+            /*margin:auto;left:25%; top:60%;*/
+            z-index: 1;
+        }
+
+        .trytoast{
+            width:450px;
+            height:240px;
+            background:transparent;
+            background-color:rgba(241,241,241,1);
+            box-shadow: 0 1px 1px rgba(0,0,0,1);
+            border-radius:10px;
+            position: fixed;
+            z-index: 1;
+        }
+        .trytoast li{float:left; line-height: 28px; color: #0096BB; margin-top: 5px;}
+    </style>
+	<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
+	<script type="text/javascript" src="js/superfish.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.7.2.js"></script>
+	<script type="text/javascript" src="js/tooltip.js"></script>
+	<script type="text/javascript" src="js/tablesorter.js"></script>
+	<script type="text/javascript" src="js/tablesorter-pager.js"></script>
+	<script type="text/javascript" src="js/cookie.js"></script>
+	<script type="text/javascript" src="js/custom.js"></script>
+	<script type="text/javascript" src="../scripts/bidLibjsjquery4.0.js"></script>
+	<script type="text/javascript" src="../scripts/bidLib.js"></script>
 	<script type="text/javascript" src="../scripts/auto.js"></script>
 	<script type="text/javascript" src="../startbootstrap/js/echarts.min.js"></script>
-	<script type="text/javascript" src="../startbootstrap/bower_components/bootstrap/dist/js/bootstrap.min.js"></script>
-    <style>
-        .panel-body{padding-bottom: 0;}
-        .panel-body td{padding-top:15px;}
-        
-    </style>
 </head>
+
+
 <script>
     var win;
     var array=new Array();
@@ -92,11 +186,12 @@
 						//alert(jsonData.platformid);
 						platformid = jsonData.platformid;
 						storeno_unique = jsonData.storeno;
+						$("#platformid").val(platformid);
 					}
 				}, false);
 		
         
-        /* loadTable(platformid); */
+         loadTable(platformid); 
 	}
   
     //记载页面时请求数据列表默认的方法
@@ -256,20 +351,20 @@
     
   
   
-  var editObj = {
+  /* var editObj = {
 			html : '<a href="#">编辑 </a>',
 			resourceId : "storeorder_List_update",
 			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
 				var id = allColumnsDataMap.id;
 				window.location.href = "storeorder_edit.html?id="+id;
 			}
-		}
+		} */
   
-  $pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
+  //$pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
   
   
-  /* function loadTable(platformid){
-	  doManager("HumanresourcesManager", "updateHumanresourceCareerGroupById",obj,
+   function loadTable(platformid){
+	  doManager("BusinessReportManager", "queryBusinesSummary",platformid,
 				 function(data, textStatus, XMLHttpRequest) {
 								if (data.result) {
 									var curStoreObj = JSON.parse(data.data);
@@ -281,7 +376,7 @@
 									$$.showMessage("系统信息", "修改失败 !");
 								}
 			     },false);
-  } */
+  } 
 </script>
 <!-- --------------------------------------------------------Echarts 部分-------------------------------------------------------------- -->
 <script>
@@ -2516,6 +2611,17 @@ $(function(){
         window.location.href=url;
     }
 </script>
+<script>
+	$(function () {
+    	//判断是否多个门店 发生切换变化 
+    	if(!checkStoreChange()){
+    		return;
+    	}
+        $$.executeSearch('queryrecommenduserlist', 'conditionsDiv');
+        $("#cstmz_actv").remove();
+        $(".display").css("width","auto");
+	});
+</script>
 <style type="text/css">
     .but {
         float: right;
@@ -2525,76 +2631,190 @@ $(function(){
 	.auto{max-height:100px; overflow-y:scroll;}
 	
 </style>
-<body style="height: 100%">
+<body class="hold-transition skin-blue sidebar-mini">
 
-<!-- <div class="panel panel-default">
-    <div class="panel-heading">
-        <h4 class="panel-title">
-              门店工单:订单运营趋势
-        </h4>
-    </div>
-</div> -->
-
-<div style="margin:10px;border:0;padding:0">
-		<div class="nav_l" id="nav_l">
-			  <!-- Tabs within a box -->
-			  <ul class="nav nav-tabs no-border nav-tabs1">
-<!-- 				<li class="active"><a href="#revenue-chart" data-toggle="tab">实时</a></li> -->
-				<li><a href="#sales-chart" data-toggle="tab" onclick="javascript:chartresize1()">时</a></li>
-                <li><a href="#day-chart" data-toggle="tab" onclick="javascript:chartresize2()">日</a></li>
-				<li><a href="#week-chart" data-toggle="tab" onclick="javascript:chartresize4()">周</a></li>
-                <li  class="active"><a href="#month-chart" data-toggle="tab" onclick="javascript:chartresize3()">月</a></li>
-                <!-- <div class="col-sm-1 pull-right"><button type="button" id="search-btn-add" class="btn btn-block btn-sm" style="margin-right: 50px; font-size: 14px; background-color: rgba(0,0,0,0.1);color: #fff">加入对比</button></div> -->
-			  </ul>
-			  <div class="tab-content no-padding" id="tab-content">
-				<!-- Morris chart - Sales -->
-<!-- 				<div class="chart tab-pane active" id="revenue-chart"> -->
-<!-- 				  <div id="main1" style="width: 100%; height: 300px;"></div> -->
-<!-- 				</div> -->
-				<div class="chart tab-pane" id="sales-chart">
-				  <div id="main4" style="width: 100%; height: 411px;"></div>
-				</div>
-                <div class="chart tab-pane" id="day-chart">
-                  <div id="main5" style="width: 100%; height: 411px;"></div>
-                </div>
-				<div class="chart tab-pane" id="week-chart">
-				  <div id="main7" style="width: 100%; height: 411px;"></div>
-				</div>
-                <div class="chart tab-pane active" id="month-chart">
-                  <div id="main6" style="width: 100%; height: 411px;"></div>
-                </div>
-			  </div>
+ 	<div id="header">
+		<div id="sitename">
+			<a href="index.html" class="logo float-left" title="国安社区门店管理系统">国安社区门店管理系统</a>
+			<div class="button float-right" id="top-menu">
+			<!--	<a href="#" id="dialog_link" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-newwin"></span>打开对话框</a>
+				<a href="#" id="login_dialog" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-image"></span>登录框</a>  -->
+              <span id="userName"></span>
+              <!-- | <a href="#" title="Edit profile">编辑资料</a> -->
+              <!-- | <a href="javascript:doLogout()" title="Logout">退出</a> -->
+			</div>
+			<div id="login" title="退出" style="min-height: 35px; width: auto;">
+					<ul>
+						<li>
+							确定退出国安社区门店管理系统？
+						</li>
+					</ul>
+			</div>
 		</div>
-</div>
+		<ul id="navigation" class="sf-navbar">
+				<!-- <li>
+						<a>运营日报</a>
+				</li> -->
+		</ul>
+	</div>
 
+<div class="wrapper">
+	<div id="page">
+	  <div class="content-wrapper" style="min-height: 408px;">
+            <div class="container" style="width: 1300px;">
+            		<div class="content-header">
+            				<div class="box box-default report">
+            						    <div class="container">
+												<div class="row">
+													<div class="col-md-3">
+														<table>
+															<tr><th colspan="4">订单量</th></tr>
+															<tr><td>昨日：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>上月：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>累计：</td><td>30%</td><td>月均增长：</td><td>30%</td></tr>
+														</table>
+													</div>
+													<div class="col-md-3">
+														<table>
+															<tr><th colspan="4">订单金额</th></tr>
+															<tr><td>昨日：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>上月：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>累计：</td><td>30%</td><td>月均增长：</td><td>30%</td></tr>
+														</table>
+													</div>
+													<div class="col-md-3">
+														<table>
+															<tr><th colspan="4">新增下单用户数</th></tr>
+															<tr><td>昨日：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>上月：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>累计：</td><td>30%</td><td>月均增长：</td><td>30%</td></tr>
+														</table>
+													</div>
+													<div class="col-md-3">
+														<table>
+															<tr><th colspan="4">下单用户数</th></tr>
+															<tr><td>昨日：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>上月：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>累计：</td><td>30%</td><td>月均增长：</td><td>30%</td></tr>
+														</table>
+													</div>
+												</div>
+												<div class="row">
+													<div class="col-md-3">
+														<table>
+															<tr><th colspan="4">订单量排行榜</th></tr>
+															<tr><th></th><th>本区</th><th>本市</th><th>全国</th></tr>
+															<tr><td>昨日：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>上月：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>累计：</td><td>30%</td><td>月均增长：</td><td>30%</td></tr>
+														</table>
+													</div>
+													<div class="col-md-3">
+														<table>
+															<tr><th colspan="4">订单量排行榜</th></tr>
+															<tr><th></th><th>本区</th><th>本市</th><th>全国</th></tr>
+															<tr><td>昨日：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>上月：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>累计：</td><td>30%</td><td>月均增长：</td><td>30%</td></tr>
+														</table>
+													</div>
+													<div class="col-md-3">
+														<table>
+															<tr><th colspan="4">订单量排行榜</th></tr>
+															<tr><th></th><th>本区</th><th>本市</th><th>全国</th></tr>
+															<tr><td>昨日：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>上月：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>累计：</td><td>30%</td><td>月均增长：</td><td>30%</td></tr>
+														</table>
+													</div>
+													<div class="col-md-3">
+														<table>
+															<tr><th colspan="4">订单量排行榜</th></tr>
+															<tr><th></th><th>本区</th><th>本市</th><th>全国</th></tr>
+															<tr><td>昨日：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>上月：</td><td>30%</td><td>环比增长：</td><td>30%</td></tr>
+															<tr><td>累计：</td><td>30%</td><td>月均增长：</td><td>30%</td></tr>
+														</table>
+													</div>
+												</div>
+											</div>
+            								
+            				</div>
+            				<div class="box box-default">
+            						<div style="margin:0;border:0;padding:0">
+											<div class="nav_l" id="nav_l">
+												  <!-- Tabs within a box -->
+												  <ul class="nav nav-tabs no-border nav-tabs1">
+									<!-- 				<li class="active"><a href="#revenue-chart" data-toggle="tab">实时</a></li> -->
+													<li><a href="#sales-chart" data-toggle="tab" onclick="javascript:chartresize1()">时</a></li>
+									                <li><a href="#day-chart" data-toggle="tab" onclick="javascript:chartresize2()">日</a></li>
+													<li><a href="#week-chart" data-toggle="tab" onclick="javascript:chartresize4()">周</a></li>
+									                <li  class="active"><a href="#month-chart" data-toggle="tab" onclick="javascript:chartresize3()">月</a></li>
+									                <!-- <div class="col-sm-1 pull-right"><button type="button" id="search-btn-add" class="btn btn-block btn-sm" style="margin-right: 50px; font-size: 14px; background-color: rgba(0,0,0,0.1);color: #fff">加入对比</button></div> -->
+												  </ul>
+												  <div class="tab-content no-padding" id="tab-content">
+													<!-- Morris chart - Sales -->
+									<!-- 				<div class="chart tab-pane active" id="revenue-chart"> -->
+									<!-- 				  <div id="main1" style="width: 100%; height: 300px;"></div> -->
+									<!-- 				</div> -->
+													<div class="chart tab-pane" id="sales-chart">
+													  <div id="main4" style="width: 100%; height: 411px;"></div>
+													</div>
+									                <div class="chart tab-pane" id="day-chart">
+									                  <div id="main5" style="width: 100%; height: 411px;"></div>
+									                </div>
+													<div class="chart tab-pane" id="week-chart">
+													  <div id="main7" style="width: 100%; height: 411px;"></div>
+													</div>
+									                <div class="chart tab-pane active" id="month-chart">
+									                  <div id="main6" style="width: 100%; height: 411px;"></div>
+									                </div>
+												  </div>
+											</div>
+									</div>		
+            				</div>
+            				<div class="box box-default">
+            					<!-- <iframe id="i2ui_shell_top3" name="i2ui_shell_top3" src="../data_access/user_recommend.html" style="width: 100%;height: 400px;"></iframe> -->
+            					<div class="panel-body" id="imp_data_div"> 
+							            <div id="conditionsDiv" style="margin-top: 0px;display:none;">
+							                <form id="service_qa" name="service_qa" class="pmsForm" validate="true" clientvalidate="true" displaynumber="7">
+							                  <table id="searchTable" cellpadding="0" cellspacing="0" style="min-width: 100%; width: auto">
+							                    <tr>
+							                      <td width="33.33%">
+							                        <p>员工姓名</p>
+							                        <p><input id="platformid" name="platformid" type="text" style="width:80%" class="form-control" onkeyup="value=value.replace(/(\s*)|(\s*)/g,'').replace(/[ ]/g,'')"/></p>
+							                      </td>
+							                    </tr>
+							                  </table>
+							                </form>
+							            </div> 
+        					</div>
+            					<div id="centerQueryGridContainer" class="panel panel-primary" queryid="queryrecommenduserlist" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+            				</div>
+            		</div>
+            </div>
+      </div>
+	</div>
+</div>		
 <script type="text/javascript">
-autodivheight();
-function autodivheight(){ //函数：获取尺寸
-	//获取浏览器窗口高度
-	var winHeight=0;
-	if (window.innerHeight)
-	  winHeight = window.innerHeight;
-	else if ((document.body) && (document.body.clientHeight))
-	  winHeight = document.body.clientHeight;
-	//通过深入Document内部对body进行检测，获取浏览器窗口高度
-	if (document.documentElement && document.documentElement.clientHeight)
-	  winHeight = document.documentElement.clientHeight;
-	//DIV高度为浏览器窗口的高度
-//	document.getElementById("main1").style.height= winHeight/2 - 60  +"px";
-	document.getElementById("main4").style.height= winHeight/2 - 60  +"px";
-	document.getElementById("main5").style.height= winHeight/2 - 60  +"px";
-	document.getElementById("main6").style.height= winHeight/2 - 60  +"px";
-	document.getElementById("main7").style.height= winHeight/2 - 60  +"px";
-//	document.getElementById("main2").style.height= winHeight/2 - 60  +"px";
-//	document.getElementById("main3").style.height= winHeight/2 - 60  +"px";
-//    document.getElementById("data_module1").style.height= (winHeight/2 - 132)/2 +"px";
-//    document.getElementById("data_module2").style.height= (winHeight/2 - 132)/2 +"px";
-//	document.getElementById("data_module3").style.height= (winHeight/2 - 45)/2  +"px";
-//	document.getElementById("data_module4").style.height= (winHeight/2 - 45)/2 - 15  +"px";
-}
-window.onresize=autodivheight; //浏览器窗口发生变化时同时变化DIV高度
-
+		autodivheight();
+		function autodivheight(){ //函数：获取尺寸
+			//获取浏览器窗口高度
+			var winHeight=0;
+			if (window.innerHeight)
+			  winHeight = window.innerHeight;
+			else if ((document.body) && (document.body.clientHeight))
+			  winHeight = document.body.clientHeight;
+			//通过深入Document内部对body进行检测，获取浏览器窗口高度
+			if (document.documentElement && document.documentElement.clientHeight)
+			  winHeight = document.documentElement.clientHeight;
+			//DIV高度为浏览器窗口的高度
+			 document.getElementById("main4").style.height= winHeight/2 - 60  +"px";
+			document.getElementById("main5").style.height= winHeight/2 - 60  +"px";
+			document.getElementById("main6").style.height= winHeight/2 - 60  +"px";
+			document.getElementById("main7").style.height= winHeight/2 - 60  +"px"; 
+		}
+		window.onresize=autodivheight; //浏览器窗口发生变化时同时变化DIV高度
 </script>
 </body>
-
 </html>

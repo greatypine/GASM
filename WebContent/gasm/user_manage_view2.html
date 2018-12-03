@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>门店管理系统-运营日报</title>
+	<link rel="shortcut icon" type="image/x-icon" href="../icon.png"/>
+	<link href="style.css" rel="stylesheet" media="all" />
+	<link href="" rel="stylesheet" title="style" media="all" />
+    <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .box-body img{width: 100%}
+        .report{font-size: 16px;background-color: #a93f31;color: #fff; padding-bottom: 20px;}
+        .report .box-header{color: #fff;}
+        .report em{width: 70px; position: absolute; right: 0; bottom: 0;}
+        .report img{height: 100%;}
+        .report li{float:left; line-height: 28px; color: #f8e7e5; margin-top: 5px;}
+        .report i{margin-right: 5px; opacity: 0.6;}
+        .report span{font-size: 24px; color: #ffb959; font-weight: bold;}
+        .report p i{color: #fff;}
+        .report p small{font-size: 16px;}
+        .report p:nth-child(2),.report p:nth-child(2n){font-size: 18px; margin: 10px 0 5px 0; color: rgba(255,255,255,0.7);}
+        .report p:nth-child(2n+1){font-size: 34px; padding-left: 20px;}
+        .report dt{border-bottom: 1px dashed rgba(255,255,255,1); padding: 0 5px 5px 5px; position: relative; margin: 0 10px;}
+        .report dt:after{content: ''; width: 7px; height: 8px; background-color: rgba(255,255,255,.8); border-radius: 50%; position: absolute; bottom: -5px; left: -7px;}
+        .report dt:before{content: ''; width: 7px; height: 8px; background-color: rgba(255,255,255,.8); border-radius: 50%; position: absolute; bottom: -5px; right: -7px;}
+        .report_jr li{width: 23%; background-color: rgba(0,0,0,0.2); box-shadow: 0 1px 1px rgba(0,0,0,1); border-radius: 5px; margin: 15px 1% 0 1%; padding: 15px 0; line-height: 30px;}
+        .report_jr li i{font-size: 50px; color: rgba(255, 255, 255, 0.4); padding-top: 5px;}
+        .report_jr li span{font-size: 22px; color: #ffde00;}
+
+        .vertical-example{
+            position: absolute;
+            top: 140px;
+            right: 5px;
+            width: 70px;}
+        .navimenu{min-height: 800px;width: 70px; padding-top: 0;}
+        #gooey-v .open-button, #gooey-v .gooey-menu-item{margin-top: 0; margin-bottom: 15em;}
+        #process_div{
+            background-color:#292a2b;
+            display:inline;
+            z-index:100000;
+            left:0px;
+            opacity:0.3; top:0; left:0;height:100%; width:100%; z-index:999; position:fixed; _position:absolute; _left: expression_r(documentElement.scrollLeft + documentElement.clientWidth - this.offsetWidth); _top: expression_r(documentElement.scrollTop + documentElement.clientHeight - this.offsetHeight);
+            filter:Alpha(Opacity=30);
+            opacity: 0.3;
+        }
+
+        #process_div_pic{
+            position:fixed;
+            top:50%;
+            left:50%;
+            z-index:100000000;
+            margin:-16px 0 0 -50px;
+            width:100px;
+            height:32px;
+            color: #fff;
+        }
+        .download{position: fixed; right: 20px; top: 120px; height: 100px; overflow: hidden; z-index: 1000;}
+        .download p{font-size: 12px;}
+        .download_icon{font-size: 36px; position:relative;animation-name:myfirst;animation-duration:2s;animation-timing-function:linear;animation-iteration-count:infinite;animation-direction:alternate;animation-play-state:running;
+            /* Firefox: */
+            -moz-animation-name:myfirst; -moz-animation-duration:2s;-moz-animation-timing-function:linear;-moz-animation-iteration-count:infinite;-moz-animation-direction:alternate;-moz-animation-play-state:running;
+            /* Safari and Chrome: */
+            -webkit-animation-name:myfirst;-webkit-animation-duration:2s;-webkit-animation-timing-function:linear;-webkit-animation-iteration-count:infinite;-webkit-animation-direction:alternate;-webkit-animation-play-state:running;
+            /* Opera: */
+            -o-animation-name:myfirst;-o-animation-duration:2s;-o-animation-timing-function:linear;-o-animation-delay:2s;-o-animation-iteration-count:infinite;-o-animation-direction:alternate;-o-animation-play-state:running;}
+        .add_citymember{wposition: absolute;}
+        .show_cmBig{wposition: absolute;}
+        .add_TestMember{wposition: absolute;}
+        .toast{
+            width:450px;
+            height:240px;
+            background:transparent;
+            background-color:rgba(241,241,241,1);
+            box-shadow: 0 1px 1px rgba(0,0,0,1);
+            border-radius:10px;
+            position: fixed;
+            z-index: 1;
+        }
+        .toast li{float:left; line-height: 28px; color: #0096BB; margin-top: 5px;}
+        .bigtoast{
+            width:350px;
+            height:240px;
+            background:transparent;
+            background-color:rgba(241,241,241,1);
+            box-shadow: 0 1px 1px rgba(0,0,0,1);
+            border-radius:10px;
+            position: absolute;
+            /*margin:auto;left:25%; top:60%;*/
+            z-index: 1;
+        }
+
+        .trytoast{
+            width:450px;
+            height:240px;
+            background:transparent;
+            background-color:rgba(241,241,241,1);
+            box-shadow: 0 1px 1px rgba(0,0,0,1);
+            border-radius:10px;
+            position: fixed;
+            z-index: 1;
+        }
+        .trytoast li{float:left; line-height: 28px; color: #0096BB; margin-top: 5px;}
+    </style>
+	<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
+	<script type="text/javascript" src="js/superfish.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.7.2.js"></script>
+	<script type="text/javascript" src="js/tooltip.js"></script>
+	<script type="text/javascript" src="js/tablesorter.js"></script>
+	<script type="text/javascript" src="js/tablesorter-pager.js"></script>
+	<script type="text/javascript" src="js/cookie.js"></script>
+	<script type="text/javascript" src="js/custom.js"></script>
+	<script type="text/javascript" src="../scripts/bidLibjsjquery4.0.js"></script>
+	
+</head>
+
+
+<script >
+
+	var employee_no="";
+
+	$(function(){
+		doManager("UserManager", "getCurrentUserDTO",null,
+  				function(data, textStatus, XMLHttpRequest) {
+  					if (data.result) {
+  						var userObj = JSON.parse(data.data);
+  						var userid = userObj.id;
+  						var store_name=userObj.store_name==null?"":userObj.store_name;
+  						var employee_id=userObj.employeeId==null?"":userObj.employeeId;
+  						employee_no=employee_id;
+  						$("#userName").html("用户: "+employee_id+" | "+userObj.name+" | "+store_name);
+  						
+  					}
+		});
+	});	
+	
+	
+	function doLogout() {
+		$('#login').dialog('open');
+	}
+	
+	
+	function updatestoreid(selectobj){
+		var store_id=selectobj.value;
+		//更改店长用户的 store_id
+		var url = "../dispatcher.action";
+		var data = new PMSRequestObject("userManager", "updateUserStoreId",[store_id,employee_no]);
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+			if (datas.result) {
+				refreshView();
+			}else{
+				$$.showMessage("系统信息", "切换失败!");
+			}
+		});
+	}
+	
+	function refreshView(){
+		window.location.reload();
+	}
+	function refreshIndex(){
+		window.location.reload();
+	}
+	
+	function tohumanmanager(){
+		var url = "../gasm/human_store_view.html";
+		window.open(url,"human_store_view"); 
+	}
+	function toworkrecord(){
+		var url = "../gasm/work_record_view.html";
+		window.open(url,"work_record_view"); 
+	}
+	function toworkinfolist(){
+		var url = "../gasm/work_info_view.html";
+		window.open(url,"work_info_view"); 
+	}
+	function toarealist(){
+		var url = "../gasm/area_view.html";
+		window.open(url,"area_view"); 
+	}
+	function totinyvillagelist(){
+		var url = "../gasm/tinyvillage_view.html";
+		window.open(url,"tinyvillage_view"); 
+	}
+	
+	
+	
+	function totownlist(){
+		var url = "../gasm/town_view.html";
+		window.open(url,"town_view");
+	}
+	function tovillagelist(){
+		var url = "../gasm/village_view.html";
+		window.open(url,"village_view");
+	} 
+	function totinyvillagelistbase(){
+		var url = "../gasm/tinyvillagebase_view.html";
+		window.open(url,"tinyvillagebase_view");
+	}
+	function tobuildinglistdata(){
+		var url = "../gasm/buildinglistdata_view.html";
+		window.open(url,"buildinglistdata_view");
+	}
+	function tohouselist(){
+		var url = "../gasm/houselist_view.html";
+		window.open(url,"houselist_view");
+	}
+	
+	function tobusinesslist(){
+		var url = "../gasm/businesslist_view.html";
+		window.open(url,"businesslist_view");
+	}
+	function tocompanylist(){
+		var url = "../gasm/companylist_view.html";
+		window.open(url,"companylist_view");
+	}
+	
+	
+	
+	function toindexpage(){
+		window.location.href="../gasm/index.html";
+	}
+
+	
+	
+	function tostoreorderlist(){
+		var url = "store_orderdz_view.html";
+		window.open(url,"storeorderdz_view");
+	}
+	
+	
+	var curStoreStatus = null;
+	var curStore = null;
+	function tohumanscore(){
+	    	   //判断门店是否发生变动 。
+	    	   var top_store=window.parent.document.getElementById("userName").innerHTML; 
+	    	   
+	    	   var storeischange=false;
+	    	 	//取得当前门店 状态 
+		       	doManager("storeManager", "queryCurrentStoreInfo",null,
+						function(data, textStatus, XMLHttpRequest) {
+							if (data.result) {
+								var curStoreObj = JSON.parse(data.data);
+								curStore = curStoreObj;
+								curStoreStatus = curStoreObj.estate;
+							}
+				},false);
+	    	   if(top_store!=null&&top_store.length>0){
+	    		  var str_arr = top_store.split('<option');
+	    		  for(i=0;i<str_arr.length;i++){
+	    			  var va = str_arr[i];
+	    			  if(va.indexOf('selected=')>-1&&va.indexOf(curStore.name)<0){
+	    				  storeischange = true;
+	    			  }
+	    		  }
+	    	   }
+	    	   if(storeischange){
+	    		   $$.showConfirm("提示","门店发生异动！ 将刷新页面！ ",function () {
+	    			   parent.location.reload();
+					});
+	    		   return;
+	    	   }
+		
+	    	   if(curStoreStatus=="运营中"||curStoreStatus=="试运营"){
+					var url = "store_input_view.html";
+	    			window.open(url,"score_input_view"); 
+      			}else{
+      				$$.showMessage('提示','当前门店暂未开业,暂不填写绩效分！ ');
+      			}
+	}
+	
+	/***********请假管理 ****************/
+	function tovacationlist(){
+		 var url = "../gasm/human_vacation_view.html";
+		 window.open(url,"human_vacation_view"); 
+	}
+	
+	
+</script>
+<body class="hold-transition skin-blue sidebar-mini">
+
+ 	<div id="header">
+		<div id="sitename">
+			<a href="index.html" class="logo float-left" title="国安社区门店管理系统">国安社区门店管理系统</a>
+			<div class="button float-right" id="top-menu">
+			<!--	<a href="#" id="dialog_link" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-newwin"></span>打开对话框</a>
+				<a href="#" id="login_dialog" class="btn ui-state-default ui-corner-all"><span class="ui-icon ui-icon-image"></span>登录框</a>  -->
+              <span id="userName"></span>
+              <!-- | <a href="#" title="Edit profile">编辑资料</a> -->
+              <!-- | <a href="javascript:doLogout()" title="Logout">退出</a> -->
+			</div>
+			<div id="login" title="退出" style="min-height: 35px; width: auto;">
+					<ul>
+						<li>
+							确定退出国安社区门店管理系统？
+						</li>
+					</ul>
+			</div>
+		</div>
+		<ul id="navigation" class="sf-navbar">
+				<!-- <li>
+						<a>运营日报</a>
+				</li> -->
+		</ul>
+	</div>
+
+<div class="wrapper">
+	<div id="page">
+	  <div class="content-wrapper" style="min-height: 408px;">
+            <div class="container" style="width: 1300px;">
+            		<div class="content-header">
+            				<div class="box box-default">
+		            				<iframe id="i2ui_shell_top1" name="i2ui_shell_top1" src="../data_access/business_summary.html" style="width: 100%;height: 400px;"></iframe>
+            				</div>
+            				<div class="box box-default">
+		            				<iframe id="i2ui_shell_top2" name="i2ui_shell_top2" src="../data_access/order_trend.html" style="width: 100%;height: 400px;"></iframe>
+            				</div>
+            				<div class="box box-default">
+            						<iframe id="i2ui_shell_top3" name="i2ui_shell_top3" src="../data_access/user_recommend.html" style="width: 100%;height: 400px;"></iframe>
+            				</div>
+            		</div>
+            </div>
+      </div>
+	</div>
+</div>		
+</body>
+</html>

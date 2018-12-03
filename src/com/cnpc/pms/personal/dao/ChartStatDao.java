@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.cnpc.pms.base.dao.IDAO;
+import com.cnpc.pms.base.query.json.QueryConditions;
 import com.cnpc.pms.personal.dto.ChartStatDto;
 
 public interface ChartStatDao extends IDAO{
@@ -44,4 +45,8 @@ public interface ChartStatDao extends IDAO{
 	
 	public Map<String, Object> queryCurMonthUser(ChartStatDto csd);
 	
+	public Map<String,Object> queryrecommenduserlist(QueryConditions queryConditions);
+	
+	public List<Map<String, Object>> queryBusinesSummary(QueryConditions queryConditions);
+
 }

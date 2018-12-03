@@ -321,6 +321,14 @@ text-decoration: underline;
 			window.open(url,"work_info_view");	
 		}
 	}
+	
+	//运营支撑
+	function businessreport(){
+		if(changeStoreFlag()){
+			var url = "../gasm/user_manage_view3.html";
+			window.open(url,"user_manage_view3");	
+		}
+	}
 	/*************************************/
 	
 	
@@ -540,6 +548,15 @@ text-decoration: underline;
 				<ul>
 					<li>
 						<a href="javascript:toworkinfolist()">任务列表</a>
+					</li>
+				</ul>
+			</li>
+			
+			<li>
+				<a>运营支撑</a>
+				<ul>
+					<li>
+						<a href="javascript:businessreport()">运营日报</a>
 					</li>
 				</ul>
 			</li>

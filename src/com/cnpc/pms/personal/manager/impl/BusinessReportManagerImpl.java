@@ -119,6 +119,7 @@ import com.cnpc.pms.utils.ChineseToEnglish;
 import com.cnpc.pms.utils.CompressFile;
 import com.cnpc.pms.utils.DateUtils;
 import com.cnpc.pms.utils.EntityEquals;
+import com.cnpc.pms.utils.ImpalaUtil;
 import com.cnpc.pms.utils.PropertiesValueUtil;
 import com.cnpc.pms.utils.ValueUtil;
 import com.google.gson.JsonObject;
@@ -276,6 +277,23 @@ public class BusinessReportManagerImpl extends BizBaseCommonManager implements B
 	public Map<String, Object> queryCurMonthUser(ChartStatDto csd){
 		ChartStatDao chartStatDao = (ChartStatDao)SpringHelper.getBean(ChartStatDao.class.getName());
 		Map<String,Object> order_obj = chartStatDao.queryCurMonthUser(csd);
+		return order_obj;
+	}
+
+	@Override
+	public Map<String,Object> queryrecommenduserlist(QueryConditions queryConditions) {
+		// TODO Auto-generated method stub
+		ChartStatDao chartStatDao = (ChartStatDao)SpringHelper.getBean(ChartStatDao.class.getName());
+		Map<String,Object> order_obj = chartStatDao.queryrecommenduserlist(queryConditions);
+		return order_obj;
+
+	}
+
+	@Override
+	public List<Map<String, Object>> queryBusinesSummary(QueryConditions queryConditions) {
+		// TODO Auto-generated method stub
+		ChartStatDao chartStatDao = (ChartStatDao)SpringHelper.getBean(ChartStatDao.class.getName());
+		List<Map<String, Object>> order_obj = chartStatDao.queryBusinesSummary(queryConditions);
 		return order_obj;
 	}
 }
