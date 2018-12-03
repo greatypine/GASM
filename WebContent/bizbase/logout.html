@@ -16,26 +16,13 @@
 <!-- 引入css和js即可 -->
 <link rel="stylesheet" href="../scripts/css/cityselect.css">
 <script type="text/javascript">
-var logincode = decode64(getUrlParamByKey("logincode"));
-var screenlogin = getUrlParamByKey("su");//大屏用户 
 	$(function() {
-		 var reObj = new PMSRequestObject("userManager", "isScreenUser", [ screenlogin ]);
-        var callback = function callback(data, textStatus, XMLHttpRequest) {
-        	window.parent.location=getRootPath() + "/crm/index_headquarters.html";
-		};
-        var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
-			alert("登录信息错误，请确认输入或联系管理员!");
-			return false;
-		}
-        var url = "../login.do";
-        $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback); 
-        
-	})
+		
 	
 	
 </script>
 </head>
 <body>
-
+已退出！！！！！<a href="http://localhost:8889/GASM">重新登录</a>
 </body>
 </html>
