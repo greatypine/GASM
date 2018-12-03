@@ -9,7 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import org.jasig.cas.client.authentication.AuthenticationFilter;
+
 import com.cnpc.pms.base.security.UserSession;
+import com.cnpc.pms.platform.entity.SystemUser;
+import com.cnpc.pms.platform.entity.SystemUserInfo;
 
 /**
  * 
@@ -25,7 +29,7 @@ public class LogoutAction extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 
 	/** The Constant LOGIN_URL. */
-	private static final String LOGIN_URL = "bizbase/login.html";
+	private static final String LOGIN_URL = "bizbase/logout.html";
 
 	/**
 	 * Do get.
@@ -64,8 +68,30 @@ public class LogoutAction extends HttpServlet {
 		if (session.getAttribute(UserSession.SESSION_ATTRIBUTE_NAME) != null) {
 			session.removeAttribute(UserSession.SESSION_ATTRIBUTE_NAME);
 		}
+		
+		
+		logout(resp, req);
+		
 		PrintWriter out = resp.getWriter();
-		out.print("<script>parent.location='" + LOGIN_URL + "'</script>");
+		out.print("<script>parent.location='" + casServerUrlPrefix + "/logout?service=http://localhost:8889/GASM'</script>");
 	}
+	
+	
+	
+	//此方法为用户统一退出方法
+		//casServerUrlPrefix自行配置cas服务地址  eg:
+	     String casServerUrlPrefix = "http://123.56.204.170:9001/cas";
+		//
+		  public String logout(HttpServletResponse response,HttpServletRequest request) {
+		      // 登出操作
+			  request.getSession().removeAttribute(AuthenticationFilter.CONST_CAS_ASSERTION);
+		      SystemUser systemUser = SystemUserInfo.getInstance();
+	    	  request.getSession().removeAttribute("user");
+		      SystemUserInfo.destroy();
+		      request.getSession().invalidate();
+			  String logoutFullUrl = request.getRequestURL().toString();
+			  String indexUrl = logoutFullUrl.substring(0, logoutFullUrl.lastIndexOf("/logout"));
+		      return "redirect:" + casServerUrlPrefix + "/logout?service=" + indexUrl + "/index";
+		  }
 
 }

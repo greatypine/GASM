@@ -3,7 +3,7 @@
 
 	<dataSource id="localdev">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
-		<property name="jdbcUrl" value="jdbc:mysql://10.16.31.228:53307/gemini?useOldAliasMetadataBehavior=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true" />
+		<property name="jdbcUrl" value="jdbc:mysql://10.16.21.62:53307/gemini?useOldAliasMetadataBehavior=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true" />
 		<property name="user" value="root" />
 		<property name="password" value="@I6Esj#yZb^iATyY" />
 		<property name="initialPoolSize" value="5" />
@@ -19,7 +19,7 @@
 
 	<dataSource id="localdevmysql">
 		<property name="driverClass" value="com.mysql.jdbc.Driver" />
- 		<property name="jdbcUrl" value="jdbc:mysql://10.16.31.228:53307/daqWeb?useOldAliasMetadataBehavior=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true" /> 
+ 		<property name="jdbcUrl" value="jdbc:mysql://10.16.21.62:53307/daqWeb?useOldAliasMetadataBehavior=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true" /> 
 <!-- 		<property name="jdbcUrl" value="jdbc:mysql://123.56.204.206/daqWeb?useOldAliasMetadataBehavior=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true" /> -->
 <!-- 		<property name="jdbcUrl" value="jdbc:mysql://localhost:3306/daqweb?useOldAliasMetadataBehavior=true&amp;useUnicode=true&amp;characterEncoding=utf8&amp;autoReconnect=true" /> -->
 		<property name="user" value="root" />

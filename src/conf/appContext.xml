@@ -52,6 +52,7 @@
 				<prop key="disSign*">PROPAGATION_REQUIRED</prop>
 				<prop key="go*">PROPAGATION_REQUIRED</prop>
 				<prop key="dis*">PROPAGATION_REQUIRED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED</prop>
 				<prop key="afterReturning">PROPAGATION_REQUIRED</prop>
 			</props>
 		</property>

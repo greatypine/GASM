@@ -17,6 +17,7 @@ import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -92,6 +93,18 @@ public class AuthFilter extends OncePerRequestFilter {
 		}
 		LOG.debug("url====" + url);
 
+		UserSession authSession = SessionManager.getUserSession();
+		if(authSession==null) {
+			AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
+			Map<String, Object> attributes = principal.getAttributes();
+			String eid = (String) attributes.get("eid");
+			authSession = setDataToUserSession(authSession, Long.parseLong(eid));
+			SessionManager.setUserSession(authSession);
+		}
+		
+		
+		
+		
 		if (url.indexOf(LOGIN_URL) >= 0) {
 			filterChain.doFilter(servletRequest, servletResponse);
 		} else if (url.indexOf("wdow.html") >= 0 || url.indexOf("wdowbid.html") >= 0) {
@@ -606,7 +619,7 @@ public class AuthFilter extends OncePerRequestFilter {
 				filterChain.doFilter(servletRequest, servletResponse);
 				return;
 			}
-			UserSession userSession = SessionManager.getUserSession();
+			UserSession userSession = authSession;
 			if (userSession == null || userSession.getSessionData() == null
 					|| userSession.getSessionData().get("user") == null) {
 				String urlString = PropertiesUtil.getValue("ssoLoginURL");
@@ -687,7 +700,7 @@ public class AuthFilter extends OncePerRequestFilter {
 	 * 为门户登录成功的用户添加Session和权限 set Data To Session;
 	 */
 	@SuppressWarnings({ "unchecked", "unused" })
-	private UserSession setDataToUserSession(UserSession userSession, String userCode) {
+	private UserSession setDataToUserSession(UserSession userSession, Long userid) {
 
 		if (null == userSession) {
 			userSession = new UserSession();
@@ -699,7 +712,7 @@ public class AuthFilter extends OncePerRequestFilter {
 		// get user and put into session;
 		// System.out.println(" sso
 		// lisongtao----setDataToUserSession---start----:"+Thread.currentThread().getId());
-		User user = userManager.getUserByUserCode(userCode);
+		User user = (User) userManager.getObject(userid);
 		// System.out.println(" sso
 		// lisongtao----getUserByUserCode-------:"+Thread.currentThread().getId());
 		if (null != user) {

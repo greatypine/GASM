@@ -58,19 +58,20 @@ public class LoginAction extends DispatcherAction {
 	protected static final Hashtable<String, List<String>> ACL_CACHE = new Hashtable<String, List<String>>();
 
 	//此方法为用户统一退出方法
-	//casServerUrlPrefix自行配置cas服务地址  eg:http://10.16.31.229:8080/cas
+	//casServerUrlPrefix自行配置cas服务地址  eg:
+     String casServerUrlPrefix = "http://10.16.31.229:8080/cas";
 	//
-//	  public String logout(HttpServletResponse response,HttpServletRequest request) {
-//	      // 登出操作
-//		  request.getSession().removeAttribute(AuthenticationFilter.CONST_CAS_ASSERTION);
-//	      SystemUser systemUser = SystemUserInfo.getInstance();
-//    	  request.getSession().removeAttribute("user");
-//	      SystemUserInfo.destroy();
-//	      request.getSession().invalidate();
-//		  String logoutFullUrl = request.getRequestURL().toString();
-//		  String indexUrl = logoutFullUrl.substring(0, logoutFullUrl.lastIndexOf("/logout"));
-//	      return "redirect:" + casServerUrlPrefix + "/logout?service=" + indexUrl + "/index";
-//	  }
+	  public String logout(HttpServletResponse response,HttpServletRequest request) {
+	      // 登出操作
+		  request.getSession().removeAttribute(AuthenticationFilter.CONST_CAS_ASSERTION);
+	      SystemUser systemUser = SystemUserInfo.getInstance();
+    	  request.getSession().removeAttribute("user");
+	      SystemUserInfo.destroy();
+	      request.getSession().invalidate();
+		  String logoutFullUrl = request.getRequestURL().toString();
+		  String indexUrl = logoutFullUrl.substring(0, logoutFullUrl.lastIndexOf("/logout"));
+	      return "redirect:" + casServerUrlPrefix + "/logout?service=" + indexUrl + "/index";
+	  }
 	  
 	@Override
 	protected final void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
