@@ -102,13 +102,13 @@
         .trytoast li{float:left; line-height: 28px; color: #0096BB; margin-top: 5px;}
     </style>
 	<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
+	<script type="text/javascript" src="js/custom.js"></script>
 	<script type="text/javascript" src="js/superfish.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.7.2.js"></script>
 	<script type="text/javascript" src="js/tooltip.js"></script>
 	<script type="text/javascript" src="js/tablesorter.js"></script>
 	<script type="text/javascript" src="js/tablesorter-pager.js"></script>
 	<script type="text/javascript" src="js/cookie.js"></script>
-	<script type="text/javascript" src="js/custom.js"></script>
 	<script type="text/javascript" src="../scripts/bidLibjsjquery4.0.js"></script>
 	<script type="text/javascript" src="../scripts/bidLib.js"></script>
 	<script type="text/javascript" src="../scripts/auto.js"></script>
@@ -390,15 +390,6 @@ Date.prototype.format = function() {
     return (s); // 返回日期。  
 };
 
-</script>
-<script type="text/javascript">
-$(function(){
-	chartresize1();
-	chartresize2();
-	chartresize3();
-	chartresize4();
-	search_manual_k();
-});
 </script>
 <script>
  var storeNo = decode64(getUrlParamByKey("so"));//门店no
@@ -2663,7 +2654,7 @@ $(function(){
 	  <div class="content-wrapper" style="min-height: 408px;">
             <div class="container" style="width: 1300px;">
             		<div class="content-header">
-            				<div class="box box-default report">
+            				<div class="box box-default report" style="display:none;">
             						    <div class="container">
 												<div class="row">
 													<div class="col-md-3">
@@ -2746,10 +2737,10 @@ $(function(){
 												  <!-- Tabs within a box -->
 												  <ul class="nav nav-tabs no-border nav-tabs1">
 									<!-- 				<li class="active"><a href="#revenue-chart" data-toggle="tab">实时</a></li> -->
-													<li><a href="#sales-chart" data-toggle="tab" onclick="javascript:chartresize1()">时</a></li>
+													<!-- <li><a href="#sales-chart" data-toggle="tab" onclick="javascript:chartresize1()">时</a></li> -->
 									                <li><a href="#day-chart" data-toggle="tab" onclick="javascript:chartresize2()">日</a></li>
-													<li><a href="#week-chart" data-toggle="tab" onclick="javascript:chartresize4()">周</a></li>
-									                <li  class="active"><a href="#month-chart" data-toggle="tab" onclick="javascript:chartresize3()">月</a></li>
+													<!-- <li><a href="#week-chart" data-toggle="tab" onclick="javascript:chartresize4()">周</a></li>
+									                <li  class="active"><a href="#month-chart" data-toggle="tab" onclick="javascript:chartresize3()">月</a></li> -->
 									                <!-- <div class="col-sm-1 pull-right"><button type="button" id="search-btn-add" class="btn btn-block btn-sm" style="margin-right: 50px; font-size: 14px; background-color: rgba(0,0,0,0.1);color: #fff">加入对比</button></div> -->
 												  </ul>
 												  <div class="tab-content no-padding" id="tab-content">
@@ -2760,13 +2751,13 @@ $(function(){
 													<div class="chart tab-pane" id="sales-chart">
 													  <div id="main4" style="width: 100%; height: 411px;"></div>
 													</div>
-									                <div class="chart tab-pane" id="day-chart">
+									                <div class="chart tab-pane active" id="day-chart">
 									                  <div id="main5" style="width: 100%; height: 411px;"></div>
 									                </div>
 													<div class="chart tab-pane" id="week-chart">
 													  <div id="main7" style="width: 100%; height: 411px;"></div>
 													</div>
-									                <div class="chart tab-pane active" id="month-chart">
+									                <div class="chart tab-pane" id="month-chart">
 									                  <div id="main6" style="width: 100%; height: 411px;"></div>
 									                </div>
 												  </div>
@@ -2788,9 +2779,9 @@ $(function(){
 							                  </table>
 							                </form>
 							            </div> 
-        					</div>
+        						</div>
             					<div id="centerQueryGridContainer" class="panel panel-primary" queryid="queryrecommenduserlist" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
-            				</div>
+            			</div>
             		</div>
             </div>
       </div>

@@ -29,7 +29,7 @@ public class HikariInner {
             String impala_port = PropertiesUtil.getValue("impala_port");
             String impala_user =  PropertiesUtil.getValue("impala_user");
             String impala_password = PropertiesUtil.getValue("impala_password");
-            String connectionUrl = "jdbc:impala://" + "10.10.40.9" + ':' + "21051" + "/daqweb;auth=noSasl";
+            String connectionUrl = "jdbc:impala://" + "10.16.21.74" + ':' + "21050" + "/daqweb;auth=noSasl";
             String driverName = "com.cloudera.impala.jdbc41.Driver";
         	 poolConfig = new HikariConfig();
         	 
