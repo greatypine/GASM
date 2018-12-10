@@ -52,6 +52,7 @@
 				<prop key="disSign*">PROPAGATION_REQUIRED</prop>
 				<prop key="go*">PROPAGATION_REQUIRED</prop>
 				<prop key="dis*">PROPAGATION_REQUIRED</prop>
+				<prop key="get*">PROPAGATION_REQUIRED</prop>
 				<prop key="afterReturning">PROPAGATION_REQUIRED</prop>
 			</props>
 		</property>
@@ -120,4 +121,22 @@
     <bean id="restTemplate" class="org.springframework.web.client.RestTemplate">
         <constructor-arg ref="httpClientFactory" />
     </bean>
+    
+     <!-- cas -->
+    <bean name="casSingleSignOutFilter" class="org.jasig.cas.client.session.SingleSignOutFilter">
+        <property name="casServerUrlPrefix" value="${casServerUrlPrefix}"/>
+    </bean>
+    <bean name="casAuthenticationFilter" class="org.jasig.cas.client.authentication.AuthenticationFilter">
+        <property name="serverName" value="${casClientServerName}"/>
+        <property name="casServerLoginUrl" value="${casServerLoginUrl}"/>
+    </bean>
+    <bean name="casTicketValidationFilter" class="org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter">
+        <property name="serverName" value="${casClientServerName}"/>
+        <property name="ticketValidator">
+            <bean class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
+                <constructor-arg index="0" value="${casServerUrlPrefix}"/>
+            </bean>
+        </property>
+    </bean>
+    
 </beans>
