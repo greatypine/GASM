@@ -653,7 +653,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			      SystemUserInfo.destroy();
 			      servletRequest.getSession().invalidate();
 					PrintWriter out = servletResponse.getWriter();
-			      out.print("<script>window.location='http://123.56.204.170:9001/cas/login?service=http://localhost:8889/GASM'</script>");
+			      out.print("<script>window.location='http://123.56.204.170:9001/cas/logout?service=GASM'</script>");
 			}else {
 			
 			

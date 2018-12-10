@@ -79,9 +79,7 @@ public class LogoutAction extends HttpServlet {
 		resp.setDateHeader("Expires", 0);
 		
 		PrintWriter out = resp.getWriter();
-	    out.print("<script>window.location='http://123.56.204.170:9001/cas/logout?service=http://localhost:8889/GASM';</script>");
-		//out.print("<script>parent.location='" + casServerUrlPrefix + "'</script>");
-		
+		out.print("<script>window.location='http://123.56.204.170:9001/cas/logout?service=GASM;</script>");
 	}
 	
 	

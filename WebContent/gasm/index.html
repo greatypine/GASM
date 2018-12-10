@@ -29,7 +29,6 @@ text-decoration: underline;
 </style>
 
 <script >
-
 	var employee_no="";
     var isgax=false;
     var currentUser=null;
@@ -169,20 +168,20 @@ text-decoration: underline;
 	
 	
 	function doLogout() {
-		//$('#login').dialog('open');
-		urlStr = "../logout.do";
-	    window.location.href = urlStr;
-	    
-	    		
-	   /*   var url = "../dispatcher.action";
-	    var data = new PMSRequestObject("userManager", "dologout",["logout"]);
-		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
-				textStatus, XMLHttpRequest) {
-				if (data.result) {
-					alert(data.data);
-					window.location.href="http://localhost:8889/GASM";
-				}
-		});  */
+	    try{
+	    	var url = "../dispatcher.action";
+		    var data = new PMSRequestObject("userManager", "dologout",["logout"]);
+			$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+					textStatus, XMLHttpRequest) {
+					if (data.result) {
+						window.location.href="http://123.56.204.170:9001/cas/logout?service=GASM";
+					}
+			});
+	    } catch(err){
+	    	alert("error");
+	    } finally{
+	    	window.location.href='http://123.56.204.170:9001/cas/logout?service=GASM';
+	    }
 		
 	}
 	
