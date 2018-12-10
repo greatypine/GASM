@@ -84,7 +84,7 @@ public class LogoutAction extends HttpServlet {
 	
 	
 	
-		//此方法为用户统一退出方法
+	//此方法为用户统一退出方法
 		//casServerUrlPrefix自行配置cas服务地址  eg:
 	     //String casServerUrlPrefix = "http://123.56.204.170:9001/cas";
 	String casServerUrlPrefix = "http://localhost:8889/GASM";

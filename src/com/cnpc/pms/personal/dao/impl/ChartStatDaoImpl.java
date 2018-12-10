@@ -592,6 +592,7 @@ public class ChartStatDaoImpl extends BaseDAOHibernate implements ChartStatDao {
 		}*/
 		String platformid = null;
 		PageInfo pageInfo = queryConditions.getPageinfo();
+		int recordsPerPage = pageInfo.getRecordsPerPage();
 		for(Map<String, Object> map : queryConditions.getConditions()){
 			if("platformid".equals(map.get("key"))&&map.get("value")!=null){//查询条件
 				platformid = map.get("value").toString();
@@ -612,10 +613,14 @@ public class ChartStatDaoImpl extends BaseDAOHibernate implements ChartStatDao {
 		String sql = sqlDemo+"  order by a.customerId  limit "+pageInfo.getRecordsPerPage()+" offset "+ pageInfo.getRecordsPerPage()*(pageInfo.getCurrentPage()-1);
 		List<Map<String,Object>> list = ImpalaUtil.executeGuoan(sql);*/
 		List<UserRecommendInfo> lst_data = new ArrayList();
-		for(Map<String,Object> temp : listDemo) {
+		for(int i=0;i<listDemo.size();i++) {
+			Map<String,Object> temp = listDemo.get(i);
 			UserRecommendInfo uri = new UserRecommendInfo();
 			uri.setCustomerId((String) temp.get("customerId"));
-			uri.setMobilephone((String) temp.get("mobilephone"));
+			StringBuilder  mobilephone = new StringBuilder((String) temp.get("mobilephone"));
+			String mobilephoneShow = "<a href=\"javascript:;\" onmouseover=\"showinfo('<strong>用户电话：</strong>"+mobilephone+"<br>@customertips"+i%recordsPerPage+"');\" id=\"customertips"+i%recordsPerPage+"\">"+mobilephone.replace(3, 7, "****").toString()+"</a>";
+			//mobilephone.replace(3, 7, "****");
+			uri.setMobilephone(mobilephoneShow);
 			uri.setArea_no((String) temp.get("area_no"));
 			uri.setEmployee_a_no((String) temp.get("employee_a_no"));
 			uri.setItem1((String) temp.get("item1"));

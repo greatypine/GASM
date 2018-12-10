@@ -7,6 +7,7 @@
 	<link href="style.css" rel="stylesheet" media="all" />
 	<link href="" rel="stylesheet" title="style" media="all" />
     <link href="../startbootstrap/bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="../scripts/layui/css/layui.css">
     <style>
         .box-body img{width: 100%}
         .report{font-size: 16px;background-color: #a93f31;color: #fff; padding-bottom: 20px;}
@@ -102,8 +103,7 @@
         .trytoast li{float:left; line-height: 28px; color: #0096BB; margin-top: 5px;}
     </style>
 	<script type="text/javascript" src="js/jquery-1.3.2.js"></script>
-	<script type="text/javascript" src="js/custom.js"></script>
-	<script type="text/javascript" src="js/superfish.js"></script>
+	<script type="text/javascript" src="../startbootstrap/js/layer.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.7.2.js"></script>
 	<script type="text/javascript" src="js/tooltip.js"></script>
 	<script type="text/javascript" src="js/tablesorter.js"></script>
@@ -111,6 +111,7 @@
 	<script type="text/javascript" src="js/cookie.js"></script>
 	<script type="text/javascript" src="../scripts/bidLibjsjquery4.0.js"></script>
 	<script type="text/javascript" src="../scripts/bidLib.js"></script>
+	<script type="text/javascript" src="../scripts/layui/layui.all.js"></script>
 	<script type="text/javascript" src="../scripts/auto.js"></script>
 	<script type="text/javascript" src="../startbootstrap/js/echarts.min.js"></script>
 </head>
@@ -191,7 +192,7 @@
 				}, false);
 		
         
-         loadTable(platformid); 
+         //loadTable(platformid); 
 	}
   
     //记载页面时请求数据列表默认的方法
@@ -251,46 +252,7 @@
             }
         }
     
-  
-  
-  
-  function toEditCareerPage(id){
-	  //点击编辑事业群时，判断门店是否变化
-    	if(!checkStoreChange()){
-    		return;
-    	}
-	  
-	  //此处 先根据ID查询 是否分配过 事业群 然后取出来 
-	  var src_career_group = "";
-	  doManager("HumanresourcesManager", "queryHumanresourceById", [id],
-				function(data, textStatus, XMLHttpRequest) {
-					if (data.result) {
-						var jsonData = $.fromJSON(data.data);
-						src_career_group = jsonData.career_group;
-					}
-		}, false);
-	  
-		$("#career_group").attr("value",src_career_group);
-		$("#career_group option[text='"+src_career_group+"']").attr("selected", true);
-	  
-    	var div = $("#doStoreMultDiv");
-	      div.dialog({
-	          bgiframe : true,
-	          title : "修改事业群数据",
-	          width : 380,
-	          height : 300,
-	          buttons : {
-	              "确定" : function() {
-	                  doUpdateHumanresourceCareerGroup($(this),id);
-	              },
-	              "取消" : function() {
-	                  $(this).dialog("close");
-	              }
-	          },
-	          modal : false
-	      });
-  }
-  
+
     //判断默认门店 是否发生切换了。
     function checkStoreChange(){
     	var top_store=window.parent.document.getElementById("userName").innerHTML;
@@ -321,47 +283,12 @@
     	   }
     	   return true;
    	}
-  
-  function doUpdateHumanresourceCareerGroup(obj_div,id){
-	  var career_group = $("#career_group  option:selected").val();
-	  //alert(id+"--"+career_group);
-	  var obj = new Object();
-	  obj.id=id;
-	  obj.career_group=career_group;
-	  
-	  doManager("HumanresourcesManager", "updateHumanresourceCareerGroupById",obj,
-		 function(data, textStatus, XMLHttpRequest) {
-						if (data.result) {
-							var curStoreObj = JSON.parse(data.data);
-							if(curStoreObj!=null){
-								searchList();
-								obj_div.dialog("close");
-							}
-						}else{
-							$$.showMessage("系统信息", "修改失败 !");
-						}
-	     },false);
-	  
-  }
-  
+
   
   function addStoreOrder(){
 	  window.location.href="storeorder_add.html";	
   }
     
-  
-  
-  /* var editObj = {
-			html : '<a href="#">编辑 </a>',
-			resourceId : "storeorder_List_update",
-			func : function(queryid, data, nTr, allColumns, allColumnsDataMap) {
-				var id = allColumnsDataMap.id;
-				window.location.href = "storeorder_edit.html?id="+id;
-			}
-		} */
-  
-  //$pmspage.opArr = [ editObj /*, publishObj  , deleteObj*/ ];
-  
   
    function loadTable(platformid){
 	  doManager("BusinessReportManager", "queryBusinesSummary",platformid,
@@ -1081,11 +1008,11 @@ Date.prototype.format = function() {
     }
 
     chart5.setOption(chart5_option);
-    $(function(){
+    /* $(function(){
       window.onresize = function(){
         chart5.resize();
       }
-    })
+    }) */
     this.resize = function size(){
       var chart5div=document.getElementById('main5');
       var tabcontent = document.getElementById('tab-content');
@@ -1115,317 +1042,6 @@ Date.prototype.format = function() {
   }
 </script>
 <script>
-	var chart7 ;
-	var chart7_option;
-	var xData_week=[];
-	function chartresize4(){
-		//console.log("chartresize");
-		var temp4 = new initchart4();
-		temp4.resize();
-	}
-	var initchart4 = function(){
-		chart7 = echarts.init(document.getElementById('main7'));
-
-// 		//K线图--周
-
-		chart7_option = {
-			backgroundColor: "#f55a44",
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					textStyle: {
-						color: '#fff'
-					}
-
-				},
-			},
-			grid: {
-				borderWidth: '0',
-				left: '5%',
-				right: '5%',
-				bottom: '30%',
-				top: '10%',
-
-			},
-			calculable: true,
-			xAxis: [{
-				type: 'category',
-				boundaryGap: false,
-				axisLine: {
-					lineStyle: {
-						color: '#333'
-					}
-				},
-				splitLine: {
-					show: false
-				},
-				axisTick: {
-					show: true
-				},
-				splitArea: {
-					show: false
-				},
-				/* axisLabel: {
-					interval: 0,
-
-				}, */
-				data: xData_week,
-			}],
-			yAxis: [{
-				type: 'value',
-				splitLine: {
-					show: false
-				},
-				axisLine: {
-					lineStyle: {
-						color: '#333'
-					}
-				},
-				axisTick: {
-					show: false
-				},
-				axisLabel: {
-					interval: 0,
-
-				},
-				splitArea: {
-					show: false
-				},
-				
-			}],
-			dataZoom: [{
-			 show: true,
-			 height: '30',
-			 xAxisIndex: [0],
-			 bottom: '30',
-			 start: '10',
-			 end: '100',
-			 handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
-			 handleSize: '110%',
-			 handleStyle:{
-			 color:"#d3dee5",
-			 },
-			 textStyle:{color:'#fff'},
-			 borderColor:"#90979c",
-			 //backgroundColor:'#fff'
-			 }],
-			series: [{
-				name: "总数",
-				type: "line",
-				stack: "总量",
-				symbolSize:10,
-				symbol:'circle',
-				itemStyle: {
-					normal: {
-						color: '#fff',
-						barBorderRadius: 0,
-						label: {
-							show: true,
-							position: 'top',
-							formatter: function(p) {
-								return p.value > 0 ? (p.value) : '';
-							}
-						}
-					}
-				},
-				data: weekData
-			},
-			]
-		}
-
-		chart7.setOption(chart7_option);
-		$(function(){
-			window.onresize = function(){
-				chart7.resize();
-			}
-		})
-		this.resize = function size(){
-			var chart7div=document.getElementById('main7');
-			var tabcontent = document.getElementById('tab-content');
-			width=tabcontent.offsetWidth;
-			//height=tabcontent.offsetHeight;
-			chart7div.style.width=width+'px';
-			chart7.resize(width);
-		}
-	}
-</script>
-<script>
-	var yData_month = [];
-	var yData_month_target = [];
-	var chart6;
-	var chart6_option;
-	function chartresize3(){
-		//console.log("chartresize");
-		var temp3 = new initchart3();
-		temp3.resize();
-	}
-	var initchart3 = function(){
-		chart6 = echarts.init(document.getElementById('main6'));
-
-		//K线图--月
-		var xData_month = function() {
-			var data = [];
-			var curMonth = now.getFullYear()+'-12-31';
-			data = getYearAndMonth('2017-12-1',curMonth);
-			return data;
-		}();
-
-		chart6_option = {
-			backgroundColor: "#f55a44",
-			tooltip: {
-				trigger: 'axis',
-				axisPointer: {
-					textStyle: {
-						color: '#fff'
-					}
-
-				},
-			},
-			grid: {
-				borderWidth: '0',
-				left: '6%',
-				right: '5%',
-				bottom: '30%',
-				top: '10%',
-
-			},
-			legend: {
-				x: '78%',
-				top: '1%',
-				data: ['月总数', '经营指标']
-			},
-
-
-			calculable: true,
-			xAxis: [{
-				type: 'category',
-				boundaryGap: false,
-				axisLine: {
-					lineStyle: {
-						color: '#333'
-					}
-				},
-				splitLine: {
-					show: false
-				},
-				axisTick: {
-					show: true
-				},
-				splitArea: {
-					show: false
-				},
-				axisLabel: {
-					interval: 0,
-
-				},
-				data: xData_month,
-			}],
-			yAxis: [{
-				type: 'value',
-				splitLine: {
-					show: false
-				},
-				axisLine: {
-					lineStyle: {
-						color: '#333'
-					}
-				},
-				axisTick: {
-					show: false
-				},
-				axisLabel: {
-					interval: 0,
-
-				},
-				splitArea: {
-					show: false
-				},
-
-			}],
-			dataZoom: [{
-				show: true,
-				height: '30',
-				xAxisIndex: [0],
-				bottom: '30',
-				start: '0',
-				end: '45',
-				handleIcon: 'path://M306.1,413c0,2.2-1.8,4-4,4h-59.8c-2.2,0-4-1.8-4-4V200.8c0-2.2,1.8-4,4-4h59.8c2.2,0,4,1.8,4,4V413z',
-				handleSize: '110%',
-				handleStyle:{
-					color:"#d3dee5",
-				},
-				textStyle:{color:'#fff'},
-				borderColor:"#90979c",
-				//backgroundColor:'#fff'
-			}],
-			series: [{
-				name: "月总数",
-				type: "line",
-				symbolSize:10,
-				symbol:'circle',
-				itemStyle: {
-					normal: {
-						color: '#fff',
-						barBorderRadius: 0,
-						label: {
-							show: true,
-							position: 'top',
-							formatter: function(p) {
-								return p.value > 0 ? (p.value) : '';
-							}
-						}
-					}
-				},
-				data:yData_month
-			},
-			{
-				name: "经营指标",
-				type: "line",
-				symbolSize:10,
-				symbol:'circle',
-				itemStyle: {
-					normal: {
-	                  color: '#000',
-	                  barBorderRadius: 0,
-	                  lineStyle:{
-	                    width:2,
-	                    type:'dotted'  //'dotted'虚线 'solid'实线
-	                  }
-	                }
-				},
-				data:yData_month_target
-			},
-			]
-		}
-
-
-		chart6.setOption(chart6_option);
-		$(function(){
-			window.onresize = function(){
-				chart6.resize();
-			}
-		})
-		this.resize = function size(){
-			var chart6div=document.getElementById('main6');
-			var tabcontent = document.getElementById('tab-content');
-			width=tabcontent.offsetWidth;
-			//height=tabcontent.offsetHeight;
-			chart6div.style.width=width+'px';
-			chart6.resize(width);
-		}
-	}
-	
-	var xData_week_temp = function() {
-		var dataTemp = [];
-		doManager("BusinessReportManager","getDateByWeek",null,
-	   			function(data,textStatus,XmlHttpRequest){
-	   				if (data.result) {
-	   					var jsonData = $.fromJSON(data.data);
-	   					dataTemp = jsonData;
-	   				}
-	   		},false);	
-		return dataTemp;
-	};
   
   var shareChartStatDto=null; //全局参数变量	
   var shareChartStatDto1=null;
@@ -1433,9 +1049,6 @@ Date.prototype.format = function() {
   var shareChartStatDto3=null;
   $(function(){
 	  loginShow();
-	  initalldept();
-	  initallchannel();
-	  initallchannelcontrast();
 	  if(target==0){//总部
 	  	initallcity(); 
 	  	initallstore();
@@ -1461,298 +1074,28 @@ Date.prototype.format = function() {
 	  	$("#store_name_manual_contrast").val(storeName);
 		$("#store_name_manual_contrast").attr("readonly",true);
 	  }else{
-		  initallcity(); 
+		  /* initallcity(); 
 		  initallstore();
-		  initallstorecontrast();
+		  initallstorecontrast(); */
 	  }
 	  
 	    var autoComplete = new AutoComplete("store_name_manual","auto",array);
-	  	/* document.getElementById("store_name_manual").onkeyup = function(event){
-	  		autoComplete.start(event);
-	  		if($("#store_name_manual").val().trim() == ""){
-				$("#store_id_manual").val("");
-			}
-	  		for(var key in storeJson){
-	  			if(document.getElementById("store_name_manual").value==key){
-	  				document.getElementById("store_id_manual").value=storeJson[key];
-	  			}
-	  		}
-	  	} */
-	  	/* $("#auto").on("click",function(event){
-			for(var key in storeJson){
-				if(document.getElementById("store_name_manual").value==key){
-					document.getElementById("store_id_manual").value=storeJson[key];
-				}
-			}
-		}); */
 	  	
 	  	//悬浮框事业群频道城市门店联动
 	  	var autoCompleteContrast = new AutoComplete("store_name_manual_contrast","auto_contrast",array_contrast);
-	  	/* document.getElementById("store_name_manual_contrast").onkeyup = function(event){
-	  		autoCompleteContrast.start(event);
-	  		if($("#store_name_manual_contrast").val().trim() == ""){
-				$("#store_id_manual_contrast").val("");
-			}
-	  		for(var key in storeJsonContrast){
-	  			if(document.getElementById("store_name_manual_contrast").value==key){
-	  				document.getElementById("store_id_manual_contrast").value=storeJson[key];
-	  			}
-	  		}
-	  	} */
-	  	/* $("#auto_contrast").on("click",function(event){
-			for(var key in storeJsonContrast){
-				if(document.getElementById("store_name_manual_contrast").value==key){
-					document.getElementById("store_id_manual_contrast").value=storeJson[key];
-				}
-			}
-		}); */
+
 	  	
 	  	
-	  xData_week = xData_week_temp();
-	  initRealData();
-	  chartresize1();
+	  /* xData_week = xData_week_temp(); */
+	  /* chartresize1(); */
 	  chartresize2();
-	  chartresize3();
-	  chartresize4();
+	  /* chartresize3();
+	  chartresize4(); */
 	  search_manual_k();
 	  
 	  
 	  timeTicket=setInterval(loadtime, 5000);
 	  
-	  /* $("#search-btn1").click(function(){
-		 excuteChart();
-	 });
-	  $("#search-btn2").click(function(){
-		 excuteChart();
-	 }); 
-	 $("#deptSelect").change(function(){
-		 $('#cbLabel').children("div").addClass('checked'); 
-		 iCheckStr = $('#cbClick').val();
-		 excuteChart();
-	 });
-	 $("#channelSelect").change(function(){
-		 $('#cbLabel').children("div").addClass('checked'); 
-		 iCheckStr = $('#cbClick').val();
-		 excuteChart();
-	 });
-	 $("#citySelect").change(function(){
-		 $('#cbLabel').children("div").addClass('checked'); 
-		 iCheckStr = $('#cbClick').val();
-		 excuteChart();
-	 }); */
-	 //小B端iCheck
-	 /* $('#cbClick').on('ifChecked', function(event){ //ifChecked 事件应该在插件初始化之前绑定 
-		 iCheckStr = $(this).val();
-		 excuteChart();
-	 });
-	 $('#cbClick').on('ifUnchecked', function(event){
-		 iCheckStr = "";
-		 excuteChart();
-	 });
-	 $('#cbClick').iCheck({
-	  	checkboxClass: 'icheckbox_minimal-red'
-	 });
-	 //大B端iCheck
-	 $('#maxbClick').on('ifChecked', function(event){ //ifChecked 事件应该在插件初始化之前绑定 
-		 iCheckMaxStr = $(this).val();
-		 excuteChart();
-	 });
-	 $('#maxbClick').on('ifUnchecked', function(event){
-		 iCheckMaxStr = "";
-		 excuteChart();
-	 });
-	 $('#maxbClick').iCheck({
-	  	checkboxClass: 'icheckbox_minimal-red'
-	 }); */
-	  //＋对比
-	  $("#search-btn-add").click(function(){
-		  var labelName1 = $("#label_manual_first").html();
-		  var labelName2 = $("#label_manual_second").html();
-		  var labelName3 = $("#label_manual_third").html();
-		  var labelName4 = $("#label_manual_fourth").html();
-		  var labelName5 = $("#label_manual_fifth").html();
-		  var lable_first = document.getElementById("warning_text");
-	      lable_first.style.display = "block";
-	    
-		  var shareChartStatDtoTemp = getShareParam();
-		  var storename = $("#store_name_manual").val()==null?'':$("#store_name_manual").val();
-	      var deptName = shareChartStatDtoTemp.deptname==null?'全部事业群':shareChartStatDtoTemp.deptname;
-	      var channelName = shareChartStatDtoTemp.channelname==null?'全部频道':shareChartStatDtoTemp.channelname;
-	      var cityName = shareChartStatDtoTemp.cityname==null?'全部城市':shareChartStatDtoTemp.cityname;
-	      var storeNo = shareChartStatDtoTemp.storeno==null?'':shareChartStatDtoTemp.storeno;
-	      var nameStrTemp = deptName+" "+channelName+" "+cityName+" "+storename;
-	      if($.trim(nameStrTemp)==$.trim(nameStr1Html) || $.trim(nameStrTemp)==$.trim(nameStr2Html) || $.trim(nameStrTemp)==$.trim(nameStr3Html) 
-	    		  || $.trim(nameStrTemp)==$.trim(nameStr4Html) || $.trim(nameStrTemp)==$.trim(nameStr5Html)){//对比条件重复过滤
-	    	document.body.className = "skin-blue sidebar-mini"; 
-    	  	return;
-    	  }
-	      if(labelName1.length==0){
-		    	var lable_flag = document.getElementById("label_first_group");
-		    	lable_flag.style.display = "block";
-		    	var lable_reset = document.getElementById("label_first_reset");
-				lable_reset.style.display = "block";
-		    	shareChartStatDto1 = shareChartStatDtoTemp;
-		    	nameStr1Html = nameStrTemp;
-		    	$("#label_manual_first").html(nameStr1Html);
-		    	nameStr1 = nameStr1Html+" "+storeNo;
-		    }else if(labelName2.length==0){
-		    	var lable_flag = document.getElementById("label_second_group");
-		    	lable_flag.style.display = "block";
-		    	var lable_reset = document.getElementById("label_second_reset");
-				lable_reset.style.display = "block";
-		    	shareChartStatDto2 = shareChartStatDtoTemp;
-				nameStr2Html = nameStrTemp;
-		    	$("#label_manual_second").html(nameStr2Html);
-		    	nameStr2 = nameStr2Html+" "+storeNo;
-		    }else if(labelName3.length==0){
-		    	var lable_flag = document.getElementById("label_third_group");
-		    	lable_flag.style.display = "block";
-		    	var lable_reset = document.getElementById("label_third_reset");
-				lable_reset.style.display = "block";
-		    	shareChartStatDto3 = shareChartStatDtoTemp;
-				nameStr3Html = nameStrTemp;
-		    	$("#label_manual_third").html(nameStr3Html);
-		    	nameStr3 = nameStr3Html+" "+storeNo;
-		    }else if(labelName4.length==0){
-		    	var lable_flag = document.getElementById("label_fourth_group");
-		    	lable_flag.style.display = "block";
-		    	var lable_reset = document.getElementById("label_fourth_reset");
-				lable_reset.style.display = "block";
-		    	shareChartStatDto4 = shareChartStatDtoTemp;
-				nameStr4Html = nameStrTemp;
-		    	$("#label_manual_fourth").html(nameStr4Html);
-		    	nameStr4 = nameStr4Html+" "+storeNo;
-		    }else if(labelName5.length==0){
-		    	var lable_flag = document.getElementById("label_fifth_group");
-		    	lable_flag.style.display = "block";
-		    	var lable_reset = document.getElementById("label_fifth_reset");
-				lable_reset.style.display = "block";
-		    	shareChartStatDto5 = shareChartStatDtoTemp;
-				nameStr5Html = nameStrTemp;
-		    	$("#label_manual_fifth").html(nameStr5Html);
-		    	nameStr5 = nameStr5Html+" "+storeNo;
-		    }       
-	      document.body.className = "skin-blue sidebar-mini"; 
-	  });
-	  
-	  var nameStr1="";
-	  var nameStr2="";
-	  var nameStr3="";
-	  var nameStr4="";
-	  var nameStr5="";
-	  var nameStr1Html="";
-	  var nameStr2Html="";
-	  var nameStr3Html="";
-	  var nameStr4Html="";
-	  var nameStr5Html="";
-	  
-
-	  $("#label_first_reset").click(function(){
-		  nameStr1 = "";
-		  nameStr1Html = "";
-		  $("#label_manual_first").html("");
-		  $("#channelSelectContrast").empty();
-		  initallchannelcontrast();
-		  var labelName1 = $("#label_manual_first").html();
-		  var labelName2 = $("#label_manual_second").html();
-		  var labelName3 = $("#label_manual_third").html();
-		  var labelName4 = $("#label_manual_fourth").html();
-		  var labelName5 = $("#label_manual_fifth").html();
-		  var lable_reset = document.getElementById("label_first_group");
-		  lable_reset.style.display = "none";
-		  if(labelName1.length==0 && labelName2.length==0 && labelName3.length==0 
-				  && labelName4.length==0 && labelName5.length==0){
-			var lable_first = document.getElementById("warning_text");
-  			lable_first.style.display = "none";
-		  }
-	  });
-	  $("#label_second_reset").click(function(){
-		  nameStr2 = "";
-		  nameStr2Html = "";
-		  $("#label_manual_second").html("");
-		  $("#channelSelectContrast").empty();
-		  initallchannelcontrast();
-		  var labelName1 = $("#label_manual_first").html();
-		  var labelName2 = $("#label_manual_second").html();
-		  var labelName3 = $("#label_manual_third").html();
-		  var labelName4 = $("#label_manual_fourth").html();
-		  var labelName5 = $("#label_manual_fifth").html();
-		  var lable_reset = document.getElementById("label_second_group");
-		  lable_reset.style.display = "none";
-		  if(labelName1.length==0 && labelName2.length==0 &&labelName3.length==0 
-				  && labelName4.length==0 && labelName5.length==0){
-			var lable_first = document.getElementById("warning_text");
-  			lable_first.style.display = "none";
-		  }
-	  });
-	  $("#label_third_reset").click(function(){
-		  nameStr3 = "";
-		  nameStr3Html = "";
-		  $("#label_manual_third").html("");
-		  $("#channelSelectContrast").empty();
-		  initallchannelcontrast();
-		  var labelName1 = $("#label_manual_first").html();
-		  var labelName2 = $("#label_manual_second").html();
-		  var labelName3 = $("#label_manual_third").html();
-		  var labelName4 = $("#label_manual_fourth").html();
-		  var labelName5 = $("#label_manual_fifth").html();
-		  var lable_reset = document.getElementById("label_third_group");
-		  lable_reset.style.display = "none";
-		  if(labelName1.length==0 && labelName2.length==0 &&labelName3.length==0 
-				  && labelName4.length==0 && labelName5.length==0){
-			var lable_first = document.getElementById("warning_text");
-  			lable_first.style.display = "none";
-		  }
-	  });
-	  $("#label_fourth_reset").click(function(){
-		  nameStr4 = "";
-		  nameStr4Html = "";
-		  $("#label_manual_fourth").html("");
-		  $("#channelSelectContrast").empty();
-		  initallchannelcontrast();
-		  var labelName1 = $("#label_manual_first").html();
-		  var labelName2 = $("#label_manual_second").html();
-		  var labelName3 = $("#label_manual_third").html();
-		  var labelName4 = $("#label_manual_fourth").html();
-		  var labelName5 = $("#label_manual_fifth").html();
-		  var lable_reset = document.getElementById("label_fourth_group");
-		  lable_reset.style.display = "none";
-		  if(labelName1.length==0 && labelName2.length==0 &&labelName3.length==0 
-				  && labelName4.length==0 && labelName5.length==0){
-			var lable_first = document.getElementById("warning_text");
-  			lable_first.style.display = "none";
-		  }
-	  });
-	  $("#label_fifth_reset").click(function(){
-		  nameStr5 = "";
-		  nameStr5Html = "";
-		  $("#label_manual_fifth").html("");
-		  $("#channelSelectContrast").empty();
-		  initallchannelcontrast();
-		  var labelName1 = $("#label_manual_first").html();
-		  var labelName2 = $("#label_manual_second").html();
-		  var labelName3 = $("#label_manual_third").html();
-		  var labelName4 = $("#label_manual_fourth").html();
-		  var labelName5 = $("#label_manual_fifth").html();
-		  var lable_reset = document.getElementById("label_fifth_group");
-		  lable_reset.style.display = "none";
-		  if(labelName1.length==0 && labelName2.length==0 &&labelName3.length==0 
-				  && labelName4.length==0 && labelName5.length==0){
-			var lable_first = document.getElementById("warning_text");
-  			lable_first.style.display = "none";
-		  }
-	  });
-	  $("#contrast").click(function(){
-		  var url = "";
-		  if(target==0){
-		  	url = "index_K_contrast.html?t="+encode64('0')+"&nameStr1="+encode64(nameStr1)+"&nameStr2="+encode64(nameStr2)+"&nameStr3="+encode64(nameStr3)+"&nameStr4="+encode64(nameStr4)+"&nameStr5="+encode64(nameStr5)+"&#ff";
-		  }else if(target==1){
-		  	url = "index_K_contrast.html?t="+encode64(1)+"&s=&sn=&c=cn="+encode64(pageStatusInfo.cityName)+"&e=&r=&nameStr1="+encode64(nameStr1)+"&nameStr2="+encode64(nameStr2)+"&nameStr3="+encode64(nameStr3)+"&nameStr4="+encode64(nameStr4)+"&nameStr5="+encode64(nameStr5)+"&#ff";
-		  }else{
-			  url = "index_K_contrast.html?t="+encode64('0')+"&nameStr1="+encode64(nameStr1)+"&nameStr2="+encode64(nameStr2)+"&nameStr3="+encode64(nameStr3)+"&nameStr4="+encode64(nameStr4)+"&nameStr5="+encode64(nameStr5)+"&#ff";
-		  }
-		  window.open(url,"index_K_contrast"); 
-	  });
 	  
   })
   
@@ -1768,12 +1111,6 @@ Date.prototype.format = function() {
 		}
   	},false);
 }
-  
-  //初始化实时图数据
-//   var real_value;
-  function initRealData(){
-	  
-  }
   
   var curDayGMV = '0';
   function inintCurDayData(){
@@ -1814,27 +1151,6 @@ Date.prototype.format = function() {
 	} 
   
   var hourData = [];  //0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-  function initHourData(){
- 		doManager("BusinessReportManager","queryTurnoverByHour",[shareChartStatDto],
- 			function(data,textStatus,XmlHttpRequest){
- 				if (data.result) {
- 					var nowHour = now.getHours();
- 					hourData=new Array(nowHour+2).join(0).split('');
- 					var jsonData = $.fromJSON(data.data);
- 					if(jsonData.length!=0){
- 						$(jsonData).each(function(index,element){
- 	 						hourData[parseInt(element.time)]=element.turnover;
- 	                     });
- 						chart4_option.series[0].data=hourData;
- 						chart4.setOption(chart4_option);
- 					}else{
- 						hourData = [];
- 						chart4_option.series[0].data=hourData;
- 						chart4.setOption(chart4_option);
- 					}
- 				}
- 		});
- 	} 
   
   function initDayData(){
 	  var fistDay = getFirstDayOfYear();
@@ -1862,195 +1178,18 @@ Date.prototype.format = function() {
   }
   
   var weekData = [];  //0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
-  function initWeekData(){
-	  weekData = new Array(xData_week.length+1).join(0).split('');
-		doManager("BusinessReportManager","queryTurnoverByWeek",[shareChartStatDto],
-			function(data,textStatus,XmlHttpRequest){
-				if (data.result) {
-					var jsonData = $.fromJSON(data.data);
-					if(jsonData.length!=0){
-						$(jsonData).each(function(index,element){
-							var dateTemp = new Date(parseInt(element.week_time)).format("yyyy-MM-dd");
-							var indexTemp = jQuery.inArray(dateTemp,xData_week);
-							weekData[indexTemp]=element.week_amount;
-	                    });
-						chart7_option.series[0].data=weekData;
-						chart7.setOption(chart7_option);
-					}else{
-						weekData = [];
-						chart7_option.series[0].data=weekData;
-						chart7.setOption(chart7_option);
-					}
-				}
-		});
-	} 
   
   Date.prototype.toLocaleString = function() {
       return this.getFullYear() + "-" + (this.getMonth() + 1) + "-" + this.getDate();
   }; 
   
-  function initMonthData(){
-	    var curMonth = now.getFullYear()+'-'+(now.getMonth()+1);
-	    var months = getYearAndMonth('2017-12-1',curMonth);
-		yData_month = new Array(months.length+1).join(0).split('');
-		doManager("BusinessReportManager","queryTurnoverByMonth",[shareChartStatDto],
-			function(data,textStatus,XmlHttpRequest){
-				if (data.result) {
-					var jsonData = $.fromJSON(data.data);
-					if(jsonData.length!=0){
-						$(jsonData).each(function(index,element){
-							var indexTemp = jQuery.inArray(element.month_time,months);
-							yData_month[indexTemp]=element.month_amount;
-	               		});
-						chart6_option.series[0].data=yData_month;
-					}else{
-						yData_month = [];
-						chart6_option.series[0].data=yData_month;
-					}
-				}
-		},false);
-		
-		doManager("BusinessReportManager","queryTargetByMonth",[shareChartStatDto],
-			function(data,textStatus,XmlHttpRequest){
-				if (data.result) {
-					var jsonData = $.fromJSON(data.data);
-					if(jsonData.length!=0){
-						yData_month_target = new Array(12).join(0).split('');
-						var curMonth = now.getFullYear()+'-12-31';
-						var monthData = getYearAndMonth('2017-12-1',curMonth);
-						$(jsonData).each(function(index,element){
-							var indexTemp = jQuery.inArray(element.month_time,monthData);
-							yData_month_target[indexTemp]=element.month_amount;
-	               		});
-						chart6_option.series[1].data=yData_month_target;
-						chart6.setOption(chart6_option);
-					}else{//没有数据时不显示
-						yData_month_target = [];
-						chart6_option.series[1].data=yData_month_target;
-						chart6.setOption(chart6_option);
-					}
-				}
-		});
-		$("#process_div").hide();
-		$("#process_div_pic").hide();
-	} 
-  
-  function initOnlineOfflineTurnover(){
-		doManager("BusinessReportManager","queryOnlineOfflineTurnover",[shareChartStatDto],
-			function(data,textStatus,XmlHttpRequest){
-				if (data.result) {
-					var jsonData = $.fromJSON(data.data);
-					option2.series[0].data[1].value = jsonData.offline_amount;
-					option2.series[0].data[0].value = jsonData.online_amount;
-					//myChart2.setOption(option2,true);
-				}
-		});
-	}
-  
-  function initScatterplot(){
-	  doManager("BusinessReportManager","queryDataOfScatterplot",[shareChartStatDto],
-			function(data,textStatus,XmlHttpRequest){
-				if (data.result) {
-					var jsonData = $.fromJSON(data.data);
-					if(jsonData.length!=0){
-						$(jsonData).each(function(index,element){
-							var temp = [];
-							temp.push(element.order_count);
-							temp.push((element.order_amount/10000).toFixed(2));
-							temp.push(element.city_name);
-							temp.push(element.store_name);
-							temp.push(element.time);
-							temp.push(element.storeno);
-							temp.push(element.cityno);
-							dataBJ.push(temp);
-	                 	});
-						option3.series[0].data = dataBJ;
-						//myChart3.setOption(option3,true);
-					}else{
-						dataBJ = [];
-						option3.series[0].data = dataBJ;
-						//myChart3.setOption(option3,true);	
-					}
-				}
-		});
-  }
-  
-  function initalldept(){
-	  doManager("BusinessReportManager","queryAllDept",null,
-		    function(data,textStatus,XmlHttpRequest){
-				if (data.result) {
-					var jsonData = $.fromJSON(data.data);
-					$("#deptSelect").append("<option value=''>全部事业群</option>");
-					$("#deptSelectContrast").append("<option value=''>全部事业群</option>");
-					$(jsonData).each(function(index,element){
-						$("#deptSelect").append('<option value="'+element.id+'">'+element.name+'</option>');
-						$("#deptSelectContrast").append('<option value="'+element.id+'">'+element.name+'</option>');
-	                  });
-				}
-		});
-  }
-  
   var array_channel=new Array();
-	//初始化所有频道
-	function initallchannel() {
-		doManager("BusinessReportManager", "queryAllChannel", null,
-			function(data, textStatus, XMLHttpRequest) {
-				if (data.result) {
-					var jsonData = $.fromJSON(data.data);
-					array_channel = new Array();
-					var storeString = "";
-					for(i=0;i<jsonData.length;i++){
-						array_channel.push(jsonData[i].name);
-						if(i == 0){
-							storeString = "{'"+jsonData[i].name+"'"+":"+"'"+jsonData[i].id+"'"+",";
-						}else if(i == jsonData.length-1){
-							storeString = storeString+"'"+jsonData[i].name+"'"+":"+"'"+jsonData[i].id+"'"+"}";
-						}else{
-							storeString = storeString+"'"+jsonData[i].name+"'"+":"+"'"+jsonData[i].id+"'"+",";
-						}
-					}
-					storeJson=$.fromJSON(storeString);
-					$("#channelSelect").append("<option value=''>全部频道</option>");
-					$(jsonData).each(function(index,element){
-						$("#channelSelect").append('<option value="'+element.id+'">'+element.name+'</option>');
-	                });
-				}
-			}, false);
-	}
-	
+
 	$("#deptSelect").change(function(){
 		initChannelSelectcomplate();
 	});
 	
 	  var array_channel_contrast=new Array();
-		//初始化所有频道
-		function initallchannelcontrast() {
-			doManager("BusinessReportManager", "queryAllChannel", null,
-				function(data, textStatus, XMLHttpRequest) {
-					if (data.result) {
-						var jsonData = $.fromJSON(data.data);
-						array_chnanel_contrast = new Array();
-						var storeString = "";
-						for(i=0;i<jsonData.length;i++){
-							array_channel_contrast.push(jsonData[i].name);
-							if(i == 0){
-								storeString = "{'"+jsonData[i].name+"'"+":"+"'"+jsonData[i].id+"'"+",";
-							}else if(i == jsonData.length-1){
-								storeString = storeString+"'"+jsonData[i].name+"'"+":"+"'"+jsonData[i].id+"'"+"}";
-							}else{
-								storeString = storeString+"'"+jsonData[i].name+"'"+":"+"'"+jsonData[i].id+"'"+",";
-							}
-						}
-						storeJson=$.fromJSON(storeString);
-						var autoCompleteContrast = new AutoComplete("channel_name_manual_contrast","auto_channel_contrast",array_channel_contrast);
-						$("#channelSelectContrast").append("<option value=''>全部频道</option>");
-						$(jsonData).each(function(index,element){
-							$("#channelSelectContrast").append('<option value="'+element.id+'">'+element.name+'</option>');
-		                });
-					}
-				}, false);
-		}
-	
 	$("#deptSelectContrast").change(function(){
 		initChannelSelectcomplateContrast();
 	});
@@ -2444,14 +1583,9 @@ Date.prototype.format = function() {
   	    if(number_str==""&&storeName!=""){
 	    	number_str=-10000;
 	    }
-		
-		 $("#process_div").show();
-	 	 $("#process_div_pic").show();
-	 	 
 	 	  
 	 	  shareChartStatDto = getShareParam();
 	 	  data = [];
-		  initRealData();
 		  //实时营业额
 		  curDayGMV = 0.00;
 		  inintCurDayData();
@@ -2462,23 +1596,23 @@ Date.prototype.format = function() {
 // 		  setInterval(initCurMonthData, 5000);
 		  //分时GMV
 		  hourData = [];
-		  initHourData();
+		  //initHourData();
 // 		  setInterval(initHourData, 5000);
 		  //日GMV
    		  yData = [];
 		  initDayData();
 		  //周GMV
 		  weekData = [];
-		  initWeekData();
+		  //initWeekData();
 		  //月GMV
 		  yData_month = [];
 		  yData_month_target = [];
-		  initMonthData();
+		  //initMonthData();
 		  //占比营业额
-		  initOnlineOfflineTurnover();
+		  //initOnlineOfflineTurnover();
 		  //门店GMV散点分布
 		  dataBJ = [];
-		  initScatterplot();		  
+		  //initScatterplot();		  
     }
 	
 	function changeMoney (x) {
@@ -2603,6 +1737,19 @@ Date.prototype.format = function() {
     }
 </script>
 <script>
+    var layer,form;
+	;!function(){
+	  layer = layui.layer;
+	  form = layui.form;
+	}();
+	
+	function sleep(delay) {
+	  var start = (new Date()).getTime();
+	  while ((new Date()).getTime() - start < delay) {
+	    continue;
+	  }
+	}
+	
 	$(function () {
     	//判断是否多个门店 发生切换变化 
     	if(!checkStoreChange()){
@@ -2611,7 +1758,28 @@ Date.prototype.format = function() {
         $$.executeSearch('queryrecommenduserlist', 'conditionsDiv');
         $("#cstmz_actv").remove();
         $(".display").css("width","auto");
-	});
+        //$(".table-container tbody").css('color','red');
+        sleep(25000);
+        $(".table-container tbody tr").each(function(){
+        	$(this).css('color','red');
+        	/* var text = $(this).children("td:first").text();
+            var text2 = text.substr(0,3)+"****"+text.substr(7);
+            $(this).children("td:first").text(text2); */
+            //<a href="javascript:;" onmouseover="showinfo('<strong>用户姓名：</strong>未填写<br><strong>用户电话：</strong>17310017192<br><strong>用户来源：</strong>APP<br>@customertips1');" id="customertips1">text2</a>
+        }); 
+        /* $("td .sorting_1").css('color','red'); */
+	}); 
+	
+	  //用户信息、消费信息、所属区域显示
+	  function showinfo(obj){
+		  var msg = obj.split("@")[0];
+		  var id = obj.split("@")[1];
+		  layer.tips(msg, '#'+id, {
+			  tips: [4, '#0FA6D8'], //还可配置颜色
+			  time:5000
+		  });
+	  }  
+
 </script>
 <style type="text/css">
     .but {
@@ -2623,7 +1791,8 @@ Date.prototype.format = function() {
 	
 </style>
 <body class="hold-transition skin-blue sidebar-mini">
-
+<!-- <div id="process_div" style="display:none"></div>
+<div id="process_div_pic" style="display:none"><img style="width:50px;height: 50px;" src="dist/img/376884043677306248.png"><i class="fa fa-refresh fa-spin"></i></div> -->
  	<div id="header">
 		<div id="sitename">
 			<a href="index.html" class="logo float-left" title="国安社区门店管理系统">国安社区门店管理系统</a>
@@ -2733,12 +1902,13 @@ Date.prototype.format = function() {
             				</div>
             				<div class="box box-default">
             						<div style="margin:0;border:0;padding:0">
+            								<div class="box-header h4"><strong>订单运营趋势日报K线图</strong></div>
 											<div class="nav_l" id="nav_l">
 												  <!-- Tabs within a box -->
 												  <ul class="nav nav-tabs no-border nav-tabs1">
-									<!-- 				<li class="active"><a href="#revenue-chart" data-toggle="tab">实时</a></li> -->
+									                <!-- 	<li class="active"><a href="#revenue-chart" data-toggle="tab">实时</a></li> -->
 													<!-- <li><a href="#sales-chart" data-toggle="tab" onclick="javascript:chartresize1()">时</a></li> -->
-									                <li><a href="#day-chart" data-toggle="tab" onclick="javascript:chartresize2()">日</a></li>
+									                <!-- <li><a href="#day-chart" data-toggle="tab" onclick="javascript:chartresize2()">日</a></li> -->
 													<!-- <li><a href="#week-chart" data-toggle="tab" onclick="javascript:chartresize4()">周</a></li>
 									                <li  class="active"><a href="#month-chart" data-toggle="tab" onclick="javascript:chartresize3()">月</a></li> -->
 									                <!-- <div class="col-sm-1 pull-right"><button type="button" id="search-btn-add" class="btn btn-block btn-sm" style="margin-right: 50px; font-size: 14px; background-color: rgba(0,0,0,0.1);color: #fff">加入对比</button></div> -->
@@ -2780,7 +1950,7 @@ Date.prototype.format = function() {
 							                </form>
 							            </div> 
         						</div>
-            					<div id="centerQueryGridContainer" class="panel panel-primary" queryid="queryrecommenduserlist" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
+            					<div id="centerQueryGridContainer" style="margin-left:0px;margin-right:0px;" class="panel panel-primary" queryid="queryrecommenduserlist" operators="$pmspage.opArr" titleAlign="center" fnRender="renderColumns" searchDiv="conditionsDiv" showno="false" showsearch="false" showpaging="true" showdisplay="false" showprint="false" autoload="false" showcheckbox="false" showRidaoButton="true" usecache="true" showsearch="false" showtitle="true"></div>
             			</div>
             		</div>
             </div>
@@ -2801,9 +1971,9 @@ Date.prototype.format = function() {
 			  winHeight = document.documentElement.clientHeight;
 			//DIV高度为浏览器窗口的高度
 			 document.getElementById("main4").style.height= winHeight/2 - 60  +"px";
-			document.getElementById("main5").style.height= winHeight/2 - 60  +"px";
+			/* document.getElementById("main5").style.height= winHeight/2 - 60  +"px";
 			document.getElementById("main6").style.height= winHeight/2 - 60  +"px";
-			document.getElementById("main7").style.height= winHeight/2 - 60  +"px"; 
+			document.getElementById("main7").style.height= winHeight/2 - 60  +"px";  */
 		}
 		window.onresize=autodivheight; //浏览器窗口发生变化时同时变化DIV高度
 </script>
