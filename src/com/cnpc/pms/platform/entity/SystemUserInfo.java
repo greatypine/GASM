@@ -44,7 +44,7 @@ public class SystemUserInfo {
 				MultiValueMap<String, String> params = new LinkedMultiValueMap<String, String>();
 				Map<String, Object> attributes = principal.getAttributes();
 				RestTemplate restTemplate = (RestTemplate) SpringHelper.getBean("restTemplate");
-				final String url = "http://10.16.31.229:9999/systemuser/getCurrentUserInfo";
+				final String url = "http://123.56.204.170:9999/systemuser/getCurrentUserInfo";
 				HttpHeaders headers = new HttpHeaders();
 				headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 				params.add("username",username);

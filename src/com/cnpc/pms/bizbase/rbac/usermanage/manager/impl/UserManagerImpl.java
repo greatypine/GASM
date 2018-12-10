@@ -54,15 +54,24 @@ import com.cnpc.pms.personal.manager.StoreManager;
 import com.cnpc.pms.personal.manager.SysUserGroupOperaManager;
 import com.cnpc.pms.personal.manager.UserLoginLogManager;
 import com.cnpc.pms.platform.dao.OrderDao;
+import com.cnpc.pms.platform.entity.SystemUser;
+import com.cnpc.pms.platform.entity.SystemUserInfo;
 import com.cnpc.pms.utils.INConditionForRewrite;
 import com.cnpc.pms.utils.MD5Utils;
 
+import org.jasig.cas.client.authentication.AuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
+import org.springframework.web.context.request.ServletWebRequest;
 
 import java.io.IOException;
 import java.util.*;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 //import com.cnpc.pms.bizbase.rbac.position.dto.PositionDTO;
 //import com.cnpc.pms.bizbase.rbac.position.entity.CnpcPosition;
@@ -2515,6 +2524,13 @@ public class UserManagerImpl extends BizBaseCommonManager implements
 	}
 	
 	
+	
+	String casServerUrlPrefix = "http://localhost:8889/GASM";
+	@Override
+	public String dologout(String logout) {
+	      // 登出操作
+	      return casServerUrlPrefix;
+	  }
 	
 	
 }

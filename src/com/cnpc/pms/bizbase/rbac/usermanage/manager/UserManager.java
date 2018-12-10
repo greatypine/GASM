@@ -21,6 +21,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 /**
  * 用户管理接口
  * 
@@ -442,5 +445,8 @@ public interface UserManager extends IManager {
 	 public Map<String, Object> querySysUserSendBoxQueryList(QueryConditions condition);
 	 
 	 public String modifyStoreUserPassword(User user);
+	 
+	 
+	 public String dologout(String logout);
 	 
 }

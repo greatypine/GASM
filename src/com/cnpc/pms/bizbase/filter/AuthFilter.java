@@ -16,10 +16,14 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
 import org.jasig.cas.client.authentication.AttributePrincipal;
+import org.jasig.cas.client.authentication.AuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.cnpc.pms.base.common.model.ClientRequestObject;
@@ -35,6 +39,8 @@ import com.cnpc.pms.base.util.StrUtil;
 import com.cnpc.pms.bizbase.rbac.resourcemanage.entity.AuthModel;
 import com.cnpc.pms.bizbase.rbac.usermanage.entity.User;
 import com.cnpc.pms.bizbase.rbac.usermanage.manager.UserManager;
+import com.cnpc.pms.platform.entity.SystemUser;
+import com.cnpc.pms.platform.entity.SystemUserInfo;
 
 /**
  * The Authority Filter.
@@ -101,8 +107,6 @@ public class AuthFilter extends OncePerRequestFilter {
 			authSession = setDataToUserSession(authSession, Long.parseLong(eid));
 			SessionManager.setUserSession(authSession);
 		}
-		
-		
 		
 		
 		if (url.indexOf(LOGIN_URL) >= 0) {
@@ -460,6 +464,7 @@ public class AuthFilter extends OncePerRequestFilter {
 				return;
 			}
 
+			
 			/**
 			 * 新增接口配置信息 wuyichao
 			 */
@@ -630,9 +635,33 @@ public class AuthFilter extends OncePerRequestFilter {
 				out.print("<script>top.location='" + urlString + "'</script>");
 				return;
 			}
+			
+			
+			
+			if(url.indexOf("dologout")>=0) {
+				HttpSession session = servletRequest.getSession();
+				if (session.getAttribute(UserSession.SESSION_ATTRIBUTE_NAME) != null) {
+					session.removeAttribute(UserSession.SESSION_ATTRIBUTE_NAME);
+				}
+				
+				userSession=null;
+				SessionManager.setUserSession(null);
+				
+				servletRequest.getSession().removeAttribute(AuthenticationFilter.CONST_CAS_ASSERTION);
+			      SystemUser systemUser = SystemUserInfo.getInstance();
+			      servletRequest.getSession().removeAttribute("user");
+			      SystemUserInfo.destroy();
+			      servletRequest.getSession().invalidate();
+					PrintWriter out = servletResponse.getWriter();
+			      out.print("<script>window.location='http://123.56.204.170:9001/cas/login?service=http://localhost:8889/GASM'</script>");
+			}else {
+			
+			
+			
 
 			boolean result = auth(url, userSession);
 
+			
 			if (result) {
 				// add by liujunsong 2014-06-18
 				// Log文件中记录执行所使用的时间
@@ -651,6 +680,8 @@ public class AuthFilter extends OncePerRequestFilter {
 				String errorString = servletRequest.getContextPath() + "/bizbase/" + ERROR_URL + "?furl=" + furl;
 				PrintWriter out = servletResponse.getWriter();
 				out.print("<script>window.location='" + errorString + "'</script>");
+			}
+			
 			}
 
 		}
