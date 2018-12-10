@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.jasig.cas.client.authentication.AuthenticationFilter;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.cnpc.pms.base.security.UserSession;
 import com.cnpc.pms.platform.entity.SystemUser;
@@ -71,17 +73,23 @@ public class LogoutAction extends HttpServlet {
 		
 		
 		logout(resp, req);
+		resp.setHeader("Access-Control-Allow-Origin", "*");
+		resp.setHeader("Pragma", "No-Cache"); 
+		resp.setHeader("Cache-Control", "No-Cache"); 
+		resp.setDateHeader("Expires", 0);
 		
 		PrintWriter out = resp.getWriter();
-		//out.print("<script>parent.location='"+ casServerUrlPrefix + "/logout?service=http://localhost:8889/GASM/bizbase/logout.html'</script>");
-		out.print("<script>parent.location='" + casServerUrlPrefix + "/logout'</script>");
+	    out.print("<script>window.location='http://123.56.204.170:9001/cas/logout?service=http://localhost:8889/GASM';</script>");
+		//out.print("<script>parent.location='" + casServerUrlPrefix + "'</script>");
+		
 	}
 	
 	
 	
 		//此方法为用户统一退出方法
 		//casServerUrlPrefix自行配置cas服务地址  eg:
-	     String casServerUrlPrefix = "http://123.56.204.170:9001/cas";
+	     //String casServerUrlPrefix = "http://123.56.204.170:9001/cas";
+	String casServerUrlPrefix = "http://localhost:8889/GASM";
 		//
 		  public String logout(HttpServletResponse response,HttpServletRequest request) {
 		      // 登出操作

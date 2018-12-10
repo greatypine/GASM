@@ -2,6 +2,11 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	
+	<META HTTP-EQUIV="pragma" CONTENT="no-cache"> 
+	<META HTTP-EQUIV="Cache-Control" CONTENT="no-cache, must-revalidate"> 
+	<META HTTP-EQUIV="expires" CONTENT="0">
+
 	<title>门店管理系统-首页</title>
 	<link rel="shortcut icon" type="image/x-icon" href="../icon.png"/>
 	<link href="style.css" rel="stylesheet" media="all" />
@@ -30,7 +35,6 @@ text-decoration: underline;
     var currentUser=null;
 	$(function(){
 		$(".ui-icon-circle-arrow-s").remove();
-		
 		doManager("UserManager", "getCurrentUserDTO",null,
   				function(data, textStatus, XMLHttpRequest) {
   					if (data.result) {
@@ -168,6 +172,18 @@ text-decoration: underline;
 		//$('#login').dialog('open');
 		urlStr = "../logout.do";
 	    window.location.href = urlStr;
+	    
+	    		
+	   /*   var url = "../dispatcher.action";
+	    var data = new PMSRequestObject("userManager", "dologout",["logout"]);
+		$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+				textStatus, XMLHttpRequest) {
+				if (data.result) {
+					alert(data.data);
+					window.location.href="http://localhost:8889/GASM";
+				}
+		});  */
+		
 	}
 	
 	

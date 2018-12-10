@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>国安社区门店管理系统-登录</title>
+  <link rel="shortcut icon" type="image/x-icon" href="../icon.png"/>
+  <!-- Tell the browser to be responsive to screen width -->
+  <meta content="width=device-width, initial-scale=0.3, maximum-scale=1, user-scalable=yes" name="viewport">
+  <!-- Bootstrap 3.3.6 -->
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="css/font-awesome.min.css">
+  <!-- Ionicons -->
+  <link rel="stylesheet" href="css/ionicons.min.css">
+  <!-- Theme style -->
+  <link rel="stylesheet" href="css/AdminLTE.min.css">
+  <!-- iCheck -->
+  <link rel="stylesheet" href="css/blue.css">
+  <link rel="stylesheet" href="css/mbox.css">
+  <script src="https://pv.sohu.com/cityjson?ie=utf-8"></script>
+  <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+  <!-- WARNING: Respond.js doesn't work if you view the page via file:// --><!--[if lt IE 9]>
+  <script src="IE 9/html5shiv.min.js"></script>
+  <script src="IE 9/respond.min.js"></script><![endif]-->
+  <style>
+    html, body {height: 100%; font-size: 12px;}
+    .container {width: 1000px;position: relative;min-height: 100%;position: relative;}
+    footer {width: 100%;height: 70px;text-align: center;}
+    .register-page {background-color: #F2F2F2;}
+    .register-pos {overflow: hidden;clear: both;position: absolute;top: 50%;margin-top: -350px;}
+    .col-sm-6 {margin: 4% 4% 0 0;width: 57%;}
+    .col-sm-6 img {width: 100%;}
+    .login_line {width: 1px;height: 450px;overflow: hidden;margin-top: 2%;}
+    .log_line1 {
+      background: -webkit-linear-gradient(top, #f3f3f3, #cbced2, #f3f3f3);
+      background: -o-linear-gradient(top, #f3f3f3, #cbced2, #f3f3f3);
+      background: -moz-linear-gradient(top, #f3f3f3, #cbced2, #f3f3f3);
+      background: linear-gradient(to top, #f3f3f3, #cbced2, #f3f3f3);
+    }
+    .log_line2 {
+      background: -webkit-linear-gradient(top, #f3f3f3, #edeff1, #f3f3f3);
+      background: -o-linear-gradient(top, #f3f3f3, #edeff1, #f3f3f3);
+      background: -moz-linear-gradient(top, #f3f3f3, #edeff1, #f3f3f3);
+      background: linear-gradient(to top, #f3f3f3, #edeff1, #f3f3f3);
+    }
+    .form-control, .form-control-feedback {
+      height: 52px;
+      line-height: 52px;
+      font-size: 16px;
+    }
+    .form-control {
+      padding-left: 38px;
+      padding-right: 0;
+      background-color: #f1f3f4;
+      border-radius: 5px;
+      border: 1px solid #cbcfd2;
+      box-shadow: 0 1px 1px rgba(0, 0, 0, 0.2);
+    }
+    .register-logo {
+      text-align: left;
+      margin-top: 50px;
+    }
+    .logo_img img {
+      width: auto;
+      height: 40px;
+    }
+    .title img {
+      height: 30px;
+      margin-left: 10px;
+    }
+    .form-control-feedback {
+      left: 5px;
+      font-size: 14px;
+      color: #9fa2a4;
+    }
+    input {outline: #488ee7;}
+    .btn.btn-flat {
+      border-radius: 5px;
+      height: 40px;
+      background: -webkit-linear-gradient(top, #255e7d, #144465);
+      background: -o-linear-gradient(top, #255e7d, #144465);
+      background: -moz-linear-gradient(top, #255e7d, #144465);
+      background: linear-gradient(to top, #255e7d, #144465);
+      letter-spacing: 10px;
+    }
+    footer {
+	    color: #9ea0a3;
+	    height: 30px;
+	    position: fixed;
+	    bottom: 10px;
+	    width: 700px;
+	    left: 50%;
+	    margin-left: -350px;
+	}
+    #process_div {
+      background-color: #292a2b;
+      display: inline;
+      z-index: 100000;
+      left: 0px;
+      opacity: 0.3;
+      top: 0;
+      left: 0;
+      height: 100%;
+      width: 100%;
+      z-index: 999;
+      position: fixed;
+      _position: absolute;
+      _left: expression_r(documentElement.scrollLeft+documentElement.clientWidth -this.offsetWidth);
+      _top: expression_r(documentElement.scrollTop+documentElement.clientHeight -this.offsetHeight);
+      filter: Alpha(Opacity=30);
+      opacity: 0.3;
+    }
+  </style>
+</head>
+<body class="hold-transition register-page">
+
+<font color='red' id="webinfo" style="display:none;">当前浏览器版本过低，请您<a target="_blank" style="color: #9ea0a3;text-decoration: underline;cursor: pointer;" href="http://www.google.cn/intl/zh-CN/chrome/browser/desktop/index.html">升级</a>最新版本</font>
+
+
+<div id="process_div" style="display:none;"></div>
+<div id="model_alert" times="2" showtime="0" style="display: none; z-index: 19891016; width: 450px; height: auto; margin-left: -225px; top: 40%; left: 50%;" id="jm-box-layout2" class="jm-box-layout" type="dialog">
+  <div style="background-color: rgb(255, 255, 255); z-index: 19891016; height: 166px;" class="jm-box-main">
+    <div class="jm-box-dialog">
+      <span class="jm-box-msg jm-box-text" style="padding-top: 54px;"><i class="jm-box-icon jm-box-icon-2"></i>当前用户为初始密码,请修改后重新登录！</span>
+    </div>
+    <div class="jm-box-title" style="cursor: move;" move="ok">
+      <em>信息</em>
+    </div>
+    <!-- <span class="jm-box-setwin"><a
+        class="jm-box-close jm-layer-png32 jm-box-close0"
+        href="javascript:closealert();" style=""></a>
+    </span> -->
+      <span class="jm-box-button">
+        <a href="javascript:toUpdatePwd();" class="jm-box-yes jm-box-button2">确定</a>
+        <!-- <a href="javascript:tobeContinueLogin();"
+        class="jm-box-no jm-box-button3">直接登录</a> -->
+      </span>
+  </div>
+</div>
+<!-- </body> -->
+<div class="container">
+  <div id="test" style="overflow: hidden; clear: both;">
+    <div class="register-pos">
+      <div class="register-logo"><span class="logo_img"><img src="images/logo1.png"></span><span class="title"><img src="images/title1.png"></span></div>
+      <div class="col-sm-6"><img src="images/p6.png"></div>
+      <div class="login_line log_line1 pull-left"></div>
+      <div class="login_line log_line2 pull-left"></div>
+      <div class="register-box pull-right">
+        <div class="register-box-body">
+          <!--<div class="login-box-msg h4"><strong>登录</strong><span class="line"></span></div>-->
+          <form action="index.html" method="post">
+            <div id="login_fail_msg" class="has-feedback text-red" style="font-size: 16px;padding-bottom: 5px;"></div>
+            <div class="form-group has-feedback" style="margin-bottom: 15px;">
+              <input type="text" class="form-control" name="USER_NAME" id="textfield" placeholder="员工编号/手机号/登录账号">
+              <span class="glyphicon glyphicon-user form-control-feedback"></span>
+            </div>
+            <div class="form-group has-feedback" style="margin-bottom: 25px;">
+              <input type="password" class="form-control" name="PASSWORD" id="textfield2" placeholder="请输入密码"> <span
+              class="glyphicon glyphicon-lock form-control-feedback"></span>
+            </div>
+            <div class="row">
+              <div class="col-xs-12">
+                <button id="loginBtn" type="button" onclick="initdoLogin();" class="btn btn-info btn-block btn-lg"
+                        style="border: 0;">登录</button>
+              </div>
+              <!-- /.col -->
+            </div>
+          </form>
+          <div id="login-help" style="margin-top: 10px;">
+            <a href="initreset.html" id="forget-password" style="color: #9ea0a3;">忘记密码?</a>
+          </div>
+        </div>
+        <!-- /.form-box -->
+      </div>
+    </div>
+    <!-- /.register-box -->
+  </div>
+  <!-- jQuery 2.2.0 -->
+  <!-- <script src="/crm/plugins/jQuery/jQuery-2.2.0.min.js"></script> -->
+  <!-- Bootstrap 3.3.6 -->
+  <!-- <script src="/crm/bootstrap/js/bootstrap.min.js"></script> -->
+  <!-- iCheck -->
+  <!-- <script src="/crm/plugins/iCheck/icheck.min.js"></script> -->
+  <!-- <script type="text/javascript" src="js/png.js"></script> -->
+  <script language="javascript" src="../scripts/lib/jquery/jquery-1.5.js"></script>
+  <script language="javascript" src="../scripts/common/common-tool.js"></script>
+  <script language="javascript" src="../scripts/common/common-core.js"></script>
+  <script language="javascript" src="../scripts/lib/jquery/validate/jquery.validate.js"></script>
+  <script language="javascript" src="../scripts/lib/jquery/validate/lib/jquery.metadata.js"></script>
+  <script language="javascript" src="../scripts/common/common-validation.js"></script>
+  <script language="javascript" src="../scripts/lib/jquery/ui/jquery-ui-1.8.9.custom.min.js"></script>
+  <script language="javascript" src="../forecast/js/scripts/bidCommon.js"></script>
+  <script src="js/lib.js" type="text/javascript"></script>
+  <script src="js/refDialog.js" type="text/javascript"></script>
+  <script src="../scripts/iCheck/icheck.min.js"></script>
+  <script>
+    var logincode = decode64(getUrlParamByKey("logincode"));
+    var screenlogin = getUrlParamByKey("su");//大屏用户
+
+    var issu = false;
+    var tobecontinue;
+
+    function closealert() {
+      document.getElementById("model_alert").style.display = "none";
+      document.getElementById("process_div").style.display = "none";
+    }
+
+    function toUpdatePwd() {//encode64(target)
+      var userid = tobecontinue.user.id;
+      var logincode = $("#textfield").val();
+      window.parent.location = getRootPath() + "/bizbase/modifypwd.html?logincode=" + encode64(logincode) + "&userid=" + encode64(userid);
+    }
+
+
+    Date.prototype.format = function (fmt) { //author: meizz
+      var o = {
+        "M+": this.getMonth() + 1, //月份
+        "d+": this.getDate(), //日
+        "h+": this.getHours(), //小时
+        "m+": this.getMinutes(), //分
+        "s+": this.getSeconds(), //秒
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+        "S": this.getMilliseconds()
+        //毫秒
+      };
+      if (/(y+)/.test(fmt))
+        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+      for (var k in o)
+        if (new RegExp("(" + k + ")").test(fmt))
+          fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+      return fmt;
+    }
+
+    var isIE = true;
+
+    var userAgent = navigator.userAgent;
+    if (userAgent.indexOf("Firefox") > -1) {
+      isIE = false;
+    }
+    if (userAgent.indexOf("Chrome") > -1) {
+      isIE = false;
+    }
+	
+    
+    String.prototype.endWith=function(endStr){
+        var d=this.length-endStr.length;
+        return (d>=0&&this.lastIndexOf(endStr)==d)
+      }
+    var history_url = "";
+    function documentrefer(){
+    	var tmp_url = document.referrer;
+    	if(tmp_url!=null&&tmp_url.length>0){
+    		var endHtml = tmp_url.endWith(".html");
+        	if(endHtml){
+        		history_url=tmp_url;
+        	}
+    	}
+    }
+    
+
+    $(function () {
+      showversion();
+      documentrefer();
+      if (logincode != null && logincode.length > 0) {
+        $("#textfield").val(logincode);
+      }
+
+      if (screenlogin != null && screenlogin == "984c0eca5f5e22325d1308dd9a762ed0") {
+        //证明 是大屏用户
+        $("#textfield").val("大屏用户");
+        $("#textfield").attr("disabled", "disabled");
+        $("#textfield2").val("*****************");
+        $("#textfield2").attr("disabled", "disabled");
+        issu = true;
+      }
+
+      
+      // 重大科技活动
+      //getGeneralEventLists();
+      // 通知公告
+      //getGeneralPortalContentDtos();
+      //帮助信息
+      //getGeneralPortalHelpContents();
+
+
+      $('input').iCheck({
+        checkboxClass: 'icheckbox_square-blue',
+        radioClass: 'iradio_square-blue',
+        increaseArea: '20%',
+      });
+      $('input').click(function () {
+        $('input').css('background-color', '#f7f7f7');
+        $('input').next(".form-control-feedback").css('color', '#9fa2a4');
+        $(this).css('background-color', '#fff');
+        $(this).next(".form-control-feedback").css('color', '#818284');
+      });
+
+
+    });
+    if (isIE) {
+      //alert("当前正在使用的浏览器，会造成系统某些功能无法正常使用，推荐使用谷歌或火狐浏览器。");
+    }
+
+
+    function initdoLogin() {
+      if (issu) {
+        /* //大屏登录
+        var reObj = new PMSRequestObject("userManager", "isScreenUser", [screenlogin]);
+        var callback = function callback(data, textStatus, XMLHttpRequest) {
+          //window.parent.location=getRootPath() + "/crm/index_headquarters.html";
+        };
+        var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
+          alert("登录信息错误，请确认输入或联系管理员!");
+          return false;
+        }
+        var url = "../login.do";
+        $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback); */
+
+      } else {
+        doLogin();//正常登录
+      }
+    }
+
+    function saveLoginLog(rtObj) {
+      var loguser = {};
+      loguser.citynames = returnCitySN.cname;
+      loguser.loginip = returnCitySN.cip;
+      loguser.token = rtObj.user.token;
+      doManager("UserLoginLogManager", "saveUserLoginLog", [loguser], function (data, textStatus, XMLHttpRequest) {
+      });
+
+    }
+
+
+    function doLogin() {
+      var userName = $("#textfield").val();
+      var userPwd = $("#textfield2").val();
+      if (userName == "" || userName == null) {
+        //layer.alert("请输入用户名！",{skin: 'layer-ui-class',btn1:function(){$("#textfield").focus();}});
+        //alert("请输入用户名！");
+        $("#login_fail_msg").html("请输入用户名");
+        $("#textfield").focus();
+        return;
+      }
+      if (userPwd == "" || userPwd == null) {
+        //layer.alert("请输入密码！",{skin: 'layer-ui-class',btn1:function(){$("#textfield2").focus();}});
+        $("#login_fail_msg").html("请输入登录密码");
+        $("#textfield2").focus();
+        return;
+      }
+      var url = "../login.do";
+      var userCode = $("#textfield").val();
+
+      var myDate = new Date();
+      var c_year = myDate.getFullYear(); //当前年
+      var c_month = myDate.getMonth() + 1;//当前月
+      var q_month = myDate.getMonth() + 1;
+      if (q_month > 1) {
+        q_month = c_month - 1;
+      }
+
+
+      var q_date = c_year + "-" + c_month;
+
+      var psw = $("#textfield2").val();
+      var reObj = new PMSRequestObject("userManager", "isValidUser", [userCode, psw]);
+      var callback = function callback(data, textStatus, XMLHttpRequest) {
+        //检查用户的口令是否是初始口令,如果是,则提示用户需要修改口令.
+        doManager("userManager", "isInitPassword", [userCode, psw], function (data, textStatus, XMLHttpRequest) {
+          if (data.result == true) {
+            var returnObj = $.fromJSON(data.data);
+            var isaccess=false;
+            if(returnObj.user.zw=="店长"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="国安侠"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="综合管理"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="事务管理"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="服务专员"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="综合专员"){
+            	isaccess = true;
+            }
+            if(returnObj.user.zw=="副店长"){
+            	isaccess = true;
+            }
+            if (!isaccess) {
+              $$.showMessage("提示", "该用户暂无访问权限！");
+              return;
+            }
+            //保存记录 
+            //saveLoginLog(returnObj);
+
+            if (returnObj.user.blankPassword == null || returnObj.user.blankPassword.trim() == "") {
+              tobecontinue = returnObj;
+              toUpdatePwd();//初始密码直接 跳转 不弹出提示 。
+              return;
+            }
+
+            doManager("DefaultConfigManager", "getDefaultConfig", [returnObj.user.employeeId, returnObj.user.name],
+              function (data, textStatus, XMLHttpRequest) {
+                if (data.result) {
+                  var defaultInfo = $.fromJSON(data.data);
+                  if(history_url!=null&&history_url.length>0){
+                	  window.parent.location = history_url;
+                  }else{
+                	  window.parent.location = getRootPath() + "/gasm/index.html";
+                  }
+
+                }
+              }, false);
+
+            /* if(returnObj=="1"){
+             alert("当前口令为系统初始口令,请及时修改!");
+             window.parent.location = "loginuser_info.html";
+             }else{
+             window.parent.location = "indexMain.html";
+             } */
+          } else {
+            $$.showMessage("${system.info}", data.message);
+          }
+        }, true, {
+          showWaiting: true
+        });
+
+        //window.parent.location = "indexMain.html";
+      };
+      var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
+        $("#login_fail_msg").html("登录名或登录密码不正确，请重新输入。");
+        return false;
+      }
+
+      $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
+    }
+    $(document).ready(function () {
+      $("#textfield").focus();
+
+      //$("#curDate").text(new Date().toLocaleString());
+    });
+
+    document.onkeydown = function (event) {
+      e = event ? event : (window.event ? window.event : null);
+      if (e.keyCode == 13) {
+        //执行的方法
+        $("#loginBtn").click();
+      }
+    }
+
+    function time2String(t) {
+      with (t)
+        return [getFullYear(), '-', ('0' + (getMonth() + 1)).slice(-2), '-', ('0' + getDate()).slice(-2), ' ', ('0' + getHours()).slice(-2), ': ', ('0' + getMinutes()).slice(-2), ': ', ('0' + getSeconds()).slice(-2)].join('')
+    }
+
+    //添加收藏夹
+    function AddFavorite() {
+      var sTitle = "国安社区门店管理系统";
+      var sURL = getRootPath();
+      try {
+        window.external.addFavorite(sURL, sTitle);
+      } catch (e) {
+        try {
+          window.sidebar.addPanel(sTitle, sURL, "");
+        } catch (e) {
+          alert("加入收藏失败，请使用Ctrl+D进行添加!");
+        }
+      }
+    }
+
+    //设为首页
+    function SetHome(obj) {
+      var vrl = getRootPath();
+      try {
+        obj.style.behavior = 'url(#default#homepage)';
+        obj.setHomePage(vrl);
+      } catch (e) {
+        if (window.netscape) {
+          try {
+            netscape.security.PrivilegeManager.enablePrivilege("UniversalXPConnect");
+          } catch (e) {
+            alert("此操作被浏览器拒绝！\n请在浏览器地址栏输入“about:config”并回车\n然后将 [signed.applets.codebase_principal_support]的值设置为'true',双击即可。");
+          }
+          var prefs = Components.classes['@mozilla.org/preferences-service;1'].getService(Components.interfaces.nsIPrefBranch);
+          prefs.setCharPref('browser.startup.homepage', vrl);
+        }
+      }
+    }
+    
+    
+    function getBrowserInfo(){
+    	var agent = navigator.userAgent.toLowerCase() ;
+    	var regStr_chrome = /chrome\/[\d.]+/gi ;
+        //Chrome
+    	if(agent.indexOf("chrome") > 0)
+    	{
+    		return agent.match(regStr_chrome) ;
+    	}
+     }
+    	
+    function showversion(){
+    	var browser = getBrowserInfo() ;
+    	var verinfo = (browser+"").replace(/[^0-9.]/ig,""); 
+    	if(verinfo=="49.0.2623.75"){
+    		$("#webinfo").show();
+    	}
+    }
+    
+    
+    
+    
+    
+  </script>
+  
+  
+  <footer>
+      <p>为了让平台能够发挥出更理想的性能，推荐您使用
+        <a target="_blank" style="color: #9ea0a3;text-decoration: underline;" href="http://www.google.cn/intl/zh-CN/chrome/browser/desktop/index.html">谷歌</a>或<a target="_blank" style="color: #9ea0a3;text-decoration: underline;" href="http://www.firefox.com.cn/">火狐</a>浏览器
+      	<br>Copyright © 2009 - 2019 国安社区(北京)科技有限公司 All Rights Reserved 京ICP备16043196号-10
+      </p>
+    </footer>
+    
+    
+</body>
+</html>
