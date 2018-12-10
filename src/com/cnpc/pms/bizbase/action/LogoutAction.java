@@ -73,13 +73,12 @@ public class LogoutAction extends HttpServlet {
 		logout(resp, req);
 		
 		PrintWriter out = resp.getWriter();
-		//out.print("<script>parent.location='"+ casServerUrlPrefix + "/logout?service=http://localhost:8889/GASM/bizbase/logout.html'</script>");
-		out.print("<script>parent.location='" + casServerUrlPrefix + "/logout'</script>");
+		out.print("<script>parent.location='" + casServerUrlPrefix + "/logout?service=http://localhost:8080/GASM'</script>");
 	}
 	
 	
 	
-		//此方法为用户统一退出方法
+	//此方法为用户统一退出方法
 		//casServerUrlPrefix自行配置cas服务地址  eg:
 	     String casServerUrlPrefix = "http://123.56.204.170:9001/cas";
 		//
