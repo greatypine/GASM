@@ -140,7 +140,7 @@
 	</logger>
 
 	<logger name="com.cnpc.pms">
-		<level value="INFO"/> 
+		<level value="DEBUG"/> 
 	</logger>
 	
 	<logger name="com.yadea.crm.etl">
@@ -170,7 +170,7 @@
 	</root>
 
 
-	<root level="info">   
+	<root level="DEBUG">   
    	 <appender-ref ref="FILE" />   
   	</root> 
   
