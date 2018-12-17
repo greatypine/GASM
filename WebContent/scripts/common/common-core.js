@@ -131,7 +131,12 @@ PMSApplication.prototype.onServerInvokeFailed = function(XMLHttpRequest, textSta
 	if (textStatus == 'parsererror') {
 		msg = '${login.timeout}';
 	}
-	this.showMessage("${client.httperrortitle}", "Reason: " + msg);
+	try{
+		this.showMessage("${client.httperrortitle}", "Reason: " + msg);
+	}catch(err){
+		msg="error";
+		window.location.href='https://login.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com';
+	}
 };
 
 /**
