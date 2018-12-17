@@ -79,7 +79,7 @@ public class LogoutAction extends HttpServlet {
 		resp.setDateHeader("Expires", 0);
 		
 		PrintWriter out = resp.getWriter();
-		out.print("<script>window.location='https://login.guoanshuju.com/login/logout?service=GASM;</script>");
+		out.print("<script>window.location='https://login.guoanshuju.com/login/logout?service=GASM'</script>");
 	}
 	
 	

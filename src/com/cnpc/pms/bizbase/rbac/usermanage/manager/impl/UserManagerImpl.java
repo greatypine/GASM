@@ -513,7 +513,14 @@ public class UserManagerImpl extends BizBaseCommonManager implements
 					.getSimpleFilter("code", userCode)));
 		} else if (isTestPassword.equals("0")) {
 			
-			//调用远程登录接口 判断是否存在userEntity 
+			
+			userEntity = (User) this.getUniqueObject((FilterFactory
+		    .getSimpleFilter("employeeId", userCode)
+			.appendAnd(FilterFactory.getSimpleFilter("password", password)))); 
+			
+			
+			
+			/*//调用远程登录接口 判断是否存在userEntity 
 			DynamicManager dynamicManager = (DynamicManager) SpringHelper.getBean("dynamicManager");
 			String retObj = dynamicManager.validateUser(userCode, password);
 			net.sf.json.JSONObject obj = net.sf.json.JSONObject.fromObject(retObj);
@@ -524,7 +531,7 @@ public class UserManagerImpl extends BizBaseCommonManager implements
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
-			}
+			}*/
 			
 		}
 		

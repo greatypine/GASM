@@ -151,7 +151,7 @@
     </init-param>
     <init-param>
       <param-name>serverName</param-name>
-      <param-value>https://store.guoanshuju.com</param-value>
+      <param-value>https://login.guoanshuju.com</param-value>
     </init-param>
   </filter>
   <filter>
@@ -163,7 +163,7 @@
     </init-param>
     <init-param>
       <param-name>serverName</param-name>
-      <param-value>https://store.guoanshuju.com</param-value>
+      <param-value>https://login.guoanshuju.com</param-value>
     </init-param>
     <init-param>
       <param-name>redirectAfterValidation</param-name>
@@ -287,10 +287,7 @@
     <filter-name>authFilter</filter-name>
     <filter-class>com.cnpc.pms.bizbase.filter.AuthFilter</filter-class>
   </filter>
-  <filter-mapping>
-    <filter-name>authFilter</filter-name>
-    <url-pattern>*.action</url-pattern>
-  </filter-mapping>
+
   <filter-mapping>
     <filter-name>authFilter</filter-name>
     <url-pattern>*.chart</url-pattern>

@@ -67,6 +67,7 @@ text-decoration: underline;
   			            }
   						if(zw!=null&&zw!=""&&!isaccess){
   							window.location.href="https://login.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com";
+  							//window.location.href="https://login.guoanshuju.com/login/login?service=http%3A%2F%2F10.16.21.121:8889/GASM";
   						}
   						var store_name=userObj.store_name==null?"":userObj.store_name;
   						var employee_id=userObj.employeeId==null?"":userObj.employeeId;
@@ -80,9 +81,9 @@ text-decoration: underline;
 			},false);
 		  
 		} catch(err){
-	    	alert("error");
+	    	//alert("error");
 	    } finally{
-	    	window.location.href='https://login.guoanshuju.com/login/logout?service=GASM';
+	    	//window.location.href='https://login.guoanshuju.com/login/logout?service=GASM';
 	    }
 		
 		
@@ -101,6 +102,7 @@ text-decoration: underline;
 		
 		if(currentUser==null){
 			window.location.href ="https://login.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com";
+			//window.location.href="https://login.guoanshuju.com/login/login?service=http%3A%2F%2F10.16.21.121:8889/GASM";
 		}
 		
 		queryMsgNoticeList();
@@ -171,6 +173,8 @@ text-decoration: underline;
 	
 	
 	function doLogout() {
+		window.location.href="../logout.do";
+		/* alert($("#logoutUrl").val());
 		 try{
 		        var url = "../dispatcher.action";
 		        var data = new PMSRequestObject("userManager", "dologout",["logout"]);
@@ -185,7 +189,7 @@ text-decoration: underline;
 		        alert("error");
 		    } finally{
 		        window.location.href=$("#logoutUrl").val();//'http://123.56.204.170:9001/cas/logout?service=pes';
-		    }
+		    } */
 		
 	}
 	

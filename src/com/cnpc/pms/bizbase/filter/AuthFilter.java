@@ -105,7 +105,12 @@ public class AuthFilter extends OncePerRequestFilter {
 			url = url + "?" + params;
 		}
 		LOG.debug("url====" + url);
-
+		
+		if(url.indexOf("login.html")>=0) {
+			filterChain.doFilter(servletRequest, servletResponse);
+			return;
+		}
+		
 		UserSession authSession = SessionManager.getUserSession();
 		if(authSession==null) {
 			 AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
@@ -118,6 +123,11 @@ public class AuthFilter extends OncePerRequestFilter {
 	            String casurl = PropertiesUtil.getValue("getCasUserURL");
 	            HttpHeaders headers = new HttpHeaders();
 	            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+	            
+	    		String contentPath = servletRequest.getContextPath();
+	            String queryPath = contentPath + "/bizbase/login.html?username="+username+"&pwd="+attributes.get("password").toString();
+	            servletResponse.sendRedirect(queryPath);
+	            
 	            casParams.add("username",username);
 	            casParams.add("password", attributes.get("password").toString());
 	            HttpEntity<MultiValueMap<String, String>> requestparams = new HttpEntity<MultiValueMap<String, String>>(casParams, headers);
