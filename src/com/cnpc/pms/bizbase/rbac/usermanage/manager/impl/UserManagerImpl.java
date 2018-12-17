@@ -785,6 +785,10 @@ public class UserManagerImpl extends BizBaseCommonManager implements
 		if(!isNormal){
 			currentUserDTO.setStore_name(selectStore.toString());
 		}
+		
+        currentUserDTO.setLogoutUrl(PropertiesUtil.getValue("htmlUrl"));
+
+        
 		return currentUserDTO;
 	} 
 	
@@ -2525,12 +2529,12 @@ public class UserManagerImpl extends BizBaseCommonManager implements
 	
 	
 	
-	String casServerUrlPrefix = "http://localhost:8889/GASM";
-	@Override
-	public String dologout(String logout) {
-	      // 登出操作
-	      return casServerUrlPrefix;
-	  }
+	String casServerUrlPrefix = PropertiesUtil.getValue("casClientServerName");
+    @Override
+    public String dologout(String logout) {
+        // 登出操作
+        return casServerUrlPrefix;
+    }
 	
 	
 }

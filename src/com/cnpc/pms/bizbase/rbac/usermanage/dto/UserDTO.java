@@ -222,6 +222,9 @@ public class UserDTO extends PMSDTO {
 	
 	private String token;
 	
+	
+	 private String logoutUrl;
+	
 	private String inviteCode;
 	
 	public String getBlankPassword() {
@@ -735,6 +738,14 @@ public class UserDTO extends PMSDTO {
 	 */
 	public String getUsertypename() {
 		return usertypename;
+	}
+
+	public String getLogoutUrl() {
+		return logoutUrl;
+	}
+
+	public void setLogoutUrl(String logoutUrl) {
+		this.logoutUrl = logoutUrl;
 	}
 
 	/**

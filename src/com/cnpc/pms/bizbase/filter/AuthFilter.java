@@ -22,6 +22,13 @@ import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.authentication.AuthenticationFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -101,11 +108,25 @@ public class AuthFilter extends OncePerRequestFilter {
 
 		UserSession authSession = SessionManager.getUserSession();
 		if(authSession==null) {
-			AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
-			Map<String, Object> attributes = principal.getAttributes();
-			String eid = (String) attributes.get("eid");
-			authSession = setDataToUserSession(authSession, Long.parseLong(eid));
-			SessionManager.setUserSession(authSession);
+			 AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
+	            Map<String, Object> attributes = principal.getAttributes();
+	            SystemUser systemuser = null;
+	            String username = principal.getName();
+	            MultiValueMap<String, String> casParams = new LinkedMultiValueMap<String, String>();
+	            RestTemplate restTemplate = (RestTemplate) SpringHelper.getBean("restTemplate");
+	            //获取登录用户信息
+	            String casurl = PropertiesUtil.getValue("getCasUserURL");
+	            HttpHeaders headers = new HttpHeaders();
+	            headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
+	            casParams.add("username",username);
+	            casParams.add("password", attributes.get("password").toString());
+	            HttpEntity<MultiValueMap<String, String>> requestparams = new HttpEntity<MultiValueMap<String, String>>(casParams, headers);
+	            ResponseEntity<SystemUser> responseEntity = restTemplate.postForEntity(casurl,requestparams, SystemUser.class);
+	            systemuser = responseEntity.getBody();
+	            //将数据存储到session中
+	            String eid = (String) attributes.get("eid");
+	            authSession = setDataToUserSession(authSession, Long.parseLong(eid),systemuser);
+	            SessionManager.setUserSession(authSession);
 		}
 		
 		
@@ -728,76 +749,77 @@ public class AuthFilter extends OncePerRequestFilter {
 	}
 
 	/**
-	 * 为门户登录成功的用户添加Session和权限 set Data To Session;
-	 */
-	@SuppressWarnings({ "unchecked", "unused" })
-	private UserSession setDataToUserSession(UserSession userSession, Long userid) {
+     * 为门户登录成功的用户添加Session和权限 set Data To Session;
+     */
+    @SuppressWarnings({ "unchecked", "unused" })
+    private UserSession setDataToUserSession(UserSession userSession, Long userid,SystemUser casuser) {
 
-		if (null == userSession) {
-			userSession = new UserSession();
-		}
-		Hashtable sessionData = new Hashtable();
+        if (null == userSession) {
+            userSession = new UserSession();
+        }
+        Hashtable sessionData = new Hashtable();
 
-		UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+        UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
 
-		// get user and put into session;
-		// System.out.println(" sso
-		// lisongtao----setDataToUserSession---start----:"+Thread.currentThread().getId());
-		User user = (User) userManager.getObject(userid);
-		// System.out.println(" sso
-		// lisongtao----getUserByUserCode-------:"+Thread.currentThread().getId());
-		if (null != user) {
-			sessionData.put("user", user);
+        // get user and put into session;
+        // System.out.println(" sso
+        // lisongtao----setDataToUserSession---start----:"+Thread.currentThread().getId());
+        User user = (User) userManager.getObject(userid);
+        // System.out.println(" sso
+        // lisongtao----getUserByUserCode-------:"+Thread.currentThread().getId());
+        if (null != user) {
+            sessionData.put("user", user);
 
-			// get ACL, and then put into session;
-			// System.out.println(" sso
-			// lisongtao----userManager.getCommonACL---start----:"+Thread.currentThread().getId());
-			List<String> commonACL = userManager.getCommonACL();
-			// System.out.println(" sso
-			// lisongtao----userManager.getCommonACL---end----:"+Thread.currentThread().getId());
-			sessionData.put("commonACL", commonACL);
+            // get ACL, and then put into session;
+            // System.out.println(" sso
+            // lisongtao----userManager.getCommonACL---start----:"+Thread.currentThread().getId());
+            List<String> commonACL = userManager.getCommonACL();
+            // System.out.println(" sso
+            // lisongtao----userManager.getCommonACL---end----:"+Thread.currentThread().getId());
+            sessionData.put("commonACL", commonACL);
 
-			List<String> listACL = new ArrayList<String>();
-			List<String> codes = new ArrayList<String>();
+            List<String> listACL = new ArrayList<String>();
+            List<String> codes = new ArrayList<String>();
 
-			String urlTemp = "";
-			String code = "";
-			// System.out.println("lisongtao:get acl
-			// begin"+"--usercode:"+userCode+"- getACL start-thread id"
-			// + Thread.currentThread().getId());
-			List<AuthModel> auths = userManager.getACL(user.getId());
-			// System.out.println("lisongtao:get acl
-			// end"+"--usercode:"+userCode+"- getACL end-thread id"
-			// + Thread.currentThread().getId());
-			for (AuthModel auth : auths) {
-				urlTemp = auth.getUrl();
-				code = auth.getActivityCode();
-				if (urlTemp != null) {
-					listACL.add(urlTemp);
-				}
-				codes.add(code);
-			}
-			sessionData.put("codes", codes);
-			sessionData.put("userACL", listACL);
+            String urlTemp = "";
+            String code = "";
+            // System.out.println("lisongtao:get acl
+            // begin"+"--usercode:"+userCode+"- getACL start-thread id"
+            // + Thread.currentThread().getId());
+            List<AuthModel> auths = userManager.getACL(user.getId());
+            // System.out.println("lisongtao:get acl
+            // end"+"--usercode:"+userCode+"- getACL end-thread id"
+            // + Thread.currentThread().getId());
+            for (AuthModel auth : auths) {
+                urlTemp = auth.getUrl();
+                code = auth.getActivityCode();
+                if (urlTemp != null) {
+                    listACL.add(urlTemp);
+                }
+                codes.add(code);
+            }
+            sessionData.put("codes", codes);
+            sessionData.put("userACL", listACL);
 
-			// get dataACL, and then put into session;
-			// System.out.println("lisongtao:get acl
-			// begin"+"--dataACL:"+userCode+"- data ACL start-thread id"
-			// + Thread.currentThread().getId());
-			Map<String, IFilter> dataACL = userManager.getDataACL(user.getId());
-			Map<String, Set<Condition>> dataACLForAdd = userManager.getDataACLForAdd(user.getId());
-			// System.out.println("lisongtao:get acl
-			// begin"+"--dataACL:"+userCode+"- data ACL end-thread id"
-			// + Thread.currentThread().getId());
-			sessionData.put("dataACL", dataACL);
-			sessionData.put("dataACLForAdd", dataACLForAdd);
+            // get dataACL, and then put into session;
+            // System.out.println("lisongtao:get acl
+            // begin"+"--dataACL:"+userCode+"- data ACL start-thread id"
+            // + Thread.currentThread().getId());
+            Map<String, IFilter> dataACL = userManager.getDataACL(user.getId());
+            Map<String, Set<Condition>> dataACLForAdd = userManager.getDataACLForAdd(user.getId());
+            // System.out.println("lisongtao:get acl
+            // begin"+"--dataACL:"+userCode+"- data ACL end-thread id"
+            // + Thread.currentThread().getId());
+            sessionData.put("dataACL", dataACL);
+            sessionData.put("dataACLForAdd", dataACLForAdd);
+            sessionData.put("casuser", casuser);
 
-			userSession.setSessionData(sessionData);
-		}
-		// System.out.println(" sso
-		// lisongtao----getUserByUserCode----end---:"+Thread.currentThread().getId());
-		return userSession;
-	}
+            userSession.setSessionData(sessionData);
+        }
+        // System.out.println(" sso
+        // lisongtao----getUserByUserCode----end---:"+Thread.currentThread().getId());
+        return userSession;
+    }
 
 	/**
 	 * Parses the client request object.

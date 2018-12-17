@@ -66,13 +66,16 @@ text-decoration: underline;
   			            	$("#mynotice").hide();
   			            }
   						if(zw!=null&&zw!=""&&!isaccess){
-  							window.location.href="https://login.guoanshuju.com/login?service=https%3A%2F%2Fstore.guoanshuju.com";
+  							window.location.href="https://login.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com";
   						}
   						var store_name=userObj.store_name==null?"":userObj.store_name;
   						var employee_id=userObj.employeeId==null?"":userObj.employeeId;
   						employee_no=employee_id;
   						$("#welcomeuser").html(userObj.name+"  欢迎光临 !");
   						$("#userName").html(userObj.name+"："+employee_id+" &nbsp;&nbsp;&nbsp;&nbsp; "+store_name);
+  						
+  						$("#logoutUrl").val(curr_user.logoutUrl);
+  						
   					}
 			},false);
 		  
@@ -97,7 +100,7 @@ text-decoration: underline;
 		});
 		
 		if(currentUser==null){
-			window.location.href ="https://login.guoanshuju.com/login?service=https%3A%2F%2Fstore.guoanshuju.com";
+			window.location.href ="https://login.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com";
 		}
 		
 		queryMsgNoticeList();
@@ -168,20 +171,21 @@ text-decoration: underline;
 	
 	
 	function doLogout() {
-	    try{
-	    	var url = "../dispatcher.action";
-		    var data = new PMSRequestObject("userManager", "dologout",["logout"]);
-			$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
-					textStatus, XMLHttpRequest) {
-					if (data.result) {
-						window.location.href="https://login.guoanshuju.com/login/logout?service=GASM";
-					}
-			});
-	    } catch(err){
-	    	alert("error");
-	    } finally{
-	    	window.location.href='https://login.guoanshuju.com/login/logout?service=GASM';
-	    }
+		 try{
+		        var url = "../dispatcher.action";
+		        var data = new PMSRequestObject("userManager", "dologout",["logout"]);
+		        $$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
+		                                                                      textStatus, XMLHttpRequest) {
+		            if (data.result) {
+		                window.location.href=$("#logoutUrl").val();//"http://123.56.204.170:9001/cas/logout?service=pes";
+
+		            }
+		        });
+		    } catch(err){
+		        alert("error");
+		    } finally{
+		        window.location.href=$("#logoutUrl").val();//'http://123.56.204.170:9001/cas/logout?service=pes';
+		    }
 		
 	}
 	
@@ -473,6 +477,7 @@ text-decoration: underline;
               <span id="userName"></span>
               <!-- | <a href="#" title="Edit profile">编辑资料</a> -->
               | <a href="javascript:doLogout()" title="Logout">退出</a>
+      <input id="logoutUrl" type="hidden" bidTableFlag="true" value=""/>
 			</div>
 			<div id="login" title="退出" style="min-height: 35px; width: auto;">
 					<ul>
