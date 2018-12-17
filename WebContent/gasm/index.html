@@ -34,7 +34,9 @@ text-decoration: underline;
     var currentUser=null;
 	$(function(){
 		$(".ui-icon-circle-arrow-s").remove();
-		doManager("UserManager", "getCurrentUserDTO",null,
+		
+		try{
+		  doManager("UserManager", "getCurrentUserDTO",null,
   				function(data, textStatus, XMLHttpRequest) {
   					if (data.result) {
   						var userObj = JSON.parse(data.data);
@@ -44,7 +46,6 @@ text-decoration: underline;
   						if(userid==null||userid==""){
   							window.location.reload();
   						}
-  						
   						var isaccess=false;
   						if(zw.trim()=="店长"){
   			            	isaccess = true;
@@ -58,30 +59,28 @@ text-decoration: underline;
   			            	isaccess = true;
   			            	$("#dz").hide();
   			            	$("#gax").show();
-  			            	
   			            	$("#quick_dz").hide();
   			            	$("#quick_gax").show();
-  			            	
   			            	$("#quickstart").hide();
   			            	$("#mymsg").hide();
   			            	$("#mynotice").hide();
   			            }
   						if(zw!=null&&zw!=""&&!isaccess){
   							window.location.href="https://login.guoanshuju.com/login?service=https%3A%2F%2Fstore.guoanshuju.com";
-  							//urlStr = "../logout.do";
-  							//window.location.href = urlStr;
   						}
-  						
   						var store_name=userObj.store_name==null?"":userObj.store_name;
   						var employee_id=userObj.employeeId==null?"":userObj.employeeId;
   						employee_no=employee_id;
-  						
   						$("#welcomeuser").html(userObj.name+"  欢迎光临 !");
-  						
   						$("#userName").html(userObj.name+"："+employee_id+" &nbsp;&nbsp;&nbsp;&nbsp; "+store_name);
-  						
   					}
-		},false);
+			},false);
+		  
+		} catch(err){
+	    	alert("error");
+	    } finally{
+	    	window.location.href='https://login.guoanshuju.com/login/logout?service=GASM';
+	    }
 		
 		
 		$('#dialog_xx').dialog({
@@ -175,13 +174,13 @@ text-decoration: underline;
 			$$.ajax(url, "requestString=" + data.toJsonString(), function(datas,
 					textStatus, XMLHttpRequest) {
 					if (data.result) {
-						window.location.href="http://123.56.204.170:9001/cas/logout?service=GASM";
+						window.location.href="https://login.guoanshuju.com/login/logout?service=GASM";
 					}
 			});
 	    } catch(err){
 	    	alert("error");
 	    } finally{
-	    	window.location.href='http://123.56.204.170:9001/cas/logout?service=GASM';
+	    	window.location.href='https://login.guoanshuju.com/login/logout?service=GASM';
 	    }
 		
 	}
