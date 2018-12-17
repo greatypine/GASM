@@ -67,6 +67,7 @@ text-decoration: underline;
   			            	$("#mynotice").hide();
   			            }
   						if(zw!=null&&zw!=""&&!isaccess){
+  							window.location.href="https://login.guoanshuju.com/login?service=https%3A%2F%2Fstore.guoanshuju.com";
   							//urlStr = "../logout.do";
   							//window.location.href = urlStr;
   						}
@@ -97,7 +98,7 @@ text-decoration: underline;
 		});
 		
 		if(currentUser==null){
-			//window.location.href =getRootPath()+"/bizbase/login.html";
+			window.location.href ="https://login.guoanshuju.com/login?service=https%3A%2F%2Fstore.guoanshuju.com";
 		}
 		
 		queryMsgNoticeList();
