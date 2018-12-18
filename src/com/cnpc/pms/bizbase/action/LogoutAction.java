@@ -14,6 +14,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
 import com.cnpc.pms.base.security.UserSession;
+import com.cnpc.pms.base.util.PropertiesUtil;
 import com.cnpc.pms.platform.entity.SystemUser;
 import com.cnpc.pms.platform.entity.SystemUserInfo;
 
@@ -78,8 +79,9 @@ public class LogoutAction extends HttpServlet {
 		resp.setHeader("Cache-Control", "No-Cache"); 
 		resp.setDateHeader("Expires", 0);
 		
+        String logoutUrl = PropertiesUtil.getValue("casServerLogoutUrl");
 		PrintWriter out = resp.getWriter();
-		out.print("<script>window.location='https://login.guoanshuju.com/login/logout?service=GASM'</script>");
+		out.print("<script>window.location='"+logoutUrl+"?service=GASM'</script>");
 	}
 	
 	
