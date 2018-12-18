@@ -284,7 +284,7 @@
       var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
         alert("登录信息错误，请确认输入或联系管理员!");
   	  	// window.location.href="https://login.guoanshuju.com/login/login?service=http%3A%2F%2F10.16.21.121%3A8889%2FGASM%2F";
-        window.location.href="https://login.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com";
+        window.location.href="http://123.56.204.170:9001/cas/login?service=http%3A%2F%2F10.16.21.63%3A8888%2FGASM%2F";
   	  	return false;
       }
       $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
