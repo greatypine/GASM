@@ -111,8 +111,8 @@ public class AuthFilter extends OncePerRequestFilter {
 			return;
 		}
 		
-		UserSession authSession = SessionManager.getUserSession();
-		if(authSession==null) {
+		UserSession userSession = SessionManager.getUserSession();
+		if(userSession==null) {
 			 AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
 	            Map<String, Object> attributes = principal.getAttributes();
 	            SystemUser systemuser = null;
@@ -128,15 +128,16 @@ public class AuthFilter extends OncePerRequestFilter {
 	            String queryPath = contentPath + "/bizbase/login.html?username="+username+"&pwd="+attributes.get("password").toString();
 	            servletResponse.sendRedirect(queryPath);
 	            
-	            casParams.add("username",username);
+	            /*casParams.add("username",username);
 	            casParams.add("password", attributes.get("password").toString());
 	            HttpEntity<MultiValueMap<String, String>> requestparams = new HttpEntity<MultiValueMap<String, String>>(casParams, headers);
 	            ResponseEntity<SystemUser> responseEntity = restTemplate.postForEntity(casurl,requestparams, SystemUser.class);
-	            systemuser = responseEntity.getBody();
+	            systemuser = responseEntity.getBody();*/
 	            //将数据存储到session中
-	            String eid = (String) attributes.get("eid");
-	            authSession = setDataToUserSession(authSession, Long.parseLong(eid),systemuser);
-	            SessionManager.setUserSession(authSession);
+	            /*String eid = (String) attributes.get("eid");
+	            userSession = setDataToUserSession(userSession, Long.parseLong(eid),null);
+	            SessionManager.setUserSession(userSession);*/
+	            
 		}
 		
 		
@@ -655,7 +656,6 @@ public class AuthFilter extends OncePerRequestFilter {
 				filterChain.doFilter(servletRequest, servletResponse);
 				return;
 			}
-			UserSession userSession = authSession;
 			if (userSession == null || userSession.getSessionData() == null
 					|| userSession.getSessionData().get("user") == null) {
 				String urlString = PropertiesUtil.getValue("ssoLoginURL");
@@ -822,7 +822,7 @@ public class AuthFilter extends OncePerRequestFilter {
             // + Thread.currentThread().getId());
             sessionData.put("dataACL", dataACL);
             sessionData.put("dataACLForAdd", dataACLForAdd);
-            sessionData.put("casuser", casuser);
+            //sessionData.put("casuser", casuser);
 
             userSession.setSessionData(sessionData);
         }

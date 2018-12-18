@@ -151,7 +151,7 @@
     </init-param>
     <init-param>
       <param-name>serverName</param-name>
-      <param-value>https://login.guoanshuju.com</param-value>
+      <param-value>https://store.guoanshuju.com</param-value>
     </init-param>
   </filter>
   <filter>
@@ -163,7 +163,7 @@
     </init-param>
     <init-param>
       <param-name>serverName</param-name>
-      <param-value>https://login.guoanshuju.com</param-value>
+      <param-value>https://store.guoanshuju.com</param-value>
     </init-param>
     <init-param>
       <param-name>redirectAfterValidation</param-name>
