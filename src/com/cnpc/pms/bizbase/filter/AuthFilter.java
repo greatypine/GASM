@@ -112,9 +112,9 @@ public class AuthFilter extends OncePerRequestFilter {
 		}
 		
 		UserSession userSession = SessionManager.getUserSession();
+		 AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
+         Map<String, Object> attributes = principal.getAttributes();
 		if(userSession==null) {
-			 AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
-	            Map<String, Object> attributes = principal.getAttributes();
 	            SystemUser systemuser = null;
 	            String username = principal.getName();
 	            MultiValueMap<String, String> casParams = new LinkedMultiValueMap<String, String>();
