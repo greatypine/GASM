@@ -13,6 +13,7 @@ import org.jasig.cas.client.authentication.AuthenticationFilter;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 
+import com.cnpc.pms.base.security.SessionManager;
 import com.cnpc.pms.base.security.UserSession;
 import com.cnpc.pms.base.util.PropertiesUtil;
 import com.cnpc.pms.platform.entity.SystemUser;
@@ -70,6 +71,11 @@ public class LogoutAction extends HttpServlet {
 		HttpSession session = req.getSession();
 		if (session.getAttribute(UserSession.SESSION_ATTRIBUTE_NAME) != null) {
 			session.removeAttribute(UserSession.SESSION_ATTRIBUTE_NAME);
+		}
+		try {
+			SessionManager.setUserSession(null);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 		
 		
