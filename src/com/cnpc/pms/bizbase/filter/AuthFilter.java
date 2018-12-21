@@ -688,7 +688,7 @@ public class AuthFilter extends OncePerRequestFilter {
 			      SystemUserInfo.destroy();
 			      servletRequest.getSession().invalidate();
 					PrintWriter out = servletResponse.getWriter();
-			      out.print("<script>window.location='https://login.guoanshuju.com/login/logout?service=GASM'</script>");
+			      out.print("<script>window.location='https://loginjs.guoanshuju.com/login/logout?service=GASM'</script>");
 			}else {
 			
 			

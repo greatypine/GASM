@@ -147,11 +147,11 @@
     <filter-class>org.jasig.cas.client.authentication.AuthenticationFilter</filter-class>
     <init-param>
       <param-name>casServerLoginUrl</param-name>
-      <param-value>https://login.guoanshuju.com/login/login</param-value>
+      <param-value>https://loginjs.guoanshuju.com/login/login</param-value>
     </init-param>
     <init-param>
       <param-name>serverName</param-name>
-      <param-value>https://store.guoanshuju.com</param-value>
+      <param-value>https://storejs.guoanshuju.com</param-value>
     </init-param>
   </filter>
   <filter>
@@ -159,11 +159,11 @@
     <filter-class>org.jasig.cas.client.validation.Cas20ProxyReceivingTicketValidationFilter</filter-class>
     <init-param>
       <param-name>casServerUrlPrefix</param-name>
-      <param-value>https://login.guoanshuju.com/login</param-value>
+      <param-value>https://loginjs.guoanshuju.com/login</param-value>
     </init-param>
     <init-param>
       <param-name>serverName</param-name>
-      <param-value>https://store.guoanshuju.com</param-value>
+      <param-value>https://storejs.guoanshuju.com</param-value>
     </init-param>
     <init-param>
       <param-name>redirectAfterValidation</param-name>
