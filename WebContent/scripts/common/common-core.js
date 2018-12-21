@@ -136,7 +136,7 @@ PMSApplication.prototype.onServerInvokeFailed = function(XMLHttpRequest, textSta
 	}catch(err){
 		msg="error";
 		//window.location.href='https://login.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com%2FGASM';
-		window.location.href="https://login.guoanshuju.com/login/login?service=http%3A%2F%2F10.16.21.63:8888/GASM";
+		window.location.href="https://login.guoanshuju.com/login/login?service=http%3A%2F%2F10.16.21.60/GASM";
 	}
 };
 
