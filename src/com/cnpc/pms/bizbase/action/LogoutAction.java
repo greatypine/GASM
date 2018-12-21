@@ -73,6 +73,7 @@ public class LogoutAction extends HttpServlet {
 			session.removeAttribute(UserSession.SESSION_ATTRIBUTE_NAME);
 		}
 		try {
+			session.invalidate();
 			SessionManager.setUserSession(null);
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -85,9 +86,12 @@ public class LogoutAction extends HttpServlet {
 		resp.setHeader("Cache-Control", "No-Cache"); 
 		resp.setDateHeader("Expires", 0);
 		
-        String logoutUrl = PropertiesUtil.getValue("casServerLogoutUrl");
-		PrintWriter out = resp.getWriter();
-		out.print("<script>window.location='"+logoutUrl+"?service=GASM'</script>");
+		String logoutUrl = PropertiesUtil.getValue("casServerLogoutUrl");
+		resp.sendRedirect(logoutUrl+"?service=GASM");
+		
+        
+		/*PrintWriter out = resp.getWriter();
+		out.print("<script>window.location='"+logoutUrl+"?service=GASM'</script>");*/
 	}
 	
 	
