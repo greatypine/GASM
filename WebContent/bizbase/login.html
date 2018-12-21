@@ -283,8 +283,8 @@
       };
       var failureCallback = function failureCallback(data, textStatus, XMLHttpRequest) {
         alert("登录信息错误，请确认输入或联系管理员!");
-        //window.location.href="https://login.guoanshuju.com/login/login?service=http%3A%2F%2Fstore.guoanshuju.com%2FGASM";
-  	    window.location.href="https://login.guoanshuju.com/login/login?service=http%3A%2F%2F10.16.21.60%2FGASM%2F";
+        window.location.href="https://login.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com%2FGASM";
+        //window.location.href="https://login.guoanshuju.com/login/login?service=http%3A%2F%2F10.16.21.60%2FGASM%2F";
   	  	return false;
       }
       $$.ajax(url, "requestString=" + reObj.toJsonString(), callback, failureCallback);
