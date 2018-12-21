@@ -128,6 +128,8 @@ public class AuthFilter extends OncePerRequestFilter {
 	            String queryPath = contentPath + "/bizbase/login.html?username="+username+"&pwd="+attributes.get("password").toString();
 	            servletResponse.sendRedirect(queryPath);
 	            
+	            LOG.debug("loginquerypath====" + queryPath);
+	            
 	            /*casParams.add("username",username);
 	            casParams.add("password", attributes.get("password").toString());
 	            HttpEntity<MultiValueMap<String, String>> requestparams = new HttpEntity<MultiValueMap<String, String>>(casParams, headers);
