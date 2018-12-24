@@ -114,6 +114,12 @@ public class AuthFilter extends OncePerRequestFilter {
 		UserSession userSession = SessionManager.getUserSession();
 		
 		if(userSession==null) {
+			
+			if(url.endsWith("gasm/index.html")) {
+				servletResponse.sendRedirect("https://loginjs.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com%2FGASM");
+				return;
+			}
+			
 			 AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
 	         Map<String, Object> attributes = principal.getAttributes();
 	         
