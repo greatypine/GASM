@@ -112,16 +112,16 @@ public class AuthFilter extends OncePerRequestFilter {
 		}
 		
 		UserSession userSession = SessionManager.getUserSession();
-		
+		boolean exit = false;
 		if(userSession==null) {
 			
 			if(url.endsWith("gasm/index.html")) {
-				servletResponse.sendRedirect("https://loginjs.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com%2FGASM");
-				return;
-			}
-			
-			 AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
-	         Map<String, Object> attributes = principal.getAttributes();
+				servletResponse.sendRedirect("https://loginjs.guoanshuju.com/login/login?service=https%3A%2F%2Fstore.guoanshuju.com%2FGASM%2F");
+				//servletResponse.sendRedirect("http://123.56.204.170:9001/cas/login?service=http%3A%2F%2F10.16.21.138%2FGASM%2F");
+				exit=true;
+			}else {
+				AttributePrincipal principal=(AttributePrincipal)servletRequest.getUserPrincipal();
+				Map<String, Object> attributes = principal.getAttributes();
 	         
 	            SystemUser systemuser = null;
 	            String username = principal.getName();
@@ -147,8 +147,13 @@ public class AuthFilter extends OncePerRequestFilter {
 	            /*String eid = (String) attributes.get("eid");
 	            userSession = setDataToUserSession(userSession, Long.parseLong(eid),null);
 	            SessionManager.setUserSession(userSession);*/
+			}
 	            
 		}
+		
+		
+		if(!exit) {
+			
 		
 		
 		if (url.indexOf(LOGIN_URL) >= 0) {
@@ -694,7 +699,8 @@ public class AuthFilter extends OncePerRequestFilter {
 			      SystemUserInfo.destroy();
 			      servletRequest.getSession().invalidate();
 					PrintWriter out = servletResponse.getWriter();
-			      out.print("<script>window.location='https://loginjs.guoanshuju.com/login/logout?service=GASM'</script>");
+				      out.print("<script>window.location='https://loginjs.guoanshuju.com/login/logout?service=GASM'</script>");
+				      //out.print("<script>window.location='http://123.56.204.170:9001/cas/logout?service=GASM'</script>");
 			}else {
 			
 			
@@ -725,6 +731,8 @@ public class AuthFilter extends OncePerRequestFilter {
 			
 			}
 
+		}
+		
 		}
 		// System.out.println(" sso
 		// doFilterInternal----end-------:"+Thread.currentThread().getId());
