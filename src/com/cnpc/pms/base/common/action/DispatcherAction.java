@@ -89,8 +89,8 @@ public class DispatcherAction extends HttpServlet {
 	 * @throws IOException
 	 */
 	protected void execute(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		request.setCharacterEncoding("UTF-8");
 		String requestString = request.getParameter(REQUEST_STRING);// for log
-		
 		System.err.println("***********************************打印请求过来的字符串requestString***********************************");
 		System.out.println("打印 requestString 的值："+requestString);
 		System.out.println("打印 requestString 的值："+requestString);

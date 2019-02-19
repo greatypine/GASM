@@ -1,7 +1,12 @@
 package com.cnpc.pms.base.query.json;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+
+import org.apache.poi.poifs.crypt.EcmaDecryptor;
 
 import com.cnpc.pms.base.paging.impl.ColumnsPageInfo;
 import com.cnpc.pms.base.paging.impl.ColumnsSort;
@@ -127,7 +132,44 @@ public class QueryConditions {
 	}
 
 	public void setConditions(List<Map<String, Object>> conditions) {
-		this.conditions = conditions;
+		
+		List<Map<String, Object>> rtCondition=new ArrayList<Map<String,Object>>();
+		Map<String, String> keys = new HashMap<String, String>();
+		keys.put("name", "name");
+		keys.put("content_name", "content_name");
+		keys.put("employee_name", "employee_name");
+		keys.put("tinyvillage_name", "tinyvillage_name");
+		keys.put("town_name", "town_name");
+		keys.put("county_name", "county_name");
+		keys.put("village_name", "village_name");
+		
+		keys.put("province_name", "province_name");
+		keys.put("store_name", "store_name");
+		
+		keys.put("townName", "townName");
+		keys.put("villageName", "villageName");
+		keys.put("tinVillageName", "tinVillageName");
+		keys.put("employeeName", "employeeName");
+		
+		keys.put("work_type", "work_type");
+		
+		try {
+			for(Map<String, Object> m:conditions) {
+				if(m.get("key")!=null&&m.get("value")!=null&&keys.containsKey(m.get("key").toString())) {
+					m.put("value", new String((m.get("value").toString()).getBytes("ISO-8859-1"), "UTF-8"));
+				}
+				rtCondition.add(m);
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		this.conditions = rtCondition;
+	}
+
+	private void i() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	public PageInfo getPageinfo() {

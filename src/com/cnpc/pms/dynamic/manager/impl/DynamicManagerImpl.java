@@ -9,6 +9,7 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -41,6 +42,7 @@ import org.json.JSONObject;
 
 import com.cnpc.pms.base.paging.FilterFactory;
 import com.cnpc.pms.base.paging.impl.PageInfo;
+import com.cnpc.pms.base.query.json.QueryConditions;
 import com.cnpc.pms.base.util.PropertiesUtil;
 import com.cnpc.pms.base.util.SpringHelper;
 import com.cnpc.pms.bizbase.common.manager.BizBaseCommonManager;
@@ -65,6 +67,7 @@ import com.cnpc.pms.platform.dao.OrderDao;
 import com.cnpc.pms.slice.dao.AreaDao;
 import com.cnpc.pms.utils.Base64Encoder;
 import com.cnpc.pms.utils.DateUtils;
+import com.cnpc.pms.utils.ImpalaUtil;
 import com.cnpc.pms.utils.MD5Utils;
 
 /**
@@ -5956,4 +5959,77 @@ public class DynamicManagerImpl extends BizBaseCommonManager implements DynamicM
 		result.put("daily", dailyStoreOrderCityList);
 		return result;
 	}
+	
+	
+	
+	
+	@Override
+	public Map<String, Object> queryStoreWarningInfo(QueryConditions conditions) {
+		
+		//分页对象
+        PageInfo pageInfo = conditions.getPageinfo();
+        UserManager userManager = (UserManager) SpringHelper.getBean("userManager");
+        StoreManager storeManager = (StoreManager) SpringHelper.getBean("storeManager");
+        Long store_id = userManager.getCurrentUserDTO().getStore_id();
+        Store store = storeManager.findStore(store_id);
+        
+        //String platformid = "00000000000000000000000000000053";
+        String platformid=null;
+        if(store!=null&&store.getPlatformid()!=null) {
+            platformid = store.getPlatformid();
+        }
+
+        String create_time="";
+        String content_name="";
+        for (Map<String, Object> map_where : conditions.getConditions()) {
+            if ("create_time".equals(map_where.get("key"))
+                    && null != map_where.get("value") && !"".equals(map_where.get("value"))) {
+            	create_time=(String) map_where.get("value");
+            	
+            	System.out.println("create_time>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+create_time);
+            }
+            
+            if ("content_name".equals(map_where.get("key"))
+                    && null != map_where.get("value") && !"".equals(map_where.get("value"))) {
+            	content_name=(String) map_where.get("value");
+            	
+            	System.out.println("content_name>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>"+content_name);
+            }
+        }
+        
+		Map<String, Object> map_result = new HashMap<String, Object>();
+		String sql="select * from gabase.b_inventory_warning where store_white='normal' and store_id='"+platformid+"' ";
+		if(create_time!=null&&create_time.length()>0) {
+			sql+=" and create_time like '"+create_time+"'";
+		}
+		if(content_name!=null&&content_name.length()>0) {
+			sql+=" and content_name like '"+content_name+"'";
+		}
+		
+		sql+="  order by create_time desc,warn_num desc ";
+		
+        String sql_count = "SELECT COUNT(1) as total FROM (" + sql + ") T";
+
+		int startData = (pageInfo.getCurrentPage() - 1) * pageInfo.getRecordsPerPage();
+        int recordsPerPage = pageInfo.getRecordsPerPage();
+        sql = sql + " LIMIT " + recordsPerPage + " offset " + startData;
+        List<Map<String,Object>> list = ImpalaUtil.executeGuoan(sql);
+
+        String total = "0";
+        List<Map<String,Object>> resultCount = ImpalaUtil.executeGuoan(sql_count);
+        if(resultCount !=null && resultCount.size()>0 ){
+            total = String.valueOf(resultCount.get(0).get("total"));
+        }
+
+        pageInfo.setTotalRecords(Integer.valueOf(total.toString()));
+
+        Integer total_pages = (pageInfo.getTotalRecords() - 1) / pageInfo.getRecordsPerPage() + 1;
+        map_result.put("pageinfo", pageInfo);
+        map_result.put("data", list);
+        map_result.put("total_pages", total_pages);
+        
+        return map_result;
+	}
+	
+	
 }

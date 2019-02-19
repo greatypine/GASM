@@ -34,6 +34,13 @@ public class I18NFilter extends OncePerRequestFilter {
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 			throws ServletException, IOException {
 		// FIXME: Check Privilege.
+		request.setCharacterEncoding("UTF-8");
+		response.setCharacterEncoding("UTF-8");
+		
+		
+		String rt = request.getParameter("requestString");
+		System.out.println(rt);
+		String requestString = request.getParameter("requestString");// for log
 		if (request != null) {
 			SessionManager.setUserSession((UserSession) request.getSession().getAttribute(
 					UserSession.SESSION_ATTRIBUTE_NAME));

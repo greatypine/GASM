@@ -11,6 +11,7 @@ import org.json.JSONObject;
 
 import com.cnpc.pms.base.manager.IManager;
 import com.cnpc.pms.base.paging.impl.PageInfo;
+import com.cnpc.pms.base.query.json.QueryConditions;
 import com.cnpc.pms.dynamic.entity.AbnormalOrderDto;
 import com.cnpc.pms.dynamic.entity.DynamicDto;
 
@@ -891,4 +892,7 @@ public interface DynamicManager extends IManager{
     
     
     public String validateUser(String username,String pwd);
+    
+    
+    public Map<String, Object> queryStoreWarningInfo(QueryConditions conditions);
 }

@@ -774,4 +774,27 @@
     </query>
     
     
+    
+    
+    
+    <query id="querystoreproductlist" header="门店选品推荐信息"  order="id desc" method="dynamicManager.queryStoreWarningInfo">
+    	<column key="id" header="编号"  align="center" display="false" allowSort="false"/>
+        <column key="store_name" header="门店名称"  align="center" allowSort="false"/>
+        <column key="store_code" header="门店编号"  align="center" allowSort="false"/>
+        <column key="content_name" header="商品名称"  align="center" allowSort="false"/>
+        <column key="cgcode" header="商品编码"  align="center" allowSort="false"/>
+        <column key="barcode" header="条形码"  align="center" allowSort="false"/>
+        <column key="pro_number" header="可销售数据"  align="center" allowSort="false"/>
+        <column key="warn_num" header="参考补充"  align="center" allowSort="false"/>
+        <column key="create_time" header="时间"  align="center" allowSort="false"/>
+    </query>
+    
+    
+    
+    
+    
+    
+    
+    
+    
 </pmsquery>
